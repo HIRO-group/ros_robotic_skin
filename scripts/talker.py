@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # license removed for brevity
 import rospy
-from robotic_skin import ADXL335
+from robotic_skin.sensor.adxl335 import ADXL335
 from sensor_msgs.msg import Imu
 
 def talker():
