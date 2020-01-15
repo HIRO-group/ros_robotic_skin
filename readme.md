@@ -34,3 +34,4 @@ ROS_MASTER_URI=http://192.168.7.2:11311/
 etc/hosts:
 192.168.7.2 qemux86-64
 ```
+Good article explaining everything in more detail: https://krishnachaitanya9.github.io/posts/ros_publish_subscribe/
