@@ -1,0 +1,4 @@
+pose_num: 20
+accel_freq: 1000              # Hz
+explore_sampling_time: 1      # s
+explore_angular_velocity: 0.5 # rad/s
