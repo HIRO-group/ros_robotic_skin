@@ -49,3 +49,36 @@ IP_ADDRESS_OF_RASPI raspberrypi.localdomain raspberrypi
 In our case, `IP_ADDRESS_OF_RASPI`  was `172.16.0.143`
 
 Good article explaining everything in more detail: https://krishnachaitanya9.github.io/posts/ros_publish_subscribe/
+
+
+# For DEVELOPERS
+## Test
+### How to run test
+```
+cd ~/catkin_ws
+cakin_make run_tests
+```
+
+### How to add test
+1. Add unittest under `test/` directory.
+2. Add these lines in `launch/test.test`
+```xml
+<launch>
+    <!-- type specifices which test script to run -->
+    <test test-name='test' pkg='ros_robotic_skin' type='template.py'/>
+</launch>
+```
+3. (If not done) Add these lines below to `CMakeLists.txt`
+```cmake
+find_package(rostest REQUIRED)
+add_rostest(launch/test.test)
+```
+
+# Parameters
+Parameters are all saved in `config/params.yaml`. <br.>
+In every launch file, it should load the yaml file. <br>
+Whenever you use it, load it like `example_param = ropsy.get_param("/example_param")`
+
+Refer to 
+- https://roboticsbackend.com/ros-param-yaml-format/
+- https://roboticsbackend.com/get-set-ros-params-rospy-roscpp/
