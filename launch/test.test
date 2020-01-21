@@ -1,0 +1,5 @@
+<launch>
+    <rosparam file="$(find ros_robotic_skin)/config/params.yaml" />
+    <!-- type specifices which test script to run -->
+    <test test-name='test' pkg='ros_robotic_skin' type='test_main.py'/>
+</launch>
