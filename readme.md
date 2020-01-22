@@ -10,9 +10,9 @@ git clone git@github.com:HIRO-group/ros_robotic_skin.git
 cd ~/catkin_ws
 cakin_make
 ```
-```
+
 Please refer to the Franka Install Guide [here](https://hiro-group.ronc.one/franka_installation_tutorial.html) for dependencies.
-```
+
 # Setting 
 Set these environment variables
 
