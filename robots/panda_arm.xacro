@@ -336,7 +336,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
+        <origin xyz="0.06 0 -.15" rpy="0 0 0" />
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
@@ -354,7 +354,7 @@
         <topicName>imu_data1</topicName>
         <bodyName>imu_link1</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 -0.12 .01</xyzOffset>
+        <xyzOffset>0.06 0 -.15</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link1</frameName>
       </plugin>
@@ -377,9 +377,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="3 3 3" rpy="0 0 0" />
+        <origin xyz="0.06 -.15 0" rpy="0 0 0" />
         <geometry>
-            <box size = ".1 .1 .1"/> 
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -395,7 +395,7 @@
         <topicName>imu_data2</topicName>
         <bodyName>imu_link2</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 -0.12 .01</xyzOffset>
+        <xyzOffset>0.06 -.15 0</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link2</frameName>
       </plugin>
@@ -418,7 +418,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
+        <origin xyz="-0.06 0 -0.06" rpy="0 0 0" />
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
@@ -436,7 +436,7 @@
         <topicName>imu_data3</topicName>
         <bodyName>imu_link3</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 -0.12 .01</xyzOffset>
+        <xyzOffset>-0.06 0 -0.06</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link3</frameName>
       </plugin>
@@ -459,9 +459,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/> 
+            <box size = ".25 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -500,9 +500,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/> 
+            <box size = ".25 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -541,9 +541,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/> 
+            <box size = ".25 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
