@@ -1,14 +1,13 @@
 import rospy
+import math
 from std_msgs.msg import Int16
 from std_msgs.msg import Bool
-from std_msgs.msg import String
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 from math import pi
-import time
 
 
-class PandaPose:
+class PandaPose(object):
     def __init__(self):
         # Create Publishers and Init Node
         self.pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
@@ -25,7 +24,7 @@ class PandaPose:
         self.point = JointTrajectoryPoint()
         self.point.positions = [0, 0, 0, 0, 0, 0, 0]
         self.point.velocities = [0, 0, 0, 0, 0, 0, 0]
-        self.point.time_from_start.secs = 10
+        self.point.time_from_start.secs = 2
         self.msg.points = [self.point]
         # TODO: Look up do we need to have one message to init the robot?
         # If I only send one message then the franka does not move.
@@ -37,6 +36,8 @@ class PandaPose:
         rospy.sleep(1)
         self.pub.publish(self.msg)
         rospy.sleep(1)
+
+        self.r = rospy.Rate(360)
 
     def _set_pose(self, pose, pose_string):
         if len(pose) != 7:
@@ -55,20 +56,39 @@ class PandaPose:
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.pub.publish(self.msg)
-            time.sleep(5)
+            self.r.sleep()
 
-    def set_poses(self, poses):
+    def set_poses_position(self, poses):
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_pose(pose_configuration, pose_string)
-            # self._set_velocity(velocity_configuration)
             self._set_all_values()
+
+    def set_poses_velocity(self, poses):
+        for each_pose in poses:
+            pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
+            self._set_velocity(velocity_configuration)
+            self._set_all_values()
+
+    def set_poses_position_velocity(self, poses):
+        for each_pose in poses:
+            pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
+            self._set_pose(pose_configuration, pose_string)
+            self._set_velocity(velocity_configuration)
+            self._set_all_values()
+
+    def move_like_sine(self):
+        while True:
+            for each_degree in range(0, 360):
+                self._set_velocity([0, 0, 5 * math.sin(math.radians(each_degree)), 0, 0, 0, 0])
+                self._set_all_values()
 
 
 if __name__ == "__main__":
     poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01], 'Pose_1'],
-        [[-1, -1, -1, -1, -1, -1, -1], [0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9], 'Pose_2']
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     pp = PandaPose()
-    pp.set_poses(poses_list)
+    while True:
+        pp.move_like_sine()
