@@ -7,7 +7,7 @@ from math import pi
 
 
 class PandaPose(object):
-    def __init__(self, sleep_time=600):
+    def __init__(self, sleep_time=300):
         # Create Publishers and Init Node
         self.pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
         self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
@@ -61,7 +61,8 @@ class PandaPose(object):
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.pub.publish(self.msg)
-            rospy.sleep(self.sleep_time)
+            self.r.sleep()
+            
 
     def set_poses_position_dynamic(self, poses):
         for each_pose in poses:
@@ -97,7 +98,8 @@ class PandaPose(object):
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.pub.publish(self.msg)
-            self.r.sleep()
+            rospy.sleep(self.sleep_time)
+            
 
     def set_poses_position_static(self, poses):
         for each_pose in poses:

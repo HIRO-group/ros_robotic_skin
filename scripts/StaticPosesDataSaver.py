@@ -3,7 +3,7 @@ import numpy as np
 import random
 import rospy
 from sensor_msgs.msg import Imu
-import collections
+from collections import OrderedDict, defaultdict
 
 ################################################
 ###### Poses Configuration #####################
@@ -11,44 +11,53 @@ poses_list = [
     [[-1, -1, -1, -3, -1, -1, -1], [], 'Pose_1']
 ]
 ################################################
-np_array_imu_0 = np.array(['', '', 0, 0, 0])
-np_array_imu_1 = np.array(['', '', 0, 0, 0])
-np_array_imu_2 = np.array(['', '', 0, 0, 0])
-np_array_imu_3 = np.array(['', '', 0, 0, 0])
-np_array_imu_4 = np.array(['', '', 0, 0, 0])
-np_array_imu_5 = np.array(['', '', 0, 0, 0])
-np_array_imu_6 = np.array(['', '', 0, 0, 0])
+np_array_storage = np.array([['', '', 0, 0, 0]])
+
+
+# From https://stackoverflow.com/questions/17796159/creating-a-3-dimensional-ordereddict-with-natural-subscripting
+class DefaultOrderedDict(OrderedDict):
+    def __missing__(self, key):
+        self[key] = type(self)()
+        return self[key]
 
 
 def callback(data):
     global pp
+    global np_array_storage
     if data.header.frame_id == 'imu_link0':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_0, ['imu_link0', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link0', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link1':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_1, ['imu_link1', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link1', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link2':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_2, ['imu_link2', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link2', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link3':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_3, ['imu_link3', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link3', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link4':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_4, ['imu_link4', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link4', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link5':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_5, ['imu_link5', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link5', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link6':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_imu_6, ['imu_link6', pp.pose_string, acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np.vstack((np_array_storage,
+                   [pp.pose_string, 'imu_link6', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
 
     else:
         raise Exception("I don't know what IMU link I am getting. Should I be getting this?: ", data.header.frame_id)
@@ -58,6 +67,7 @@ class PandaPosesDataSaver(PandaPose):
     def __init__(self):
         super(PandaPosesDataSaver, self).__init__()
         self.pose_string = ''
+        self.data_ordered_dict = defaultdict(list)
 
     def get_imu_data(self):
         rospy.Subscriber('imu_data0', Imu, callback)
@@ -73,9 +83,20 @@ class PandaPosesDataSaver(PandaPose):
         self.set_poses_position_static(poses_list)
 
     def ready_the_data(self):
-
-
-
+        global np_array_storage
+        for every_entry in np_array_storage:
+            # if self.data_ordered_dict[every_entry[1]][every_entry[0]]:
+            #     self.data_ordered_dict[every_entry[1]][every_entry[0]] = [0, 0, 0]
+            # self.data_ordered_dict[every_entry[1]][every_entry[0]].append(
+            #     [every_entry[2], every_entry[3], every_entry[4]])
+            if not self.data_ordered_dict[every_entry[0]]:
+                self.data_ordered_dict[every_entry[0]] = defaultdict(list)
+                self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
+            elif not self.data_ordered_dict[every_entry[0]][every_entry[1]]:
+                self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
+            self.data_ordered_dict[every_entry[0]][every_entry[1]].append(
+                [every_entry[2], every_entry[3], every_entry[4]])
+        print(self.data_ordered_dict)
 
 
 # Lets generate poses for review
@@ -83,3 +104,4 @@ if __name__ == "__main__":
     pp = PandaPosesDataSaver()
     pp.get_imu_data()
     pp.set_poses()
+    pp.ready_the_data()
