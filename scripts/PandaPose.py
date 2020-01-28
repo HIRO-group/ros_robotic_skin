@@ -2,8 +2,7 @@ import rospy
 import math
 from std_msgs.msg import Int16
 from std_msgs.msg import Bool
-from trajectory_msgs.msg import JointTrajectory
-from trajectory_msgs.msg import JointTrajectoryPoint
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from math import pi
 
 
