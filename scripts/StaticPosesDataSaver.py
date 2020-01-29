@@ -1,9 +1,9 @@
 from PandaPose import PandaPose
 import numpy as np
-import random
+import pickle
 import rospy
 from sensor_msgs.msg import Imu
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 
 ################################################
 ###### Poses Configuration #####################
@@ -84,10 +84,6 @@ class PandaPosesDataSaver(PandaPose):
     def ready_the_data(self):
         global np_array_storage
         for every_entry in np_array_storage:
-            # if self.data_ordered_dict[every_entry[1]][every_entry[0]]:
-            #     self.data_ordered_dict[every_entry[1]][every_entry[0]] = [0, 0, 0]
-            # self.data_ordered_dict[every_entry[1]][every_entry[0]].append(
-            #     [every_entry[2], every_entry[3], every_entry[4]])
             if not self.data_ordered_dict[every_entry[0]]:
                 self.data_ordered_dict[every_entry[0]] = defaultdict(list)
                 self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
@@ -95,6 +91,17 @@ class PandaPosesDataSaver(PandaPose):
                 self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
             self.data_ordered_dict[every_entry[0]][every_entry[1]].append(
                 [every_entry[2], every_entry[3], every_entry[4]])
+        # Delete the data_ordered_dict[''], because it ain't useful
+        del self.data_ordered_dict['']
+        for pose, imu_links in self.data_ordered_dict.items():
+            for imu_link in imu_links:
+                resulted_np_array = np.array(self.data_ordered_dict[pose][imu_link]).astype(np.float)
+                avg_array = np.mean(resulted_np_array, axis=0) / 9.81
+                self.data_ordered_dict[pose][imu_link] = avg_array
+        save_file_array = np.array(self.data_ordered_dict)
+        output = open('myfile.pkl', 'wb')
+        pickle.dump(self.data_ordered_dict, output)
+        output.close()
         print(self.data_ordered_dict)
 
 
