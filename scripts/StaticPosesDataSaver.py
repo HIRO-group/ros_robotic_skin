@@ -11,14 +11,7 @@ poses_list = [
     [[-1, -1, -1, -3, -1, -1, -1], [], 'Pose_1']
 ]
 ################################################
-np_array_storage = np.array([['', '', 0, 0, 0]])
-
-
-# From https://stackoverflow.com/questions/17796159/creating-a-3-dimensional-ordereddict-with-natural-subscripting
-class DefaultOrderedDict(OrderedDict):
-    def __missing__(self, key):
-        self[key] = type(self)()
-        return self[key]
+global np_array_storage
 
 
 def callback(data):
@@ -26,8 +19,9 @@ def callback(data):
     global np_array_storage
     if data.header.frame_id == 'imu_link0':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, 'imu_link0', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np_array_storage = np.vstack((np_array_storage,
+                                      [pp.pose_string, 'imu_link0', acceleration_data.x, acceleration_data.y,
+                                       acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link1':
         acceleration_data = data.linear_acceleration
@@ -36,28 +30,33 @@ def callback(data):
 
     elif data.header.frame_id == 'imu_link2':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, 'imu_link2', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np_array_storage = np.vstack((np_array_storage,
+                                      [pp.pose_string, 'imu_link2', acceleration_data.x, acceleration_data.y,
+                                       acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link3':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, 'imu_link3', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np_array_storage = np.vstack((np_array_storage,
+                                      [pp.pose_string, 'imu_link3', acceleration_data.x, acceleration_data.y,
+                                       acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link4':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, 'imu_link4', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np_array_storage = np.vstack((np_array_storage,
+                                      [pp.pose_string, 'imu_link4', acceleration_data.x, acceleration_data.y,
+                                       acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link5':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, 'imu_link5', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np_array_storage = np.vstack((np_array_storage,
+                                      [pp.pose_string, 'imu_link5', acceleration_data.x, acceleration_data.y,
+                                       acceleration_data.z]))
 
     elif data.header.frame_id == 'imu_link6':
         acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, 'imu_link6', acceleration_data.x, acceleration_data.y, acceleration_data.z]))
+        np_array_storage = np.vstack((np_array_storage,
+                                      [pp.pose_string, 'imu_link6', acceleration_data.x, acceleration_data.y,
+                                       acceleration_data.z]))
 
     else:
         raise Exception("I don't know what IMU link I am getting. Should I be getting this?: ", data.header.frame_id)
@@ -101,6 +100,8 @@ class PandaPosesDataSaver(PandaPose):
 
 # Lets generate poses for review
 if __name__ == "__main__":
+    # global np_array_storage
+    np_array_storage = np.array([['', '', 0, 0, 0]])
     pp = PandaPosesDataSaver()
     pp.get_imu_data()
     pp.set_poses()

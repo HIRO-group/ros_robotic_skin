@@ -4,6 +4,7 @@ from std_msgs.msg import Int16
 from std_msgs.msg import Bool
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from math import pi
+import datetime
 
 
 class PandaPose(object):
@@ -62,7 +63,6 @@ class PandaPose(object):
             # publish message to actuate the dof
             self.pub.publish(self.msg)
             self.r.sleep()
-            
 
     def set_poses_position_dynamic(self, poses):
         for each_pose in poses:
@@ -98,8 +98,12 @@ class PandaPose(object):
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.pub.publish(self.msg)
-            rospy.sleep(self.sleep_time)
-            
+            self.r.sleep()
+            d1 = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            while True:
+                rospy.rostime.wallsleep(0.5)
+                if d1 < datetime.datetime.now():
+                    break
 
     def set_poses_position_static(self, poses):
         for each_pose in poses:
