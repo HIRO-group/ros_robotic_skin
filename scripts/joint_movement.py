@@ -36,8 +36,8 @@ joint_int = -1
 
 pub.publish(msg)
 rospy.sleep(1)
-pub.publish(msg)
-rospy.sleep(1)
+# pub.publish(msg)
+# rospy.sleep(1)
 
 
 def talker():
