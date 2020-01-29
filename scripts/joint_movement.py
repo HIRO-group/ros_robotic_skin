@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import rospy
 from std_msgs.msg import Int16
@@ -16,7 +16,8 @@ rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
 msg = JointTrajectory()
 msg.header.stamp = rospy.Time.now()
 msg.header.frame_id = '/base_link'
-msg.joint_names = ['panda_joint1', 'panda_joint2','panda_joint3','panda_joint4','panda_joint5','panda_joint6','panda_joint7']
+msg.joint_names = ['panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5', 'panda_joint6',
+                   'panda_joint7']
 
 # Set Initial position of the robot
 point = JointTrajectoryPoint()
@@ -24,7 +25,6 @@ point.positions = [0, 0, 0, 0, 0, 0, 0]
 point.time_from_start.secs = 1
 msg.points = [point]
 joint_int = -1
-
 
 # TODO: Look up do we need to have one message to init the robot?
 # If I only send one message then the franka does not move.
@@ -36,8 +36,8 @@ joint_int = -1
 
 pub.publish(msg)
 rospy.sleep(1)
-# pub.publish(msg)
-# rospy.sleep(1)
+pub.publish(msg)
+rospy.sleep(1)
 
 
 def talker():
@@ -67,9 +67,10 @@ def talker():
         pub_int.publish(joint_int)
         rospy.sleep(1)
 
-        #publish message to actuate the dof
+        # publish message to actuate the dof
         pub.publish(msg)
         rospy.sleep(5)
+
 
 if __name__ == '__main__':
     try:
