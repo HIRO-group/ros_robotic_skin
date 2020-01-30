@@ -64,6 +64,7 @@ class PandaPose(object):
             self.pub.publish(self.msg)
             self.r.sleep()
 
+
     def set_poses_position_dynamic(self, poses):
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
@@ -87,10 +88,13 @@ class PandaPose(object):
             self._set_all_values_dynamic()
 
     def move_like_sine_dynamic(self):
+        d1 = datetime.datetime.now() + datetime.timedelta(minutes=1)
         while True:
             for each_degree in range(0, 360):
                 self._set_velocity([0, 0, 5 * math.sin(math.radians(each_degree)), 0, 0, 0, 0])
                 self._set_all_values_dynamic()
+            if d1 < datetime.datetime.now():
+                break
 
     # Start Static Change
     def _set_all_values_static(self):
