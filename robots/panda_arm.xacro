@@ -303,7 +303,7 @@
             <box size = "0.05 0.05 0.05"/> 
         </geometry>
         <material name="green"/>
-        </visual>
+      </visual>
     </link>
     <gazebo reference="imu_link0">
     <gravity>true</gravity>
@@ -323,6 +323,9 @@
       <pose>0 0 0 0 0 0</pose>
     </sensor>
   </gazebo>
+
+
+
 <joint name = "imu_link_joint1" type ="fixed">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <parent link="${arm_id}_link1"/>
@@ -459,9 +462,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="-0.14 0.09 0" rpy="0 0 0" />
         <geometry>
-            <box size = ".25 .05 .05"/> 
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -477,7 +480,7 @@
         <topicName>imu_data4</topicName>
         <bodyName>imu_link4</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 -0.12 .01</xyzOffset>
+        <xyzOffset>-0.14 0.09 0</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link4</frameName>
       </plugin>
@@ -500,9 +503,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0 0.10 -0.11" rpy="0 0 0" />
         <geometry>
-            <box size = ".25 .05 .05"/> 
+            <box size = ".05 .05 .05"/>  
         </geometry>
         <material name="orange"/>
         </visual>
@@ -518,7 +521,7 @@
         <topicName>imu_data5</topicName>
         <bodyName>imu_link5</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 -0.12 .01</xyzOffset>
+        <xyzOffset>0 0.10 -0.11</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link5</frameName>
       </plugin>
@@ -541,9 +544,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0.13 0.02 0" rpy="0 0 0" />
         <geometry>
-            <box size = ".25 .05 .05"/> 
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -559,7 +562,7 @@
         <topicName>imu_data6</topicName>
         <bodyName>imu_link6</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 -0.12 .01</xyzOffset>
+        <xyzOffset>0.13 0.02 0</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link6</frameName>
       </plugin>
