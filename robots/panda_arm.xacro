@@ -284,7 +284,7 @@
 
 
 
-<!-- aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -->
+<!-- IMU Placement changes start from here. In kandai's words: aaaaaaaaaaa -->
     <joint name = "imu_link_joint0" type ="fixed">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <parent link="${arm_id}_link0"/>
@@ -312,6 +312,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data0</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data0</topicName>
         <bodyName>imu_link0</bodyName>
@@ -353,6 +355,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data1</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data1</topicName>
         <bodyName>imu_link1</bodyName>
@@ -394,6 +398,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data2</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data2</topicName>
         <bodyName>imu_link2</bodyName>
@@ -435,6 +441,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data3</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data3</topicName>
         <bodyName>imu_link3</bodyName>
@@ -476,6 +484,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data4</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data4</topicName>
         <bodyName>imu_link4</bodyName>
@@ -517,6 +527,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data5</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data5</topicName>
         <bodyName>imu_link5</bodyName>
@@ -558,6 +570,8 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data1</topic>
+<!--      Below is the line to change the material-->
+      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data6</topicName>
         <bodyName>imu_link6</bodyName>
