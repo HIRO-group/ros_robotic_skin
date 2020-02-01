@@ -344,7 +344,6 @@
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
-        <material name="orange"/>
         </visual>
     </link>
     <gazebo reference="imu_link1">
@@ -387,7 +386,6 @@
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
-        <material name="orange"/>
         </visual>
     </link>
     <gazebo reference="imu_link2">
@@ -430,7 +428,6 @@
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
-        <material name="orange"/>
         </visual>
     </link>
     <gazebo reference="imu_link3">
@@ -473,7 +470,6 @@
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
-        <material name="orange"/>
         </visual>
     </link>
     <gazebo reference="imu_link4">
@@ -516,7 +512,6 @@
         <geometry>
             <box size = ".05 .05 .05"/>  
         </geometry>
-        <material name="orange"/>
         </visual>
     </link>
     <gazebo reference="imu_link5">
@@ -559,7 +554,6 @@
         <geometry>
             <box size = ".05 .05 .05"/> 
         </geometry>
-        <material name="orange"/>
         </visual>
     </link>
     <gazebo reference="imu_link6">
