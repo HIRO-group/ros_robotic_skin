@@ -7,6 +7,8 @@ from sensor_msgs.msg import Imu
 from collections import defaultdict
 import datetime
 
+# TODO: Get max acceleration, as well joint angle at that point
+# [pose] [joint: which is changing] [acclerometer_max, theta]
 ################################################
 ###### Poses Configuration #####################
 poses_list = [
