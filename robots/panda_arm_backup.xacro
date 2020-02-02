@@ -1,0 +1,834 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+  <xacro:macro name="panda_arm" params="arm_id:='panda' description_pkg:='franka_description' connected_to:='' xyz:='0 0 0' rpy:='0 0 0'">
+    <xacro:unless value="${not connected_to}">
+      <joint name="${arm_id}_joint_${connected_to}" type="fixed">
+        <parent link="${connected_to}"/>
+        <child link="${arm_id}_link0"/>
+        <origin rpy="${rpy}" xyz="${xyz}"/>
+      </joint>
+    </xacro:unless>
+
+    <!-- for simulation -->
+    <link name="world" />
+
+    <joint name="robot_to_world" type="fixed">
+      <parent link="world" />
+      <child link="${arm_id}_link0" />
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+    </joint>
+
+    <xacro:property name="joint_damping" value="1.0"/>
+    <!-- end for simulation -->
+
+    <link name="${arm_id}_link0">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link0.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link0.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="3.06" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <link name="${arm_id}_link1">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link1.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link1.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="2.34" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint1" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+      <origin rpy="0 0 0" xyz="0 0 0.333"/>
+      <parent link="${arm_id}_link0"/>
+      <child link="${arm_id}_link1"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link2">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link2.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link2.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="2.36" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint2" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.7628" soft_upper_limit="1.7628"/>
+      <origin rpy="${-pi/2} 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link1"/>
+      <child link="${arm_id}_link2"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="87" lower="-1.7628" upper="1.7628" velocity="2.1750"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link3">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link3.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link3.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="2.38" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint3" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+      <origin rpy="${pi/2} 0 0" xyz="0 -0.316 0"/>
+      <parent link="${arm_id}_link2"/>
+      <child link="${arm_id}_link3"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link4">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link4.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link4.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="2.43" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint4" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.0718" soft_upper_limit="-0.0698"/>
+      <origin rpy="${pi/2} 0 0" xyz="0.0825 0 0"/>
+      <parent link="${arm_id}_link3"/>
+      <child link="${arm_id}_link4"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="87" lower="-3.0718" upper="-0.0698" velocity="2.1750"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link5">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link5.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link5.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="3.5" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint5" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+      <origin rpy="${-pi/2} 0 0" xyz="-0.0825 0.384 0"/>
+      <parent link="${arm_id}_link4"/>
+      <child link="${arm_id}_link5"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link6">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link6.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link6.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="1.47" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint6" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-0.0175" soft_upper_limit="3.7525"/>
+      <origin rpy="${pi/2} 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link5"/>
+      <child link="${arm_id}_link6"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="12" lower="-0.0175" upper="3.7525" velocity="2.6100"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link7">
+      <visual>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/visual/link7.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://${description_pkg}/meshes/collision/link7.stl"/>
+        </geometry>
+      </collision>
+
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="0.45" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint7" type="revolute">
+      <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8973" soft_upper_limit="2.8973"/>
+      <origin rpy="${pi/2} 0 0" xyz="0.088 0 0"/>
+      <parent link="${arm_id}_link6"/>
+      <child link="${arm_id}_link7"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+
+      <!-- for simulation -->
+      <dynamics damping="${joint_damping}"/>
+      <!-- end for simulation -->
+    </joint>
+    <link name="${arm_id}_link8">
+      <!-- for simulation -->
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="0.0" />
+        <inertia ixx="0.3" ixy="0.0" ixz="0.0" iyy="0.3" iyz="0.0" izz="0.3" />
+      </inertial>
+      <!-- end for simulation -->
+    </link>
+    <joint name="${arm_id}_joint8" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0.107"/>
+      <parent link="${arm_id}_link7"/>
+      <child link="${arm_id}_link8"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+
+
+
+
+<!-- IMU Placement changes start from here. In kandai's words: aaaaaaaaaaa -->
+    <joint name = "imu_link_joint0" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link0"/>
+      <child link="imu_link0"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link0">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 0.05" rpy="0 0 0" />
+        <geometry>
+            <box size = "0.05 0.05 0.05"/> 
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="imu_link0">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor0" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data0</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data0</topicName>
+        <bodyName>imu_link0</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0.06 0 0.05</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link0</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+<!--    Joint 0 Axes Start-->
+<!--    IMU 0 X Axis link-->
+  <joint name = "imu_link_joint0_x_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link0"/>
+      <child link="imu_link0_x_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link0_x_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 0.05" rpy="1.57 0 0" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link0_x_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/RedBright</material>
+  </gazebo>
+<!--    End-->
+
+<!--    IMU 5 Y Axis link-->
+    <joint name = "imu_link_joint0_y_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link0"/>
+      <child link="imu_link0_y_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link0_y_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 0.05" rpy="0 1.57 0" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link0_y_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+<!--    End-->
+<!--    IMU 5 Z Axis link-->
+  <joint name = "imu_link_joint0_z_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link0"/>
+      <child link="imu_link0_z_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link0_z_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 0.05" rpy="0 0 1.57" />
+          <geometry>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link0_z_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+<!--    End-->
+<!--    Joint 0 Axes End-->
+
+
+<joint name = "imu_link_joint1" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link1"/>
+      <child link="imu_link1"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link1">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 -.15" rpy="0 0 0" />
+        <geometry>
+            <box size = ".05 .05 .05"/> 
+        </geometry>
+        </visual>
+    </link>
+    <gazebo reference="imu_link1">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor1" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data1</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data1</topicName>
+        <bodyName>imu_link1</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0.06 0 -.15</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link1</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+
+    <!--    Joint 1 Axes Start-->
+<!--    IMU 0 X Axis link-->
+  <joint name = "imu_link_joint1_x_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link1"/>
+      <child link="imu_link1_x_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link1_x_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 -.15" rpy="1.57 0 0" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link1_x_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/RedBright</material>
+  </gazebo>
+<!--    End-->
+
+<!--    IMU 5 Y Axis link-->
+    <joint name = "imu_link_joint1_y_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link1"/>
+      <child link="imu_link1_y_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link1_y_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 -.15" rpy="0 1.57 0" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link1_y_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+<!--    End-->
+<!--    IMU 5 Z Axis link-->
+  <joint name = "imu_link_joint1_z_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link1"/>
+      <child link="imu_link1_z_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link1_z_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 0 -.15" rpy="0 0 1.57" />
+          <geometry>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link1_z_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+<!--    End-->
+<!--    Joint 1 Axes End-->
+
+
+
+
+
+  <joint name = "imu_link_joint2" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link2"/>
+      <child link="imu_link2"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link2">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 -.15 0" rpy="0 0 0" />
+<!--        <origin xyz="${props['IMU2_Position_x']}" rpy="0 0 0" />-->
+        <geometry>
+            <box size = ".05 .05 .05"/> 
+        </geometry>
+        </visual>
+    </link>
+    <gazebo reference="imu_link2">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor2" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data2</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data2</topicName>
+        <bodyName>imu_link2</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0.06 -.15 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link2</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+    <!--    Joint 2 Axes Start-->
+<!--    IMU 2 X Axis link-->
+  <joint name = "imu_link_joint2_x_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link2"/>
+      <child link="imu_link2_x_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link2_x_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 -.15 0" rpy="1.57 0 0" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link2_x_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/RedBright</material>
+  </gazebo>
+<!--    End-->
+
+<!--    IMU 5 Y Axis link-->
+    <joint name = "imu_link_joint2_y_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link2"/>
+      <child link="imu_link2_y_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link2_y_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 -.15 0" rpy="0 1.57 0" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link2_y_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+<!--    End-->
+<!--    IMU 5 Z Axis link-->
+  <joint name = "imu_link_joint2_z_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link2"/>
+      <child link="imu_link2_z_axis"/>
+      <axis xyz="0 0 0"/>
+  </joint>
+  <link name="imu_link2_z_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.06 -.15 0" rpy="0 0 1.57" />
+          <geometry>
+<!--            <cylinder length="0.07" radius="0.001"/>-->
+            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+          </geometry>
+        </visual>
+  </link>
+  <gazebo reference="imu_link2_z_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+<!--    End-->
+<!--    Joint 2 Axes End-->
+
+
+  <joint name = "imu_link_joint3" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link3"/>
+      <child link="imu_link3"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link3">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.06 0 -0.06" rpy="0 0 0" />
+        <geometry>
+            <box size = ".05 .05 .05"/> 
+        </geometry>
+        </visual>
+    </link>
+    <gazebo reference="imu_link3">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor3" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data3</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data3</topicName>
+        <bodyName>imu_link3</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>-0.06 0 -0.06</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link3</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+
+
+  <joint name = "imu_link_joint4" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link4"/>
+      <child link="imu_link4"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link4">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="-0.14 0.09 0" rpy="0 0 0" />
+        <geometry>
+            <box size = ".05 .05 .05"/> 
+        </geometry>
+        </visual>
+    </link>
+    <gazebo reference="imu_link4">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor4" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data4</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data4</topicName>
+        <bodyName>imu_link4</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>-0.14 0.09 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link4</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+
+
+  <joint name = "imu_link_joint5" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link5"/>
+      <child link="imu_link5"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link5">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0.10 -0.11" rpy="0 0 0" />
+        <geometry>
+            <box size = ".05 .05 .05"/>  
+        </geometry>
+        </visual>
+    </link>
+    <gazebo reference="imu_link5">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor5" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data5</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data5</topicName>
+        <bodyName>imu_link5</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0.10 -0.11</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link5</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+
+
+  <joint name = "imu_link_joint6" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="${arm_id}_link6"/>
+      <child link="imu_link6"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="imu_link6">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.13 0.02 0" rpy="0 0 0" />
+        <geometry>
+            <box size = ".05 .05 .05"/> 
+        </geometry>
+        </visual>
+    </link>
+    <gazebo reference="imu_link6">
+    <gravity>true</gravity>
+    <!--      Below is the line to change the material-->
+    <material>Gazebo/YellowGlow</material>
+    <sensor name="imu_sensor6" type="imu">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>imu_data1</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu_data6</topicName>
+        <bodyName>imu_link6</bodyName>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0.13 0.02 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link6</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+  </xacro:macro>
+</robot>
