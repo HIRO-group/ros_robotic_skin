@@ -284,7 +284,8 @@
 
 
 
-<!-- IMU Placement changes start from here. In kandai's words: aaaaaaaaaaa -->
+
+   
     <joint name = "imu_link_joint0" type ="fixed">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <parent link="${arm_id}_link0"/>
@@ -300,10 +301,10 @@
       <visual>
         <origin xyz="0.06 0 0.05" rpy="0 0 0" />
         <geometry>
-            <box size = "0.05 0.05 0.05"/>
+            <box size = ".25 .25 1"/> 
         </geometry>
         <material name="green"/>
-      </visual>
+        </visual>
     </link>
     <gazebo reference="imu_link0">
     <gravity>true</gravity>
@@ -312,8 +313,6 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data0</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data0</topicName>
         <bodyName>imu_link0</bodyName>
@@ -341,9 +340,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.06 0 -.15" rpy="0 0 0" />
+        <origin xyz="0 0 -.5" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/>
+            <box size = ".25 .25 .25"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -355,13 +354,11 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data1</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data1</topicName>
         <bodyName>imu_link1</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0.06 0 -.15</xyzOffset>
+        <xyzOffset>0 -0.12 .01</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link1</frameName>
       </plugin>
@@ -384,10 +381,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.06 -.15 0" rpy="0 0 0" />
+        <origin xyz="3 3 3" rpy="0 0 0" />
         <geometry>
-
-            <box size = ".05 .05 .05"/>
+            <box size = ".1 .1 .1"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -399,13 +395,11 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data2</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data2</topicName>
         <bodyName>imu_link2</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0.06 -.15 0</xyzOffset>
+        <xyzOffset>0 -0.12 .01</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link2</frameName>
       </plugin>
@@ -428,9 +422,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="-0.06 0 -0.06" rpy="0 0 0" />
+        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/>
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -442,13 +436,11 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data3</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data3</topicName>
         <bodyName>imu_link3</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>-0.06 0 -0.06</xyzOffset>
+        <xyzOffset>0 -0.12 .01</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link3</frameName>
       </plugin>
@@ -471,9 +463,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="-0.14 0.09 0" rpy="0 0 0" />
+        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/>
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -485,13 +477,11 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data4</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data4</topicName>
         <bodyName>imu_link4</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>-0.14 0.09 0</xyzOffset>
+        <xyzOffset>0 -0.12 .01</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link4</frameName>
       </plugin>
@@ -514,9 +504,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0 0.10 -0.11" rpy="0 0 0" />
+        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/>
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -528,13 +518,11 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data5</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data5</topicName>
         <bodyName>imu_link5</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 0.10 -0.11</xyzOffset>
+        <xyzOffset>0 -0.12 .01</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link5</frameName>
       </plugin>
@@ -557,9 +545,9 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.13 0.02 0" rpy="0 0 0" />
+        <origin xyz="0 -0.12 .01" rpy="0 0 0" />
         <geometry>
-            <box size = ".05 .05 .05"/>
+            <box size = ".05 .05 .05"/> 
         </geometry>
         <material name="orange"/>
         </visual>
@@ -571,13 +559,11 @@
       <update_rate>10</update_rate>
       <visualize>true</visualize>
       <topic>imu_data1</topic>
-<!--      Below is the line to change the material-->
-      <material>Gazebo/YellowGlow</material>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>imu_data6</topicName>
         <bodyName>imu_link6</bodyName>
         <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0.13 0.02 0</xyzOffset>
+        <xyzOffset>0 -0.12 .01</xyzOffset>
         <rpyOffset>0 0 0</rpyOffset>
         <frameName>imu_link6</frameName>
       </plugin>
