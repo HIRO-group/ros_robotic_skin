@@ -1,6 +1,16 @@
 """
 This script is the output of my frustration with Gazebo, when I want to place reusable blocks, which passing some
 strings as parameters. Also to change origin and orientation using quaternion mathematics. Wish me luck.
+
+Usage:
+1) Make the required changes in generate_xacro class's __init__ definition constants and just run the python file. This
+will take panda_arm_reference.xacro as base, generated required xacro blocks and rewrites the old panda_arm.xacro. So
+make a backup of working and stable panda_arm.xacro before attempting to do any changes for peace of your own mind.
+2) You don't need to run the python file every time, only when you want to change the xacro settings
+3) If you want to change the xacro, you can, but later update the changes in this file's xacro template, so that next
+time they are auto-magically generated for you
+4) This python file should be one stop destination relating to generating the xacro for all needs
+5) The variables are named programmatically and clearly, so I won't comment. Everything is self explanatory
 """
 import math
 import numpy as np
@@ -154,7 +164,7 @@ class generate_xacro:
         # Specific Sensor Configuration
         self.real_visual_imu_xyz_0 = np.array([0.06, 0, 0.05])
         # We will offset to add to the xyz of real IMU to that of simulated IMU
-        self.offset = np.array([1, 0, 0])
+        self.offset = np.array([0.5, 0, 0])
         self.simulated_visual_imu_xyz_0 = self.real_visual_imu_xyz_0 + self.offset
 
         self.real_visual_imu_xyz_1 = np.array([0.06, 0, -0.15])
