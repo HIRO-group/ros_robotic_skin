@@ -3,11 +3,20 @@ This is a panda pose library, this is comprised of three main types of classes
 1) General Utilities: defs utilized by all classes
 2) Static Defs: All defs starting with static. Used only for static data collection
 3) dynamic Defs: All defs starting with dynamic. Used for dynamic data collection only
+Each Pose should be defined in this way
+poses_list = [
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
+    ]
+Which is basically:
+poses_list = [
+        [[Position List_1], [Velocity_list_1], 'Pose_name_1'],
+        [[Position List_2], [Velocity_list_2], 'Pose_name_2']
+    ]
 """
 import rospy
 import math
-from std_msgs.msg import Int16
-from std_msgs.msg import Bool
+from std_msgs.msg import Int16, Bool
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from math import pi
 import datetime
@@ -18,9 +27,10 @@ class PandaPose(object):
     This is the main PandaPose class. The main reason this class needs to be overridden is that you can rospy.init_node
     once. Hence. You need to call this super method.
     """
+
     def __init__(self, sleep_time=300):
         # Create Publishers and Init Node
-        self.pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
+        self.trajectory_pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
         self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.pub_bool = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
@@ -37,14 +47,15 @@ class PandaPose(object):
         self.point.time_from_start.secs = 1
         self.msg.points = [self.point]
         # TODO: Look up do we need to have one message to init the robot?
-        # If I only send one message then the franka does not move.
+        # If I only send one message then the franka bottom most joint does not move in simulation.
+        # Need to check if same thing happens in real robot too. @peasant98 can you please confirm this?
         # TODO: This might not be the best starting position for the robot to be in.
         # Think about if we are losing some information by using a completely vertical position
         # for the start.
         # Move arm to starting position
-        self.pub.publish(self.msg)
+        self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
-        self.pub.publish(self.msg)
+        self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
         self.sleep_time = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
@@ -91,9 +102,8 @@ class PandaPose(object):
         self.msg.points = [self.point]
         if not rospy.is_shutdown():
             # publish message to actuate the dof
-            self.pub.publish(self.msg)
+            self.trajectory_pub.publish(self.msg)
             self.r.sleep()
-
 
     def set_poses_position_dynamic(self, poses):
         """
@@ -159,7 +169,7 @@ class PandaPose(object):
         self.msg.points = [self.point]
         if not rospy.is_shutdown():
             # publish message to actuate the dof
-            self.pub.publish(self.msg)
+            self.trajectory_pub.publish(self.msg)
             self.r.sleep()
             d1 = datetime.datetime.now() + datetime.timedelta(minutes=self.sleep_time)
             while True:
