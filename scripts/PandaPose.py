@@ -1,3 +1,9 @@
+"""
+This is a panda pose library, this is comprised of three main types of classes
+1) General Utilities: defs utilized by all classes
+2) Static Defs: All defs starting with static. Used only for static data collection
+3) dynamic Defs: All defs starting with dynamic. Used for dynamic data collection only
+"""
 import rospy
 import math
 from std_msgs.msg import Int16
@@ -8,6 +14,10 @@ import datetime
 
 
 class PandaPose(object):
+    """
+    This is the main PandaPose class. The main reason this class needs to be overridden is that you can rospy.init_node
+    once. Hence. You need to call this super method.
+    """
     def __init__(self, sleep_time=300):
         # Create Publishers and Init Node
         self.pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
@@ -40,15 +50,30 @@ class PandaPose(object):
         self.r = rospy.Rate(360)
         self.pose_string = ''
 
-    ## General Utilities
+    # General Utilities
 
     def _set_pose(self, pose, pose_string):
+        """
+        Set pose of the panda
+        :param pose: list
+            Set the pose according to the list that you get
+        :param pose_string: str
+            Set Pose type string like Pose_0
+        :return:
+        """
         if len(pose) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(self.point.positions):
             self.point.positions[index] = pose[index]
+        self.pose_string = pose_string
 
     def _set_velocity(self, velocity):
+        """
+        Set velocity of the joint
+        :param velocity:
+            Set the joint velocity according to the list that you get
+        :return: None
+        """
         if len(velocity) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(velocity):
@@ -58,6 +83,11 @@ class PandaPose(object):
 
     # Start Dynamic Changes
     def _set_all_values_dynamic(self):
+        """
+        This will just set all the values and send the trajectory msg to ros master. This should be used for dynamic
+        data collection
+        :return:
+        """
         self.msg.points = [self.point]
         if not rospy.is_shutdown():
             # publish message to actuate the dof
@@ -66,6 +96,12 @@ class PandaPose(object):
 
 
     def set_poses_position_dynamic(self, poses):
+        """
+        Set Poses
+        :param poses: Special Data Structure
+            Loop through all the poses and velocity in the poses
+        :return: None
+        """
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_pose(pose_configuration, pose_string)
@@ -73,6 +109,12 @@ class PandaPose(object):
             self._set_all_values_dynamic()
 
     def set_poses_velocity_dynamic(self, poses):
+        """
+        Set Velocities
+        :param poses: Special Data Structure
+            Loop through all the poses and velocity in the poses
+        :return: None
+        """
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_velocity(velocity_configuration)
@@ -80,6 +122,12 @@ class PandaPose(object):
             self._set_all_values_dynamic()
 
     def set_poses_position_velocity_dynamic(self, poses):
+        """
+        Set Velocities and Poses
+        :param poses: Special Data Structure
+            Loop through all the poses and velocity in the poses
+        :return: None
+        """
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_pose(pose_configuration, pose_string)
@@ -88,6 +136,11 @@ class PandaPose(object):
             self._set_all_values_dynamic()
 
     def move_like_sine_dynamic(self):
+        """
+        This will move the ARM like a sine wave
+        # TODO: add minutes delay
+        :return:
+        """
         d1 = datetime.datetime.now() + datetime.timedelta(minutes=1)
         while True:
             for each_degree in range(0, 360):
@@ -98,6 +151,11 @@ class PandaPose(object):
 
     # Start Static Change
     def _set_all_values_static(self):
+        """
+        This will just set all the values and send the trajectory msg to ros master. This should be used for static
+        data collection
+        :return:
+        """
         self.msg.points = [self.point]
         if not rospy.is_shutdown():
             # publish message to actuate the dof
@@ -110,6 +168,12 @@ class PandaPose(object):
                     break
 
     def set_poses_position_static(self, poses):
+        """
+        Set poses
+        :param poses:  Special Data Structure
+            Loop through all the poses and velocity in the poses
+        :return: None
+        """
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_pose(pose_configuration, pose_string)
@@ -117,6 +181,12 @@ class PandaPose(object):
             self._set_all_values_static()
 
     def set_poses_velocity_static(self, poses):
+        """
+        Set Velocities
+        :param poses:  Special Data Structure
+            Loop through all the poses and velocity in the poses
+        :return: None
+        """
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_velocity(velocity_configuration)
@@ -124,6 +194,12 @@ class PandaPose(object):
             self._set_all_values_static()
 
     def set_poses_position_velocity_static(self, poses):
+        """
+        Set poses and velocities
+        :param poses:  Special Data Structure
+            Loop through all the poses and velocity in the poses
+        :return: None
+        """
         for each_pose in poses:
             pose_configuration, velocity_configuration, pose_string = each_pose[0], each_pose[1], each_pose[2]
             self._set_pose(pose_configuration, pose_string)
