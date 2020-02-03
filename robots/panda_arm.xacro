@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
-  <xacro:macro name="panda_arm" params="arm_id:='panda' description_pkg:='franka_description' connected_to:='' xyz:='0 0 0' rpy:='0 0 0'">
+  <xacro:macro name="panda_arm" params="arm_id:='panda' description_pkg:='franka_description' axes_meshes:='ros_robotic_skin' connected_to:='' xyz:='0 0 0' rpy:='0 0 0'">
     <xacro:unless value="${not connected_to}">
       <joint name="${arm_id}_joint_${connected_to}" type="fixed">
         <parent link="${connected_to}"/>
@@ -858,7 +858,7 @@
       <visual>
         <origin xyz="0.06 0.0 0.05" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -931,7 +931,7 @@
       <visual>
         <origin xyz="0.06 0.0 -0.15" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1004,7 +1004,7 @@
       <visual>
         <origin xyz="0.06 -0.15 0.0" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1077,7 +1077,7 @@
       <visual>
         <origin xyz="-0.06 0.0 -0.06" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1150,7 +1150,7 @@
       <visual>
         <origin xyz="-0.14 0.09 0.0" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1223,7 +1223,7 @@
       <visual>
         <origin xyz="0.0 0.1 -0.11" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1296,7 +1296,7 @@
       <visual>
         <origin xyz="0.13 0.02 0.0" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1369,7 +1369,7 @@
       <visual>
         <origin xyz="0.56 0.0 0.05" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1442,7 +1442,7 @@
       <visual>
         <origin xyz="0.56 0.0 -0.15" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1515,7 +1515,7 @@
       <visual>
         <origin xyz="0.56 -0.15 0.0" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1588,7 +1588,7 @@
       <visual>
         <origin xyz="0.44 0.0 -0.06" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1661,7 +1661,7 @@
       <visual>
         <origin xyz="0.36 0.09 0.0" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1734,7 +1734,7 @@
       <visual>
         <origin xyz="0.5 0.1 -0.11" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -1807,7 +1807,7 @@
       <visual>
         <origin xyz="0.63 0.02 0.0" rpy="1 0 0" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>

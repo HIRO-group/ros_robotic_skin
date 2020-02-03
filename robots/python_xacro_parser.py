@@ -75,7 +75,7 @@ axes_blocks = """
       <visual>
         <origin xyz="{visual_xyz}" rpy="{visual_rpy_x}" />
           <geometry>
-            <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
           </geometry>
         </visual>
   </link>
@@ -252,7 +252,8 @@ class generate_xacro:
             visual_rpy_x=list_to_string(visual_rpy_x),
             visual_rpy_y=list_to_string(visual_rpy_y),
             visual_rpy_z=list_to_string(visual_rpy_z),
-            description_pkg='{description_pkg}'
+            description_pkg='{description_pkg}',
+            axes_meshes='{axes_meshes}'
         )
 
     def gen_config(self):
