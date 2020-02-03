@@ -137,7 +137,7 @@ axes_blocks = """
 
 # End XML Blocks
 
-def list_to_string(my_list: list):
+def list_to_string(my_list):
     """
     Input a list, it will output a string delimited by a white space
     :param my_list: list
