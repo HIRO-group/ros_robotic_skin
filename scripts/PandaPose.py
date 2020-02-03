@@ -46,8 +46,8 @@ class PandaPose(object):
         rospy.sleep(1)
         self.pub.publish(self.msg)
         rospy.sleep(1)
-        self.sleep_time = sleep_time
-        self.r = rospy.Rate(360)
+        self.sleep_time = rospy.get_param('/static_sleep_time')
+        self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_string = ''
 
     # General Utilities
@@ -161,7 +161,7 @@ class PandaPose(object):
             # publish message to actuate the dof
             self.pub.publish(self.msg)
             self.r.sleep()
-            d1 = datetime.datetime.now() + datetime.timedelta(minutes=1)
+            d1 = datetime.datetime.now() + datetime.timedelta(minutes=self.sleep_time)
             while True:
                 rospy.rostime.wallsleep(0.5)
                 if d1 < datetime.datetime.now():
