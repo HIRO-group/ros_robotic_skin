@@ -28,7 +28,7 @@ class PandaPose(object):
     once. Hence. You need to call this super method.
     """
 
-    def __init__(self, sleep_time=300):
+    def __init__(self):
         # Create Publishers and Init Node
         self.trajectory_pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
         self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
@@ -57,7 +57,7 @@ class PandaPose(object):
         rospy.sleep(1)
         self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
-        self.sleep_time = rospy.get_param('/static_sleep_time')
+        self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_string = ''
 
@@ -147,7 +147,7 @@ class PandaPose(object):
 
     def move_like_sine_dynamic(self):
         """
-        This will move the ARM like a sine wave
+        This will move the joint of the Panda ARM like a sine wave
         # TODO: add minutes delay
         :return:
         """
@@ -171,9 +171,9 @@ class PandaPose(object):
             # publish message to actuate the dof
             self.trajectory_pub.publish(self.msg)
             self.r.sleep()
-            d1 = datetime.datetime.now() + datetime.timedelta(minutes=self.sleep_time)
+            d1 = datetime.datetime.now() + datetime.timedelta(minutes=self.sleep_time_static)
             while True:
-                rospy.rostime.wallsleep(0.5)
+                rospy.rostime.wallsleep(self.sleep_time_static)
                 if d1 < datetime.datetime.now():
                     break
 
