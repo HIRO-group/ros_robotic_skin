@@ -20,45 +20,45 @@ import os
 sensor_block = """
 
 
-<joint name = "{imu_joint}" type ="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <parent link="{imu_parent}"/>
-      <child link="{imu_link}"/>
-      <axis xyz="0 0 0"/>
-</joint>
-<link name="{imu_link}">
-    <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="0.0"/>
-        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
-    </inertial>
-    <visual>
-        <origin xyz="{visual_xyz}" rpy="{visual_rpy}" />
-        <geometry>
-            <box size = "0.05 0.05 0.05"/> 
-        </geometry>
-    </visual>
-</link>
-<gazebo reference="{imu_link}">
-    <gravity>true</gravity>
-    <!--      Below is the line to change the material-->
-    <material>Gazebo/YellowGlow</material>
-    <sensor name="{imu_sensor}" type="imu">
-      <always_on>true</always_on>
-      <update_rate>10</update_rate>
-      <visualize>true</visualize>
-      <topic>imu_data0</topic>
-      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>{imu_data}</topicName>
-        <bodyName>{imu_link}</bodyName>
-        <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>{visual_xyz}</xyzOffset>
-        <rpyOffset>{visual_rpy}</rpyOffset>
-        <frameName>{imu_link}</frameName>
-      </plugin>
-      <pose>0 0 0 0 0 0</pose>
-    </sensor>
-</gazebo>
+    <joint name = "{imu_joint}" type ="fixed">
+          <origin rpy="0 0 0" xyz="0 0 0"/>
+          <parent link="{imu_parent}"/>
+          <child link="{imu_link}"/>
+          <axis xyz="0 0 0"/>
+    </joint>
+    <link name="{imu_link}">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.0"/>
+            <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+        </inertial>
+        <visual>
+            <origin xyz="{visual_xyz}" rpy="{visual_rpy}" />
+            <geometry>
+                <box size = "0.05 0.05 0.05"/> 
+            </geometry>
+        </visual>
+    </link>
+    <gazebo reference="{imu_link}">
+        <gravity>true</gravity>
+        <!--      Below is the line to change the material-->
+        <material>Gazebo/YellowGlow</material>
+        <sensor name="{imu_sensor}" type="imu">
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+          <visualize>true</visualize>
+          <topic>imu_data0</topic>
+          <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+            <topicName>{imu_data}</topicName>
+            <bodyName>{imu_link}</bodyName>
+            <gaussianNoise>0.0</gaussianNoise>
+            <xyzOffset>{visual_xyz}</xyzOffset>
+            <rpyOffset>{visual_rpy}</rpyOffset>
+            <frameName>{imu_link}</frameName>
+          </plugin>
+          <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo>
 
 
 """
@@ -66,79 +66,79 @@ sensor_block = """
 axes_blocks = """
 
 
-<joint name = "{imu_joint}_x_axis" type ="fixed">
-  <origin rpy="0 0 0" xyz="0 0 0"/>
-  <parent link="{imu_parent}"/>
-  <child link="{imu_link}_x_axis"/>
-  <axis xyz="0 0 0"/>
-</joint>
-<link name="{imu_link}_x_axis">
-  <inertial>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <mass value="0.0"/>
-    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="{visual_xyz}" rpy="{visual_rpy_x}" />
-      <geometry>
-        <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/axes_meshes/meshes/visual/arrow.dae"/>
-      </geometry>
-    </visual>
-</link>
-<gazebo reference="{imu_link}_x_axis">
-<gravity>true</gravity>
-<material>Gazebo/RedBright</material>
-</gazebo>
- 
-  
-<joint name = "{imu_joint}_y_axis" type ="fixed">
-  <origin rpy="0 0 0" xyz="0 0 0"/>
-  <parent link="{imu_parent}"/>
-  <child link="{imu_link}_y_axis"/>
-  <axis xyz="0 0 0"/>
-</joint>
-<link name="{imu_link}_y_axis">
-  <inertial>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <mass value="0.0"/>
-    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="{visual_xyz}" rpy="{visual_rpy_y}" />
-      <geometry>
-        <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
-      </geometry>
-    </visual>
-</link>
-<gazebo reference="{imu_link}_y_axis">
-<gravity>true</gravity>
-<material>Gazebo/Green</material>
-</gazebo>
-
-
-<joint name = "{imu_joint}_z_axis" type ="fixed">
-  <origin rpy="0 0 0" xyz="0 0 0"/>
-  <parent link="{imu_parent}"/>
-  <child link="{imu_link}_z_axis"/>
-  <axis xyz="0 0 0"/>
-</joint>
-<link name="{imu_link}_z_axis">
-  <inertial>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <mass value="0.0"/>
-    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="{visual_xyz}" rpy="{visual_rpy_z}" />
-      <geometry>
-        <mesh scale="0.007 0.007 0.007" filename="package://${description_pkg}/meshes/visual/arrow.dae"/>
-      </geometry>
-    </visual>
-</link>
-<gazebo reference="{imu_link}_z_axis">
-<gravity>true</gravity>
-<material>Gazebo/Blue</material>
-</gazebo>
+    <joint name = "{imu_joint}_x_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="{imu_parent}"/>
+      <child link="{imu_link}_x_axis"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="{imu_link}_x_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="{visual_xyz}" rpy="{visual_rpy_x}" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
+          </geometry>
+        </visual>
+    </link>
+    <gazebo reference="{imu_link}_x_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/RedBright</material>
+    </gazebo>
+     
+      
+    <joint name = "{imu_joint}_y_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="{imu_parent}"/>
+      <child link="{imu_link}_y_axis"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="{imu_link}_y_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="{visual_xyz}" rpy="{visual_rpy_y}" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
+          </geometry>
+        </visual>
+    </link>
+    <gazebo reference="{imu_link}_y_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Green</material>
+    </gazebo>
+    
+    
+    <joint name = "{imu_joint}_z_axis" type ="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <parent link="{imu_parent}"/>
+      <child link="{imu_link}_z_axis"/>
+      <axis xyz="0 0 0"/>
+    </joint>
+    <link name="{imu_link}_z_axis">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0"/>
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="{visual_xyz}" rpy="{visual_rpy_z}" />
+          <geometry>
+            <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
+          </geometry>
+        </visual>
+    </link>
+    <gazebo reference="{imu_link}_z_axis">
+    <gravity>true</gravity>
+    <material>Gazebo/Blue</material>
+    </gazebo>
 
 
 """
