@@ -11,6 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  moveit_ros_planning_interface
+  moveit_visual_tools
+  tf
+  franka_control
+  franka_gripper
 )
 
 find_package(catkin REQUIRED)

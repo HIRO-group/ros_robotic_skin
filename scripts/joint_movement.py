@@ -1,78 +1,95 @@
 #!/usr/bin/env python
 
-import rospy 
+import argparse
+import rospy
 from std_msgs.msg import Int16
 from std_msgs.msg import Bool
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 
-# Create Publishers and Init Node
-pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
-pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
-pub_bool = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
-rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
 
-# Create and set Joint Trajectory msg
-msg = JointTrajectory()
-msg.header.stamp = rospy.Time.now()
-msg.header.frame_id = '/base_link'
-msg.joint_names = ['panda_joint1', 'panda_joint2','panda_joint3','panda_joint4','panda_joint5','panda_joint6','panda_joint7']    
-
-# Set Initial position of the robot
-point = JointTrajectoryPoint() 
-point.positions = [0, 0, 0, 0, 0, 0, 0]
-point.time_from_start.secs = 1    
-msg.points = [point]
-joint_int = -1
+class PandaTrajectoryControl():
+    def __init__(self, is_sim=True):
+        """
+        Panda Trajectory control class for sending 
+        JointTrajectory messages to the real Franka Panda,
+        or the simulated Panda.
 
 
-# TODO: Look up do we need to have one message to init the robot? 
-# If I only send one message then the franka does not move.
-# TODO: This might not be the best starting postion for the robot to be in. 
-# Think about if we are losing some inforamtion by using a completely vertical postion 
-# for the start.
-# Move arm to starting position
+        Parameters
+        --------------
+        `is_sim`: `bool`: If we are working with the real or simulated Panda
+             
+        """
+        super(PandaJointPublisher).__init__()
+        self.joint_dof_pub = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
+        self.calibration_pub = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
+        rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
+        trajectory_msg = JointTrajectory()
+        trajectory_msg.header.stamp = rospy.Time.now()
+        trajectory_msg.header.frame_id = '/base_link'
 
+        trajectory_msg.joint_names = ['panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5', 'panda_joint6',
+                   'panda_joint7']
 
-pub.publish(msg)
-rospy.sleep(1)
-pub.publish(msg)
-rospy.sleep(1)
+        point = JointTrajectoryPoint()
+        point.positions = [0, 0, 0, 0, 0, 0, 0]
+        point.time_from_start.secs = 1
+        trajectory_msg.points = [point]
+        self.trajectory_msg = trajectory_msg
+        self.point = point
+        self.is_sim = is_sim
+        self.get_trajectory_publisher()
+        # sending initial msg
 
+    def get_trajectory_publisher(self):
+        topic_string = '/panda_arm_controller/command' if self.is_sim else '/moveit/trajectory/command'
+        self.trajectory_pub = rospy.Publisher(topic_string, 
+                                                JointTrajectory, queue_size=1)
 
-def talker():
-    # specify all global variables that were defined outside of this function
-    global joint_int 
-    global point
-    global msg
-    global pub 
-    global pub_int
-    global pub_bool
-
-    while not rospy.is_shutdown():
-
-        # Increment the Dof we are actuating here
-        joint_int = (joint_int + 1)
-        
-        # Check if we have actuated every DoF, to end this script
-        if joint_int == 7:
-            pub_bool.publish(True)
-            print('CALIBRATION COMPLETE')
-            break
-
-        point.positions[joint_int] = -1
-        msg.points = [point]
-
-        # Publish this message so activation_matrix.py knows which Dof what actuated
-        pub_int.publish(joint_int)
+    def send_once(self):
+        # TODO: Look up do we need to have one message to init the robot?
+        # If I only send one message then the franka does not move.
+        # TODO: This might not be the best starting postion for the robot to be in.
+        # Think about if we are losing some inforamtion by using a completely vertical postion
+        # for the start.
+        # Move arm to starting position
+        self.trajectory_pub.publish(self.trajectory_msg)
+        rospy.sleep(1)
+        self.trajectory_pub.publish(self.trajectory_msg)
         rospy.sleep(1)
 
-        #publish message to actuate the dof
-        pub.publish(msg)
-        rospy.sleep(5)
+    def spin(self):
+        joint_int = -1
+        while not rospy.is_shutdown():
+            # Increment the Dof we are actuating here
+            joint_int+=1
+
+            # Check if we have actuated every DoF, to end this script
+            if joint_int == 7:
+                self.calibration_pub.publish(True)
+                print('CALIBRATION COMPLETE')
+                break
+
+            self.point.positions[joint_int] = -1
+            self.trajectory_msg.points = [self.point]
+
+            # Publish this message so activation_matrix.py knows which Dof what actuated
+            self.joint_dof_pub.publish(joint_int)
+            rospy.sleep(1)
+
+            # publish message to actuate the dof
+            self.trajectory_pub.publish(self.trajectory_msgms)
+            rospy.sleep(5)
+        
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--simulation', type=bool, default=False, help='panda simulation boolean')
+    opt = parser.parse_args()
+    is_simulation = opt.simulation
     try:
-        talker()
+        panda_control = PandaTrajectoryControl(is_simulation)
+        panda_control.spin()
     except rospy.ROSInterruptException:
-        pass
+        print('Exciting Franka Panda control process...')

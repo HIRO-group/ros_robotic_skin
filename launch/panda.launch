@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<launch>
+  <!-- robot ip of the panda must be specified -->
+  <arg name="robot_ip" />
+  <arg name="load_gripper" default="true" />
+
+  <include file="$(find franka_control)/launch/franka_control.launch" >
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+</launch>
