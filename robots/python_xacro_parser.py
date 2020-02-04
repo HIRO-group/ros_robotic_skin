@@ -45,12 +45,13 @@ sensor_block = """
         <material>Gazebo/YellowGlow</material>
         <sensor name="{imu_sensor}" type="imu">
           <always_on>true</always_on>
-          <update_rate>10</update_rate>
+          <update_rate>100</update_rate>
           <visualize>true</visualize>
           <topic>imu_data0</topic>
           <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
             <topicName>{imu_data}</topicName>
             <bodyName>{imu_link}</bodyName>
+            <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
             <xyzOffset>{visual_xyz}</xyzOffset>
             <rpyOffset>{visual_rpy}</rpyOffset>
