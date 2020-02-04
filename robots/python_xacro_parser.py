@@ -173,7 +173,7 @@ class generate_xacro:
         # Specific Sensor Configuration
         self.real_visual_imu_xyz_0 = np.array([0.06, 0, 0.05])
         # We will offset to add to the xyz of real IMU to that of simulated IMU
-        self.offset = np.array([0.5, 0, 0])
+        self.offset = np.array([0.1, 0, 0])
         self.simulated_visual_imu_xyz_0 = self.real_visual_imu_xyz_0 + self.offset
 
         self.real_visual_imu_xyz_1 = np.array([0.06, 0, -0.15])
@@ -209,33 +209,33 @@ class generate_xacro:
         self.real_imu_visual_rpy_6 = self.simulated_imu_visual_rpy_6 = [0, 0, 0]
 
         # Axes Settings
-        self.real_imu_rpy_x_0 = self.simulated_imu_rpy_x_0 = [1, 0, 0]
-        self.real_imu_rpy_y_0 = self.simulated_imu_rpy_y_0 = [0, 1, 0]
-        self.real_imu_rpy_z_0 = self.simulated_imu_rpy_z_0 = [0, 0, 1]
+        self.real_imu_rpy_x_0 = self.simulated_imu_rpy_x_0 = [1.57, 0, 0]
+        self.real_imu_rpy_y_0 = self.simulated_imu_rpy_y_0 = [0, 1.57, 0]
+        self.real_imu_rpy_z_0 = self.simulated_imu_rpy_z_0 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_1 = self.simulated_imu_rpy_x_1 = [1, 0, 0]
-        self.real_imu_rpy_y_1 = self.simulated_imu_rpy_y_1 = [0, 1, 0]
-        self.real_imu_rpy_z_1 = self.simulated_imu_rpy_z_1 = [0, 0, 1]
+        self.real_imu_rpy_x_1 = self.simulated_imu_rpy_x_1 = [1.57, 0, 0]
+        self.real_imu_rpy_y_1 = self.simulated_imu_rpy_y_1 = [0, 1.57, 0]
+        self.real_imu_rpy_z_1 = self.simulated_imu_rpy_z_1 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_2 = self.simulated_imu_rpy_x_2 = [1, 0, 0]
-        self.real_imu_rpy_y_2 = self.simulated_imu_rpy_y_2 = [0, 1, 0]
-        self.real_imu_rpy_z_2 = self.simulated_imu_rpy_z_2 = [0, 0, 1]
+        self.real_imu_rpy_x_2 = self.simulated_imu_rpy_x_2 = [1.57, 0, 0]
+        self.real_imu_rpy_y_2 = self.simulated_imu_rpy_y_2 = [0, 1.57, 0]
+        self.real_imu_rpy_z_2 = self.simulated_imu_rpy_z_2 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_3 = self.simulated_imu_rpy_x_3 = [1, 0, 0]
-        self.real_imu_rpy_y_3 = self.simulated_imu_rpy_y_3 = [0, 1, 0]
-        self.real_imu_rpy_z_3 = self.simulated_imu_rpy_z_3 = [0, 0, 1]
+        self.real_imu_rpy_x_3 = self.simulated_imu_rpy_x_3 = [1.57, 0, 0]
+        self.real_imu_rpy_y_3 = self.simulated_imu_rpy_y_3 = [0, 1.57, 0]
+        self.real_imu_rpy_z_3 = self.simulated_imu_rpy_z_3 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_4 = self.simulated_imu_rpy_x_4 = [1, 0, 0]
-        self.real_imu_rpy_y_4 = self.simulated_imu_rpy_y_4 = [0, 1, 0]
-        self.real_imu_rpy_z_4 = self.simulated_imu_rpy_z_4 = [0, 0, 1]
+        self.real_imu_rpy_x_4 = self.simulated_imu_rpy_x_4 = [1.57, 0, 0]
+        self.real_imu_rpy_y_4 = self.simulated_imu_rpy_y_4 = [0, 1.57, 0]
+        self.real_imu_rpy_z_4 = self.simulated_imu_rpy_z_4 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_5 = self.simulated_imu_rpy_x_5 = [1, 0, 0]
-        self.real_imu_rpy_y_5 = self.simulated_imu_rpy_y_5 = [0, 1, 0]
-        self.real_imu_rpy_z_5 = self.simulated_imu_rpy_z_5 = [0, 0, 1]
+        self.real_imu_rpy_x_5 = self.simulated_imu_rpy_x_5 = [1.57, 0, 0]
+        self.real_imu_rpy_y_5 = self.simulated_imu_rpy_y_5 = [0, 1.57, 0]
+        self.real_imu_rpy_z_5 = self.simulated_imu_rpy_z_5 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_6 = self.simulated_imu_rpy_x_6 = [1, 0, 0]
-        self.real_imu_rpy_y_6 = self.simulated_imu_rpy_y_6 = [0, 1, 0]
-        self.real_imu_rpy_z_6 = self.simulated_imu_rpy_z_6 = [0, 0, 1]
+        self.real_imu_rpy_x_6 = self.simulated_imu_rpy_x_6 = [1.57, 0, 0]
+        self.real_imu_rpy_y_6 = self.simulated_imu_rpy_y_6 = [0, 1.57, 0]
+        self.real_imu_rpy_z_6 = self.simulated_imu_rpy_z_6 = [0, 0, 1.57]
 
         self.starting_string = ""
 
