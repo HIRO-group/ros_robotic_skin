@@ -1,3 +1,4 @@
 ---
+  # These constants are in use in PandaPose File, to set global sleep time and frequency
   static_sleep_time: 2
   dynamic_frequency: 360
