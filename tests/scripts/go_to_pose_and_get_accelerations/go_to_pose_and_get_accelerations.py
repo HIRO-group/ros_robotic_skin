@@ -1,5 +1,7 @@
 """
-Setting the pose and getting linear accelerations of IMU in interest
+Setting the pose and getting linear accelerations of IMU in interest.
+You have to add ros_robotic_skin to PYTHONPATH for the PandaPose module to be imported correctly.Better add it to
+bashrc.
 """
 from scripts.PandaPose import PandaPose
 from math import pi
