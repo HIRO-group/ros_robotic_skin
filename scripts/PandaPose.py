@@ -170,12 +170,7 @@ class PandaPose(object):
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.trajectory_pub.publish(self.msg)
-            self.r.sleep()
-            d1 = datetime.datetime.now() + datetime.timedelta(minutes=self.sleep_time_static)
-            while True:
-                rospy.rostime.wallsleep(self.sleep_time_static)
-                if d1 < datetime.datetime.now():
-                    break
+            rospy.sleep(self.sleep_time_static)
 
     def set_poses_position_static(self, poses):
         """
