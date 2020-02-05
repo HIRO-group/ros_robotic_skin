@@ -1,6 +1,5 @@
 """
-Basically what I am doing is setting the pose where I can clearly test the acceleration values to whatever I want
-Let's go
+Setting the pose and getting linear accelerations of IMU in interest
 """
 from scripts.PandaPose import PandaPose
 from math import pi
