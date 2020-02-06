@@ -21,7 +21,7 @@ class PandaTrajectoryControl():
         `is_sim`: `bool`: If we are working with the real or simulated Panda
              
         """
-        super(PandaJointPublisher).__init__()
+        super(PandaTrajectoryControl).__init__()
         self.joint_dof_pub = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.calibration_pub = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
