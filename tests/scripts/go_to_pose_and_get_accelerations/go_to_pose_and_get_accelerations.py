@@ -56,14 +56,14 @@ class PoseAcceleration(PandaPose):
         :return: None
         """
         self.set_poses_position_static(self.pose)
-        self.get_imu_data()
+        # self.get_imu_data()
 
 
 if __name__ == "__main__":
     interested_imu_link = 'imu_link2'
     poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
+        [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
     ]
     PoseAcceleration(poses_list).set_pose_and_print_acceleration()
-    while True:
-        sleep(0.5)
+    # while True:
+    #     sleep(0.5)

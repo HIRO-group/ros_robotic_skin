@@ -376,7 +376,7 @@
 
 
     <joint name = "imu_link_joint2" type ="fixed">
-          <origin rpy="0 0 0" xyz="0 0 0"/>
+          <origin rpy="0 0 1.57" xyz="0 0 0"/>
           <parent link="${arm_id}_link2"/>
           <child link="imu_link2"/>
           <axis xyz="0 0 0"/>
@@ -388,7 +388,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.06 -0.15 0.0" rpy="0 0 0" />
+            <origin xyz="0.06 -0.15 0.0" rpy="0 0 1.57" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -409,7 +409,7 @@
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
             <xyzOffset>0.06 -0.15 0.0</xyzOffset>
-            <rpyOffset>0 0 0</rpyOffset>
+            <rpyOffset>0 0 1.57</rpyOffset>
             <frameName>imu_link2</frameName>
           </plugin>
           <pose>0 0 0 0 0 0</pose>
@@ -613,7 +613,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.16 0.0 0.05" rpy="0 0 0" />
+            <origin xyz="0.36 0.0 0.05" rpy="0 0 0" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -633,7 +633,7 @@
             <bodyName>simulated_imu_link0</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>0.16 0.0 0.05</xyzOffset>
+            <xyzOffset>0.36 0.0 0.05</xyzOffset>
             <rpyOffset>0 0 0</rpyOffset>
             <frameName>simulated_imu_link0</frameName>
           </plugin>
@@ -658,7 +658,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.16 0.0 -0.15" rpy="0 0 0" />
+            <origin xyz="0.36 0.0 -0.15" rpy="0 0 0" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -678,7 +678,7 @@
             <bodyName>simulated_imu_link1</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>0.16 0.0 -0.15</xyzOffset>
+            <xyzOffset>0.36 0.0 -0.15</xyzOffset>
             <rpyOffset>0 0 0</rpyOffset>
             <frameName>simulated_imu_link1</frameName>
           </plugin>
@@ -691,7 +691,7 @@
 
 
     <joint name = "simulated_imu_link_joint2" type ="fixed">
-          <origin rpy="0 0 0" xyz="0 0 0"/>
+          <origin rpy="0 0 1.57" xyz="0 0 0"/>
           <parent link="${arm_id}_link2"/>
           <child link="simulated_imu_link2"/>
           <axis xyz="0 0 0"/>
@@ -703,7 +703,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.16 -0.15 0.0" rpy="0 0 0" />
+            <origin xyz="0.36 -0.15 0.0" rpy="0 0 1.57" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -723,8 +723,8 @@
             <bodyName>simulated_imu_link2</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>0.16 -0.15 0.0</xyzOffset>
-            <rpyOffset>0 0 0</rpyOffset>
+            <xyzOffset>0.36 -0.15 0.0</xyzOffset>
+            <rpyOffset>0 0 1.57</rpyOffset>
             <frameName>simulated_imu_link2</frameName>
           </plugin>
           <pose>0 0 0 0 0 0</pose>
@@ -748,7 +748,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.04 0.0 -0.06" rpy="0 0 0" />
+            <origin xyz="0.24 0.0 -0.06" rpy="0 0 0" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -768,7 +768,7 @@
             <bodyName>simulated_imu_link3</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>0.04 0.0 -0.06</xyzOffset>
+            <xyzOffset>0.24 0.0 -0.06</xyzOffset>
             <rpyOffset>0 0 0</rpyOffset>
             <frameName>simulated_imu_link3</frameName>
           </plugin>
@@ -793,7 +793,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="-0.04 0.09 0.0" rpy="0 0 0" />
+            <origin xyz="0.16 0.09 0.0" rpy="0 0 0" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -813,7 +813,7 @@
             <bodyName>simulated_imu_link4</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>-0.04 0.09 0.0</xyzOffset>
+            <xyzOffset>0.16 0.09 0.0</xyzOffset>
             <rpyOffset>0 0 0</rpyOffset>
             <frameName>simulated_imu_link4</frameName>
           </plugin>
@@ -838,7 +838,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.1 0.1 -0.11" rpy="0 0 0" />
+            <origin xyz="0.3 0.1 -0.11" rpy="0 0 0" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -858,7 +858,7 @@
             <bodyName>simulated_imu_link5</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>0.1 0.1 -0.11</xyzOffset>
+            <xyzOffset>0.3 0.1 -0.11</xyzOffset>
             <rpyOffset>0 0 0</rpyOffset>
             <frameName>simulated_imu_link5</frameName>
           </plugin>
@@ -883,7 +883,7 @@
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
         </inertial>
         <visual>
-            <origin xyz="0.23 0.02 0.0" rpy="0 0 0" />
+            <origin xyz="0.43 0.02 0.0" rpy="0 0 0" />
             <geometry>
                 <box size = "0.05 0.05 0.05"/> 
             </geometry>
@@ -903,7 +903,7 @@
             <bodyName>simulated_imu_link6</bodyName>
             <updateRateHZ>100.0</updateRateHZ>
             <gaussianNoise>0.0</gaussianNoise>
-            <xyzOffset>0.23 0.02 0.0</xyzOffset>
+            <xyzOffset>0.43 0.02 0.0</xyzOffset>
             <rpyOffset>0 0 0</rpyOffset>
             <frameName>simulated_imu_link6</frameName>
           </plugin>
@@ -1474,7 +1474,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 0.0 0.05" rpy="1.57 0 0" />
+        <origin xyz="0.36 0.0 0.05" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1499,7 +1499,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 0.0 0.05" rpy="0 1.57 0" />
+        <origin xyz="0.36 0.0 0.05" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1524,7 +1524,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 0.0 0.05" rpy="0 0 1.57" />
+        <origin xyz="0.36 0.0 0.05" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1552,7 +1552,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 0.0 -0.15" rpy="1.57 0 0" />
+        <origin xyz="0.36 0.0 -0.15" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1577,7 +1577,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 0.0 -0.15" rpy="0 1.57 0" />
+        <origin xyz="0.36 0.0 -0.15" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1602,7 +1602,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 0.0 -0.15" rpy="0 0 1.57" />
+        <origin xyz="0.36 0.0 -0.15" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1630,7 +1630,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 -0.15 0.0" rpy="1.57 0 0" />
+        <origin xyz="0.36 -0.15 0.0" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1655,7 +1655,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 -0.15 0.0" rpy="0 1.57 0" />
+        <origin xyz="0.36 -0.15 0.0" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1680,7 +1680,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.16 -0.15 0.0" rpy="0 0 1.57" />
+        <origin xyz="0.36 -0.15 0.0" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1708,7 +1708,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.04 0.0 -0.06" rpy="1.57 0 0" />
+        <origin xyz="0.24 0.0 -0.06" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1733,7 +1733,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.04 0.0 -0.06" rpy="0 1.57 0" />
+        <origin xyz="0.24 0.0 -0.06" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1758,7 +1758,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.04 0.0 -0.06" rpy="0 0 1.57" />
+        <origin xyz="0.24 0.0 -0.06" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1786,7 +1786,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="-0.04 0.09 0.0" rpy="1.57 0 0" />
+        <origin xyz="0.16 0.09 0.0" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1811,7 +1811,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="-0.04 0.09 0.0" rpy="0 1.57 0" />
+        <origin xyz="0.16 0.09 0.0" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1836,7 +1836,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="-0.04 0.09 0.0" rpy="0 0 1.57" />
+        <origin xyz="0.16 0.09 0.0" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1864,7 +1864,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.1 0.1 -0.11" rpy="1.57 0 0" />
+        <origin xyz="0.3 0.1 -0.11" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1889,7 +1889,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.1 0.1 -0.11" rpy="0 1.57 0" />
+        <origin xyz="0.3 0.1 -0.11" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1914,7 +1914,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.1 0.1 -0.11" rpy="0 0 1.57" />
+        <origin xyz="0.3 0.1 -0.11" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1942,7 +1942,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.23 0.02 0.0" rpy="1.57 0 0" />
+        <origin xyz="0.43 0.02 0.0" rpy="1.57 0 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1967,7 +1967,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.23 0.02 0.0" rpy="0 1.57 0" />
+        <origin xyz="0.43 0.02 0.0" rpy="0 1.57 0" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
@@ -1992,7 +1992,7 @@
         <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
       </inertial>
       <visual>
-        <origin xyz="0.23 0.02 0.0" rpy="0 0 1.57" />
+        <origin xyz="0.43 0.02 0.0" rpy="0 0 1.57" />
           <geometry>
             <mesh scale="0.007 0.007 0.007" filename="package://${axes_meshes}/meshes/visual/arrow.dae"/>
           </geometry>
