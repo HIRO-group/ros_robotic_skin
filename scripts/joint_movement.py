@@ -47,24 +47,10 @@ class PandaTrajectoryControl():
         self.trajectory_pub = rospy.Publisher(topic_string, 
                                                 JointTrajectory, queue_size=1)
 
-    def send_once(self):
-        # TODO: Look up do we need to have one message to init the robot?
-        # If I only send one message then the franka does not move.
-        # TODO: This might not be the best starting postion for the robot to be in.
-        # Think about if we are losing some inforamtion by using a completely vertical postion
-        # for the start.
-        # Move arm to starting position
-        self.trajectory_pub.publish(self.trajectory_msg)
-        rospy.sleep(1)
-        self.trajectory_pub.publish(self.trajectory_msg)
-        rospy.sleep(1)
-
     def spin(self):
-        joint_int = -1
+        joint_int = 0
         while not rospy.is_shutdown():
             # Increment the Dof we are actuating here
-            joint_int+=1
-
             # Check if we have actuated every DoF, to end this script
             if joint_int == 7:
                 self.calibration_pub.publish(True)
@@ -81,6 +67,9 @@ class PandaTrajectoryControl():
             # publish message to actuate the dof
             self.trajectory_pub.publish(self.trajectory_msg)
             rospy.sleep(5)
+
+            joint_int+=1
+
         
 
 if __name__ == '__main__':
