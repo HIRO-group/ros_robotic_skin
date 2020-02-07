@@ -54,19 +54,16 @@ roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
 ```
 
 ## Activity Matrix Generation
-The activity matrix generation currently needs to be done for three separate files, and currently requires three separate terminals or tmux)
-From the root folder of your catkin workspace, make sure to run `source devel/setup.bash`
-Below are the three commands that need to be run for the process to work successfully.
+The activity matrix generation currently needs to be done for three separate files, but we have a roslaunch file to handle the running of the three matrices. To do so, from the root of your catkin workspace, run:
 
 ```sh
 
-rosrun ros_robotic_skin activation_matrix.py
-rosrun ros_robotic_skin imu_listener.py
-rosrun ros_robotic_skin joint_movement.py --simulation=<is_sim>
+source devel/setup.bash
+roslaunch activity_matrix.launch is_sim:=<sim_bool>
 
 ```
 
-Where `is_sim` should be `True` is you are running the Panda in simulation, and `is_sim` should be `False` if you are running the Panda in real life. These series of commands will run the Panda through a variety of poses and generate the necessary activity matrix.
+Where `sim_bool` should be `true` is you are running the Panda in simulation, and `sim_bool` should be `false` if you are running the Panda in real life. These series of commands will run the Panda through a variety of poses and generate the necessary activity matrix.
 
 
 # Setting
