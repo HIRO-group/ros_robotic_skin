@@ -25,6 +25,7 @@ def callback(data):
         y_diff = abs(prev_imu_link3.y - data.linear_acceleration.y)
         z_diff = abs(prev_imu_link3.z - data.linear_acceleration.z)
         if x_diff > acc_thresh or y_diff > acc_thresh or z_diff > acc_thresh:
+            # the threshold is large enough to publish an imu activated message
             print('*************DIFFF***************')
             print(data.header.frame_id)
             print('NEW DATA')

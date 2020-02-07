@@ -6,6 +6,12 @@ from std_msgs.msg import Int16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 
+import numpy as np
+
+
+# class ActivationMatrix():
+
+
 current_dof = None
 num_dofs = 7
 num_skinunits = 7
@@ -19,7 +25,7 @@ def setDoF(data):
 def imu_mvmt(data):
     global activation_matrix
     # If no DoF has been set then we are just moving the robot to the starting pose
-    if not current_dof == None:
+    if current_dof is not None:
         # Indexing though row, col
         print('DOF', current_dof, 'IMU', type(data))
         activation_matrix[data.data, current_dof] = 1
@@ -28,6 +34,7 @@ def calibration_complete(data):
     if data.data == True:
         print("****** ACTIVATION MATRIX ******")
         print(activation_matrix)
+        np.savetxt('matrix.txt', activation_matrix)
 
 def listener():
     rospy.init_node('activation_matrix', anonymous=True)
