@@ -36,7 +36,34 @@ rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
 cd ..
 catkin_make
 ```
+## Running Simulation
 
+In order to run the Panda Gazebo simulation, make sure that you have built your workspace, then run (from `catkin_ws`, or the root of your catkin workspace)
+```sh
+source devel/setup.bash
+roslaunch ros_robotic_skin simulation.launch
+```
+
+
+## Running Real Panda
+
+Perform similar steps as what you would do for running the Panda Gazebo simulation, and then run"
+```sh
+source devel/setup.bash
+roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
+```
+
+## Activity Matrix Generation
+The activity matrix generation currently needs to be done for three separate files, but we have a roslaunch file to handle the running of the three matrices. To do so, from the root of your catkin workspace, run:
+
+```sh
+
+source devel/setup.bash
+roslaunch activity_matrix.launch is_sim:=<sim_bool>
+
+```
+
+Where `sim_bool` should be `true` is you are running the Panda in simulation, and `sim_bool` should be `false` if you are running the Panda in real life. These series of commands will run the Panda through a variety of poses and generate the necessary activity matrix.
 
 
 # Setting
