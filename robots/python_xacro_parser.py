@@ -199,7 +199,7 @@ class generate_xacro:
 
         self.real_imu_visual_rpy_1 = self.simulated_imu_visual_rpy_1 = [0, 0, 0]
 
-        self.real_imu_visual_rpy_2 = self.simulated_imu_visual_rpy_2 = [0, 0, 1.57]
+        self.real_imu_visual_rpy_2 = self.simulated_imu_visual_rpy_2 = [1.57, 0, 1.57]
 
         self.real_imu_visual_rpy_3 = self.simulated_imu_visual_rpy_3 = [0, 0, 0]
 
