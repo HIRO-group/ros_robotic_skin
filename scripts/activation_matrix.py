@@ -27,7 +27,8 @@ def imu_mvmt(data):
     # If no DoF has been set then we are just moving the robot to the starting pose
     if current_dof is not None:
         # Indexing though row, col
-        print('DOF', current_dof, 'IMU', type(data))
+        # print('DOF', current_dof, 'IMU', type(data))
+        # print(data.data)
         activation_matrix[data.data, current_dof] = 1
 
 def calibration_complete(data):

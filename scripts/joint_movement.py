@@ -52,6 +52,7 @@ class PandaTrajectoryControl():
         while not rospy.is_shutdown():
             # Increment the Dof we are actuating here
             # Check if we have actuated every DoF, to end this script
+            print(joint_int)
             if joint_int == 7:
                 self.calibration_pub.publish(True)
                 print('CALIBRATION COMPLETE')
