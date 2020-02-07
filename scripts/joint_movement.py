@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import sys
 import rospy
 from std_msgs.msg import Int16
 from std_msgs.msg import Bool
@@ -21,7 +22,6 @@ class PandaTrajectoryControl():
         `is_sim`: `bool`: If we are working with the real or simulated Panda
              
         """
-        super(PandaTrajectoryControl).__init__()
         self.joint_dof_pub = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.calibration_pub = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
@@ -43,7 +43,7 @@ class PandaTrajectoryControl():
         # sending initial msg
 
     def get_trajectory_publisher(self):
-        topic_string = '/panda_arm_controller/command' if self.is_sim else '/moveit/trajectory/command'
+        topic_string = '/panda_arm_controller/command' if self.is_sim else '/joint_trajectory_controller/command'
         self.trajectory_pub = rospy.Publisher(topic_string, 
                                                 JointTrajectory, queue_size=1)
 
@@ -79,15 +79,13 @@ class PandaTrajectoryControl():
             rospy.sleep(1)
 
             # publish message to actuate the dof
-            self.trajectory_pub.publish(self.trajectory_msgms)
+            self.trajectory_pub.publish(self.trajectory_msg)
             rospy.sleep(5)
         
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--simulation', type=bool, default=False, help='panda simulation boolean')
-    opt = parser.parse_args()
-    is_simulation = opt.simulation
+    arg = sys.argv[1]
+    is_simulation = True if arg == 'true' else False
     try:
         panda_control = PandaTrajectoryControl(is_simulation)
         panda_control.spin()
