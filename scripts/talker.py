@@ -5,9 +5,9 @@ from robotic_skin.sensor.adxl335 import ADXL335
 from sensor_msgs.msg import Imu
 
 def talker():
-    pub = rospy.Publisher('/imu', Imu, queue_size=10)
+    pub = rospy.Publisher('/imu', Imu, queue_size=100)
     rospy.init_node('talker', anonymous=True)
-    r = rospy.Rate(10) 
+    r = rospy.Rate(100) 
 
     accel_sensor = ADXL335(xpin=0, ypin=1, zpin=2)
     imu_msg = Imu()

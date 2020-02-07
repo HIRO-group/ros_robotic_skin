@@ -11,7 +11,15 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  moveit_ros_planning_interface
+  moveit_visual_tools
+  tf
+  franka_control
+  franka_gripper
 )
+
+find_package(catkin REQUIRED)
+catkin_package(CATKIN_DEPENDS xacro)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -154,6 +162,12 @@ include_directories(
 ## Install ##
 #############
 
+
+install(DIRECTORY robot
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
@@ -209,3 +223,4 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(launch/test.test)
 endif()
+
