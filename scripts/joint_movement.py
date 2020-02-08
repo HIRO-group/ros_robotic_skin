@@ -47,6 +47,20 @@ class PandaTrajectoryControl():
         self.trajectory_pub = rospy.Publisher(topic_string, 
                                                 JointTrajectory, queue_size=1)
 
+
+    def send_once(self):
+        # TODO: Look up do we need to have one message to init the robot?
+        # If I only send one message then the franka does not move.
+        # TODO: This might not be the best starting postion for the robot to be in.
+        # Think about if we are losing some inforamtion by using a completely vertical postion
+        # for the start.
+        # Move arm to starting position
+        self.trajectory_pub.publish(self.trajectory_msg)
+        rospy.sleep(1)
+        self.trajectory_pub.publish(self.trajectory_msg)
+        rospy.sleep(1)
+
+
     def spin(self):
         joint_int = 0
         while not rospy.is_shutdown():
@@ -58,7 +72,7 @@ class PandaTrajectoryControl():
                 print('CALIBRATION COMPLETE')
                 break
 
-            self.point.positions[joint_int] = -1
+            self.point.positions[joint_int] = -2
             self.trajectory_msg.points = [self.point]
 
             # Publish this message so activation_matrix.py knows which Dof what actuated
@@ -78,6 +92,7 @@ if __name__ == '__main__':
     is_simulation = True if arg == 'true' else False
     try:
         panda_control = PandaTrajectoryControl(is_simulation)
+        panda_control.send_once()
         panda_control.spin()
     except rospy.ROSInterruptException:
         print('Exciting Franka Panda control process...')

@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 import rospy 
-from std_msgs.msg import String, Int16
+from std_msgs.msg import String, Int16, Bool
 from sensor_msgs.msg import Imu
 
 import numpy as np
 
-
 class ImuListener():
 
-    def __init__(self, num_imus, acc_thresh=5.0):
+    def __init__(self, num_imus, acc_thresh=0.3):
 
         self.prev_imu_matrix = np.full((num_imus, 3), np.nan)
         self.acc_thresh = acc_thresh
         rospy.init_node('skin_calibration', anonymous=True)
         self.imu_mvmt_pub = rospy.Publisher('/imu_activated', Int16, queue_size=1)
         self.imu_num_msg = Int16()
-
         # create subscribers for num_imus topics
         for i in range(num_imus):
             rospy.Subscriber('imu_data{}'.format(i), Imu, self.imu_callback)
+        
         rospy.spin()
+
 
     def imu_callback(self, data):
         imu_num = int(data.header.frame_id[-1])
@@ -36,22 +36,23 @@ class ImuListener():
             x_diff = np.abs(prev_imu_acc[0] - data.linear_acceleration.x)
             y_diff = np.abs(prev_imu_acc[1] - data.linear_acceleration.y)
             z_diff = np.abs(prev_imu_acc[2] - data.linear_acceleration.z)
-            if (x_diff > self.acc_thresh or y_diff > self.acc_thresh or z_diff > self.acc_thresh):
-                print(x_diff, y_diff, z_diff)
-                print('*************DIFF***************')
-                print(data.header.frame_id)
-                print('NEW DATA')
-                print('x: {}'.format(data.linear_acceleration.x))
-                print('y: {}'.format(data.linear_acceleration.y))
-                print('z: {}'.format(data.linear_acceleration.z))
-                print('OLD DATA')
-                print('x: {}'.format(self.prev_imu_matrix[imu_num,0]))
-                print('y: {}'.format(self.prev_imu_matrix[imu_num,1]))
-                print('z: {}'.format(self.prev_imu_matrix[imu_num,2]))
-                print('')
+            total_diff = np.linalg.norm(np.array([x_diff, y_diff, z_diff]))
+            if total_diff > self.acc_thresh:
+                # print(x_diff, y_diff, z_diff)
+                # print('*************DIFF***************')
+                # print(data.header.frame_id)
+                # print('NEW DATA')
+                # print('x: {}'.format(data.linear_acceleration.x))
+                # print('y: {}'.format(data.linear_acceleration.y))
+                # print('z: {}'.format(data.linear_acceleration.z))
+                # print('OLD DATA')
+                # print('x: {}'.format(self.prev_imu_matrix[imu_num,0]))
+                # print('y: {}'.format(self.prev_imu_matrix[imu_num,1]))
+                # print('z: {}'.format(self.prev_imu_matrix[imu_num,2]))
+                # print('')
                 # publish the imu message if the acceleration is above a certain threshold.
-                self.imu_num_msg.data = imu_num
-                self.imu_mvmt_pub.publish(self.imu_num_msg)
+                self.imu_mvmt_pub.publish(Int16(imu_num))
+       
             self.prev_imu_matrix[imu_num,0] = data.linear_acceleration.x
             self.prev_imu_matrix[imu_num,1] = data.linear_acceleration.y
             self.prev_imu_matrix[imu_num,2] = data.linear_acceleration.z
