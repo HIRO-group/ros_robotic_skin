@@ -72,7 +72,7 @@ class PandaTrajectoryControl():
                 print('CALIBRATION COMPLETE')
                 break
 
-            self.point.positions[joint_int] = -2
+            self.point.positions[joint_int] = -1
             self.trajectory_msg.points = [self.point]
 
             # Publish this message so activation_matrix.py knows which Dof what actuated

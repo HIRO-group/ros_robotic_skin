@@ -31,7 +31,7 @@ class PandaPose(object):
     def __init__(self, is_sim=True):
         # Create Publishers and Init Node
         self.is_sim = is_sim
-        self.trajectory_pub = self.get_trajectory_publisher()
+        self.get_trajectory_publisher()
         self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.pub_bool = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
