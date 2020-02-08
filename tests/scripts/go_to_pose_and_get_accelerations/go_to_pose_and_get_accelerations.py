@@ -62,7 +62,7 @@ class PoseAcceleration(PandaPose):
 
 
 if __name__ == "__main__":
-    interested_imu_link = 'imu_link2'
+    interested_imu_link = 'imu_link3'
     poses_list = [
         [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
     ]
