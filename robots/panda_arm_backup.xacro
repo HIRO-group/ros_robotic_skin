@@ -310,7 +310,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor0" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data0</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -435,7 +435,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor1" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data1</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -565,7 +565,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor2" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data2</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -690,7 +690,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor3" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data3</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -732,7 +732,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor4" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data4</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -774,7 +774,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor5" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data5</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -816,7 +816,7 @@
     <material>Gazebo/YellowGlow</material>
     <sensor name="imu_sensor6" type="imu">
       <always_on>true</always_on>
-      <update_rate>10</update_rate>
+      <update_rate>100</update_rate>
       <visualize>true</visualize>
       <topic>imu_data1</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">

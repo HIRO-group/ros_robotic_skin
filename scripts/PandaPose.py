@@ -28,9 +28,10 @@ class PandaPose(object):
     once. Hence. You need to call this super method.
     """
 
-    def __init__(self):
+    def __init__(self, is_sim=True):
         # Create Publishers and Init Node
-        self.trajectory_pub = rospy.Publisher('/panda_arm_controller/command', JointTrajectory, queue_size=1)
+        self.is_sim = is_sim
+        self.get_trajectory_publisher()
         self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.pub_bool = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
@@ -62,6 +63,11 @@ class PandaPose(object):
         self.pose_string = ''
 
     # General Utilities
+
+    def get_trajectory_publisher(self):
+        topic_string = '/panda_arm_controller/command' if self.is_sim else '/joint_trajectory_controller/command'
+        self.trajectory_pub = rospy.Publisher(topic_string, 
+                                                JointTrajectory, queue_size=1)
 
     def _set_pose(self, pose, pose_string):
         """
