@@ -12,7 +12,6 @@ time they are auto-magically generated for you
 4) This python file should be one stop destination relating to generating the xacro for all needs
 5) The variables are named programmatically and clearly, so I won't comment. Everything is self explanatory
 """
-import math
 import numpy as np
 import os
 

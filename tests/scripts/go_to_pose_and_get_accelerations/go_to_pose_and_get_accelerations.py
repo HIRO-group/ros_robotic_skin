@@ -4,7 +4,6 @@ You have to add ros_robotic_skin to PYTHONPATH for the PandaPose module to be im
 bashrc.
 """
 from scripts.PandaPose import PandaPose
-from math import pi
 from sensor_msgs.msg import Imu
 import rospy
 from time import sleep
