@@ -212,23 +212,25 @@ class generate_xacro:
         y_original = 0
         z_original = -0.06
         # rearranged coordinates according to rpy set
-        x = -z_original
+        x = z_original
         y = y_original
         z = -x_original
         # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
-        self.real_visual_imu_xyz_3 = np.array([x_original, y_original, z_original])
+        self.real_visual_imu_xyz_3 = np.array([x, y, z])
         # IMU 3 end
 
+        # IMU 4 start
         # The original Stable coordinates coded by Garrett
         x_original = -0.14
         y_original = 0.09
         z_original = 0
         # rearranged coordinates according to rpy set
-        x = -z_original
+        x = z_original
         y = y_original
         z = -x_original
         # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
         self.real_visual_imu_xyz_4 = np.array([x, y, z])
+        # IMU 4 end
 
         # The original Stable coordinates coded by Garrett
         x_original = 0
@@ -257,7 +259,7 @@ class generate_xacro:
 
         self.real_imu_visual_rpy_2 = [3.14, -1.57, 0]
 
-        self.real_imu_visual_rpy_3 = [0, 0, 0]
+        self.real_imu_visual_rpy_3 = [0, -1.57, 0]
 
         self.real_imu_visual_rpy_4 = [0, -1.57, 0]
 
@@ -278,20 +280,20 @@ class generate_xacro:
         self.real_imu_rpy_y_2 = [-1.57, 0, 0]
         self.real_imu_rpy_z_2 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_3 = [1.57, 0, 0]
-        self.real_imu_rpy_y_3 = [0, 1.57, 0]
+        self.real_imu_rpy_x_3 = [0, 1.57, 0]
+        self.real_imu_rpy_y_3 = [-1.57, 0, 0]
         self.real_imu_rpy_z_3 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_4 = [1.57, 0, 0]
-        self.real_imu_rpy_y_4 = [0, 1.57, 0]
+        self.real_imu_rpy_x_4 = [0, 1.57, 0]
+        self.real_imu_rpy_y_4 = [-1.57, 0, 0]
         self.real_imu_rpy_z_4 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_5 = [1.57, 0, 0]
-        self.real_imu_rpy_y_5 = [0, 1.57, 0]
+        self.real_imu_rpy_x_5 = [0, 1.57, 0]
+        self.real_imu_rpy_y_5 = [-1.57, 0, 0]
         self.real_imu_rpy_z_5 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_6 = [1.57, 0, 0]
-        self.real_imu_rpy_y_6 = [0, 1.57, 0]
+        self.real_imu_rpy_x_6 = [0, 1.57, 0]
+        self.real_imu_rpy_y_6 = [-1.57, 0, 0]
         self.real_imu_rpy_z_6 = [0, 0, 1.57]
 
         self.starting_string = ""
@@ -327,8 +329,8 @@ class generate_xacro:
     def gen_config(self):
         # Generating all sensors
         for type_of_imu in ['real_']:
-            for sensor_int in ['3']:
-                # for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
+            # for sensor_int in ['6']:
+            for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
                 self.starting_string += self.make_sensor(
                     imu_joint=getattr(self, type_of_imu + 'imu_joint') + sensor_int,
                     imu_parent=getattr(self, 'imu_parent') + sensor_int,
@@ -340,8 +342,8 @@ class generate_xacro:
                 )
         # Generating all Axes
         for type_of_imu in ['real_']:
-            for sensor_int in ['3']:
-                # for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
+            # for sensor_int in ['6']:
+            for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
                 self.starting_string += self.make_axes(
                     imu_joint=getattr(self, type_of_imu + 'imu_joint') + sensor_int,
                     imu_parent=getattr(self, 'imu_parent') + sensor_int,

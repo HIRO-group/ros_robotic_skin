@@ -62,13 +62,16 @@ class PoseAcceleration(PandaPose):
 
 
 if __name__ == "__main__":
-    interested_imu_link = 'imu_link3'
+    interested_imu_link = 'imu_link6'
     poses_list = [
         [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
     ]
-    # poses_list = [
-    #     [[0.0, 1.6, 0.0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
-    # ]
+    poses_list = [
+        [[0.0, 1.6, 0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
+    ]
+    poses_list = [
+        [[0.0, 1.6, -1.6, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
+    ]
     PoseAcceleration(poses_list).set_pose_and_print_acceleration()
     while True:
         sleep(0.5)
