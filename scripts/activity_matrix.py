@@ -7,11 +7,22 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
 import numpy as np
 
+import os
+import errno
+import sys
+
 
 class ActivityMatrix():
-    def __init__(self, num_dofs=7, num_skinunits=7):
+    def __init__(self, ros_robotic_skin_path, num_dofs=7, num_skinunits=7):
         self.num_dofs = num_dofs
         self.num_skinunits = num_skinunits
+        self.save_dir = os.path.join(ros_robotic_skin_path, 'activity_matrix_files')
+        try: 
+            os.makedirs(self.save_dir)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                print('Activiation matrix folder already exists!')
+
         self.activity_matrix = np.zeros([self.num_skinunits, self.num_dofs])
         self.current_dof = None
 
@@ -39,8 +50,12 @@ class ActivityMatrix():
         if data.data == True:
             print("****** ACTIVITY MATRIX ******")
             print(self.activity_matrix)
-            np.savetxt('matrix.txt', self.activity_matrix)
+            save_mat_path = os.path.join(self.save_dir, 'activity_matrix.txt')
+            np.savetxt(save_mat_path, self.activity_matrix)
 
 if __name__ == '__main__':
-    activity_matrix = ActivityMatrix()
+    # get the path to the ros_robotic_skin package
+    ros_robotic_skin_path = sys.argv[1]
+
+    activity_matrix = ActivityMatrix(ros_robotic_skin_path)
     activity_matrix.spin()
