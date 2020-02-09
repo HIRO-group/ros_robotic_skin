@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This is a panda pose library, this is comprised of three main types of classes
 1) General Utilities: defs utilized by all classes
