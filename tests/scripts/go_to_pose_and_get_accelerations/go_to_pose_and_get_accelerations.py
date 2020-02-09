@@ -62,7 +62,10 @@ class PoseAcceleration(PandaPose):
 
 
 if __name__ == "__main__":
+    # The string should be the imu_link which you want to see the acceleration values
     interested_imu_link = 'imu_link6'
+    # Checking one of the axes with below poses_list. Please keep only one of them uncommented, but rest of them
+    # commented
     poses_list = [
         [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
     ]
