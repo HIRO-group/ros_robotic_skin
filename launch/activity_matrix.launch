@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <launch>
-    <arg name="gazebo" default="true" />
     <arg name="is_sim" default="true" />
 
     <group if="$(arg is_sim)">
-        <include if="$(arg gazebo)" file="$(find ros_robotic_skin)/launch/simulation.launch" />
+        <include file="$(find ros_robotic_skin)/launch/simulation.launch" />
     </group>
     <group unless="$(arg is_sim)">
-        <include if="$(arg gazebo)" file="$(find ros_robotic_skin)/launch/panda.launch" />
+        <include file="$(find ros_robotic_skin)/launch/panda.launch" />
     </group>
 
 
