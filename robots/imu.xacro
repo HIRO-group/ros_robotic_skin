@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="imu">
+
+    <xacro:macro name="imu" params="imu_id:='0' xyz:='0 0 0' rpy:='0 0 0' boxxy:='0.02 0.02' boxz:='0.01'">
+        <joint name="imu_to_world${imu_id}" type="floating">
+            <parent link="world" />
+            <child link="imu_link${imu_id}" />
+            <!-- XYZ, RPY from parent Visual Origin (Center o Gravity) -->
+            <!-- in this case it's 0 0 0-->
+            <origin xyz="${xyz}" rpy="${rpy}"/>
+        </joint>
+
+        <!-- XYZ, RPY from the joint-->
+        <!-- in this case it's imu_to_world${imu_id}-->
+        <!-- To set the CoG to the joint, do not add any displacement -->
+        <!-- To set the box base to the joint, add displacement-->
+        <xacro:property name="displacement" value="${boxz}"/>
+        <link name="imu_link${imu_id}">
+            <inertial>
+                <origin xyz="0 0 ${displacement/2}" rpy="0 0 0"/>
+                <mass value="0.01"/>
+                <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 ${displacement/2}" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${boxxy} ${boxz}"/> 
+                </geometry>
+            </visual>
+        </link>
+
+        <gazebo reference="imu_link${imu_id}">
+            <material>Gazebo/White</material>
+            <gravity>false</gravity>
+            <sensor name="imu_sensor${imu_id}" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <visualize>true</visualize>
+            <topic>imu_data${imu_id}</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>imu_data${imu_id}</topicName>
+                <bodyName>imu_link${imu_id}</bodyName>
+                <updateRateHZ>100.0</updateRateHZ>
+                <gaussianNoise>0.0</gaussianNoise>
+                <xyzOffset>0.0 0.0 0.0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link${imu_id}</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+</robot>
