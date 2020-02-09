@@ -2,10 +2,8 @@
 <launch>
 
     <arg name="is_sim" default="true" />
-    <arg name="ros_robotic" default="true" />
 
-
-    <node pkg="ros_robotic_skin" name="activity_matrix" type="activity_matrix.py" args="$(find ros_robotic_skin)" output="screen" />
+    <node pkg="ros_robotic_skin" name="activity_matrix" type="activity_matrix.py" output="screen" />
     <node pkg="ros_robotic_skin" name="imu_listener" type="imu_listener.py" output="screen" />
     <node pkg="ros_robotic_skin" name="joint_movement" type="joint_movement.py" args="$(arg is_sim)" output="screen" />
 

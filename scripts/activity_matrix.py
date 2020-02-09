@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import rospy 
+import rospkg
+
 import numpy as np
 from std_msgs.msg import Int16
 from std_msgs.msg import Bool
@@ -55,7 +57,8 @@ class ActivityMatrix():
 
 if __name__ == '__main__':
     # get the path to the ros_robotic_skin package
-    ros_robotic_skin_path = sys.argv[1]
-
+    rospack = rospkg.RosPack()
+    ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
     activity_matrix = ActivityMatrix(ros_robotic_skin_path)
     activity_matrix.spin()
+    
