@@ -49,7 +49,7 @@ class ImuListener():
                 print('y: {}'.format(self.prev_imu_matrix[imu_num,1]))
                 print('z: {}'.format(self.prev_imu_matrix[imu_num,2]))
                 print('')
-                publish the imu message if the acceleration is above a certain threshold.
+                # publish the imu message if the acceleration is above a certain threshold.
                 self.imu_mvmt_pub.publish(Int16(imu_num))
        
             self.prev_imu_matrix[imu_num,0] = data.linear_acceleration.x

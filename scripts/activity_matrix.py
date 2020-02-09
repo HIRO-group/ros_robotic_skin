@@ -5,7 +5,6 @@ import numpy as np
 from std_msgs.msg import Int16
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu
-
 import numpy as np
 
 
@@ -30,9 +29,9 @@ class ActivityMatrix():
     def imu_mvmt(self, data):
         if self.current_dof is not None:
             # If no DoF has been set then we are just moving the robot to the starting pose
-            print('DOF:', self.current_dof, 'IMU': type(data))
+            print('DOF:', self.current_dof, 'IMU:', type(data))
             print(data.data)
-            self.activity_matrix_matrix[data.data, self.current_dof] = 1
+            self.activity_matrix[data.data, self.current_dof] = 1
             print(self.activity_matrix)
 
 
