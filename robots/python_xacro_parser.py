@@ -12,7 +12,6 @@ time they are auto-magically generated for you
 4) This python file should be one stop destination relating to generating the xacro for all needs
 5) The variables are named programmatically and clearly, so I won't comment. Everything is self explanatory
 """
-import math
 import numpy as np
 import os
 
@@ -21,7 +20,7 @@ sensor_block = """
 
 
     <joint name = "{imu_joint}" type ="fixed">
-          <origin rpy="0 0 0" xyz="0 0 0"/>
+          <origin rpy="{visual_rpy}" xyz="0 0 0"/>
           <parent link="{imu_parent}"/>
           <child link="{imu_link}"/>
           <axis xyz="0 0 0"/>
@@ -68,7 +67,7 @@ axes_blocks = """
 
 
     <joint name = "{imu_joint}_x_axis" type ="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="{joint_rotation_rpy}" xyz="0 0 0"/>
       <parent link="{imu_parent}"/>
       <child link="{imu_link}_x_axis"/>
       <axis xyz="0 0 0"/>
@@ -93,7 +92,7 @@ axes_blocks = """
      
       
     <joint name = "{imu_joint}_y_axis" type ="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="{joint_rotation_rpy}" xyz="0 0 0"/>
       <parent link="{imu_parent}"/>
       <child link="{imu_link}_y_axis"/>
       <axis xyz="0 0 0"/>
@@ -118,7 +117,7 @@ axes_blocks = """
     
     
     <joint name = "{imu_joint}_z_axis" type ="fixed">
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="{joint_rotation_rpy}" xyz="0 0 0"/>
       <parent link="{imu_parent}"/>
       <child link="{imu_link}_z_axis"/>
       <axis xyz="0 0 0"/>
@@ -163,80 +162,138 @@ class generate_xacro:
         # Below we set all the constants required for generating required config files
         # Sensor Settings
         self.real_imu_joint = "imu_link_joint"
-        self.simulated_imu_joint = "simulated_imu_link_joint"
         self.imu_parent = "${arm_id}_link"
         self.real_imu_link = "imu_link"
-        self.simulated_imu_link = "simulated_imu_link"
+        self.real_imu_link_axes = "imu_link_axes"
         self.real_imu_sensor = "imu_sensor"
-        self.simulated_imu_sensor = "simulated_imu_sensor"
         self.real_imu_data = "imu_data"
-        self.simulated_imu_data = "simulated_imu_data"
         # Specific Sensor Configuration
-        self.real_visual_imu_xyz_0 = np.array([0.06, 0, 0.05])
-        # We will offset to add to the xyz of real IMU to that of simulated IMU
-        self.offset = np.array([0.1, 0, 0])
-        self.simulated_visual_imu_xyz_0 = self.real_visual_imu_xyz_0 + self.offset
+        # IMU 0 Start
+        # The original Stable coordinates coded by Garrett
+        x_original = 0.06
+        y_original = 0
+        z_original = 0.05
+        # rearranged coordinates according to rpy set
+        x = y_original
+        y = z_original
+        z = x_original
 
-        self.real_visual_imu_xyz_1 = np.array([0.06, 0, -0.15])
-        self.simulated_visual_imu_xyz_1 = self.real_visual_imu_xyz_1 + self.offset
+        self.real_visual_imu_xyz_0 = np.array([x, y, z])
+        # IMU 0 End
 
-        self.real_visual_imu_xyz_2 = np.array([0.06, -0.15, 0])
-        self.simulated_visual_imu_xyz_2 = self.real_visual_imu_xyz_2 + self.offset
+        # IMU 1 start
+        # The original Stable coordinates coded by Garrett
+        x_original = 0.06
+        y_original = 0
+        z_original = -0.15
+        # rearranged coordinates according to rpy set
+        x = y_original
+        y = z_original
+        z = x_original
+        self.real_visual_imu_xyz_1 = np.array([x, y, z])
+        # IMU 1 end
 
-        self.real_visual_imu_xyz_3 = np.array([-0.06, 0, -0.06])
-        self.simulated_visual_imu_xyz_3 = self.real_visual_imu_xyz_3 + self.offset
+        # IMU 2 start
+        # The original Stable coordinates coded by Garrett
+        x_original = 0.06
+        y_original = -0.15
+        z_original = 0
+        # rearranged coordinates according to rpy set
+        x = z_original
+        y = -y_original
+        z = x_original
+        self.real_visual_imu_xyz_2 = np.array([x, y, z])
+        # IMU 2 end
 
-        self.real_visual_imu_xyz_4 = np.array([-0.14, 0.09, 0])
-        self.simulated_visual_imu_xyz_4 = self.real_visual_imu_xyz_4 + self.offset
+        # IMU 3 start
+        # The original Stable coordinates coded by Garrett
+        x_original = -0.06
+        y_original = 0
+        z_original = -0.06
+        # rearranged coordinates according to rpy set
+        x = z_original
+        y = y_original
+        z = -x_original
+        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        self.real_visual_imu_xyz_3 = np.array([x, y, z])
+        # IMU 3 end
 
-        self.real_visual_imu_xyz_5 = np.array([0, 0.10, -0.11])
-        self.simulated_visual_imu_xyz_5 = self.real_visual_imu_xyz_5 + self.offset
+        # IMU 4 start
+        # The original Stable coordinates coded by Garrett
+        x_original = -0.14
+        y_original = 0.09
+        z_original = 0
+        # rearranged coordinates according to rpy set
+        x = z_original
+        y = y_original
+        z = -x_original
+        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        self.real_visual_imu_xyz_4 = np.array([x, y, z])
+        # IMU 4 end
 
-        self.real_visual_imu_xyz_6 = np.array([0.13, 0.02, 0])
-        self.simulated_visual_imu_xyz_6 = self.real_visual_imu_xyz_6 + self.offset
+        # The original Stable coordinates coded by Garrett
+        x_original = 0
+        y_original = 0.1
+        z_original = -0.11
+        # rearranged coordinates according to rpy set
+        x = -x_original
+        y = z_original
+        z = y_original
+        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        self.real_visual_imu_xyz_5 = np.array([x, y, z])
 
-        self.real_imu_visual_rpy_0 = self.simulated_imu_visual_rpy_0 = [0, 0, 0]
+        x_original = 0.13
+        y_original = 0.02
+        z_original = 0
+        # rearranged coordinates according to rpy set
+        x = y_original
+        y = z_original
+        z = x_original
+        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        self.real_visual_imu_xyz_6 = np.array([x, y, z])
 
-        self.real_imu_visual_rpy_1 = self.simulated_imu_visual_rpy_1 = [0, 0, 0]
+        self.real_imu_visual_rpy_0 = [1.57, 0, 1.57]
 
-        self.real_imu_visual_rpy_2 = self.simulated_imu_visual_rpy_2 = [0, 0, 0]
+        self.real_imu_visual_rpy_1 = [1.57, 0, 1.57]
 
-        self.real_imu_visual_rpy_3 = self.simulated_imu_visual_rpy_3 = [0, 0, 0]
+        self.real_imu_visual_rpy_2 = [3.14, -1.57, 0]
 
-        self.real_imu_visual_rpy_4 = self.simulated_imu_visual_rpy_4 = [0, 0, 0]
+        self.real_imu_visual_rpy_3 = [0, -1.57, 0]
 
-        self.real_imu_visual_rpy_5 = self.simulated_imu_visual_rpy_5 = [0, 0, 0]
+        self.real_imu_visual_rpy_4 = [0, -1.57, 0]
 
-        self.real_imu_visual_rpy_6 = self.simulated_imu_visual_rpy_6 = [0, 0, 0]
+        self.real_imu_visual_rpy_5 = [-1.57, 3.14, 0]
+
+        self.real_imu_visual_rpy_6 = [1.57, 0, 1.57]
 
         # Axes Settings
-        self.real_imu_rpy_x_0 = self.simulated_imu_rpy_x_0 = [1.57, 0, 0]
-        self.real_imu_rpy_y_0 = self.simulated_imu_rpy_y_0 = [0, 1.57, 0]
-        self.real_imu_rpy_z_0 = self.simulated_imu_rpy_z_0 = [0, 0, 1.57]
+        self.real_imu_rpy_x_0 = [0, 1.57, 0]
+        self.real_imu_rpy_y_0 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_0 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_1 = self.simulated_imu_rpy_x_1 = [1.57, 0, 0]
-        self.real_imu_rpy_y_1 = self.simulated_imu_rpy_y_1 = [0, 1.57, 0]
-        self.real_imu_rpy_z_1 = self.simulated_imu_rpy_z_1 = [0, 0, 1.57]
+        self.real_imu_rpy_x_1 = [0, 1.57, 0]
+        self.real_imu_rpy_y_1 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_1 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_2 = self.simulated_imu_rpy_x_2 = [1.57, 0, 0]
-        self.real_imu_rpy_y_2 = self.simulated_imu_rpy_y_2 = [0, 1.57, 0]
-        self.real_imu_rpy_z_2 = self.simulated_imu_rpy_z_2 = [0, 0, 1.57]
+        self.real_imu_rpy_x_2 = [0, 1.57, 0]
+        self.real_imu_rpy_y_2 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_2 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_3 = self.simulated_imu_rpy_x_3 = [1.57, 0, 0]
-        self.real_imu_rpy_y_3 = self.simulated_imu_rpy_y_3 = [0, 1.57, 0]
-        self.real_imu_rpy_z_3 = self.simulated_imu_rpy_z_3 = [0, 0, 1.57]
+        self.real_imu_rpy_x_3 = [0, 1.57, 0]
+        self.real_imu_rpy_y_3 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_3 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_4 = self.simulated_imu_rpy_x_4 = [1.57, 0, 0]
-        self.real_imu_rpy_y_4 = self.simulated_imu_rpy_y_4 = [0, 1.57, 0]
-        self.real_imu_rpy_z_4 = self.simulated_imu_rpy_z_4 = [0, 0, 1.57]
+        self.real_imu_rpy_x_4 = [0, 1.57, 0]
+        self.real_imu_rpy_y_4 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_4 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_5 = self.simulated_imu_rpy_x_5 = [1.57, 0, 0]
-        self.real_imu_rpy_y_5 = self.simulated_imu_rpy_y_5 = [0, 1.57, 0]
-        self.real_imu_rpy_z_5 = self.simulated_imu_rpy_z_5 = [0, 0, 1.57]
+        self.real_imu_rpy_x_5 = [0, 1.57, 0]
+        self.real_imu_rpy_y_5 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_5 = [0, 0, 1.57]
 
-        self.real_imu_rpy_x_6 = self.simulated_imu_rpy_x_6 = [1.57, 0, 0]
-        self.real_imu_rpy_y_6 = self.simulated_imu_rpy_y_6 = [0, 1.57, 0]
-        self.real_imu_rpy_z_6 = self.simulated_imu_rpy_z_6 = [0, 0, 1.57]
+        self.real_imu_rpy_x_6 = [0, 1.57, 0]
+        self.real_imu_rpy_y_6 = [-1.57, 0, 0]
+        self.real_imu_rpy_z_6 = [0, 0, 1.57]
 
         self.starting_string = ""
 
@@ -252,13 +309,15 @@ class generate_xacro:
             visual_rpy=list_to_string(visual_rpy)
         )
 
-    def make_axes(self, imu_joint, imu_parent, imu_link, visual_xyz, visual_rpy_x, visual_rpy_y, visual_rpy_z):
+    def make_axes(self, imu_joint, imu_parent, imu_link, visual_xyz, joint_rotation_rpy, visual_rpy_x, visual_rpy_y,
+                  visual_rpy_z):
         global axes_blocks
         return axes_blocks.format(
             imu_joint=imu_joint,
             imu_parent=imu_parent,
             imu_link=imu_link,
             visual_xyz=list_to_string(visual_xyz),
+            joint_rotation_rpy=list_to_string(joint_rotation_rpy),
             visual_rpy_x=list_to_string(visual_rpy_x),
             visual_rpy_y=list_to_string(visual_rpy_y),
             visual_rpy_z=list_to_string(visual_rpy_z),
@@ -268,7 +327,8 @@ class generate_xacro:
 
     def gen_config(self):
         # Generating all sensors
-        for type_of_imu in ['real_', 'simulated_']:
+        for type_of_imu in ['real_']:
+            # for sensor_int in ['6']:
             for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
                 self.starting_string += self.make_sensor(
                     imu_joint=getattr(self, type_of_imu + 'imu_joint') + sensor_int,
@@ -280,13 +340,15 @@ class generate_xacro:
                     visual_rpy=getattr(self, type_of_imu + 'imu_visual_rpy_' + sensor_int)
                 )
         # Generating all Axes
-        for type_of_imu in ['real_', 'simulated_']:
+        for type_of_imu in ['real_']:
+            # for sensor_int in ['6']:
             for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
                 self.starting_string += self.make_axes(
                     imu_joint=getattr(self, type_of_imu + 'imu_joint') + sensor_int,
                     imu_parent=getattr(self, 'imu_parent') + sensor_int,
-                    imu_link=getattr(self, type_of_imu + 'imu_link') + sensor_int,
+                    imu_link=getattr(self, type_of_imu + 'imu_link_axes') + sensor_int,
                     visual_xyz=getattr(self, type_of_imu + 'visual_imu_xyz_' + sensor_int),
+                    joint_rotation_rpy=getattr(self, type_of_imu + 'imu_visual_rpy_' + sensor_int),
                     visual_rpy_x=getattr(self, type_of_imu + 'imu_rpy_x_' + sensor_int),
                     visual_rpy_y=getattr(self, type_of_imu + 'imu_rpy_y_' + sensor_int),
                     visual_rpy_z=getattr(self, type_of_imu + 'imu_rpy_z_' + sensor_int)

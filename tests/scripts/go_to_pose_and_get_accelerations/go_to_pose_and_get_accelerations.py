@@ -4,7 +4,6 @@ You have to add ros_robotic_skin to PYTHONPATH for the PandaPose module to be im
 bashrc.
 """
 from scripts.PandaPose import PandaPose
-from math import pi
 from sensor_msgs.msg import Imu
 import rospy
 from time import sleep
@@ -62,10 +61,19 @@ class PoseAcceleration(PandaPose):
 
 
 if __name__ == "__main__":
-    interested_imu_link = 'imu_link2'
+    # The string should be the imu_link which you want to see the acceleration values
+    interested_imu_link = 'imu_link6'
+    # Checking one of the axes with below poses_list. Please keep only one of them uncommented, but rest of them
+    # commented
     poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
+        [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
     ]
+    # poses_list = [
+    #     [[0.0, 1.6, 0, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
+    # ]
+    # poses_list = [
+    #     [[0.0, 1.6, -1.6, 0.0, 0.0, 0.0, 0.0], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1']
+    # ]
     PoseAcceleration(poses_list).set_pose_and_print_acceleration()
     while True:
         sleep(0.5)
