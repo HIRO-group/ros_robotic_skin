@@ -18,7 +18,7 @@ class ActivityMatrix():
     def __init__(self, ros_robotic_skin_path, num_dofs=7, num_skinunits=7):
         self.num_dofs = num_dofs
         self.num_skinunits = num_skinunits
-        self.save_dir = os.path.join(ros_robotic_skin_path, 'activity_matrix_files')
+        self.save_dir = os.path.join(ros_robotic_skin_path, 'data')
         try: 
             os.makedirs(self.save_dir)
         except OSError as e:
