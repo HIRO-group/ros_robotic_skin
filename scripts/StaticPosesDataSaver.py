@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 from PandaPose import PandaPose
 import numpy as np
 import rospy
 from sensor_msgs.msg import Imu
 from collections import defaultdict
+import pickle
 
 ################################################
 # Poses Configuration #####################
@@ -12,7 +14,6 @@ poses_list = [
 ]
 ################################################
 global np_array_storage
-
 
 def callback(data):
     global pp
@@ -29,7 +30,7 @@ class PandaPosesDataSaver(PandaPose):
         self.pose_string = ''
         self.data_ordered_dict = defaultdict(list)
         self.get_imu_data()
-        self.gravitation_constant = rospy.get_param('/Gravity_Constant')
+        self.gravitation_constant = rospy.get_param('/gravity_constant')
 
     def get_imu_data(self):
         imu_list = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
@@ -59,8 +60,8 @@ class PandaPosesDataSaver(PandaPose):
         self.save_array_to_file()
 
     def save_array_to_file(self):
-        save_file_array = np.array(self.data_ordered_dict)
-        np.save('StaticData.npy', save_file_array)
+        with open('data/static_data.pickle', 'wb') as f:
+            pickle.dump(self.data_ordered_dict, f)
 
 
 # Lets generate poses for review
