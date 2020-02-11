@@ -2,8 +2,7 @@
 
 import rospy 
 import numpy as np
-from std_msgs.msg import Int16
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int16 
 from sensor_msgs.msg import Imu
 import numpy as np
 

@@ -3,10 +3,8 @@
 import argparse
 import sys
 import rospy
-from std_msgs.msg import Int16
-from std_msgs.msg import Bool
-from trajectory_msgs.msg import JointTrajectory
-from trajectory_msgs.msg import JointTrajectoryPoint
+from std_msgs.msg import Bool, Int16
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
 class PandaTrajectoryControl():
