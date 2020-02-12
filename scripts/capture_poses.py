@@ -4,6 +4,8 @@ import rospy
 import rospkg
 import numpy as np
 import os
+import sys
+
 
 from std_msgs.msg import Bool, Int16
 from sensor_msgs.msg import JointState
@@ -12,30 +14,48 @@ from sensor_msgs.msg import JointState
 
 class CapturePose():
 
-    def __init__(self, save_path, poses=11, joints=7):
+    def __init__(self, save_path, joints=7, is_sim=False):
 
         # publisher for when the user wants the pose to be captured
-        rospy.init_node('capture_poses', anonymous=True)
 
-        topic_string = "/franka_state_controller/joint_states"
-        self.joint_pos_sub = rospy.Subscriber(topic_string, JointState, self.capture_pose_callback)
+        # get max number of poses from ros params
+
+        rospy.init_node("capture_poses", anonymous=True)
+        rospy.Subscriber("/is_in_captured_pose", Bool, self.get_is_captured_callback)
+        rospy.Subscriber("/zero_g_pose_num", Int16, self.get_pose_num_callback)
+        topic_string = "/joint_states" if is_sim else "/franka_state_controller/joint_states" 
+        rospy.Subscriber(topic_string, JointState, self.capture_pose_callback)
+        self.total_num_poses = rospy.get_param("/zero_g_poses")
+
+        self.captured_positions = np.zeros((self.total_num_poses, joints))
         self.is_in_captured_pose = False
-        self.poses = poses
-        self.captured_positions = np.zeros((poses, joints))
         self.save_path = os.path.join(save_path, 'data', 'positions.txt')
+        self.pose_num = 0
+        # get the total number of poses
         rospy.spin()
+
+    def get_pose_num_callback(self, data):
+        self.pose_num = data.data
+
+    def get_is_captured_callback(self, data):
+        self.is_in_captured_pose = data.data
 
     def capture_pose_callback(self, data):
         if self.is_in_captured_pose:
             # get the current pose from the panda
             joint_positions = np.array(data.position)
             # save to txt file 
-            self.captured_positions[self.pose_num] = joint_positions
+            self.captured_positions[self.pose_num] = joint_positions[2:]
+            # if last pose is met, we're done
+            if self.pose_num == self.total_num_poses - 1:
+                np.savetxt(self.save_path, self.captured_positions)
 
 if __name__ == "__main__":
 
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
 
-    cp = CapturePose(ros_robotic_skin_path)
-    cp.capture_poses()
+    arg = sys.argv[1]
+    is_sim = True if arg == 'true' else False
+
+    cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim)

@@ -1,12 +1,19 @@
 <?xml version="1.0" ?>
 <launch>
-  <arg name="robot_ip" />
+  <arg name="is_sim" default="true" />
+  <!-- <arg name="robot_ip" />
   <arg name="load_gripper" default="true" />
+
+  <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
+  <rosparam command="load" file="$(arg constants_file_yaml)"/>
+
   <include file="$(find franka_example_controllers)/launch/force_example_controller.launch" >
     <arg name="robot_ip" value="$(arg robot_ip)" />
     <arg name="load_gripper" value="$(arg load_gripper)" />
-  </include>
+  </include> -->
 
-  <node pkg="ros_robotic_skin" name="capture_poses" type="capture_poses.py" output="screen" />
+  <node pkg="ros_robotic_skin" name="capture_poses" type="capture_poses.py" args="$(arg is_sim)" output="screen" />
+  <node pkg="ros_robotic_skin" name="wait_poses" type="wait_poses.py" output="screen" />
+
 
 </launch>
