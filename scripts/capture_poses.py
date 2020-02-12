@@ -19,10 +19,11 @@ class CapturePose():
         # publisher for when the user wants the pose to be captured
 
         # get max number of poses from ros params
-
+        self.is_sim = is_sim
         rospy.init_node("capture_poses", anonymous=True)
         rospy.Subscriber("/is_in_captured_pose", Bool, self.get_is_captured_callback)
         rospy.Subscriber("/zero_g_pose_num", Int16, self.get_pose_num_callback)
+        
         topic_string = "/joint_states" if is_sim else "/franka_state_controller/joint_states" 
         rospy.Subscriber(topic_string, JointState, self.capture_pose_callback)
         self.total_num_poses = rospy.get_param("/zero_g_poses")
@@ -45,7 +46,9 @@ class CapturePose():
             # get the current pose from the panda
             joint_positions = np.array(data.position)
             # save to txt file 
-            self.captured_positions[self.pose_num] = joint_positions[2:]
+            arr_pos = joint_positions[2:] if self.is_sim else joint_positions
+
+            self.captured_positions[self.pose_num] = arr_pos
             # if last pose is met, we're done
             if self.pose_num == self.total_num_poses - 1:
                 np.savetxt(self.save_path, self.captured_positions)

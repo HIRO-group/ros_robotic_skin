@@ -3,4 +3,4 @@
   static_sleep_time: 2
   dynamic_frequency: 360
   gravity_constant: 9.81
-  zero_g_poses: 11
+  zero_g_poses: 16
