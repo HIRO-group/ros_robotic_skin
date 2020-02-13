@@ -9,8 +9,6 @@
         <include file="$(find ros_robotic_skin)/launch/panda.launch" />
     </group>
 
-
-    <node pkg="plotjuggler" name="plotjuggler" type="PlotJuggler" args="--layout /home/kandai/.ros/imu_oscillate.xml"/>
     <node pkg="ros_robotic_skin" name="activity_matrix" type="activity_matrix.py"/>
     <node pkg="ros_robotic_skin" name="imu_listener" type="imu_listener.py"/>
     <node pkg="ros_robotic_skin" name="joint_movement" type="joint_movement.py" args="$(arg is_sim)"/>
