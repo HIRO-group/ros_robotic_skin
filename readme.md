@@ -36,6 +36,17 @@ rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
 cd ..
 catkin_make
 ```
+
+## (Optional) Install Sawyer Gazebo Simulator
+```
+cd catkin_ws/src
+wstool init
+wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
+wstool update
+cd ..
+catkin_make
+```
+
 ## Running Simulation
 
 In order to run the Panda Gazebo simulation, make sure that you have built your workspace, then run (from `catkin_ws`, or the root of your catkin workspace)
