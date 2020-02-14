@@ -58,7 +58,7 @@
                     <gaussianNoise>0.0</gaussianNoise>
                     <xyzOffset>0.0 0.0 0.0</xyzOffset>
                     <rpyOffset>0 0 0</rpyOffset>
-                    <frameName>imu_frame${imu_id}</frameName>
+                    <frameName>imu_link${imu_id}</frameName>
                 </plugin>
                 <pose>0 0 0 0 0 0</pose>
             </sensor>
