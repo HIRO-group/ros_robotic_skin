@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from PandaPose import PandaPose
+from SawyerPose import SawyerPose
 import numpy as np
 import rospy
 from sensor_msgs.msg import Imu
@@ -16,18 +16,18 @@ poses_list = [
 global np_array_storage
 
 def callback(data):
-    global pp
+    global sd 
     global np_array_storage
     acceleration_data = data.linear_acceleration
     np_array_storage = np.vstack((np_array_storage,
-                                  [pp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
+                                  [sd.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
                                    acceleration_data.z]))
 
 
-class PandaPosesDataSaver(PandaPose):
-    def __init__(self):
-        super(PandaPosesDataSaver, self).__init__()
-        self.pose_string = ''
+class StaticDataSaver():
+    def __init__(self, robot_pose):
+        self.rp = robot_pose
+        self.rp.pose_string = ''
         self.data_ordered_dict = defaultdict(list)
         self.get_imu_data()
         self.gravitation_constant = rospy.get_param('/gravity_constant')
@@ -38,7 +38,7 @@ class PandaPosesDataSaver(PandaPose):
             rospy.Subscriber(each_imu, Imu, callback)
 
     def set_poses(self):
-        self.set_poses_position_static(poses_list)
+        self.rb.set_positions_list(poses_list, sleep=1)
 
     def structure_collected_data(self):
         global np_array_storage
@@ -68,7 +68,8 @@ class PandaPosesDataSaver(PandaPose):
 if __name__ == "__main__":
     # global np_array_storage
     np_array_storage = np.array([['', '', '0', '0', '0']])
-    pp = PandaPosesDataSaver()
-    pp.get_imu_data()
-    pp.set_poses()
-    pp.structure_collected_data()
+    robot_pose = SawyerPose()
+    sd = StaticDataSaver(robot_pose)
+    sd.get_imu_data()
+    sd.set_poses()
+    sd.structure_collected_data()

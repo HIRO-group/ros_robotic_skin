@@ -1,11 +1,14 @@
-from PandaPose import PandaPose
+#!/usr/bin/env python
+from collections import defaultdict
+import datetime
+import math
 from math import pi
 import numpy as np
 import pickle
 import rospy
+
 from sensor_msgs.msg import Imu
-from collections import defaultdict
-import datetime
+from SawyerPose import SawyerPose
 
 # TODO: Get max acceleration, as well joint angle at that point
 # [pose] [joint: which is changing] [acclerometer_max, theta]
@@ -27,61 +30,18 @@ def get_joint_int():
     joint_int = [idx for idx, val in enumerate(poses_list[0][1]) if val != 0][0] + 1
     return joint_int
 
-
 def callback(data):
-    global pp
+    global dd 
     global np_array_storage
-    global joint_int
-    if data.header.frame_id == 'imu_link0':
-        acceleration_data = data.linear_acceleration
-        np_array_storage = np.vstack((np_array_storage,
-                                      [pp.pose_string, joint_int, 'imu_link0', acceleration_data.x, acceleration_data.y,
-                                       acceleration_data.z]))
+    acceleration_data = data.linear_acceleration
+    np_array_storage = np.vstack((np_array_storage,
+                                  [dd.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
+                                   acceleration_data.z]))
 
-    elif data.header.frame_id == 'imu_link1':
-        acceleration_data = data.linear_acceleration
-        np.vstack((np_array_storage,
-                   [pp.pose_string, joint_int, 'imu_link1', acceleration_data.x, acceleration_data.y,
-                    acceleration_data.z]))
-
-    elif data.header.frame_id == 'imu_link2':
-        acceleration_data = data.linear_acceleration
-        np_array_storage = np.vstack((np_array_storage,
-                                      [pp.pose_string, joint_int, 'imu_link2', acceleration_data.x, acceleration_data.y,
-                                       acceleration_data.z]))
-
-    elif data.header.frame_id == 'imu_link3':
-        acceleration_data = data.linear_acceleration
-        np_array_storage = np.vstack((np_array_storage,
-                                      [pp.pose_string, joint_int, 'imu_link3', acceleration_data.x, acceleration_data.y,
-                                       acceleration_data.z]))
-
-    elif data.header.frame_id == 'imu_link4':
-        acceleration_data = data.linear_acceleration
-        np_array_storage = np.vstack((np_array_storage,
-                                      [pp.pose_string, joint_int, 'imu_link4', acceleration_data.x, acceleration_data.y,
-                                       acceleration_data.z]))
-
-    elif data.header.frame_id == 'imu_link5':
-        acceleration_data = data.linear_acceleration
-        np_array_storage = np.vstack((np_array_storage,
-                                      [pp.pose_string, joint_int, 'imu_link5', acceleration_data.x, acceleration_data.y,
-                                       acceleration_data.z]))
-
-    elif data.header.frame_id == 'imu_link6':
-        acceleration_data = data.linear_acceleration
-        np_array_storage = np.vstack((np_array_storage,
-                                      [pp.pose_string, joint_int, 'imu_link6', acceleration_data.x, acceleration_data.y,
-                                       acceleration_data.z]))
-
-    else:
-        raise Exception("I don't know what IMU link I am getting. Should I be getting this?: ", data.header.frame_id)
-
-
-class PandaPosesDataSaver(PandaPose):
-    def __init__(self):
-        super(PandaPosesDataSaver, self).__init__()
-        self.pose_string = ''
+class DynamicDataSaver():
+    def __init__(self, robot_pose):
+        self.rp = robot_pose
+        self.rp.pose_string = ''
         self.data_ordered_dict = defaultdict(list)
         get_joint_int()
 
@@ -96,7 +56,20 @@ class PandaPosesDataSaver(PandaPose):
         # rospy.spin()
 
     def set_poses(self):
-        pp.move_like_sine_dynamic()
+        self.rp.move_like_sine_dynamic()
+
+    def move_like_sine_dynamic(self):
+        """
+        This will move the joint of the Panda ARM like a sine wave
+        # TODO: add minutes delay
+        :return:
+        """
+        d1 = datetime.datetime.now() + datetime.timedelta(minutes=1)
+        while True:
+            for each_degree in range(0, 360):
+                self.rp.publish_velocity([0, 0, 5 * math.sin(math.radians(each_degree)), 0, 0, 0, 0], sleep=None)
+            if d1 < datetime.datetime.now():
+                break
 
     def ready_the_data(self):
         global np_array_storage
@@ -127,8 +100,9 @@ if __name__ == "__main__":
     # global np_array_storage
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     np_array_storage = np.array([['', 0, '', 0, 0, 0]])
-    pp = PandaPosesDataSaver()
-    pp.get_imu_data()
-    pp.set_poses()
-    pp.ready_the_data()
+    robot_pose = SawyerPose()
+    dd = DynamicDataSaver()
+    dd.get_imu_data()
+    dd.set_poses()
+    dd.ready_the_data()
     # print(get_joint_int())

@@ -1,78 +1,43 @@
 #!/usr/bin/env python
 """
-This is a panda pose library, this is comprised of three main types of classes
-1) General Utilities: defs utilized by all classes
-2) Static Defs: All defs starting with static. Used only for static data collection
-3) dynamic Defs: All defs starting with dynamic. Used for dynamic data collection only
-Each Pose should be defined in this way
-poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
-        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
-    ]
-Which is basically:
-poses_list = [
-        [[Position List_1], [Velocity_list_1], 'Pose_name_1'],
-        [[Position List_2], [Velocity_list_2], 'Pose_name_2']
-    ]
+
 """
 import rospy
 import math
-from std_msgs.msg import Int16, Bool
-from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+import intera_interface
 from math import pi
 import datetime
 
-
-class PandaPose(object):
+class SawyerPose(object):
     """
-    This is the main PandaPose class. The main reason this class needs to be overridden is that you can rospy.init_node
+    This is the main SawyerPose class. The main reason this class needs to be overridden is that you can rospy.init_node
     once. Hence. You need to call this super method.
     """
 
-    def __init__(self, is_sim=True):
+    def __init__(self):
         # Create Publishers and Init Node
-        self.is_sim = is_sim
-        self.get_trajectory_publisher()
-        self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
-        self.pub_bool = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
-        rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
-        self.msg = JointTrajectory()
-        self.msg.header.stamp = rospy.Time.now()
-        self.msg.header.frame_id = '/base_link'
-        self.msg.joint_names = ['panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5',
-                                'panda_joint6', 'panda_joint7']
-
+        rospy.init_node('sawyer_joint_movement', anonymous=True)
         # Set Initial position of the robot
-        self.point = JointTrajectoryPoint()
-        self.point.positions = [0, 0, 0, 0, 0, 0, 0]
-        self.point.velocities = [0, 0, 0, 0, 0, 0, 0]
-        self.point.time_from_start.secs = 1
-        self.msg.points = [self.point]
-        # TODO: Look up do we need to have one message to init the robot?
-        # If I only send one message then the franka bottom most joint does not move in simulation.
-        # Need to check if same thing happens in real robot too. @peasant98 can you please confirm this?
-        # TODO: This might not be the best starting position for the robot to be in.
-        # Think about if we are losing some information by using a completely vertical position
-        # for the start.
-        # Move arm to starting position
-        self.trajectory_pub.publish(self.msg)
-        rospy.sleep(1)
-        self.trajectory_pub.publish(self.msg)
-        rospy.sleep(1)
+        self._limb = intera_interface.Limb(limb)
+        self._rs = intera_interface.RobotEnable(intera_interface.CHECK_VERSION)
+        self._init_state = self._rs.state().enabled
+        self._rs.enable()
+
+        self.positions = {name: 0.0 for name in self._limb.joint_names()}
+        self.velocities = {name: 0.0 for name in self._limb.joint_names()}
+
+        try:
+            self._limb.set_joint_positions(self.positions)
+        except rospy.ROSInterruptException:
+            print('Set Joint Velocities Failed')
+
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_string = ''
 
-    # General Utilities
-
-    def get_trajectory_publisher(self):
-        topic_string = '/panda_arm_controller/command' if self.is_sim else '/joint_trajectory_controller/command'
-        self.trajectory_pub = rospy.Publisher(topic_string, 
-                                                JointTrajectory, queue_size=1)
-
     def publish_positions(self, positions, sleep):
         """
-        Set joint positions of the panda 
+        Set joint positions of the sawyer 
 
         Arguments
         ----------
@@ -87,12 +52,22 @@ class PandaPose(object):
         """
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
-        for index, _ in enumerate(self.point.positions):
-            self.point.positions[index] = positions[index]
+        self.positions = positions
+
+        if not rospy.is_shutdown():
+            try:
+                self._limb.set_joint_positions(self.positions)
+            except rospy.ROSInterruptException:
+                print('Set Joint Positions Failed')
+
+            if sleep:
+                rospy.sleep(self.sleep_time_static)
+            else:
+                self.r.sleep()
 
     def publish_velocities(self, velocities, sleep):
         """
-        Set joint velocities of the panda 
+        Set joint velocities of the sawyer 
 
         Arguments
         ----------
@@ -107,12 +82,22 @@ class PandaPose(object):
         """
         if len(velocities) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
-        for index, _ in enumerate(velocities):
-            self.point.velocities[index] = velocities[index]
+        self.velocities = velocities
+        
+        if not rospy.is_shutdown():
+            try:
+                self._limb.set_joint_velocities(self.velocities)
+            except rospy.ROSInterruptException:
+                print('Set Joint Velocities Failed')
+            
+            if sleep:
+                rospy.sleep(self.sleep_time_static)
+            else:
+                self.r.sleep()
 
     def publish_trajectory(self, positions, velocities, sleep):
         """
-        Set joint trajectory (positions and velocities) of the panda 
+        Set joint trajectory (positions and velocities) of the sawyer 
 
         Arguments
         ----------
@@ -131,38 +116,21 @@ class PandaPose(object):
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         if len(velocities) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
+        self.positions = positions
+        self.velocities = velocities
 
-        for index, _ in enumerate(positions):
-            self.point.positions[index] = positions[index]
-            self.point.velocities[index] = velocities[index]
-
-        self._publish_all_values(sleep)        
-
-    # End General Utilities
-    def _publish_all_values(self, sleep):
-        """
-        This will just set all the values and send the trajectory msg to ros master. This should be used for static
-        data collection
-        
-        Arguments
-        ------------
-        sleep: float
-            Set how long it should wait after commanding a command
-
-        Returns
-        --------
-        return: None
-        """
-        self.msg.points = [self.point]
         if not rospy.is_shutdown():
-            # publish message to actuate the dof
-            self.trajectory_pub.publish(self.msg)
+            try:
+                self._limb.set_joint_trajectory(self._limb.joint_names(), positions, velocities)
+            except rospy.ROSInternalException:
+                print('Set Joint Trajectory Failed')
 
             if sleep:
                 rospy.sleep(self.sleep_time_static)
             else:
                 self.r.sleep()
 
+    # End General Utilities
     def set_positions_list(self, poses, sleep):
         """
         Set joint poses (positions)
@@ -180,8 +148,8 @@ class PandaPose(object):
         --------
         return: None
         """
-        for each_pose in poses:
-            positions, _, pose_string = each_pose[0], each_pose[1], each_pose[2]
+        for pose in poses:
+            positions, _, pose_string = pose[0], pose[1], pose[2]
             self.pose_string = pose_string
             self.publish_positions(positions, sleep)
 
@@ -229,11 +197,12 @@ class PandaPose(object):
             self.pose_string = pose_string
             self.publish_trajectory(positions, velocities, sleep)
 
+
 if __name__ == "__main__":
     poses_list = [
         [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
-    pp = PandaPose()
+    sp = SawyerPose()
     while True:
-        pp.move_like_sine_dynamic()
+        sp.set_trajectory_list(poses_list, sleep=1)

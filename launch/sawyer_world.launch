@@ -88,8 +88,8 @@
       <arg name="head_camera" value="$(arg head_camera)" />
   </include>
 
+  <node pkg="ros_robotic_skin" name="sawyer_joint_movement" type="sawyer_joint_movement.py"/>
 
   <!-- Publish a static transform between the world and the base of the robot -->
   <node pkg="rosbag" type="play" name="io_robot" args="-l $(find sawyer_gazebo)/share/bags/robot_io.bag" />
-
 </launch>
