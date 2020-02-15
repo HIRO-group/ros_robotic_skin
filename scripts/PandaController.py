@@ -23,7 +23,7 @@ from math import pi
 import datetime
 
 
-class PandaPose(object):
+class PandaController(object):
     """
     This is the main PandaPose class. The main reason this class needs to be overridden is that you can rospy.init_node
     once. Hence. You need to call this super method.
@@ -237,6 +237,6 @@ if __name__ == "__main__":
         [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
-    pp = PandaPose()
+    controller = PandaController()
     while True:
-        pp.move_like_sine_dynamic()
+        controller.move_like_sine_dynamic()

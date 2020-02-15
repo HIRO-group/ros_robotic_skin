@@ -1,6 +1,19 @@
 #!/usr/bin/env python
 """
-
+This is a sawyer pose library, this is comprised of three main types of classes
+1) General Utilities: defs utilized by all classes
+2) Static Defs: All defs starting with static. Used only for static data collection
+3) dynamic Defs: All defs starting with dynamic. Used for dynamic data collection only
+Each Pose should be defined in this way
+poses_list = [
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
+    ]
+Which is basically:
+poses_list = [
+        [[Position List_1], [Velocity_list_1], 'Pose_name_1'],
+        [[Position List_2], [Velocity_list_2], 'Pose_name_2']
+    ]
 """
 import rospy
 import math
@@ -8,7 +21,7 @@ import intera_interface
 from math import pi
 import datetime
 
-class SawyerPose(object):
+class SawyerController(object):
     """
     This is the main SawyerPose class. The main reason this class needs to be overridden is that you can rospy.init_node
     once. Hence. You need to call this super method.
@@ -16,7 +29,7 @@ class SawyerPose(object):
 
     def __init__(self, limb="right"):
         # Create Publishers and Init Node
-        rospy.init_node('sawyer_pose', anonymous=True)
+        rospy.init_node('sawyer_controller', anonymous=True)
         # Set Initial position of the robot
         self._limb = intera_interface.Limb(limb)
         self._rs = intera_interface.RobotEnable(intera_interface.CHECK_VERSION)
@@ -67,7 +80,7 @@ class SawyerPose(object):
             else:
                 self.r.sleep()
 
-    def publish_velocities(self, velocities, sleep):
+    def publish_velocities(self, velocities, sleep=None):
         """
         Set joint velocities of the sawyer 
 
@@ -159,7 +172,7 @@ class SawyerPose(object):
             self.pose_string = pose_string
             self.publish_positions(positions, sleep)
 
-    def set_velocities_list(self, poses, sleep):
+    def set_velocities_list(self, poses, sleep=None):
         """
         Set poses (velocities)
         
@@ -181,7 +194,7 @@ class SawyerPose(object):
             self.pose_string = pose_string
             self.publish_velocities(velocities, sleep)
 
-    def set_trajectory_list(self, poses, sleep):
+    def set_trajectory_list(self, poses, sleep=None):
         """
         Set poses (positions and velocities)
         
@@ -209,6 +222,6 @@ if __name__ == "__main__":
         [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
-    sp = SawyerPose()
+    controller = SawyerController()
     while True:
-        sp.set_trajectory_list(poses_list, sleep=1)
+        controller.set_trajectory_list(poses_list, sleep=1)

@@ -8,55 +8,40 @@ import pickle
 import rospy
 
 from sensor_msgs.msg import Imu
-from SawyerPose import SawyerPose
-
-# TODO: Get max acceleration, as well joint angle at that point
-# [pose] [joint: which is changing] [acclerometer_max, theta]
-################################################
-###### Poses Configuration #####################
-poses_list = [
-    [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
-    [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_1']
-]
-################################################
-global np_array_storage
-global joint_int
-
-
-def get_joint_int():
-    global poses_list
-    global joint_int
-    # https://www.geeksforgeeks.org/python-index-of-non-zero-elements-in-python-list/
-    joint_int = [idx for idx, val in enumerate(poses_list[0][1]) if val != 0][0] + 1
-    return joint_int
-
-def callback(data):
-    global dd 
-    global np_array_storage
-    acceleration_data = data.linear_acceleration
-    np_array_storage = np.vstack((np_array_storage,
-                                  [dd.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
-                                   acceleration_data.z]))
+from SawyerController import SawyerController
+from PandaController import PandaController
 
 class DynamicPoseDataSaver():
-    def __init__(self, robot_pose):
-        self.rp = robot_pose
-        self.rp.pose_string = ''
+    def __init__(self, controller, poses_list):
+        self.controller = controller
+        self.controller.pose_string = ''
+        # constant
+        self.poses_list = poses_list
+        # data storage 
+        self.np_array_storage = np.array([['', 0, '', 0, 0, 0]])
+        self.np_array_storage = np.array([['', '', '0', '0', '0']])
         self.data_ordered_dict = defaultdict(list)
-        get_joint_int()
+        # Subscribe to IMUs
+        self.get_joint_int()
+        self.get_imu_data()
+    
+    def get_joint_int(self):
+        joint_int = [idx for idx, val in enumerate(self.poses_list[0][1]) if val != 0][0] + 1
+        return joint_int
+    
+    def callback(self, data):
+        acceleration_data = data.linear_acceleration
+        self.np_array_storage = np.vstack((self.np_array_storage,
+                                    [self.controller.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
+                                    acceleration_data.z]))
 
     def get_imu_data(self):
-        rospy.Subscriber('imu_data0', Imu, callback)
-        rospy.Subscriber('imu_data1', Imu, callback)
-        rospy.Subscriber('imu_data2', Imu, callback)
-        rospy.Subscriber('imu_data3', Imu, callback)
-        rospy.Subscriber('imu_data4', Imu, callback)
-        rospy.Subscriber('imu_data5', Imu, callback)
-        rospy.Subscriber('imu_data6', Imu, callback)
-        # rospy.spin()
+        imu_list = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
+        for each_imu in imu_list:
+            rospy.Subscriber(each_imu, Imu, self.callback)
 
     def set_poses(self):
-        self.rp.move_like_sine_dynamic()
+        self.move_like_sine_dynamic()
 
     def move_like_sine_dynamic(self):
         """
@@ -65,15 +50,21 @@ class DynamicPoseDataSaver():
         :return:
         """
         d1 = datetime.datetime.now() + datetime.timedelta(minutes=1)
+        self.controller._limb.set_joint_position_speed(speed=1.0)
+
+        dt = 1/rospy.get_param('/dynamic_frequency')
+        t = 0.0
+        freq = 2.0
+
         while True:
-            for each_degree in range(0, 360):
-                self.rp.publish_velocity([0, 0, 5 * math.sin(math.radians(each_degree)), 0, 0, 0, 0], sleep=None)
+            velocity = 2*math.sin(2 * pi * freq * t)
+            self.controller.publish_velocities([velocity, 0, 0, 0, 0, 0, 0])
+            t += dt
             if d1 < datetime.datetime.now():
                 break
 
-    def ready_the_data(self):
-        global np_array_storage
-        for every_entry in np_array_storage:
+    def structure_collected_data(self):
+        for every_entry in self.np_array_storage:
             if not self.data_ordered_dict[every_entry[0]]:
                 self.data_ordered_dict[every_entry[0]] = defaultdict(list)
                 self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
@@ -96,13 +87,18 @@ class DynamicPoseDataSaver():
 
 
 # Lets generate poses for review
+# TODO: Get max acceleration, as well joint angle at that point
 if __name__ == "__main__":
-    # global np_array_storage
+    # Poses Configuration
+    # [pose] [joint: which is changing] [acclerometer_max, theta]
+    poses_list = [
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_1']
+    ]
+    
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
-    np_array_storage = np.array([['', 0, '', 0, 0, 0]])
-    robot_pose = SawyerPose()
-    dd = DynamicPoseDataSaver()
-    dd.get_imu_data()
+    # controller = PandaController()
+    controller = SawyerController()
+    dd = DynamicPoseDataSaver(controller, poses_list)
     dd.set_poses()
-    dd.ready_the_data()
-    # print(get_joint_int())
+    dd.structure_collected_data()

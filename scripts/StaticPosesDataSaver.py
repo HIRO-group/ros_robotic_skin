@@ -1,23 +1,19 @@
 #!/usr/bin/env python
-from SawyerPose import SawyerPose
-from PandaPose import PandaPose
+from SawyerController import SawyerController
+from PandaController import PandaController
 import numpy as np
 import rospy
 from sensor_msgs.msg import Imu
 from collections import defaultdict
 import pickle
 
-################################################
-# Poses Configuration #####################
-# Explained in detail in PandaPose file
-################################################
-
 class StaticPoseDataSaver():
-    def __init__(self, robot_pose):
-        self.rp = robot_pose
-        self.rp.pose_string = ''
+    def __init__(self,controller, poses_list):
+        self.controller = controller
+        self.controller.pose_string = ''
         # constant
         self.gravitation_constant = rospy.get_param('/gravity_constant')
+        self.poses_list = poses_list
         # data storage
         # TODO: Reduce to just 1 storage
         self.np_array_storage = np.array([['', '', '0', '0', '0']])
@@ -28,7 +24,7 @@ class StaticPoseDataSaver():
     def callback(self, data):
         acceleration_data = data.linear_acceleration
         self.np_array_storage = np.vstack((self.np_array_storage,
-                                    [self.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
+                                    [self.controller.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
                                     acceleration_data.z]))
 
     def get_imu_data(self):
@@ -36,8 +32,8 @@ class StaticPoseDataSaver():
         for each_imu in imu_list:
             rospy.Subscriber(each_imu, Imu, self.callback)
 
-    def set_poses(self, poses_list):
-        self.rp.set_positions_list(poses_list, sleep=1)
+    def set_poses(self):
+        self.controller.set_positions_list(self.poses_list, sleep=1)
 
     def structure_collected_data(self):
         for every_entry in self.np_array_storage:
@@ -63,13 +59,13 @@ class StaticPoseDataSaver():
 
 # Lets generate poses for review
 if __name__ == "__main__":
+    # Poses Configuration
     poses_list = [
         [[-1, -1, -1, 0, -3, -1, -1], [], 'Pose_1']
     ]
 
-    robot_pose = PandaPose()
-    #robot_pose = SawyerPose()
-    sd = StaticPoseDataSaver(robot_pose)
-    sd.get_imu_data()
-    sd.set_poses(poses_list)
+    #controller = PandaController()
+    controller = SawyerController()
+    sd = StaticPoseDataSaver(controller, poses_list)
+    sd.set_poses()
     sd.structure_collected_data()
