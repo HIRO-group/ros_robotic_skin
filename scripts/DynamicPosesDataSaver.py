@@ -38,7 +38,7 @@ def callback(data):
                                   [dd.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
                                    acceleration_data.z]))
 
-class DynamicDataSaver():
+class DynamicPoseDataSaver():
     def __init__(self, robot_pose):
         self.rp = robot_pose
         self.rp.pose_string = ''
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     np_array_storage = np.array([['', 0, '', 0, 0, 0]])
     robot_pose = SawyerPose()
-    dd = DynamicDataSaver()
+    dd = DynamicPoseDataSaver()
     dd.get_imu_data()
     dd.set_poses()
     dd.ready_the_data()

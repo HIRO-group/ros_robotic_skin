@@ -32,10 +32,10 @@ class PandaPose(object):
     def __init__(self, is_sim=True):
         # Create Publishers and Init Node
         self.is_sim = is_sim
-        self.get_trajectory_publisher()
-        self.pub_int = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
-        self.pub_bool = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
-        rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
+        self.trajectory_pub = self.get_trajectory_publisher(is_sim)
+        rospy.init_node('panda_pose', anonymous=True)
+
+        # Prepare msg to send 
         self.msg = JointTrajectory()
         self.msg.header.stamp = rospy.Time.now()
         self.msg.header.frame_id = '/base_link'
@@ -59,16 +59,15 @@ class PandaPose(object):
         rospy.sleep(1)
         self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
+
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_string = ''
 
     # General Utilities
-
-    def get_trajectory_publisher(self):
-        topic_string = '/panda_arm_controller/command' if self.is_sim else '/joint_trajectory_controller/command'
-        self.trajectory_pub = rospy.Publisher(topic_string, 
-                                                JointTrajectory, queue_size=1)
+    def get_trajectory_publisher(self, is_sim):
+        topic_string = '/panda_arm_controller/command' if is_sim else '/joint_trajectory_controller/command'
+        return rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
 
     def publish_positions(self, positions, sleep):
         """
@@ -89,6 +88,8 @@ class PandaPose(object):
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(self.point.positions):
             self.point.positions[index] = positions[index]
+        
+        self._publish_all_values(sleep)        
 
     def publish_velocities(self, velocities, sleep):
         """
@@ -109,6 +110,8 @@ class PandaPose(object):
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(velocities):
             self.point.velocities[index] = velocities[index]
+        
+        self._publish_all_values(sleep)        
 
     def publish_trajectory(self, positions, velocities, sleep):
         """

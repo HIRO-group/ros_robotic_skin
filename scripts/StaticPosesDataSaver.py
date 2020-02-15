@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from SawyerPose import SawyerPose
+from PandaPose import PandaPose
 import numpy as np
 import rospy
 from sensor_msgs.msg import Imu
@@ -9,40 +10,37 @@ import pickle
 ################################################
 # Poses Configuration #####################
 # Explained in detail in PandaPose file
-poses_list = [
-    [[-1, -1, -1, -3, -1, -1, -1], [], 'Pose_1']
-]
 ################################################
-global np_array_storage
 
-def callback(data):
-    global sd 
-    global np_array_storage
-    acceleration_data = data.linear_acceleration
-    np_array_storage = np.vstack((np_array_storage,
-                                  [sd.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
-                                   acceleration_data.z]))
-
-
-class StaticDataSaver():
+class StaticPoseDataSaver():
     def __init__(self, robot_pose):
         self.rp = robot_pose
         self.rp.pose_string = ''
-        self.data_ordered_dict = defaultdict(list)
-        self.get_imu_data()
+        # constant
         self.gravitation_constant = rospy.get_param('/gravity_constant')
+        # data storage
+        # TODO: Reduce to just 1 storage
+        self.np_array_storage = np.array([['', '', '0', '0', '0']])
+        self.data_ordered_dict = defaultdict(list)
+        # Subscribe to IMUs
+        self.get_imu_data()
+
+    def callback(self, data):
+        acceleration_data = data.linear_acceleration
+        self.np_array_storage = np.vstack((self.np_array_storage,
+                                    [self.rp.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
+                                    acceleration_data.z]))
 
     def get_imu_data(self):
         imu_list = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
         for each_imu in imu_list:
-            rospy.Subscriber(each_imu, Imu, callback)
+            rospy.Subscriber(each_imu, Imu, self.callback)
 
-    def set_poses(self):
-        self.rb.set_positions_list(poses_list, sleep=1)
+    def set_poses(self, poses_list):
+        self.rp.set_positions_list(poses_list, sleep=1)
 
     def structure_collected_data(self):
-        global np_array_storage
-        for every_entry in np_array_storage:
+        for every_entry in self.np_array_storage:
             if not self.data_ordered_dict[every_entry[0]]:
                 self.data_ordered_dict[every_entry[0]] = defaultdict(list)
                 self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
@@ -63,13 +61,15 @@ class StaticDataSaver():
         with open('data/static_data.pickle', 'wb') as f:
             pickle.dump(self.data_ordered_dict, f)
 
-
 # Lets generate poses for review
 if __name__ == "__main__":
-    # global np_array_storage
-    np_array_storage = np.array([['', '', '0', '0', '0']])
-    robot_pose = SawyerPose()
-    sd = StaticDataSaver(robot_pose)
+    poses_list = [
+        [[-1, -1, -1, 0, -3, -1, -1], [], 'Pose_1']
+    ]
+
+    robot_pose = PandaPose()
+    #robot_pose = SawyerPose()
+    sd = StaticPoseDataSaver(robot_pose)
     sd.get_imu_data()
-    sd.set_poses()
+    sd.set_poses(poses_list)
     sd.structure_collected_data()

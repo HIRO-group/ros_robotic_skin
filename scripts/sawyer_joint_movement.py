@@ -16,6 +16,7 @@ class SawyerJointControl():
         self._rs.enable()
 
         self.velocities = {name: 0.0 for name in self._limb.joint_names()}
+        self.positions = {name: -0.2*i for i, name in enumerate(self._limb.joint_names())}
 
     def spin(self):
         dt = 0.01

@@ -14,9 +14,9 @@ class SawyerPose(object):
     once. Hence. You need to call this super method.
     """
 
-    def __init__(self):
+    def __init__(self, limb="right"):
         # Create Publishers and Init Node
-        rospy.init_node('sawyer_joint_movement', anonymous=True)
+        rospy.init_node('sawyer_pose', anonymous=True)
         # Set Initial position of the robot
         self._limb = intera_interface.Limb(limb)
         self._rs = intera_interface.RobotEnable(intera_interface.CHECK_VERSION)
@@ -52,11 +52,13 @@ class SawyerPose(object):
         """
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
-        self.positions = positions
+        
+        for joint_name, position in zip(self._limb.joint_names(), positions):
+            self.positions[joint_name] = position
 
         if not rospy.is_shutdown():
             try:
-                self._limb.set_joint_positions(self.positions)
+                self._limb.move_to_joint_positions(self.positions, timeout=sleep)
             except rospy.ROSInterruptException:
                 print('Set Joint Positions Failed')
 
@@ -82,7 +84,9 @@ class SawyerPose(object):
         """
         if len(velocities) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
-        self.velocities = velocities
+        
+        for joint_name, velocity in zip(self._limb.joint_names(), velocities):
+            self.velocities[joint_name] = velocity
         
         if not rospy.is_shutdown():
             try:
@@ -116,8 +120,10 @@ class SawyerPose(object):
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         if len(velocities) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
-        self.positions = positions
-        self.velocities = velocities
+        
+        for joint_name, position, velocity in zip(self._limb.joint_names(), positions, velocities):
+            self.positions[joint_name] = position
+            self.velocities[joint_name] = velocity
 
         if not rospy.is_shutdown():
             try:
