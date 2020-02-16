@@ -113,7 +113,7 @@ class PandaController(object):
         
         self._publish_all_values(sleep)        
 
-    def publish_trajectory(self, positions, velocities, sleep):
+    def publish_trajectory(self, positions, velocities, accelerations, sleep):
         """
         Set joint trajectory (positions and velocities) of the panda 
 
@@ -138,6 +138,7 @@ class PandaController(object):
         for index, _ in enumerate(positions):
             self.point.positions[index] = positions[index]
             self.point.velocities[index] = velocities[index]
+            self.point.accelerations[index] = accelerations[index]
 
         self._publish_all_values(sleep)        
 
@@ -227,10 +228,12 @@ class PandaController(object):
         --------
         return: None
         """
+        # TODO: add accelerations
         for each_pose in poses:
             positions, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
+            accelerations = [0.0]*7
             self.pose_string = pose_string
-            self.publish_trajectory(positions, velocities, sleep)
+            self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 if __name__ == "__main__":
     poses_list = [

@@ -112,7 +112,7 @@ class SawyerController(object):
             else:
                 self.r.sleep()
 
-    def publish_trajectory(self, positions, velocities, sleep):
+    def publish_trajectory(self, positions, velocities, accelerations, sleep):
         """
         Set joint trajectory (positions and velocities) of the sawyer 
 
@@ -140,7 +140,7 @@ class SawyerController(object):
 
         if not rospy.is_shutdown():
             try:
-                self._limb.set_joint_trajectory(self._limb.joint_names(), positions, velocities)
+                self._limb.set_joint_trajectory(self._limb.joint_names(), positions, velocities, accelerations)
             except rospy.ROSInternalException:
                 print('Set Joint Trajectory Failed')
 
@@ -211,10 +211,12 @@ class SawyerController(object):
         --------
         return: None
         """
+        # TODO: add accelerations
         for each_pose in poses:
             positions, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
+            accelerations = [0.0]*7
             self.pose_string = pose_string
-            self.publish_trajectory(positions, velocities, sleep)
+            self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 
 if __name__ == "__main__":
