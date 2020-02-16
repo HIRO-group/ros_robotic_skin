@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="imu">
 
-    <xacro:macro name="imu" params="imu_id:='0' xyz:='0 0 0' rpy:='0 0 0' boxxy:='0.05 0.05' boxz:='0.03' gravity:='false' type:='fixed' freq:='100' connected_to:=''">
+    <xacro:macro name="imu" params="imu_id:='0' xyz:='0 0 0' rpy:='0 0 0' gravity:='false' type:='fixed' freq:='100' connected_to:=''">
         <!-- Connect IMU to the world if not specified -->
         <xacro:if value="${connected_to == ''}">
             <joint name="imu${imu_id}_to_world" type="${type}">
@@ -26,17 +26,19 @@
         <!-- in this case it's imu_to_world${imu_id}-->
         <!-- To set the CoG to the joint, do not add any displacement -->
         <!-- To set the box base to the joint, add displacement-->
+        <xacro:property name="boxxy" value="0.05"/>
+        <xacro:property name="boxz" value="0.03"/>
         <xacro:property name="displacement" value="${boxz}"/>
         <link name="imu_link${imu_id}">
             <inertial>
-                <origin xyz="0 0 ${displacement/2}" rpy="0 0 0"/>
-                <mass value="0.1"/>
-                <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <mass value="0.01"/>
+                <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
             </inertial>
             <visual>
-                <origin xyz="0 0 ${displacement/2}" rpy="0 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="${boxxy} ${boxz}"/> 
+                    <box size="${boxxy} ${boxxy} ${boxz}"/> 
                 </geometry>
             </visual>
         </link>
@@ -62,6 +64,74 @@
                 </plugin>
                 <pose>0 0 0 0 0 0</pose>
             </sensor>
+        </gazebo>
+
+        <!-- ////////////////////////////////////////// -->
+        <!--                    AXIS                    -->
+        <!-- ////////////////////////////////////////// -->
+        <joint name="imu${imu_id}_to_xaxis" type="fixed">
+            <parent link="imu_link${imu_id}"/>
+            <child link="imu_link${imu_id}_xaxis"/>
+            <origin rpy="0 1.57 0" xyz="0 0 0"/>
+        </joint>
+        <joint name="imu${imu_id}_to_yaxis" type="fixed">
+            <parent link="imu_link${imu_id}"/>
+            <child link="imu_link${imu_id}_yaxis"/>
+            <origin rpy="-1.57 0 0" xyz="0 0 0"/>
+        </joint>
+        <joint name="imu${imu_id}_to_zaxis" type="fixed">
+            <parent link="imu_link${imu_id}"/>
+            <child link="imu_link${imu_id}_zaxis"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </joint>
+
+        <link name="imu_link${imu_id}_xaxis">
+            <inertial>
+                <origin xyz="0 0 ${boxz}" rpy="0 0 0"/>
+                <mass value="0.001"/>
+                <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 ${boxz}" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder radius="${boxxy/20}" length="${2*boxz}"/>
+                </geometry>
+            </visual>
+        </link>
+        <link name="imu_link${imu_id}_yaxis">
+            <inertial>
+                <origin xyz="0 0 ${boxz}" rpy="0 0 0"/>
+                <mass value="0.001"/>
+                <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 ${boxz}" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder radius="${boxxy/20}" length="${2*boxz}"/>
+                </geometry>
+            </visual>
+        </link>
+        <link name="imu_link${imu_id}_zaxis">
+            <inertial>
+                <origin xyz="0 0 ${boxz}" rpy="0 0 0"/>
+                <mass value="0.001"/>
+                <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 ${boxz}" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder radius="${boxxy/20}" length="${2*boxz}"/>
+                </geometry>
+            </visual>
+        </link>
+        <gazebo reference="imu_link${imu_id}_xaxis">
+            <material>Gazebo/Red</material>
+        </gazebo>
+        <gazebo reference="imu_link${imu_id}_yaxis">
+            <material>Gazebo/Green</material>
+        </gazebo>
+        <gazebo reference="imu_link${imu_id}_zaxis">
+            <material>Gazebo/Blue</material>
         </gazebo>
     </xacro:macro>
 </robot>
