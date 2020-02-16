@@ -64,8 +64,8 @@ class DynamicPoseDataSaver():
             print('At Position: ' + pose_string, positions)
 
             for i in range(7):
-                velocities = [0.0]*7
-                accelerations = [0.0]*7
+                velocities = np.zeros(7)
+                accelerations = np.zeros(7)
                 d1 = datetime.datetime.now() + datetime.timedelta(seconds=5)
                 poss = positions
                 while True:
@@ -76,7 +76,7 @@ class DynamicPoseDataSaver():
                     velocities[i] = velocity
                     accelerations[i] = acceleration
                     #self.controller.publish_velocities(velocities)
-                    self.controller.publish_trajectory(positions, velocities, accelerations)
+                    self.controller.publish_trajectory(positions, velocities, accelerations, sleep=1)
 
                     t += dt
                     if d1 < datetime.datetime.now():
@@ -103,6 +103,11 @@ class DynamicPoseDataSaver():
         # pickle.dump(self.data_ordered_dict, output)
         # output.close()
         print(self.data_ordered_dict)
+        self.save_array_to_file()
+
+    def save_array_to_file(self):
+        with open('data/dynamic_data.pickle', 'wb') as f:
+            pickle.dump(self.data_ordered_dict, f)
 
 
 # Lets generate poses for review

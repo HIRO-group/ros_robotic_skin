@@ -64,7 +64,7 @@ class SawyerController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list should be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
         
         for joint_name, position in zip(self._limb.joint_names(), positions):
             self.positions[joint_name] = position
@@ -96,7 +96,7 @@ class SawyerController(object):
         return: None
         """
         if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
         
         for joint_name, velocity in zip(self._limb.joint_names(), velocities):
             self.velocities[joint_name] = velocity
@@ -130,9 +130,9 @@ class SawyerController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list should be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
         if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
         
         for joint_name, position, velocity in zip(self._limb.joint_names(), positions, velocities):
             self.positions[joint_name] = position
@@ -214,7 +214,7 @@ class SawyerController(object):
         # TODO: add accelerations
         for each_pose in poses:
             positions, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
-            accelerations = [0.0]*7
+            accelerations = np.zeros(7)
             self.pose_string = pose_string
             self.publish_trajectory(positions, velocities, accelerations, sleep)
 
