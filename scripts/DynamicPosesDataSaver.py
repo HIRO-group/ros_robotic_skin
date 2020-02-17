@@ -79,7 +79,7 @@ class DynamicPoseData():
                         self.data[pose_name][joint_name][imu_name][idx, :]
 
         # save max acceleration data
-        self._save(data, "max_")
+        self._save(data, "_max")
 
 class DynamicPoseDataSaver():
     def __init__(self, controller, poses_list, filepath='data/dynamic_data'):
