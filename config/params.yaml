@@ -3,3 +3,5 @@
   static_sleep_time: 2
   dynamic_frequency: 30.0
   gravity_constant: 9.81
+  oscillation_magnitude: 2.0
+  oscillation_frequency: 2.0
