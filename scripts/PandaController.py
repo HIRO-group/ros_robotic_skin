@@ -15,12 +15,14 @@ poses_list = [
         [[Position List_2], [Velocity_list_2], 'Pose_name_2']
     ]
 """
+import datetime
 import rospy
 import math
+from math import pi
+import numpy as np
+
 from std_msgs.msg import Int16, Bool
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-from math import pi
-import datetime
 
 
 class PandaController(object):
@@ -62,7 +64,7 @@ class PandaController(object):
 
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
-        self.pose_string = ''
+        self.pose_name = ''
 
     # General Utilities
     def get_trajectory_publisher(self, is_sim):
@@ -185,8 +187,8 @@ class PandaController(object):
         return: None
         """
         for each_pose in poses:
-            positions, _, pose_string = each_pose[0], each_pose[1], each_pose[2]
-            self.pose_string = pose_string
+            positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]
+            self.pose_name = pose_name
             self.publish_positions(positions, sleep)
 
     def set_velocities_list(self, poses, sleep):
@@ -207,8 +209,8 @@ class PandaController(object):
         return: None
         """
         for each_pose in poses:
-            _, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
-            self.pose_string = pose_string
+            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
+            self.pose_name = pose_name
             self.publish_velocities(velocities, sleep)
 
     def set_trajectory_list(self, poses, sleep):
@@ -230,9 +232,9 @@ class PandaController(object):
         """
         # TODO: add accelerations
         for each_pose in poses:
-            positions, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
-            accelerations = [0.0]*7
-            self.pose_string = pose_string
+            positions, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
+            accelerations = np.zeros(7)
+            self.pose_name = pose_name
             self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 if __name__ == "__main__":
@@ -242,4 +244,4 @@ if __name__ == "__main__":
     ]
     controller = PandaController()
     while True:
-        controller.move_like_sine_dynamic()
+        controller.set_trajectory_list(poses_list, sleep=1)

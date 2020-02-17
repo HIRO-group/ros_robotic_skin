@@ -15,11 +15,13 @@ poses_list = [
         [[Position List_2], [Velocity_list_2], 'Pose_name_2']
     ]
 """
+import datetime
 import rospy
 import math
-import intera_interface
 from math import pi
-import datetime
+import numpy as np
+
+import intera_interface
 
 class SawyerController(object):
     """
@@ -46,7 +48,7 @@ class SawyerController(object):
 
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
-        self.pose_string = ''
+        self.pose_name = ''
 
     def publish_positions(self, positions, sleep):
         """
@@ -168,8 +170,8 @@ class SawyerController(object):
         return: None
         """
         for pose in poses:
-            positions, _, pose_string = pose[0], pose[1], pose[2]
-            self.pose_string = pose_string
+            positions, _, pose_name = pose[0], pose[1], pose[2]
+            self.pose_name = pose_name
             self.publish_positions(positions, sleep)
 
     def set_velocities_list(self, poses, sleep=None):
@@ -190,8 +192,8 @@ class SawyerController(object):
         return: None
         """
         for each_pose in poses:
-            _, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
-            self.pose_string = pose_string
+            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
+            self.pose_name = pose_name
             self.publish_velocities(velocities, sleep)
 
     def set_trajectory_list(self, poses, sleep=None):
@@ -213,9 +215,9 @@ class SawyerController(object):
         """
         # TODO: add accelerations
         for each_pose in poses:
-            positions, velocities, pose_string = each_pose[0], each_pose[1], each_pose[2]
+            positions, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
             accelerations = np.zeros(7)
-            self.pose_string = pose_string
+            self.pose_name = pose_name
             self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 

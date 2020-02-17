@@ -1,63 +1,183 @@
 #!/usr/bin/env python
-from SawyerController import SawyerController
-from PandaController import PandaController
-import numpy as np
-import rospy
-from sensor_msgs.msg import Imu
+import os, sys
 from collections import defaultdict
+import copy
+import datetime
+import math
+from math import pi
+import numpy as np
 import pickle
 
+import rospy
+import rospkg
+from sensor_msgs.msg import Imu
+
+from SawyerController import SawyerController
+from PandaController import PandaController
+
+RAD2DEG = 180.0/np.pi
+
+class StaticPoseData():
+    """
+    Class to store static poses into a nested dictionary.
+    It is stored as in [20 poses][7 IMUs][data]. 
+    self.data[pose_name][imu_name] = np.ndarray
+    The data is defined as below. 
+    data = [mean x y z acceleration]. 
+    so the np.ndarray's dimension is (No. of collected data  x  xyz accelerations)
+    """
+    def __init__(self, pose_names, imu_names, filepath):
+        """
+        Initialize StaticPoseData class. 
+
+        Arguments
+        ----------
+        pose_names: list[str]
+            Names of poses
+        imu_names: list[str]
+            Names of imus
+        filepath: str
+            Path to save the collected data
+        """
+        self.pose_names = pose_names
+        self.imu_names = imu_names
+        self.filepath = filepath
+        self.data = defaultdict(list)
+
+        # Create nested dictionary to store data
+        for pose_name in pose_names:
+            self.data[pose_name] = defaultdict(list)
+            for imu_name in imu_names:
+                self.data[pose_name][imu_name] = np.empty((0, 3), float) 
+
+    def append(self, pose_name, imu_name, data):
+        """
+        Append data to a dictionary whose keys are 
+        [pose_name][imu_name]
+
+        Arguments
+        ----------
+        pose_name: str
+            Names of poses
+        imu_name: str
+            Names of imus
+        data: np.array
+            Numpy array of size (1,3). 
+            Includes an accelerometer measurement.
+        """
+        self.data[pose_name][imu_name] = \
+            np.append(self.data[pose_name][imu_name], np.array([data]), axis=0)
+
+    def _save(self, data, suffix=None):
+        """
+        Save data as a pickle file
+
+        data: 
+            Nested Dictionary
+
+        suffix: str
+            suffix to add to the filename
+        """
+        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+        filepath = self.filepath if suffix is None else self.filepath+suffix
+        filepath = os.path.join(ros_robotic_skin_path, filepath+'.pickle')
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(data, f)
+
+    def save(self):
+        """
+        TODO: Stop saving the original collected data since we do not need them
+        Save both the original collected data and the averaged data
+        """
+        # save original
+        self._save(self.data)
+
+        # Create nested dictionary to store data
+        data = copy.deepcopy(self.data)
+        for pose_name in self.pose_names:
+            for imu_name in self.imu_names:
+                mean_acceleration = np.mean(self.data[pose_name][imu_name], axis=0)
+                data[pose_name][imu_name] = mean_acceleration
+
+        # save mean acceleration data
+        self._save(data, "_mean")
+
 class StaticPoseDataSaver():
-    def __init__(self,controller, poses_list):
+    """
+    Class for collecting static pose data nd save them as a pickle file
+    """
+    def __init__(self, controller, poses_list, filepath='data/static_data'):
+        """
+        Initializes StaticPoseDataSaver class.
+
+        Arguments
+        -----------
+        controller: 
+            Wrapped controller to control either Panda or Sawyer robot.
+        poses_list: list
+            A list of poses. Each pose is a list. 
+            It includes 7 joint positiosn, 7 joint velociites, and the Pose name
+        filepath: str
+            File path to save the collected data
+        """
         self.controller = controller
-        self.controller.pose_string = ''
-        # constant
-        self.gravitation_constant = rospy.get_param('/gravity_constant')
         self.poses_list = poses_list
+
+        self.pose_names = [pose[2] for pose in poses_list]
+        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
+        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
+        self.curr_pose_name = self.pose_names[0] 
+        self.ready = False
+        
         # data storage
-        # TODO: Reduce to just 1 storage
-        self.np_array_storage = np.array([['', '', '0', '0', '0']])
-        self.data_ordered_dict = defaultdict(list)
+        self.data_storage = StaticPoseData(self.pose_names, self.imu_names, filepath)
+        
         # Subscribe to IMUs
-        self.get_imu_data()
+        for imu_topic in self.imu_topics:
+            rospy.Subscriber(imu_topic, Imu, self.callback)
 
     def callback(self, data):
-        acceleration_data = data.linear_acceleration
-        self.np_array_storage = np.vstack((self.np_array_storage,
-                                    [self.controller.pose_string, data.header.frame_id, acceleration_data.x, acceleration_data.y,
-                                    acceleration_data.z]))
+        """
+        A callback function for IMU topics
+        
+        Arguments
+        ----------
+        data: sensor_msgs.msg.Imu
+            IMU data. Please refer to the official documentation. 
+            http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
+        """
+        if self.ready:
+            accel = data.linear_acceleration
 
-    def get_imu_data(self):
-        imu_list = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
-        for each_imu in imu_list:
-            rospy.Subscriber(each_imu, Imu, self.callback)
+            self.data_storage.append(
+                self.curr_pose_name,            # for each defined initial pose
+                data.header.frame_id,           # for each imu  
+                np.array([accel.x, accel.y, accel.z]))
 
-    def set_poses(self):
-        self.controller.set_positions_list(self.poses_list, sleep=3)
+    def set_poses(self, time=2.0):
+        """
+        Move to the defined poses and collect the IMU data
+        for a given amount of time.
 
-    def structure_collected_data(self):
-        for every_entry in self.np_array_storage:
-            if not self.data_ordered_dict[every_entry[0]]:
-                self.data_ordered_dict[every_entry[0]] = defaultdict(list)
-                self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
-            elif not self.data_ordered_dict[every_entry[0]][every_entry[1]]:
-                self.data_ordered_dict[every_entry[0]][every_entry[1]] = []
-            self.data_ordered_dict[every_entry[0]][every_entry[1]].append(
-                [every_entry[2], every_entry[3], every_entry[4]])
-        # Delete the data_ordered_dict[''], because it ain't useful
-        del self.data_ordered_dict['']
-        for pose, imu_links in self.data_ordered_dict.items():
-            for imu_link in imu_links:
-                resulted_np_array = np.array(self.data_ordered_dict[pose][imu_link]).astype(np.float)
-                avg_array = np.mean(resulted_np_array, axis=0) / self.gravitation_constant
-                self.data_ordered_dict[pose][imu_link] = avg_array
-        self.save_array_to_file()
+        time: float
+            Time to collect the IMU data
+        """
+        for pose in self.poses_list:
+            positions, _, pose_name = pose[0], pose[1], pose[2]
+            self.controller.publish_positions(positions, 0.1)
+            print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
+            self.curr_pose_name = pose_name
+            self.ready = True
+            rospy.sleep(time)
+            self.ready = False
 
-    def save_array_to_file(self):
-        with open('data/static_data.pickle', 'wb') as f:
-            pickle.dump(self.data_ordered_dict, f)
+    def save(self):
+        """
+        Save data to a pickle file.
+        """
+        self.data_storage.save()
 
-# Lets generate poses for review
 if __name__ == "__main__":
     # Poses Configuration
     poses_list = [
@@ -82,8 +202,15 @@ if __name__ == "__main__":
         [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
     ]    
 
-    #controller = PandaController()
-    controller = SawyerController()
-    sd = StaticPoseDataSaver(controller, poses_list)
+    arg = sys.argv[1]
+    if arg == 'panda':
+        controller = PandaController()
+    elif arg == 'sawyer':
+        controller = SawyerController()
+    else:
+        raise ValueError("Must be either panda or sawyer")
+
+    filepath = 'data/static_data'
+    sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
-    sd.structure_collected_data()
+    sd.save()
