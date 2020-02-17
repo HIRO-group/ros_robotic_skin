@@ -28,6 +28,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link0.stl"/>
         </geometry>
@@ -48,6 +50,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link1.stl"/>
         </geometry>
@@ -80,6 +84,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link2.stl"/>
         </geometry>
@@ -112,7 +118,9 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
         <geometry>
+        
           <mesh filename="package://${description_pkg}/meshes/collision/link3.stl"/>
         </geometry>
       </collision>
@@ -144,6 +152,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link4.stl"/>
         </geometry>
@@ -176,6 +186,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link5.stl"/>
         </geometry>
@@ -208,6 +220,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link6.stl"/>
         </geometry>
@@ -240,6 +254,8 @@
         </geometry>
       </visual>
       <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.035"/>
+
         <geometry>
           <mesh filename="package://${description_pkg}/meshes/collision/link7.stl"/>
         </geometry>
