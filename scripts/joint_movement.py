@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import argparse
 import sys
 import rospy
@@ -50,7 +49,6 @@ class PandaTrajectoryControl():
         self.trajectory_pub = rospy.Publisher(topic_string, 
                                                 JointTrajectory, queue_size=1)
 
-
     def send_once(self):
         # TODO: Look up do we need to have one message to init the robot?
         # If I only send one message then the franka does not move.
@@ -62,7 +60,6 @@ class PandaTrajectoryControl():
         rospy.sleep(1)
         self.trajectory_pub.publish(self.trajectory_msg)
         rospy.sleep(1)
-
 
     def spin(self):
         joint_int = 0
