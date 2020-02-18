@@ -64,6 +64,9 @@ source devel/setup.bash
 roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
 ```
 
+## Capture Poses
+If you want to be able to capture certain poses of the robot, run `roslaunch ros_robotic_skin poses.launch`. Follow the steps on the command line. This will save a file of the poses in the `data` folder.
+
 ## Activity Matrix Generation
 The activity matrix generation currently needs to be done for three separate files, but we have a roslaunch file to handle the running of the three matrices. To do so, from the root of your catkin workspace, run:
 
