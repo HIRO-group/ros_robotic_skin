@@ -5,6 +5,7 @@ import rospkg
 import numpy as np
 import os
 import sys
+import errno
 
 
 from std_msgs.msg import Bool, Int16
@@ -26,11 +27,19 @@ class CapturePose():
         
         topic_string = "/joint_states" if is_sim else "/franka_state_controller/joint_states" 
         rospy.Subscriber(topic_string, JointState, self.capture_pose_callback)
-        self.total_num_poses = rospy.get_param("/zero_g_poses")
+        self.total_num_poses = rospy.get_param("/zero_g_poses", default=11)
 
         self.captured_positions = np.zeros((self.total_num_poses, joints))
         self.is_in_captured_pose = False
-        self.save_path = os.path.join(save_path, 'data', 'positions.txt')
+        self.save_dir = os.path.join(save_path, 'data')
+
+        try: 
+            os.makedirs(self.save_dir)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                print('Data folder already exists!')
+
+        self.save_path = os.path.join(self.save_dir, 'positions.txt')
         self.pose_num = 0
         # get the total number of poses
         rospy.spin()

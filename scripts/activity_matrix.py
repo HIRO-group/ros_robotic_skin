@@ -22,7 +22,7 @@ class ActivityMatrix():
             os.makedirs(self.save_dir)
         except OSError as e:
             if e.errno == errno.EEXIST:
-                print('Activiation matrix folder already exists!')
+                print('Data folder already exists!')
 
         self.activity_matrix = np.zeros([self.num_skinunits, self.num_dofs])
         self.current_dof = None
