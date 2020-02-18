@@ -14,6 +14,19 @@ class WaitPose():
 
     def __init__(self, joints=7):
 
+        """
+        Creates a wait pose object. 
+
+        Arguments
+        ----------
+        `joints`: `int`
+            Sets the amount of joints in the desired robot
+
+        Returns
+        ----------
+        returns: None
+        """
+
         # publisher for when the user wants the pose to be captured
         rospy.init_node("wait_poses", anonymous=True)
         
@@ -25,6 +38,19 @@ class WaitPose():
         self.pose_num = 0
 
     def wait_poses(self):
+        """
+        Waits for all of the poses. Requires a user to press enter 
+        when the desired pose is reached. Peforms this for
+        `self.poses` times. 
+
+        Arguments
+        ----------
+        None
+
+        Returns
+        ----------
+        returns: None
+        """
         for i in range(self.poses):
             self.pose_num = i
 
@@ -39,6 +65,5 @@ class WaitPose():
             rospy.sleep(1)
 
 if __name__ == "__main__":
-
     wp = WaitPose()
     wp.wait_poses()

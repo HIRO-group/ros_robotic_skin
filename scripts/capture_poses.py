@@ -16,6 +16,24 @@ from sensor_msgs.msg import JointState
 class CapturePose():
 
     def __init__(self, save_path, joints=7, is_sim=False):
+        """
+        Creates a CapturePose object. 
+
+        Arguments
+        ----------
+        `save_path`: `str`
+            The path of where the `ros_robotic_skin` package skin is.
+
+        `joints`: `int`
+            The amount of joints
+
+        `is_sim`: `bool`
+            If we are in simulation or real life
+
+        Returns
+        ----------
+        returns: None
+        """
 
         # publisher for when the user wants the pose to be captured
 
@@ -42,15 +60,52 @@ class CapturePose():
         self.save_path = os.path.join(self.save_dir, 'positions.txt')
         self.pose_num = 0
         # get the total number of poses
-        rospy.spin()
 
     def get_pose_num_callback(self, data):
+        """
+        Pose number callback from ROS Subscriber 
+
+        Arguments
+        ----------
+        `data`: `Int16`
+            The data of the joint number
+
+        Returns
+        ----------
+        returns: None
+        """
         self.pose_num = data.data
 
     def get_is_captured_callback(self, data):
+        """
+        Sees if the robot is in a pose that needs to be
+        captured and eventually sent out to a file.
+
+        Arguments
+        ----------
+        `data`: `Bool`
+            If the robot is in a captured pose.
+
+        Returns
+        ----------
+        returns: None
+        """
         self.is_in_captured_pose = data.data
 
     def capture_pose_callback(self, data):
+        """
+        A ROS callback for getting all of the joint states
+
+        Arguments
+        ----------
+        `data`: `JointState`
+            joint states of the robot
+
+        Returns
+        ----------
+        returns: None
+        """
+        
         if self.is_in_captured_pose:
             # get the current pose from the panda
             joint_positions = np.array(data.position)
@@ -71,3 +126,4 @@ if __name__ == "__main__":
     is_sim = True if arg == 'true' else False
 
     cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim)
+    rospy.spin()
