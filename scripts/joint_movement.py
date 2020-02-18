@@ -2,14 +2,12 @@
 import argparse
 import sys
 import rospy
-from std_msgs.msg import Int16
-from std_msgs.msg import Bool
-from trajectory_msgs.msg import JointTrajectory
-from trajectory_msgs.msg import JointTrajectoryPoint
+from std_msgs.msg import Bool, Int16
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
 class PandaTrajectoryControl():
-    def __init__(self, is_sim=True):
+    def __init__(self,  desired_positions_path, is_sim=True):
         """
         Panda Trajectory control class for sending 
         JointTrajectory messages to the real Franka Panda,
@@ -24,6 +22,8 @@ class PandaTrajectoryControl():
         self.joint_dof_pub = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.calibration_pub = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
+        self.points = np.loadtxt(desired_positions_path)
+        # points is an np.array with shape (poses, 7)
         trajectory_msg = JointTrajectory()
         trajectory_msg.header.stamp = rospy.Time.now()
         trajectory_msg.header.frame_id = '/base_link'
@@ -41,6 +41,9 @@ class PandaTrajectoryControl():
         self.get_trajectory_publisher()
         # sending initial msg
 
+    def get_desired_positions(self):
+        # gets the desired positions to move the panda.
+        np.loadtxt()
     def get_trajectory_publisher(self):
         topic_string = '/panda_arm_controller/command' if self.is_sim else '/joint_trajectory_controller/command'
         self.trajectory_pub = rospy.Publisher(topic_string, 
@@ -63,6 +66,8 @@ class PandaTrajectoryControl():
         while not rospy.is_shutdown():
             # Increment the Dof we are actuating here
             # Check if we have actuated every DoF, to end this script
+
+            # go through every pose
             print(joint_int)
             if joint_int == 7:
                 self.calibration_pub.publish(True)
@@ -87,8 +92,11 @@ class PandaTrajectoryControl():
 if __name__ == '__main__':
     arg = sys.argv[1]
     is_simulation = True if arg == 'true' else False
+    rospack = rospkg.RosPack()
+    ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
+    desired_positions_path = os.path.join(ros_robotic_skin_path, 'data', 'positions.txt')
     try:
-        panda_control = PandaTrajectoryControl(is_simulation)
+        panda_control = PandaTrajectoryControl(desired_positions_path, is_simulation)
         panda_control.send_once()
         panda_control.spin()
     except rospy.ROSInterruptException:
