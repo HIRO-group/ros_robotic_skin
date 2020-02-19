@@ -9,7 +9,7 @@ import rospkg
 import os
 import numpy as np
 
-from scripts.PandaController import PandaController
+from PandaController import PandaController
 
 class ActivityPandaController():
     def __init__(self, controller, desired_positions_path, is_sim=True):
