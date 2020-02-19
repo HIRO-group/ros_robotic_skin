@@ -131,4 +131,4 @@ if __name__ == "__main__":
         cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim, filename=filename)
         rospy.spin()
     except rospy.ROSInterruptException:
-        print('Exciting Sawyer control process...')
+        print('Exiting Sawyer control process...')

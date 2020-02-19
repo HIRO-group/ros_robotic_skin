@@ -115,4 +115,4 @@ if __name__ == '__main__':
         # panda_control.send_once()
         # panda_control.spin()
     except rospy.ROSInterruptException:
-        print('Exciting Franka Panda control process...')
+        print('Exiting Franka Panda control process...')
