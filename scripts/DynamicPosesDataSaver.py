@@ -104,7 +104,8 @@ class DynamicPoseData():
         for pose_name in self.pose_names:
             for joint_name in self.joint_names:
                 for imu_name in self.imu_names:
-                    idx = np.argmax(np.linalg.norm(self.data[pose_name][joint_name][imu_name][:,:3], axis=1))
+                    norm = np.linalg.norm(self.data[pose_name][joint_name][imu_name][:,:3], axis=1)
+                    idx = np.argmax(norm, axis=1)
                     data[pose_name][joint_name][imu_name] = \
                         self.data[pose_name][joint_name][imu_name][idx, :]
 
@@ -201,7 +202,7 @@ class DynamicPoseDataSaver():
                 self.ready = True
                 while True:
                     # Oscillated Pos, Vel, Acc
-                    position = A/(2*pi*freq)*math.cos(2 * pi * freq * t)
+                    position = A/(2*pi*freq)*(1-math.cos(2 * pi * freq * t))
                     velocity = A*math.sin(2 * pi * freq * t)
                     acceleration = 2*pi*freq*A*math.cos(2 * pi * freq * t)
 
@@ -221,7 +222,6 @@ class DynamicPoseDataSaver():
         Save data to a pickle file.
         """
         self.data_storage.save()
-        print(self.data_storage.data)
 
 if __name__ == "__main__":
     # Poses Configuration
