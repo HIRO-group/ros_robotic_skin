@@ -73,11 +73,12 @@ The activity matrix generation currently needs to be done for three separate fil
 ```sh
 
 source devel/setup.bash
-roslaunch activity_matrix.launch is_sim:=<sim_bool>
+roslaunch activity_matrix.launch is_sim:=<sim_bool> filename:=<txt_filename>
 
 ```
 
-Where `sim_bool` should be `true` is you are running the Panda in simulation, and `sim_bool` should be `false` if you are running the Panda in real life. These series of commands will run the Panda through a variety of poses and generate the necessary activity matrix.
+Where `sim_bool` should be `true` is you are running the Panda in simulation, and `sim_bool` should be `false` if you are running the Panda in real life. These series of commands will run the Panda through a variety of poses and generate the necessary activity matrix. The activity matrix will be saved in the `data` folder of this package, under `txt_filename`. By default,
+`txt_filename` is `positions.txt`.
 
 
 # Setting

@@ -15,7 +15,7 @@ from sensor_msgs.msg import Imu
 from SawyerController import SawyerController
 from PandaController import PandaController
 
-from utils import get_poses_list_file
+import utils
 
 RAD2DEG = 180.0/np.pi
 
@@ -192,8 +192,10 @@ if __name__ == "__main__":
         raise ValueError("Must be either panda or sawyer")
     
     if len(sys.argv > 2):
-
-        poses_list = get_poses_list_file(sys.argv[2])
+        try:
+            poses_list = utils.get_poses_list_file(sys.argv[2])
+        except:
+            raise Exception("Could not initiate poses_lists from file!")
     else:
     # Poses Configuration
         poses_list = [
@@ -217,7 +219,6 @@ if __name__ == "__main__":
             [[4.63, -0.70, 3.14, 3.41, 3.55, 0.69, 6.10], [], 'Pose_19'],
             [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
         ]    
-
     
 
     filepath = 'data/static_data'
