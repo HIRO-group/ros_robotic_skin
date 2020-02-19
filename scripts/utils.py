@@ -16,7 +16,7 @@ def get_poses_list_file(filename):
     ----------
     returns: `poses_list`: `list` Consists of a list of `p` entries
     for each pose, where each of these entries contains a list of
-    `j` joint positions, an empty lits, and a list that with one entry 
+    `j` joint positions, an empty lits, and a string
     that consists of `Pose_{p+1}`, where p is the pose number.
     """
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
@@ -24,5 +24,9 @@ def get_poses_list_file(filename):
     poses_mat = np.loadtxt(os.path.join(ros_robotic_skin_path, 'data', filename))
     poses_list = []
     for idx,pose in enumerate(poses_mat):
-        poses_list.append([list(pose), [], ['Pose_{}'.format(idx+1)]])
+        poses_list.append([list(pose), [], 'Pose_{}'.format(idx+1)])
+    print(poses_list)
     return poses_list
+
+
+get_poses_list_file("positions.txt")
