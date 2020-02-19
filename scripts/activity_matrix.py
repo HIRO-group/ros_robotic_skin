@@ -58,6 +58,10 @@ if __name__ == '__main__':
     # get the path to the ros_robotic_skin package
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
-    activity_matrix = ActivityMatrix(ros_robotic_skin_path)
-    activity_matrix.spin()
+    try:
+
+        activity_matrix = ActivityMatrix(ros_robotic_skin_path)
+        activity_matrix.spin()
+    except rospy.ROSInterruptException:
+        print('Exiting Panda control process...')
     

@@ -15,7 +15,7 @@ from sensor_msgs.msg import JointState
 
 class CapturePose():
 
-    def __init__(self, save_path, joints=7, is_sim=False):
+    def __init__(self, save_path, joints=7, is_sim=False, filename="positions.txt"):
         """
         Creates a CapturePose object. 
 
@@ -57,7 +57,7 @@ class CapturePose():
             if e.errno == errno.EEXIST:
                 print('Data folder already exists!')
 
-        self.save_path = os.path.join(self.save_dir, 'positions.txt')
+        self.save_path = os.path.join(self.save_dir, filename)
         self.pose_num = 0
         # get the total number of poses
 
@@ -125,5 +125,10 @@ if __name__ == "__main__":
     arg = sys.argv[1]
     is_sim = True if arg == 'true' else False
 
-    cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim)
-    rospy.spin()
+    filename = sys.argv[2]
+
+    try:
+        cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim, filename=filename)
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        print('Exciting Sawyer control process...')

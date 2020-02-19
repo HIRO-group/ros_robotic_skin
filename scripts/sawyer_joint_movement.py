@@ -59,4 +59,4 @@ if __name__ == '__main__':
         #sawer_control.spin()
         sawer_control.set_random_pose()
     except rospy.ROSInterruptException:
-        print('Exciting Sawyer control process...')
+        print('Exiting Sawyer control process...')
