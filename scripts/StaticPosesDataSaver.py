@@ -95,7 +95,7 @@ class StaticPoseData():
         Save both the original collected data and the averaged data
         """
         # save original
-        #self._save(self.data)
+        self._save(self.data)
 
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
@@ -106,11 +106,12 @@ class StaticPoseData():
                 s = np.std(d, axis=0)
                 data[pose_name][imu_name] = m
 
-                #print('Mean: %.4f %.4f %.4f'%(m[0], m[1], m[2]))
+                if imu_name == 'imu_link0':
+                    print('Mean: %.4f %.4f %.4f'%(m[0], m[1], m[2]))
                 #print('[%s, %s] Std:  %.4f %.4f %.4f'%(pose_name, imu_name, s[0], s[1], s[2]))
 
         # save mean acceleration data
-        #self._save(data, "_mean")
+        self._save(data, "_mean")
 
 class StaticPoseDataSaver():
     """
