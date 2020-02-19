@@ -225,6 +225,8 @@ class DynamicPoseDataSaver():
 
 if __name__ == "__main__":
     # Poses Configuration
+
+    # get poses from file?
     poses_list = [
         [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_1'],
         [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_2'],

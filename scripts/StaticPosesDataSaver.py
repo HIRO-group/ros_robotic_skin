@@ -179,6 +179,8 @@ class StaticPoseDataSaver():
         self.data_storage.save()
 
 if __name__ == "__main__":
+
+    # get poses from file?
     # Poses Configuration
     poses_list = [
         [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_1'],
