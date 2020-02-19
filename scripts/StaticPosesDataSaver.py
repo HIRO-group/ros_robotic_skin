@@ -17,6 +17,10 @@ from PandaController import PandaController
 
 RAD2DEG = 180.0/np.pi
 
+def reject_outliers(data, m=1):
+    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
+    return data[is_in_std, :]
+
 class StaticPoseData():
     """
     Class to store static poses into a nested dictionary.
@@ -91,17 +95,22 @@ class StaticPoseData():
         Save both the original collected data and the averaged data
         """
         # save original
-        self._save(self.data)
+        #self._save(self.data)
 
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
-                mean_acceleration = np.mean(self.data[pose_name][imu_name], axis=0)
-                data[pose_name][imu_name] = mean_acceleration
+                d = reject_outliers(self.data[pose_name][imu_name])
+                m = np.mean(d, axis=0)
+                s = np.std(d, axis=0)
+                data[pose_name][imu_name] = m
+
+                #print('Mean: %.4f %.4f %.4f'%(m[0], m[1], m[2]))
+                #print('[%s, %s] Std:  %.4f %.4f %.4f'%(pose_name, imu_name, s[0], s[1], s[2]))
 
         # save mean acceleration data
-        self._save(data, "_mean")
+        #self._save(data, "_mean")
 
 class StaticPoseDataSaver():
     """
@@ -155,7 +164,7 @@ class StaticPoseDataSaver():
                 data.header.frame_id,           # for each imu  
                 np.array([accel.x, accel.y, accel.z]))
 
-    def set_poses(self, time=2.0):
+    def set_poses(self, time=3.0):
         """
         Move to the defined poses and collect the IMU data
         for a given amount of time.
@@ -168,6 +177,7 @@ class StaticPoseDataSaver():
             self.controller.publish_positions(positions, 0.1)
             print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
+            rospy.sleep(0.5)
             self.ready = True
             rospy.sleep(time)
             self.ready = False
