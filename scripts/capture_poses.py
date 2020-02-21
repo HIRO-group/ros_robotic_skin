@@ -15,7 +15,8 @@ from sensor_msgs.msg import JointState
 
 class CapturePose():
 
-    def __init__(self, save_path, joints=7, is_sim=False, filename="positions.txt"):
+    def __init__(self, save_path, joints=7, is_sim=False, robot_type="panda", 
+                    filename="positions.txt"):
         """
         Creates a CapturePose object. 
 
@@ -30,6 +31,12 @@ class CapturePose():
         `is_sim`: `bool`
             If we are in simulation or real life
 
+        `robot_type`: `str`
+            The robot type, either `"panda"` or `"sawyer"`
+
+        `filename`: `str`
+            The filename to save the captured poses to
+
         Returns
         ----------
         returns: None
@@ -42,7 +49,10 @@ class CapturePose():
         rospy.init_node("capture_poses", anonymous=True)
         rospy.Subscriber("/is_in_captured_pose", Bool, self.get_is_captured_callback)
         rospy.Subscriber("/zero_g_pose_num", Int16, self.get_pose_num_callback)
-        
+        # topic string is based on simulation and panda type
+        if robot_type == 'sawyer':
+            # work with intera interface!
+            pass
         topic_string = "/joint_states" if is_sim else "/franka_state_controller/joint_states" 
         rospy.Subscriber(topic_string, JointState, self.capture_pose_callback)
         self.total_num_poses = rospy.get_param("/zero_g_poses", default=11)
@@ -121,14 +131,21 @@ if __name__ == "__main__":
 
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
+    if len(sys.argv > 4):
+        raise Exception('Too many arguments provided!')
 
     arg = sys.argv[1]
     is_sim = True if arg == 'true' else False
 
-    filename = sys.argv[2]
+    robot_type = sys.argv[2]
+    filename = sys.argv[3]
+
+    if robot_type == 'sawyer' and is_sim == False:
+        raise Exception('There is currently not yet support for real Sawyer.')
 
     try:
-        cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim, filename=filename)
+        cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim, 
+                            robot_type=robot_type, filename=filename)
         rospy.spin()
     except rospy.ROSInterruptException:
         print('Exiting Sawyer control process...')

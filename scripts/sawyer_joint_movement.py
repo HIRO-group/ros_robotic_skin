@@ -14,6 +14,7 @@ class SawyerJointControl():
         self._init_state = self._rs.state().enabled
         print("Enabling robot... ")
         self._rs.enable()
+        print(self._limb.joint_angles())
 
         self.velocities = {name: 0.0 for name in self._limb.joint_names()}
         self.positions = {name: -0.2*i for i, name in enumerate(self._limb.joint_names())}
