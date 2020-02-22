@@ -31,8 +31,13 @@ void filterStationary(
 }
 
 void msgCallback(const sensor_msgs::Imu::ConstPtr& msg){
+    double q0, q1, q2, q3;
+//    filterStationary((float)msg->linear_acceleration.x, (float)msg->linear_acceleration.y, (float)msg->linear_acceleration.z,
+//                     (float)msg->angular_velocity.x, (float)msg->angular_velocity.y, (float)msg->angular_velocity.z,
+//                     q0, q1, q2, q3); // Not working, need to figure out
     std::cout << "IMU2 Data: X: " << msg->linear_acceleration.x << " Y: " << msg->linear_acceleration.y << " Z: "
         << msg->linear_acceleration.z << std::endl;
+
 
 }
 
