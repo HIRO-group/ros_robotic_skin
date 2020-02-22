@@ -32,7 +32,7 @@ void filterStationary(
 
 void msgCallback(const sensor_msgs::Imu::ConstPtr& msg){
     std::cout << "IMU2 Data: X: " << msg->linear_acceleration.x << " Y: " << msg->linear_acceleration.y << " Z: "
-        << msg->linear_acceleration.z;
+        << msg->linear_acceleration.z << std::endl;
 
 }
 

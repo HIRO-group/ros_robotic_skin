@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(PoseEstimation)
-
+find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs)
 set(CMAKE_CXX_STANDARD 14)
+include_directories(/opt/ros/melodic/include)
 add_executable(PoseEstimation main.cpp)
-target_include_directories(PoseEstimation PUBLIC /opt/ros/melodic/include)
+target_link_libraries(PoseEstimation ${catkin_LIBRARIES})
