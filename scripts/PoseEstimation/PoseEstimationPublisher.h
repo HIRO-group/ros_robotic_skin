@@ -1,7 +1,3 @@
-//
-// Created by hiro on 2/22/20.
-//
-
 #ifndef POSEESTIMATION_POSEESTIMATIONPUBLISHER_H
 #define POSEESTIMATION_POSEESTIMATIONPUBLISHER_H
 #include "ros/ros.h"
@@ -11,8 +7,12 @@
 #include "geometry_msgs/Quaternion.h"
 
 class PosePublisher {
+    // This class is made so that everything required can be encapsulated in one class
 public:
+    /*Why pointer to a node handle? Because you initialize it in the main function only
+     * and next pass on to other functions to use it*/
     static ros::NodeHandle* nh;
+    /*Below are static ROS Publishers*/
     static ros::Publisher imu0_pose;
     static ros::Publisher imu1_pose;
     static ros::Publisher imu2_pose;
