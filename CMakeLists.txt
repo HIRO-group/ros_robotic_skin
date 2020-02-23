@@ -163,9 +163,9 @@ include_directories(
 #############
 
 
-install(DIRECTORY robot
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+#install(DIRECTORY robot
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#)
 
 
 # all install targets should use catkin DESTINATION variables

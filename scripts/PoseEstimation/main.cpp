@@ -1,4 +1,3 @@
-#include <cmath>
 #include "PoseEstimationPublisher.h"
 
 ros::NodeHandle* PosePublisher::nh;

@@ -2,7 +2,10 @@
 #include <imu_filter_madgwick/imu_filter.h>
 #define FILTER_ITERATIONS 10000
 
-
+/*
+ * The below part filterStationary is directly copied from imu_filter_madgwick example file:
+ * https://github.com/ccny-ros-pkg/imu_tools/blob/indigo/imu_filter_madgwick/test/madgwick_test.cpp
+ * */
 template <WorldFrame::WorldFrame FRAME>
 void filterStationary(
         float Ax, float Ay, float Az,
@@ -50,11 +53,13 @@ void filterStationary(float Ax, float Ay, float Az,
 
 
 void PosePublisher::init() {
+    // Here just starting the function which will initialize the callback from different IMU placed on Franka
     get_imu_data();
 
 }
 
 void PosePublisher::get_imu_data() {
+    // Loop through IMU numbers and subscribe to them with static class function imu_callback
     std::vector<int> imu_numbers {1, 2, 3, 4, 5, 6, 7};
     for(int i: imu_numbers){
         ros::Subscriber cam_sub = nh->subscribe("/imu_data"+std::to_string(i),100, imu_callback);
@@ -64,10 +69,11 @@ void PosePublisher::get_imu_data() {
 
 void PosePublisher::imu_callback(const sensor_msgs::Imu::ConstPtr &msg) {
     double q0, q1, q2, q3;
-    filterStationary<WorldFrame::ENU>((float)msg->linear_acceleration.x, (float)msg->linear_acceleration.y, (float)msg->linear_acceleration.z,
+    filterStationary<WorldFrame::NED>((float)msg->linear_acceleration.x, (float)msg->linear_acceleration.y, (float)msg->linear_acceleration.z,
+                                      (float)msg->angular_velocity.x, (float)msg->angular_velocity.y, (float)msg->angular_velocity.z,
                                       q0, q1, q2, q3);
     geometry_msgs::Quaternion calculated_quaternion;
-    /*Why am I considering like that?:
+    /*Why considering like that?:
      * Proof: https://github.com/ccny-ros-pkg/imu_tools/blob/indigo/imu_filter_madgwick/src/imu_filter_ros.cpp#L297
      * */
     calculated_quaternion.x = q1;
@@ -81,6 +87,8 @@ void PosePublisher::imu_callback(const sensor_msgs::Imu::ConstPtr &msg) {
      * Hence the reason of hardcoding
      *
      * 2) This will make it fast rather than initializing again and again
+     *
+     * 3) Using if-else if will make it easier to read rather than switch
      * */
     if(msg->header.frame_id == "imu_data0"){
         imu0_pose.publish(calculated_quaternion);
