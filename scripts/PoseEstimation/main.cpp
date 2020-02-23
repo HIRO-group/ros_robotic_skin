@@ -12,6 +12,7 @@ ros::Publisher PosePublisher::imu6_pose;
 ros::Publisher PosePublisher::imu7_pose;
 int main(int argc, char** argv) {
     ros::init(argc,argv,"IMU_Pose_Estimator");
+    // Declaring the ROS Handle in main and passing the pointer to it around to other classes to use it
     ros::NodeHandle nhp;
     PosePublisher::nh = &nhp;
     PosePublisher::imu0_pose = PosePublisher::nh->advertise<geometry_msgs::Quaternion>("imu0_pose", 100);
