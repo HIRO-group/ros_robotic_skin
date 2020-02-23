@@ -151,7 +151,7 @@ class DynamicPoseDataSaver():
         # constant
         # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
-        self.joint_names = self.controller._limb.joint_names()
+        self.joint_names = self.controller.joint_names
         self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
         self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
@@ -178,7 +178,7 @@ class DynamicPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
-            joint_angle = self.controller._limb.joint_angle(self.curr_joint_name)
+            joint_angle = self.controller.joint_angle(self.curr_joint_name)
 
             # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
             #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
@@ -194,7 +194,7 @@ class DynamicPoseDataSaver():
         This will move the joint of the robot arm like a sine wave
         for all joints for all defined poses. 
         """
-        self.controller._limb.set_joint_position_speed(speed=1.0)
+        self.controller.set_joint_position_speed(speed=1.0)
 
         dt = 1/rospy.get_param('/dynamic_frequency')
         freq = rospy.get_param('/oscillation_frequency')
