@@ -116,13 +116,13 @@ class DynamicPoseData():
                 for imu_name in self.imu_names:
                     accel_z = self.data[pose_name][joint_name][imu_name][:, 2]
                     accel_z, outliers_index = hampel_filter_forloop(accel_z, 10, 3)
-                    idx = np.argmax(np.abs(accel_z))
-                    d = self.data[pose_name][joint_name][imu_name][idx, :]
+                    #idx = np.argmax(np.abs(accel_z))
+                    index = np.argwhere(np.abs(accel_z) == np.max(np.abs(accel_z))).flatten()
                     data[pose_name][joint_name][imu_name] = \
-                        self.data[pose_name][joint_name][imu_name][idx, :]
+                        np.mean(self.data[pose_name][joint_name][imu_name][index, :], axis=0)
 
                     if verbose:
-                        d = self.data[pose_name][joint_name][imu_name][idx, :]
+                        d = np.mean(self.data[pose_name][joint_name][imu_name][index, :], axis=0)
                         rospy.loginfo('[%s, %s, %s] (%.3f, %.3f, %.3f)'%(pose_name, joint_name, imu_name, d[0], d[1], d[2]))
 
         # save max acceleration data
@@ -246,7 +246,7 @@ class DynamicPoseDataSaver():
 if __name__ == "__main__":
     # Poses Configuration
     poses_list = [
-        [[0, 0, 0, 0, 0, 0, 0], [], 'Pose_1'],
+        [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 'Pose_1'],
         [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_2'],
         [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_3'],
         [[-0.75, -1.60, 1.56, 4.43, 1.54, 4.59, 6.61], [], 'Pose_4'],
@@ -267,9 +267,6 @@ if __name__ == "__main__":
         [[4.63, -0.70, 3.14, 3.41, 3.55, 0.69, 6.10], [], 'Pose_19'],
         [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
     ]    
-    """
-    ]
-    """
 
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     arg = sys.argv[1]
