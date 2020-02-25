@@ -13,7 +13,6 @@ from sensor_msgs.msg import JointState
 
 import intera_interface
 
-
 # a class to capture key poses of the panda 
 
 class CapturePose():

@@ -7,11 +7,23 @@
   <!-- if robot_type is sawyer, and is_sim is false, this will cause an error later. -->
   <arg name="robot_type" default="panda" />
 
-
   <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
   <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
+  <group if="$(arg is_sim)">
+    <!-- if simulation is desired -->
+    <group if="$(eval arg('robot_type') == 'panda')">
+        <include file="$(find ros_robotic_skin)/launch/simulation.launch" />
+    </group>
+    <group unless="$(eval arg('robot_type') == 'panda')">
+        <!-- launch sawyer instead, if robot_type is not panda -->
+        <include file="$(find ros_robotic_skin)/launch/sawyer_world.launch" />
+    </group>
+
+  <group/>
+
   <group unless="$(arg is_sim)">
+    <!-- if simulation is not desired, resort to real life panda -->
     <arg name="robot_ip" />
     <arg name="load_gripper" default="true" />
 
