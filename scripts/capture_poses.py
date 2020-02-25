@@ -11,6 +11,9 @@ import errno
 from std_msgs.msg import Bool, Int16
 from sensor_msgs.msg import JointState
 
+import intera_interface
+
+
 # a class to capture key poses of the panda 
 
 class CapturePose():
@@ -52,7 +55,7 @@ class CapturePose():
         # topic string is based on simulation and panda type
         if robot_type == 'sawyer':
             # work with intera interface!
-            pass
+            self._limb = intera_interface.Limb("right")
         topic_string = "/joint_states" if is_sim else "/franka_state_controller/joint_states" 
         rospy.Subscriber(topic_string, JointState, self.capture_pose_callback)
         self.total_num_poses = rospy.get_param("/zero_g_poses", default=11)
