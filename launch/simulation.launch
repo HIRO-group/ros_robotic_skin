@@ -49,13 +49,13 @@
     <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
 
     <!-- launch robot control node for moveit motion planning -->
-    <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/>
+    <!-- <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/> -->
 
     <!--    Add Params YAML File-->
     <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
     <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
-    <node name="PoseEstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" />
+    <!-- <node name="PoseEstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" /> -->
 
 </launch>
