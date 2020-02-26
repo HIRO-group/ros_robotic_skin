@@ -59,7 +59,6 @@ if __name__ == '__main__':
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
     try:
-
         activity_matrix = ActivityMatrix(ros_robotic_skin_path)
         activity_matrix.spin()
     except rospy.ROSInterruptException:
