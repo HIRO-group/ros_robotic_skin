@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import argparse
 import sys
 import rospy
@@ -10,8 +11,9 @@ import os
 import numpy as np
 
 from PandaController import PandaController
+from SawyerController import SawyerController
 
-class ActivityPandaController():
+class ActivityMatrixController():
     def __init__(self, controller, desired_positions_path, is_sim=True):
         """
         Panda Trajectory control class for sending 
@@ -30,9 +32,9 @@ class ActivityPandaController():
 
         self.joint_dof_pub = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
         self.calibration_pub = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
-        rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
+        # rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
         self.pos_mat = np.loadtxt(desired_positions_path)
-
+        print(self.pos_mat)
 
         # trajectory_msg = JointTrajectory()
         # trajectory_msg.header.stamp = rospy.Time.now()
@@ -100,17 +102,24 @@ class ActivityPandaController():
         
 
 if __name__ == '__main__':
+    if len(sys.argv ) > 6:
+        raise Exception('Too many arguments provided!')
     arg = sys.argv[1]
     filename = sys.argv[2]
+    robot_type = sys.argv[3]
     is_simulation = True if arg == 'true' else False
+
+    if robot_type == 'sawyer' and is_simulation == False:
+        raise Exception('Real Sawyer support is currently not supported.')
+
+    controller = PandaController(is_sim=is_simulation) if robot_type == 'panda' else SawyerController()
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
     desired_positions_path = os.path.join(ros_robotic_skin_path, 'data', filename)
     try:
-        panda_controller = PandaController(is_sim=is_simulation)
-        activity_panda_control = ActivityPandaController(panda_controller, desired_positions_path,
+        activity_matrix_control = ActivityMatrixController(controller, desired_positions_path,
                                 is_sim=is_simulation)
-        activity_panda_control.spin()
+        # activity_matrix_control.spin()
         # panda_control = PandaTrajectoryControl(desired_positions_path, is_simulation)
         # panda_control.send_once()
         # panda_control.spin()
