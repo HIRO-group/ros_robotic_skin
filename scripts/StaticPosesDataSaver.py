@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, sys
-from collections import defaultdict
+from collections import OrderedDict 
 import copy
 import datetime
 import math
@@ -48,11 +48,11 @@ class StaticPoseData():
         self.pose_names = pose_names
         self.imu_names = imu_names
         self.filepath = filepath
-        self.data = defaultdict(list)
+        self.data = OrderedDict()
 
         # Create nested dictionary to store data
         for pose_name in pose_names:
-            self.data[pose_name] = defaultdict(list)
+            self.data[pose_name] = OrderedDict()
             for imu_name in imu_names:
                 self.data[pose_name][imu_name] = np.empty((0, 3), float) 
 
@@ -91,14 +91,11 @@ class StaticPoseData():
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
 
-    def save(self):
+    def save(self, verbose=False):
         """
         TODO: Stop saving the original collected data since we do not need them
         Save both the original collected data and the averaged data
         """
-        # save original
-        #self._save(self.data)
-
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
@@ -108,11 +105,11 @@ class StaticPoseData():
                 s = np.std(d, axis=0)
                 data[pose_name][imu_name] = m
 
-                #print('Mean: %.4f %.4f %.4f'%(m[0], m[1], m[2]))
-                #print('[%s, %s] Std:  %.4f %.4f %.4f'%(pose_name, imu_name, s[0], s[1], s[2]))
+                if verbose:
+                    rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)'%(pose_name, imu_name, m[0], m[1], m[2]))
 
         # save mean acceleration data
-        #self._save(data, "_mean")
+        self._save(data, "_mean")
 
 class StaticPoseDataSaver():
     """
@@ -184,14 +181,13 @@ class StaticPoseDataSaver():
             rospy.sleep(time)
             self.ready = False
 
-    def save(self):
+    def save(self, verbose=False):
         """
         Save data to a pickle file.
         """
-        self.data_storage.save()
+        self.data_storage.save(verbose=verbose)
 
 if __name__ == "__main__":
-
     # get poses from file?
     arg = sys.argv[1]
     if arg == 'panda':
@@ -207,22 +203,23 @@ if __name__ == "__main__":
         except:
             raise Exception("Could not initiate poses_lists from file!")
     else:
-    # Poses Configuration
-        poses_list = [
-            [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_1'],
-            [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_2'],
-            [[-0.75, -1.60, 1.56, 4.43, 1.54, 4.59, 6.61], [], 'Pose_3'],
-            [[-0.61, -0.54, 3.76, 3.91, 5.05, 0.92, 6.88], [], 'Pose_4'],
-            [[-1.39, -0.87, 4.01, 3.75, 5.56, 2.98, 4.88], [], 'Pose_5'],
-            [[1.51, -2.47, 3.20, 1.29, 0.24, 4.91, 8.21], [], 'Pose_6'],
-            [[0.25, -0.18, 5.13, 5.43, 2.78, 3.86, 6.72], [], 'Pose_7'],
-            [[0.76, -1.96, 2.24, 1.54, 4.19, 5.22, 7.46], [], 'Pose_8'],
-            [[0.03, -1.09, 2.63, 0.33, 3.87, 0.88, 2.92], [], 'Pose_9'],
-            [[0.72, -1.00, 6.09, 2.61, 1.10, 4.13, 3.06], [], 'Pose_10'],
-            [[1.69, -2.72, 0.14, 1.08, 2.14, 0.08, 9.13], [], 'Pose_11'],
-            [[0.81, -1.89, 3.26, 1.42, 5.64, 0.14, 8.34], [], 'Pose_12'],
-            [[-0.90, -3.10, 3.24, 0.16, 4.81, 4.94, 4.35], [], 'Pose_13'],
-            [[1.36, -1.89, 2.73, 1.20, 3.08, 3.29, 3.88], [], 'Pose_14'],
+        # Poses Configuration
+        poses_list = [        
+            [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 'Pose_1'],
+            [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_2'],
+            [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_3'],
+            [[-0.75, -1.60, 1.56, 4.43, 1.54, 4.59, 6.61], [], 'Pose_4'],
+            [[-0.61, -0.54, 3.76, 3.91, 5.05, 0.92, 6.88], [], 'Pose_5'],
+            [[-1.39, -0.87, 4.01, 3.75, 5.56, 2.98, 4.88], [], 'Pose_6'],
+            [[1.51, -2.47, 3.20, 1.29, 0.24, 4.91, 8.21], [], 'Pose_7'],
+            [[0.25, -0.18, 5.13, 5.43, 2.78, 3.86, 6.72], [], 'Pose_8'],
+            [[0.76, -1.96, 2.24, 1.54, 4.19, 5.22, 7.46], [], 'Pose_9'],
+            [[0.03, -1.09, 2.63, 0.33, 3.87, 0.88, 2.92], [], 'Pose_10'],
+            [[0.72, -1.00, 6.09, 2.61, 1.10, 4.13, 3.06], [], 'Pose_11'],
+            [[1.69, -2.72, 0.14, 1.08, 2.14, 0.08, 9.13], [], 'Pose_12'],
+            [[0.81, -1.89, 3.26, 1.42, 5.64, 0.14, 8.34], [], 'Pose_13'],
+            [[-0.90, -3.10, 3.24, 0.16, 4.81, 4.94, 4.35], [], 'Pose_14'],
+            [[1.36, -1.89, 2.73, 1.20, 3.08, 3.29, 3.88], [], 'Pose_15'],
             [[-0.36, -2.19, 3.91, 0.04, 2.15, 3.19, 5.18], [], 'Pose_16'],
             [[5.25, -0.55, 0.98, 4.15, 5.65, 3.65, 9.27], [], 'Pose_17'],
             [[2.52, -2.54, 2.07, 0.55, 3.26, 2.31, 4.72], [], 'Pose_18'],
@@ -234,4 +231,4 @@ if __name__ == "__main__":
     filepath = 'data/static_data'
     sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
-    sd.save()
+    sd.save(verbose=True)

@@ -22,6 +22,7 @@ from math import pi
 import numpy as np
 
 from std_msgs.msg import Int16, Bool
+from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
@@ -48,6 +49,7 @@ class PandaController(object):
         self.point = JointTrajectoryPoint()
         self.point.positions = [0, 0, 0, 0, 0, 0, 0]
         self.point.velocities = [0, 0, 0, 0, 0, 0, 0]
+        self.point.accelerations = [0, 0, 0, 0, 0, 0, 0]
         self.point.time_from_start.secs = 1
         self.msg.points = [self.point]
         # TODO: Look up do we need to have one message to init the robot?
@@ -65,6 +67,37 @@ class PandaController(object):
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_name = ''
+
+        rospy.Subscriber('/joint_states', JointState, self.joint_state_callback)
+        self.joint_states = JointState()
+
+    @property
+    def joint_names(self):
+        return self.msg.joint_names
+
+    @property
+    def joint_angles(self):
+        index = [self.joint_states.name.index(joint_name) for joint_name in self.joint_names]
+        return [self.joint_states.position[idx] for idx in index]
+    
+    @property
+    def joint_velocities(self):
+        index = [self.joint_states.name.index(joint_name) for joint_name in self.joint_names]
+        return [self.joint_states.velocity[idx] for idx in index]
+
+    def joint_state_callback(self, joint_states):
+        self.joint_states = joint_states
+
+    def joint_angle(self, joint_name):
+        idx = self.joint_states.name.index(joint_name)
+        return self.joint_states.position[idx]
+    
+    def joint_velocity(self, joint_name):
+        idx = self.joint_states.name.index(joint_name)
+        return self.joint_states.velocity[idx]
+
+    def set_joint_position_speed(self, speed=1.0):
+        rospy.logerr('Set Joint Position Speed Not Implemented for Panda')
 
     # General Utilities
     def get_trajectory_publisher(self, is_sim):
