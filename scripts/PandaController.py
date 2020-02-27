@@ -104,6 +104,12 @@ class PandaController(object):
         topic_string = '/panda_arm_controller/command' if is_sim else '/joint_trajectory_controller/command'
         return rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
 
+    def send_once(self):
+        self.trajectory_pub.publish(self.msg)
+        rospy.sleep(1)
+        self.trajectory_pub.publish(self.msg)
+        rospy.sleep(1)
+
     def publish_positions(self, positions, sleep):
         """
         Set joint positions of the panda 

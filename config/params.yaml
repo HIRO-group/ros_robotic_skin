@@ -1,6 +1,7 @@
 ---
   # These constants are in use in PandaPose.py File, to set global sleep time and frequency
   static_sleep_time: 2
+  zero_g_poses: 20
   dynamic_frequency: 100.0
   gravity_constant: 9.81
   oscillation_magnitude: 2.0
