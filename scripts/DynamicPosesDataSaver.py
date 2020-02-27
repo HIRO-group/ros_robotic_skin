@@ -12,6 +12,7 @@ import rospy
 import rospkg
 from sensor_msgs.msg import Imu
 
+import utils
 from SawyerController import SawyerController
 from PandaController import PandaController
 import utils
@@ -69,7 +70,7 @@ class DynamicPoseData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 4), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 11), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -90,44 +91,44 @@ class DynamicPoseData():
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
     
-    def _save(self, data, suffix=None):
+    def clean_data(self, verbose=False):
         """
-        Save data as a pickle file
-        data: 
-            Nested Dictionary
-        suffix: str
-            suffix to add to the filename
-        """
-        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-        filepath = self.filepath if suffix is None else self.filepath + suffix 
-        filepath = os.path.join(ros_robotic_skin_path, filepath+'.pickle')
-        
-        with open(filepath, 'wb') as f:
-            pickle.dump(data, f)
-
-    def save(self, verbose=False):
-        """
-        TODO: Stop saving the original collected data since we do not need them
-        Save both the original collected data and the maxed data
+        verbose: bool
         """
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for joint_name in self.joint_names:
                 for imu_name in self.imu_names:
-                    accel_z = self.data[pose_name][joint_name][imu_name][:, 2]
-                    accel_z, outliers_index = hampel_filter_forloop(accel_z, 10, 3)
-                    #idx = np.argmax(np.abs(accel_z))
-                    index = np.argwhere(np.abs(accel_z) == np.max(np.abs(accel_z))).flatten()
+                    norms = np.linalg.norm(self.data[pose_name][joint_name][imu_name][:, :3], axis=1)
+                    norms, outliers_index = hampel_filter_forloop(norms, 10, 2)
+                    idx = np.argmax(norms)
+
+                    # Save maximum angular velocity A of all time
+                    w = self.data[pose_name][joint_name][imu_name][:, 3]
+                    w, outliers_index = hampel_filter_forloop(w, 10, 2)
+                    max_w = np.max(w)
+
                     data[pose_name][joint_name][imu_name] = \
-                        np.mean(self.data[pose_name][joint_name][imu_name][index, :], axis=0)
+                        self.data[pose_name][joint_name][imu_name][idx, :]
+                    data[pose_name][joint_name][imu_name][3] = max_w
 
                     if verbose:
-                        d = np.mean(self.data[pose_name][joint_name][imu_name][index, :], axis=0)
+                        rospy.loginfo(data[pose_name][joint_name][imu_name])
+                        d = data[pose_name][joint_name][imu_name]
                         rospy.loginfo('[%s, %s, %s] (%.3f, %.3f, %.3f)'%(pose_name, joint_name, imu_name, d[0], d[1], d[2]))
+        
+        return data
 
-        # save max acceleration data
-        self._save(data, "_max")
+    def save(self, data):
+        """
+        Save data
+        """
+        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+        filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(data, f)
 
 class DynamicPoseDataSaver():
     """
@@ -157,8 +158,12 @@ class DynamicPoseDataSaver():
         self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
         self.ready = False
+        self.curr_positions = [0, 0, 0, 0, 0, 0, 0]
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
+        self.max_angular_velocity = -np.inf
+
+        rospy.loginfo(self.joint_names)
 
         # data storage 
         self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
@@ -179,16 +184,21 @@ class DynamicPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
-            joint_angle = self.controller.joint_angle(self.curr_joint_name)
+            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
 
-            # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
-            #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
+            if self.curr_joint_name == self.joint_names[0] and data.header.frame_id == 'imu_link0':
+                rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
+
+            curr_A = abs(self.controller.joint_velocity(self.curr_joint_name))
+            if curr_A > self.max_angular_velocity:
+                self.max_angular_velocity = curr_A
+                #rospy.loginfo(self.curr_joint_name + ' ' + data.header.frame_id + ' ' + 'Max Angular Velocity: %.4f'%(curr_A))
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu  
-                np.array([accel.x, accel.y, accel.z, joint_angle]))
+                np.array([accel.x, accel.y, accel.z, self.max_angular_velocity] + joint_angles))
 
     def move_like_sine_dynamic(self):
         """
@@ -197,19 +207,19 @@ class DynamicPoseDataSaver():
         """
         self.controller.set_joint_position_speed(speed=1.0)
 
-        dt = 1/rospy.get_param('/dynamic_frequency')
         freq = rospy.get_param('/oscillation_frequency')
         A = rospy.get_param('/oscillation_magnitude')
-        t = 0.0
 
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]
+            self.curr_positions = positions
             self.curr_pose_name = pose_name
             self.controller.publish_positions(positions, sleep=1)
             print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
 
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
+                self.max_angular_velocity = -np.inf
 
                 # Prepare for publishing a trajectory
                 velocities = np.zeros(len(self.joint_names))
@@ -226,15 +236,16 @@ class DynamicPoseDataSaver():
                     position = A/(2*pi*freq)*(1-math.cos(2 * pi * freq * t))
                     velocity = A*math.sin(2 * pi * freq * t)
                     acceleration = 2*pi*freq*A*math.cos(2 * pi * freq * t)
-
+                    
                     poss[i] = positions[i] + position
                     velocities[i] = velocity
                     accelerations[i] = acceleration
-
+                    
                     self.controller.publish_trajectory(poss, velocities, accelerations, None)
 
                     if t > OSCILLATION_TIME:
                         break
+
                 self.ready = False
                 rospy.sleep(1)
 
@@ -242,15 +253,18 @@ class DynamicPoseDataSaver():
         """
         Save data to a pickle file.
         """
-        self.data_storage.save(verbose)
+        
+        data = self.data_storage.clean_data(verbose)
+        self.data_storage.save(data)
 
 
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
-    arg = sys.argv[1]
-    if arg == 'panda':
+    robot = sys.argv[1]
+    if robot == 'panda':
         controller = PandaController()
-    elif arg == 'sawyer':
+        poses_list = utils.get_poses_list_file('positions.txt')
+    elif robot == 'sawyer':
         controller = SawyerController()
     else:
         raise ValueError("Must be either panda or sawyer")
@@ -284,7 +298,7 @@ if __name__ == "__main__":
             [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
         ]    
     
-    filepath = 'data/dynamic_data'
+    filepath = '_'.join(['data/dynamic_data', robot])
     dd = DynamicPoseDataSaver(controller, poses_list, filepath)
     dd.move_like_sine_dynamic()
-    dd.save(verbose=True)
+    dd.save(verbose=False)
