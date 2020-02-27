@@ -190,8 +190,8 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    arg = sys.argv[1]
-    if arg == 'panda':
+    robot = sys.argv[1]
+    if robot == 'panda':
         controller = PandaController()
         poses_list = utils.get_poses_list_file('positions.txt')
     elif robot == 'sawyer':
