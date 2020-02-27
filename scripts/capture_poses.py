@@ -148,8 +148,6 @@ if __name__ == "__main__":
 
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
-    if len(sys.argv ) > 6:
-        raise Exception('Too many arguments provided!')
 
     arg = sys.argv[1]
     is_sim = True if arg == 'true' else False

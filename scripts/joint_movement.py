@@ -102,8 +102,6 @@ class ActivityMatrixController():
         
 
 if __name__ == '__main__':
-    if len(sys.argv ) > 6:
-        raise Exception('Too many arguments provided!')
     arg = sys.argv[1]
     filename = sys.argv[2]
     robot_type = sys.argv[3]
