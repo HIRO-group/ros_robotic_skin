@@ -12,6 +12,7 @@ import rospy
 import rospkg
 from sensor_msgs.msg import Imu
 
+import utils
 from SawyerController import SawyerController
 from PandaController import PandaController
 
@@ -21,6 +22,10 @@ RAD2DEG = 180.0/np.pi
 
 def reject_outliers(data, m=1):
     is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
+    return data[is_in_std, :]
+
+def reject_outlier(data, m=1):
+    is_in_std = np.absolute(data - np.mean(data)) < m * np.std(data)
     return data[is_in_std, :]
 
 class StaticPoseData():
@@ -54,7 +59,7 @@ class StaticPoseData():
         for pose_name in pose_names:
             self.data[pose_name] = OrderedDict()
             for imu_name in imu_names:
-                self.data[pose_name][imu_name] = np.empty((0, 3), float) 
+                self.data[pose_name][imu_name] = np.empty((0, 10), float) 
 
     def append(self, pose_name, imu_name, data):
         """
@@ -73,43 +78,36 @@ class StaticPoseData():
         """
         self.data[pose_name][imu_name] = \
             np.append(self.data[pose_name][imu_name], np.array([data]), axis=0)
-
-    def _save(self, data, suffix=None):
+    
+    def clean_data(self, verbose=False):
         """
-        Save data as a pickle file
-
-        data: 
-            Nested Dictionary
-
-        suffix: str
-            suffix to add to the filename
-        """
-        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-        filepath = self.filepath if suffix is None else self.filepath+suffix
-        filepath = os.path.join(ros_robotic_skin_path, filepath+'.pickle')
-        
-        with open(filepath, 'wb') as f:
-            pickle.dump(data, f)
-
-    def save(self, verbose=False):
-        """
-        TODO: Stop saving the original collected data since we do not need them
-        Save both the original collected data and the averaged data
+        verbose: bool
         """
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
-                d = reject_outliers(self.data[pose_name][imu_name])
+                d = reject_outliers(self.data[pose_name][imu_name][:, :3])
                 m = np.mean(d, axis=0)
                 s = np.std(d, axis=0)
-                data[pose_name][imu_name] = m
+                joints = reject_outliers(self.data[pose_name][imu_name][:, 3:])
+                j = np.mean(joints, axis=0)
+                data[pose_name][imu_name] = np.r_[m, j]
 
                 if verbose:
                     rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)'%(pose_name, imu_name, m[0], m[1], m[2]))
 
-        # save mean acceleration data
-        self._save(data, "_mean")
+        return data
+
+    def save(self, data):
+        """
+        Save both the original collected data and the averaged data
+        """
+        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+        filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
+        
+        with open(filepath, 'wb') as f:
+            pickle.dump(data, f)
 
 class StaticPoseDataSaver():
     """
@@ -133,6 +131,7 @@ class StaticPoseDataSaver():
         self.poses_list = poses_list
 
         self.pose_names = [pose[2] for pose in poses_list]
+        self.joint_names = self.controller.joint_names
         self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
         self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
         self.curr_pose_name = self.pose_names[0] 
@@ -157,11 +156,12 @@ class StaticPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
+            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 data.header.frame_id,           # for each imu  
-                np.array([accel.x, accel.y, accel.z]))
+                np.array([accel.x, accel.y, accel.z] + joint_angles))
 
     def set_poses(self, time=3.0):
         """
@@ -185,14 +185,16 @@ class StaticPoseDataSaver():
         """
         Save data to a pickle file.
         """
-        self.data_storage.save(verbose=verbose)
+        data = self.data_storage.clean_data(verbose)
+        self.data_storage.save(data)
 
 if __name__ == "__main__":
     # get poses from file?
-    arg = sys.argv[1]
-    if arg == 'panda':
+    robot = sys.argv[1]
+    if robot == 'panda':
         controller = PandaController()
-    elif arg == 'sawyer':
+        poses_list = utils.get_poses_list_file('positions.txt')
+    elif robot == 'sawyer':
         controller = SawyerController()
     else:
         raise ValueError("Must be either panda or sawyer")
@@ -228,7 +230,7 @@ if __name__ == "__main__":
         ]    
     
 
-    filepath = 'data/static_data'
+    filepath = '_'.join(['data/static_data', robot])
     sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
     sd.save(verbose=True)

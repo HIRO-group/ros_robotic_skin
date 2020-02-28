@@ -152,7 +152,29 @@ class PandaController(object):
         for index, _ in enumerate(velocities):
             self.point.velocities[index] = velocities[index]
         
-        self._publish_all_values(sleep)        
+        self._publish_all_values(sleep)
+
+    def publish_accelerations(self, accelerations, sleep):
+        """
+        Set joint velocities of the panda 
+
+        Arguments
+        ----------
+        positions: list
+            Set the joint velocities according to the list that you get
+        sleep: float
+            Set how long it should wait after commanding a command
+        
+        Returns
+        ----------
+        return: None
+        """
+        if len(accelerations) != 7:
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
+        for index, _ in enumerate(accelerations):
+            self.point.accelerations[index] = accelerations[index]
+        
+        self._publish_all_values(sleep)
 
     def publish_trajectory(self, positions, velocities, accelerations, sleep):
         """

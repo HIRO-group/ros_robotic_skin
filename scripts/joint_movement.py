@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import math
 import rospy
 from std_msgs.msg import Bool, Int16
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
