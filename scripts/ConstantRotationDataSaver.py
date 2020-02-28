@@ -107,7 +107,7 @@ class ConstantRotationData():
         
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
-
+    
 
 class ConstantRotationDataSaver():
     """
@@ -199,7 +199,7 @@ class ConstantRotationDataSaver():
                 now = rospy.get_rostime()
                 while True:
                     dt = (rospy.get_rostime() - now).to_sec()
-                    pos = velocities*dt
+                    pos += (velocities*dt)
 
                     self.controller.publish_trajectory(pos, velocities, accelerations, None)
                     if dt > DATA_COLLECTION_TIME:
