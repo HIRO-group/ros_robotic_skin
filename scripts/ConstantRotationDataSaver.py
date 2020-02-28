@@ -188,16 +188,20 @@ class ConstantRotationDataSaver():
                 print(joint_name)
 
                 # Prepare for publishing a trajectory
+                pos = copy.deepcopy(positions)
                 velocities = np.zeros(len(self.joint_names))
                 velocities[i] = CONSTANT_VELOCITY
+                accelerations = np.zeros(len(self.joint_names))
 
                 # stopping time
                 self.ready = True
                 now = rospy.get_rostime()
                 while True:
-                    print("testing")
-                    self.controller.publish_velocities(velocities, None)
-                    if (rospy.get_rostime() - now).to_sec() > DATA_COLLECTION_TIME:
+                    dt = (rospy.get_rostime() - now).to_sec()
+                    pos = velocities*dt
+
+                    self.controller.publish_trajectory(pos, velocities, accelerations, None)
+                    if dt > DATA_COLLECTION_TIME:
                         break
                 self.ready = False
                 rospy.sleep(1)
@@ -243,7 +247,7 @@ if __name__ == "__main__":
     else:
         raise ValueError("Must be either panda or sawyer")
     
-    poses_list = utils.get_poses_list_file('positions.txt')
+    # poses_list = utils.get_poses_list_file('positions.txt')
 
     filepath = '_'.join(['data/constant_data', robot])
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
