@@ -8,6 +8,8 @@ from std_msgs.msg import Bool, Int16
 from sensor_msgs.msg import Imu
 import numpy as np
 
+from robotic_skin.algorithm.convert_to_lowertriangular_matrix import ConvertToLT
+
 import os
 import errno
 import sys
@@ -51,8 +53,11 @@ class ActivityMatrix():
         if data.data == True:
             print("****** ACTIVITY MATRIX ******")
             print(self.activity_matrix)
+            _, final_matrix, _, _, _ = ConvertToLT(self.activity_matrix).get_lt_matrix_infos()
+            # convert the activity matrix to upper triangular
+
             save_mat_path = os.path.join(self.save_dir, 'activity_matrix.txt')
-            np.savetxt(save_mat_path, self.activity_matrix)
+            np.savetxt(save_mat_path, final_matrix)
 
 if __name__ == '__main__':
     # get the path to the ros_robotic_skin package

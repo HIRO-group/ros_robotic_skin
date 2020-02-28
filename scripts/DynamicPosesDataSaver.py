@@ -269,7 +269,7 @@ if __name__ == "__main__":
     else:
         raise ValueError("Must be either panda or sawyer")
 
-    if len(sys.argv > 2):
+    if len(sys.argv) > 2:
         try:
             poses_list = utils.get_poses_list_file(sys.argv[2])
         except:
