@@ -70,7 +70,6 @@ class DynamicPoseData():
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
                     self.data[pose_name][joint_name][imu_name] = np.empty((0, 4), float)
-
     def append(self, pose_name, joint_name, imu_name, data):
         """
         Append data to a dictionary whose keys are 
@@ -183,7 +182,6 @@ class DynamicPoseDataSaver():
 
             # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
             #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
-
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
@@ -255,7 +253,7 @@ if __name__ == "__main__":
     else:
         raise ValueError("Must be either panda or sawyer")
 
-    if len(sys.argv > 2):
+    if len(sys.argv) > 2:
         try:
             poses_list = utils.get_poses_list_file(sys.argv[2])
         except:

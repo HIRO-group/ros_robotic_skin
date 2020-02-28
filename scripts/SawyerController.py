@@ -63,10 +63,10 @@ class SawyerController(object):
         self._limb.joint_velocities()
 
     def joint_angle(self, joint_name):
-        self._limb.joint_angle(joint_name)
+        return self._limb.joint_angle(joint_name)
     
     def joint_velocity(self, joint_name):
-        self._limb.joint_velocity(joint_name)
+        return self._limb.joint_velocity(joint_name)
 
     def set_joint_position_speed(self, speed=1.0):
         self._limb.set_joint_position_speed(speed=speed)
