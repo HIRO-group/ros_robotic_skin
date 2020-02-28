@@ -98,15 +98,37 @@ class ConstantRotationData():
 
         return data
 
-    def save(self, data):
+    def save(self, data, filter=False):
         """
         Save data
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
-        
+        if filter:
+            data = self.filter_data(data)
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
+
+    def filter_data(self, data):
+        """
+        Filters the data along values near `CONSTANT_VELOCITY`
+        """
+        for pose in data.keys():
+            poses_dict = data[pose]
+            for joint in poses_dict.keys():
+                all_joints = poses_dict[joint]
+                for imu in all_joints.keys():
+                    imu_points = all_joints[imu][0]
+                    delete_idxs = []
+                    for ind,val in enumerate(imu_points):
+                        joint_vel = val[-1]
+                        if abs(joint_vel - CONSTANT_VELOCITY) >= 0.25:
+                            delete_idxs.append(ind)
+                    res = np.delete(imu_points, delete_idxs, 0)
+                    y = np.expand_dims(res, axis=0)
+                    all_joints[imu] = y
+        return data
+
     
 
 class ConstantRotationDataSaver():
@@ -207,12 +229,13 @@ class ConstantRotationDataSaver():
                 self.ready = False
                 rospy.sleep(1)
 
-    def save(self, verbose=False):
+    def save(self, verbose=False, filter=False):
         """
         Save data to a pickle file.
         """
         data = self.data_storage.clean_data(verbose)
-        self.data_storage.save(data)
+        
+        self.data_storage.save(data, filter=filter)
 
 if __name__ == "__main__":
     # Poses Configuration
@@ -253,4 +276,4 @@ if __name__ == "__main__":
     filepath = '_'.join(['data/constant_data', robot])
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
     cr.rotate_at_constant_vel()
-    cr.save(verbose=True)
+    cr.save(verbose=True, filter=True)
