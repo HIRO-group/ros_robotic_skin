@@ -23,8 +23,9 @@ CONSTANT_VELOCITY = 2.0
 n2s = lambda x, precision=2:  np.array2string(x, precision=precision, separator=',', suppress_small=True)
 
 def reject_outliers(data, m=1):
-    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
-    return data[is_in_std, :], is_in_std
+    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
+    indices = np.where(is_in_std==True)
+    return data[indices], indices
 
 class ConstantRotationData():
     """

@@ -153,9 +153,9 @@ class SawyerController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 joints")
         if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 joints")
         
         for joint_name, position, velocity in zip(self._limb.joint_names(), positions, velocities):
             self.positions[joint_name] = position
