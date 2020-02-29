@@ -15,7 +15,6 @@ from sensor_msgs.msg import Imu
 import utils
 from SawyerController import SawyerController
 from PandaController import PandaController
-import utils
 
 RAD2DEG = 180.0/np.pi
 OSCILLATION_TIME = 3.0

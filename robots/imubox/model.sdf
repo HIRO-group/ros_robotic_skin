@@ -22,7 +22,7 @@
       <visual name='visual'>
         <geometry>
           <box>
-            <size>0.1 0.1 0.1</size>
+            <size>0.05 0.05 0.03</size>
           </box>
         </geometry>
         <material>
@@ -48,7 +48,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.1 0.1 0.1</size>
+            <size>0.05 0.05 0.03</size>
           </box>
         </geometry>
         <surface>
@@ -111,7 +111,7 @@
         </inertia>
         <pose frame=''>0 0 0 0 1.57 -0.01</pose>
       </inertial>
-      <pose frame=''>-0.00044 -0.000217 0.05 0 -0 0</pose>
+      <pose frame=''>0 0 0.015 0 -0 0</pose>
       <gravity>0</gravity>
       <self_collide>0</self_collide>
       <kinematic>0</kinematic>
@@ -120,8 +120,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -147,8 +147,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <surface>
@@ -211,7 +211,7 @@
         </inertia>
         <pose frame=''>0 0 0 0 1.57 0</pose>
       </inertial>
-      <pose frame=''>0.05 0 0 0 1.57 0</pose>
+      <pose frame=''>0.015 0 0 0 1.57 0</pose>
       <gravity>0</gravity>
       <self_collide>0</self_collide>
       <kinematic>0</kinematic>
@@ -220,8 +220,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -247,8 +247,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <surface>
@@ -311,7 +311,7 @@
         </inertia>
         <pose frame=''>0 0 0 0 1.57 0</pose>
       </inertial>
-      <pose frame=''>0 0.05 0 1.57 -0 0</pose>
+      <pose frame=''>0 0.015 0 1.57 -0 0</pose>
       <gravity>0</gravity>
       <self_collide>0</self_collide>
       <kinematic>0</kinematic>
@@ -320,8 +320,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -345,8 +345,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -370,8 +370,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -395,8 +395,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -422,8 +422,8 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.01</radius>
-            <length>0.1</length>
+            <radius>0.0025</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <surface>
