@@ -61,7 +61,7 @@ class ConstantRotationData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 5), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 9), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -182,17 +182,17 @@ class ConstantRotationDataSaver():
         if self.ready:
             # acceleration of skin unit, followed by its acceleration
             accel = data.linear_acceleration
+            q = data.orientation
             # get the orientation of the imu
             joint_angle = self.controller.joint_angle(self.curr_joint_name)
             joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
             # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
             #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
-
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu  
-                np.array([accel.x, accel.y, accel.z, joint_angle, joint_velocity]))
+                np.array([q.x, q.y, q.z, q.w, accel.x, accel.y, accel.z, joint_angle, joint_velocity]))
 
     def rotate_at_constant_vel(self):
         """
