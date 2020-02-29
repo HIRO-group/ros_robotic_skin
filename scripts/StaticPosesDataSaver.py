@@ -181,12 +181,14 @@ class StaticPoseDataSaver():
             rospy.sleep(time)
             self.ready = False
 
-    def save(self, verbose=False):
+    def save(self, save=True, verbose=False):
         """
         Save data to a pickle file.
         """
         data = self.data_storage.clean_data(verbose)
-        self.data_storage.save(data)
+
+        if save:
+            self.data_storage.save(data)
 
 if __name__ == "__main__":
     # get poses from file?
@@ -228,9 +230,8 @@ if __name__ == "__main__":
             [[4.63, -0.70, 3.14, 3.41, 3.55, 0.69, 6.10], [], 'Pose_19'],
             [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
         ]    
-    
 
     filepath = '_'.join(['data/static_data', robot])
     sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
-    sd.save(verbose=True)
+    sd.save(save=True, verbose=True)

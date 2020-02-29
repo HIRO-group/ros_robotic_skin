@@ -25,7 +25,6 @@ def get_poses_list_file(filename):
     poses_list = []
     for idx,pose in enumerate(poses_mat):
         poses_list.append([list(pose), [], 'Pose_{}'.format(idx+1)])
-    print(poses_list)
     return poses_list
 
 
