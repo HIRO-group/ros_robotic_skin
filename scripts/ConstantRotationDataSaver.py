@@ -23,8 +23,9 @@ CONSTANT_VELOCITY = 2.0
 n2s = lambda x, precision=2:  np.array2string(x, precision=precision, separator=',', suppress_small=True)
 
 def reject_outliers(data, m=1):
-    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
-    return data[is_in_std, :], is_in_std
+    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
+    indices = np.where(is_in_std==True)
+    return data[indices], indices
 
 class ConstantRotationData():
     """
@@ -60,7 +61,7 @@ class ConstantRotationData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 3), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 9), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -77,7 +78,7 @@ class ConstantRotationData():
         data: np.array
             Numpy array of size (1,4). 
             Includes an accelerometer measurement and a joint angle.
-        """
+        """ 
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
     
@@ -97,16 +98,38 @@ class ConstantRotationData():
 
         return data
 
-    def save(self, data):
+    def save(self, data, filter=False):
         """
         Save data
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
-        
+        if filter:
+            data = self.filter_data(data)
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
 
+    def filter_data(self, data):
+        """
+        Filters the data along values near `CONSTANT_VELOCITY`
+        """
+        for pose in data.keys():
+            poses_dict = data[pose]
+            for joint in poses_dict.keys():
+                all_joints = poses_dict[joint]
+                for imu in all_joints.keys():
+                    imu_points = all_joints[imu][0]
+                    delete_idxs = []
+                    for ind,val in enumerate(imu_points):
+                        joint_vel = val[-1]
+                        if abs(joint_vel - CONSTANT_VELOCITY) >= 0.25:
+                            delete_idxs.append(ind)
+                    res = np.delete(imu_points, delete_idxs, 0)
+                    y = np.expand_dims(res, axis=0)
+                    all_joints[imu] = y
+        return data
+
+    
 
 class ConstantRotationDataSaver():
     """
@@ -157,17 +180,19 @@ class ConstantRotationDataSaver():
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
         if self.ready:
+            # acceleration of skin unit, followed by its acceleration
             accel = data.linear_acceleration
+            q = data.orientation
+            # get the orientation of the imu
             joint_angle = self.controller.joint_angle(self.curr_joint_name)
-
+            joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
             # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
             #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
-
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu  
-                np.array([accel.x, accel.y, accel.z, joint_angle]))
+                np.array([q.x, q.y, q.z, q.w, accel.x, accel.y, accel.z, joint_angle, joint_velocity]))
 
     def rotate_at_constant_vel(self):
         """
@@ -175,6 +200,7 @@ class ConstantRotationDataSaver():
         for all joints for all defined poses. 
         """
         for pose in self.poses_list:
+
             positions, _, pose_name = pose[0], pose[1], pose[2]
             self.curr_pose_name = pose_name
             self.controller.publish_positions(positions, sleep=1)
@@ -182,27 +208,34 @@ class ConstantRotationDataSaver():
 
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
+                print(joint_name)
 
                 # Prepare for publishing a trajectory
+                pos = copy.deepcopy(positions)
                 velocities = np.zeros(len(self.joint_names))
                 velocities[i] = CONSTANT_VELOCITY
+                accelerations = np.zeros(len(self.joint_names))
 
                 # stopping time
                 self.ready = True
                 now = rospy.get_rostime()
                 while True:
-                    self.controller.publish_velocities(velocities, None)
-                    if (rospy.get_rostime() - now).to_sec() > DATA_COLLECTION_TIME:
+                    dt = (rospy.get_rostime() - now).to_sec()
+                    pos += (velocities*dt)
+
+                    self.controller.publish_trajectory(pos, velocities, accelerations, None)
+                    if dt > DATA_COLLECTION_TIME:
                         break
                 self.ready = False
                 rospy.sleep(1)
 
-    def save(self, verbose=False):
+    def save(self, verbose=False, filter=False):
         """
         Save data to a pickle file.
         """
         data = self.data_storage.clean_data(verbose)
-        self.data_storage.save(data)
+        
+        self.data_storage.save(data, filter=filter)
 
 if __name__ == "__main__":
     # Poses Configuration
@@ -233,13 +266,14 @@ if __name__ == "__main__":
     robot = sys.argv[1]
     if robot == 'panda':
         controller = PandaController()
-        poses_list = utils.get_poses_list_file('positions.txt')
     elif robot == 'sawyer':
         controller = SawyerController()
     else:
         raise ValueError("Must be either panda or sawyer")
     
+    # poses_list = utils.get_poses_list_file('positions.txt')
+
     filepath = '_'.join(['data/constant_data', robot])
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
     cr.rotate_at_constant_vel()
-    cr.save(verbose=True)
+    cr.save(verbose=True, filter=True)
