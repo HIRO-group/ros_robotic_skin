@@ -61,7 +61,7 @@ class ConstantRotationData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 9), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 15), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -120,7 +120,7 @@ class ConstantRotationData():
                 for imu in all_joints.keys():
                     imu_points = all_joints[imu][0]
                     delete_idxs = []
-                    for ind,val in enumerate(imu_points):
+                    for ind, val in enumerate(imu_points):
                         joint_vel = val[-1]
                         if abs(joint_vel - CONSTANT_VELOCITY) >= 0.25:
                             delete_idxs.append(ind)
@@ -184,7 +184,7 @@ class ConstantRotationDataSaver():
             accel = data.linear_acceleration
             q = data.orientation
             # get the orientation of the imu
-            joint_angle = self.controller.joint_angle(self.curr_joint_name)
+            J = np.array([self.controller.joint_angle(name) for name in self.joint_names])
             joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
             # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
             #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
@@ -192,7 +192,7 @@ class ConstantRotationDataSaver():
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu  
-                np.array([q.x, q.y, q.z, q.w, accel.x, accel.y, accel.z, joint_angle, joint_velocity]))
+                np.array([q.x, q.y, q.z, q.w, accel.x, accel.y, accel.z, J[0], J[1], J[2], J[3], J[4], J[5], J[6], joint_velocity]))
 
     def rotate_at_constant_vel(self):
         """
