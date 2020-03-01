@@ -37,23 +37,6 @@ class ActivityMatrixController():
         self.pos_mat = np.loadtxt(desired_positions_path)
         print(self.pos_mat)
 
-        # trajectory_msg = JointTrajectory()
-        # trajectory_msg.header.stamp = rospy.Time.now()
-        # trajectory_msg.header.frame_id = '/base_link'
-
-        # trajectory_msg.joint_names = ['panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5', 'panda_joint6',
-        #            'panda_joint7']
-
-        # point = JointTrajectoryPoint()
-        # point.positions = [0, 0, 0, 0, 0, 0, 0]
-        # point.time_from_start.secs = 1
-        # trajectory_msg.points = [point]
-        # self.trajectory_msg = trajectory_msg
-        # self.point = point
-        # self.is_sim = is_sim
-        # self.get_trajectory_publisher()
-        # sending initial msg
-
     # def get_desired_positions(self):
     #     # gets the desired positions to move the panda.
     #     np.loadtxt()
