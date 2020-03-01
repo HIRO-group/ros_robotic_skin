@@ -37,14 +37,6 @@ class ActivityMatrixController():
         self.pos_mat = np.loadtxt(desired_positions_path)
         print(self.pos_mat)
 
-    # def get_desired_positions(self):
-    #     # gets the desired positions to move the panda.
-    #     np.loadtxt()
-    # def get_trajectory_publisher(self):
-    #     topic_string = '/panda_arm_controller/command' if self.is_sim else '/joint_trajectory_controller/command'
-    #     self.trajectory_pub = rospy.Publisher(topic_string, 
-    #                                             JointTrajectory, queue_size=1)
-
     # def send_once(self):
     #     # TODO: Look up do we need to have one message to init the robot?
     #     # If I only send one message then the franka does not move.
