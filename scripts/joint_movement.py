@@ -95,8 +95,6 @@ if __name__ == '__main__':
         activity_matrix_control = ActivityMatrixController(controller, desired_positions_path,
                                 is_sim=is_simulation)
         activity_matrix_control.spin()
-        # panda_control = PandaTrajectoryControl(desired_positions_path, is_simulation)
-        # panda_control.send_once()
-        # panda_control.spin()
+        
     except rospy.ROSInterruptException:
         print('Exiting Franka Panda control process...')
