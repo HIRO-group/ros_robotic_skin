@@ -52,7 +52,7 @@ void filterStationary(float Ax, float Ay, float Az,
 
 void PosePublisher::init() {
     // Here just starting the function which will initialize the callback from different IMU placed on Franka
-    filter_.setWorldFrame(WorldFrame::NWU);
+    filter_.setWorldFrame(WorldFrame::ENU);
     get_imu_data();
 
 }
@@ -63,7 +63,7 @@ void PosePublisher::get_imu_data() {
 //    for(int i: imu_numbers){
 //        ros::Subscriber cam_sub = nh->subscribe("imu_data"+std::to_string(i),100, PosePublisher::imu_callback);
 //    }
-    ros::Subscriber cam_sub = nh->subscribe("imu_data4", 100, PosePublisher::imu_callback);
+    ros::Subscriber cam_sub = nh->subscribe("imu/data_raw", 100, PosePublisher::imu_callback);
     ros::spin();
 }
 
@@ -77,6 +77,15 @@ void PosePublisher::imu_callback(const sensor_msgs::Imu::ConstPtr &msg) {
      */
     ros::Time time = msg->header.stamp;
     std::string imu_frame_ = msg->header.frame_id;
+    if (!initialized || stateless){
+        geometry_msgs::Quaternion init_q;
+        StatelessOrientation::computeOrientation(WorldFrame::ENU, lin_acc, init_q);
+        filter_.setOrientation(init_q.w, init_q.x, init_q.y, init_q.z);
+    }
+    if(!initialized){
+        last_time_ = time;
+        initialized = true;
+    }
     double dt;
     dt = (time - last_time_).toSec();
     filter_.madgwickAHRSupdateIMU(

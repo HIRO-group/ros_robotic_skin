@@ -2,6 +2,7 @@
 #define POSEESTIMATION_POSEESTIMATIONPUBLISHER_H
 
 #include <imu_filter_madgwick/imu_filter.h>
+#include "imu_filter_madgwick/stateless_orientation.h"
 #include "ros/ros.h"
 #include "trajectory_msgs/JointTrajectory.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
@@ -17,6 +18,8 @@ public:
     static ros::Time last_time_;
     static ImuFilter filter_;
     /*Below are static ROS Publishers*/
+    static bool initialized;
+    static bool stateless;
     static ros::Publisher imu0_pose;
 //    static ros::Publisher imu1_pose;
 //    static ros::Publisher imu2_pose;
