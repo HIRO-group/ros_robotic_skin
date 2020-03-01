@@ -8,6 +8,7 @@ from math import pi
 import numpy as np
 import pickle
 
+import tf
 import rospy
 import rospkg
 from sensor_msgs.msg import Imu
@@ -168,6 +169,8 @@ class ConstantRotationDataSaver():
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
+        self.tf_listener = tf.TransformListener()
+        self.Q = {imu_name : Quaternion for imu_name in self.imu_names}
     
     def callback(self, data):
         """
@@ -182,7 +185,7 @@ class ConstantRotationDataSaver():
         if self.ready:
             # acceleration of skin unit, followed by its acceleration
             accel = data.linear_acceleration
-            q = data.orientation
+            q = self.Q[data.header.frame_id]
             # get the orientation of the imu
             J = np.array([self.controller.joint_angle(name) for name in self.joint_names])
             joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
@@ -226,6 +229,14 @@ class ConstantRotationDataSaver():
                     self.controller.publish_trajectory(pos, velocities, accelerations, None)
                     if dt > DATA_COLLECTION_TIME:
                         break
+
+                    for imu_name in self.imu_names:
+                        try:
+                            (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
+                            self.Q[imu_name] = rot
+                        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                            continue
+
                 self.ready = False
                 rospy.sleep(1)
 
