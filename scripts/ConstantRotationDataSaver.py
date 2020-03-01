@@ -12,6 +12,7 @@ import tf
 import rospy
 import rospkg
 from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Quaternion
 
 import utils
 from SawyerController import SawyerController
@@ -106,6 +107,7 @@ class ConstantRotationData():
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
         if filter:
+            # filters the data and gets the constant angular velocity values
             data = self.filter_data(data)
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
@@ -170,7 +172,7 @@ class ConstantRotationDataSaver():
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
         self.tf_listener = tf.TransformListener()
-        self.Q = {imu_name : Quaternion for imu_name in self.imu_names}
+        self.Q = {imu_name : Quaternion() for imu_name in self.imu_names}
     
     def callback(self, data):
         """
@@ -233,7 +235,10 @@ class ConstantRotationDataSaver():
                     for imu_name in self.imu_names:
                         try:
                             (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
-                            self.Q[imu_name] = rot
+                            self.Q[imu_name].x = rot[0]
+                            self.Q[imu_name].y = rot[1]
+                            self.Q[imu_name].z = rot[2]
+                            self.Q[imu_name].w = rot[3]
                         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                             continue
 
