@@ -23,7 +23,7 @@ class IMUBoxStateManager():
         self.position = Point(1,1,1)
         init_poses = [Pose(position=self.position, orientation=self.imu_q)]
         #rospy.Subscriber('imu0_pose', Quaternion, self.imu_callback)
-        rospy.Subscriber('imu_data0', Imu, self.imu_callback)
+        rospy.Subscriber('imu_data3', Imu, self.imu_callback)
 
         rospy.wait_for_service('/gazebo/set_model_state')
         if sdf:
@@ -95,7 +95,7 @@ class IMUBoxStateManager():
 if __name__ == '__main__':
     rospy.init_node("set_estimated_imu_positions")
 
-    model_names = ['imu4']
+    model_names = ['imu3']
     state_manager = IMUBoxStateManager(model_names) 
     state_manager.spawn()
 
