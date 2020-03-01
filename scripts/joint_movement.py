@@ -12,7 +12,7 @@ import os
 import numpy as np
 
 from PandaController import PandaController
-from SawyerController import SawyerController
+# from SawyerController import SawyerController
 
 class ActivityMatrixController():
     def __init__(self, controller, desired_positions_path, is_sim=True):
@@ -92,11 +92,11 @@ class ActivityMatrixController():
             rospy.sleep(1)
 
             # publish message to actuate the dof
-            self.controller.publish_positions(self.pos_mat[joint_int*2])
-            rospy.sleep(5)
+            self.controller.publish_positions(self.pos_mat[joint_int*2], 2)
+            rospy.sleep(10)
 
             # bring back to home position before next pose
-            self.controller.publish_positions(self.pos_mat[(joint_int*2)+1])
+            self.controller.publish_positions(self.pos_mat[(joint_int*2)+1], 2)
 
             joint_int+=1
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     try:
         activity_matrix_control = ActivityMatrixController(controller, desired_positions_path,
                                 is_sim=is_simulation)
-        # activity_matrix_control.spin()
+        activity_matrix_control.spin()
         # panda_control = PandaTrajectoryControl(desired_positions_path, is_simulation)
         # panda_control.send_once()
         # panda_control.spin()

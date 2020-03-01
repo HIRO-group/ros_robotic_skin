@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
     // Declaring the ROS Handle in main and passing the pointer to it around to other classes to use it
     ros::NodeHandle nhp;
     PosePublisher::nh = &nhp;
-    PosePublisher::imu0_pose = PosePublisher::nh->advertise<geometry_msgs::Quaternion>("imu0_pose", 100);
+    PosePublisher::imu0_pose = PosePublisher::nh->advertise<geometry_msgs::Quaternion>("imu0_pose", 10);
 //    PosePublisher::imu1_pose = PosePublisher::nh->advertise<geometry_msgs::Quaternion>("imu1_pose", 100);
 //    PosePublisher::imu2_pose = PosePublisher::nh->advertise<geometry_msgs::Quaternion>("imu2_pose", 100);
 //    PosePublisher::imu3_pose = PosePublisher::nh->advertise<geometry_msgs::Quaternion>("imu3_pose", 100);
