@@ -77,7 +77,8 @@ class ActivityMatrixController():
             # publish message to actuate the dof
             self.controller.publish_positions(self.pos_mat[joint_int*2], 2)
             rospy.sleep(5)
-
+            # publish -1 so nothing is put into activity matrix
+            self.joint_dof_pub.publish(-1)
             # bring back to home position before next pose
             self.controller.publish_positions(self.pos_mat[(joint_int*2)+1], 2)
 
