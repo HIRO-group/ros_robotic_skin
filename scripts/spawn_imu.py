@@ -55,7 +55,15 @@ class EstimatedIMUBoxStateManager():
         for model_name, pose in zip(self.model_names, self.init_poses):
             try:
                 self.req.model_name = model_name
-                self.req.initial_pose = pose
+                init_pose = Pose()
+                init_pose.position.x = pose.position[0]
+                init_pose.position.y = pose.position[1]
+                init_pose.position.z = pose.position[2] + 0.77
+                init_pose.orientation.x = pose.orientation[0]
+                init_pose.orientation.y = pose.orientation[1]
+                init_pose.orientation.z = pose.orientation[2]
+                init_pose.orientation.w = pose.orientation[3]
+                self.req.initial_pose = init_pose
                 res = self.spawn_model(self.req) 
             except rospy.ServiceException, e:
                 rospy.loginfo("Service call failed: %s" % e)
@@ -109,7 +117,7 @@ def load_estimated_poses(filename):
     return np.loadtxt(os.path.join(ros_robotic_skin_path, 'data', filename))
 
 if __name__ == '__main__':
-    rospy.init_node("set_estimated_imu_positions")
+    # rospy.init_node("set_estimated_imu_positions")
     n_joint = 7
     n_imu = 7
 
@@ -124,7 +132,7 @@ if __name__ == '__main__':
         raise ValueError("Must be either panda or sawyer")
     
     poses = load_estimated_poses(filename)
-    positions = np.zeros(len(poses.shape[0]))
+    positions = np.zeros(poses.shape[0])
     controller.publish_positions(positions, sleep=1)
 
     imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
