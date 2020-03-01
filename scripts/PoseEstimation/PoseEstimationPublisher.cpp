@@ -6,49 +6,6 @@
  * The below part filterStationary is directly copied from imu_filter_madgwick example file:
  * https://github.com/ccny-ros-pkg/imu_tools/blob/indigo/imu_filter_madgwick/test/madgwick_test.cpp
  * */
-template <WorldFrame::WorldFrame FRAME>
-void filterStationary(
-        float Ax, float Ay, float Az,
-        float Mx, float My, float Mz,
-        double& q0, double& q1, double& q2, double& q3) {
-    float dt = 0.1;
-    float Gx = 0.0, Gy = 0.0, Gz = 0.0; // Stationary state => Gyro = (0,0,0)
-
-    ImuFilter filter;
-    filter.setDriftBiasGain(0.0);
-    filter.setAlgorithmGain(0.1);
-
-    // initialize with some orientation
-    filter.setOrientation(q0,q1,q2,q3);
-    filter.setWorldFrame(FRAME);
-
-    for (int i = 0; i < FILTER_ITERATIONS; i++) {
-        filter.madgwickAHRSupdate(Gx, Gy, Gz, Ax, Ay, Az, Mx, My, Mz, dt);
-    }
-
-    filter.getOrientation(q0,q1,q2,q3);
-}
-
-template <WorldFrame::WorldFrame FRAME>
-void filterStationary(float Ax, float Ay, float Az,
-                      double& q0, double& q1, double& q2, double& q3) {
-    float dt = 0.1;
-    float Gx = 0.0, Gy = 0.0, Gz = 0.0; // Stationary state => Gyro = (0,0,0)
-
-    ImuFilter filter;
-    filter.setDriftBiasGain(0.0);
-    filter.setAlgorithmGain(0.1);
-
-    // initialize with some orientation
-    filter.setOrientation(q0,q1,q2,q3);
-    filter.setWorldFrame(FRAME);
-
-    for (int i = 0; i < FILTER_ITERATIONS; i++) {
-        filter.madgwickAHRSupdateIMU(Gx, Gy, Gz, Ax, Ay, Az, dt);
-    }
-
-    filter.getOrientation(q0,q1,q2,q3);
-}
 
 void PosePublisher::init() {
     // Here just starting the function which will initialize the callback from different IMU placed on Franka
@@ -63,7 +20,7 @@ void PosePublisher::get_imu_data() {
 //    for(int i: imu_numbers){
 //        ros::Subscriber cam_sub = nh->subscribe("imu_data"+std::to_string(i),100, PosePublisher::imu_callback);
 //    }
-    ros::Subscriber cam_sub = nh->subscribe("imu/data_raw", 100, PosePublisher::imu_callback);
+    ros::Subscriber cam_sub = nh->subscribe(original_imu_publisher_name, 100, PosePublisher::imu_callback);
     ros::spin();
 }
 
@@ -83,16 +40,16 @@ void PosePublisher::imu_callback(const sensor_msgs::Imu::ConstPtr &msg) {
         filter_.setOrientation(init_q.w, init_q.x, init_q.y, init_q.z);
     }
     if(!initialized){
-        last_time_ = time;
+        last_time = time;
         initialized = true;
     }
     double dt;
-    dt = (time - last_time_).toSec();
+    dt = (time - last_time).toSec();
     filter_.madgwickAHRSupdateIMU(
             ang_vel.x, ang_vel.y, ang_vel.z,
             lin_acc.x, lin_acc.y, lin_acc.z,
             dt);
-    last_time_ = time;
+    last_time = time;
     filter_.getOrientation(q0,q1,q2,q3);
     // AHRS Stuff end
     geometry_msgs::Quaternion calculated_quaternion;
@@ -113,7 +70,7 @@ void PosePublisher::imu_callback(const sensor_msgs::Imu::ConstPtr &msg) {
      *
      * 3) Using if-else if will make it easier to read rather than switch
      * */
-    imu0_pose.publish(calculated_quaternion);
+    imu_pose.publish(calculated_quaternion);
 //    std::cout << calculated_quaternion.x << "," << calculated_quaternion.y << "," << calculated_quaternion.z << "," << calculated_quaternion.w << std::endl;
 
 }
