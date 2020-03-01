@@ -12,7 +12,7 @@ ros::Publisher PosePublisher::imu0_pose;
 ros::Time PosePublisher::last_time_;
 ImuFilter PosePublisher::filter_;
 int main(int argc, char** argv) {
-    ros::init(argc,argv,"IMU_Pose_Estimator");
+    ros::init(argc, argv, "IMU_Pose_Estimator");
     // Declaring the ROS Handle in main and passing the pointer to it around to other classes to use it
     ros::NodeHandle nhp;
     PosePublisher::nh = &nhp;

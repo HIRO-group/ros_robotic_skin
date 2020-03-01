@@ -234,4 +234,4 @@ if __name__ == "__main__":
     filepath = '_'.join(['data/static_data', robot])
     sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
-    sd.save(save=True, verbose=True)
+    #sd.save(save=True, verbose=True)

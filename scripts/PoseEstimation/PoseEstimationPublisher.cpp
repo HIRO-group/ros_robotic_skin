@@ -52,7 +52,7 @@ void filterStationary(float Ax, float Ay, float Az,
 
 void PosePublisher::init() {
     // Here just starting the function which will initialize the callback from different IMU placed on Franka
-    filter_.setWorldFrame(WorldFrame::NED);
+    filter_.setWorldFrame(WorldFrame::NWU);
     get_imu_data();
 
 }
@@ -63,7 +63,7 @@ void PosePublisher::get_imu_data() {
 //    for(int i: imu_numbers){
 //        ros::Subscriber cam_sub = nh->subscribe("imu_data"+std::to_string(i),100, PosePublisher::imu_callback);
 //    }
-    ros::Subscriber cam_sub = nh->subscribe("imu_data3",100, PosePublisher::imu_callback);
+    ros::Subscriber cam_sub = nh->subscribe("imu_data4", 100, PosePublisher::imu_callback);
     ros::spin();
 }
 
