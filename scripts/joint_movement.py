@@ -12,7 +12,7 @@ import os
 import numpy as np
 
 from PandaController import PandaController
-from SawyerController import SawyerController
+# from SawyerController import SawyerController
 
 class ActivityMatrixController():
     def __init__(self, controller, desired_positions_path, is_sim=True):

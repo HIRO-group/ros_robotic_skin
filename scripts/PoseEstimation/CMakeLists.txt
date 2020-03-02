@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(PoseEstimation)
+find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs imu_filter_madgwick)
+set(CMAKE_CXX_STANDARD 14)
+include_directories(/opt/ros/melodic/include)
+add_executable(PoseEstimation main.cpp PoseEstimationPublisher.cpp PoseEstimationPublisher.h)
+target_link_libraries(PoseEstimation ${catkin_LIBRARIES})
+install(TARGETS PoseEstimation DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
