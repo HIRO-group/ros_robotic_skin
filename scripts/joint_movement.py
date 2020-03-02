@@ -37,18 +37,6 @@ class ActivityMatrixController():
         self.pos_mat = np.loadtxt(desired_positions_path)
         print(self.pos_mat)
 
-    # def send_once(self):
-    #     # TODO: Look up do we need to have one message to init the robot?
-    #     # If I only send one message then the franka does not move.
-    #     # TODO: This might not be the best starting postion for the robot to be in.
-    #     # Think about if we are losing some inforamtion by using a completely vertical postion
-    #     # for the start.
-    #     # Move arm to starting position
-    #     self.trajectory_pub.publish(self.trajectory_msg)
-    #     rospy.sleep(1)
-    #     self.trajectory_pub.publish(self.trajectory_msg)
-    #     rospy.sleep(1)
-
     def spin(self):
         joint_int = 0
         self.controller.send_once()
@@ -95,6 +83,6 @@ if __name__ == '__main__':
         activity_matrix_control = ActivityMatrixController(controller, desired_positions_path,
                                 is_sim=is_simulation)
         activity_matrix_control.spin()
-        
+
     except rospy.ROSInterruptException:
         print('Exiting Franka Panda control process...')
