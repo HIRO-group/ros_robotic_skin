@@ -41,7 +41,7 @@ class ActivityMatrix():
         self.current_dof = data.data
 
     def imu_mvmt(self, data):
-        if self.current_dof is not None:
+        if self.current_dof is not None and self.current_dof in range(7):
             # If no DoF has been set then we are just moving the robot to the starting pose
             print('DOF:', self.current_dof, 'IMU:', type(data))
             print(data.data)

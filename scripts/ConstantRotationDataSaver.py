@@ -8,9 +8,11 @@ from math import pi
 import numpy as np
 import pickle
 
+import tf
 import rospy
 import rospkg
 from sensor_msgs.msg import Imu
+from geometry_msgs.msg import Quaternion
 
 import utils
 from SawyerController import SawyerController
@@ -61,7 +63,7 @@ class ConstantRotationData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 9), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 15), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -105,6 +107,7 @@ class ConstantRotationData():
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
         if filter:
+            # filters the data and gets the constant angular velocity values
             data = self.filter_data(data)
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
@@ -120,7 +123,7 @@ class ConstantRotationData():
                 for imu in all_joints.keys():
                     imu_points = all_joints[imu][0]
                     delete_idxs = []
-                    for ind,val in enumerate(imu_points):
+                    for ind, val in enumerate(imu_points):
                         joint_vel = val[-1]
                         if abs(joint_vel - CONSTANT_VELOCITY) >= 0.25:
                             delete_idxs.append(ind)
@@ -168,6 +171,8 @@ class ConstantRotationDataSaver():
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
+        self.tf_listener = tf.TransformListener()
+        self.Q = {imu_name : Quaternion() for imu_name in self.imu_names}
     
     def callback(self, data):
         """
@@ -182,9 +187,9 @@ class ConstantRotationDataSaver():
         if self.ready:
             # acceleration of skin unit, followed by its acceleration
             accel = data.linear_acceleration
-            q = data.orientation
+            q = self.Q[data.header.frame_id]
             # get the orientation of the imu
-            joint_angle = self.controller.joint_angle(self.curr_joint_name)
+            J = np.array([self.controller.joint_angle(name) for name in self.joint_names])
             joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
             # if self.curr_joint_name == 'right_j0' and data.header.frame_id == 'imu_link0':
             #     rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
@@ -192,7 +197,7 @@ class ConstantRotationDataSaver():
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu  
-                np.array([q.x, q.y, q.z, q.w, accel.x, accel.y, accel.z, joint_angle, joint_velocity]))
+                np.array([q.x, q.y, q.z, q.w, accel.x, accel.y, accel.z, J[0], J[1], J[2], J[3], J[4], J[5], J[6], joint_velocity]))
 
     def rotate_at_constant_vel(self):
         """
@@ -226,6 +231,17 @@ class ConstantRotationDataSaver():
                     self.controller.publish_trajectory(pos, velocities, accelerations, None)
                     if dt > DATA_COLLECTION_TIME:
                         break
+
+                    for imu_name in self.imu_names:
+                        try:
+                            (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
+                            self.Q[imu_name].x = rot[0]
+                            self.Q[imu_name].y = rot[1]
+                            self.Q[imu_name].z = rot[2]
+                            self.Q[imu_name].w = rot[3]
+                        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                            continue
+
                 self.ready = False
                 rospy.sleep(1)
 
