@@ -17,6 +17,24 @@ import sys
 
 class ActivityMatrix():
     def __init__(self, ros_robotic_skin_path, num_dofs=7, num_skinunits=7):
+        """
+        Activity Matrix class for a generalized robot arm
+
+        Arguments
+        ----------
+        `ros_robotic_skin_path`: `str`
+            The absolute filepath to this ros package.
+        
+        `num_dofs`: `int`
+            The amount of degrees of freedom in the robot.
+
+        `num_skinunuts`: `int`
+            The amount of skin units on the robot
+
+        Returns
+        ----------
+        returns: nothing
+        """
         self.num_dofs = num_dofs
         self.num_skinunits = num_skinunits
         self.save_dir = os.path.join(ros_robotic_skin_path, 'data')
@@ -30,6 +48,18 @@ class ActivityMatrix():
         self.current_dof = None
 
     def spin(self):
+        """
+        The spin function for the ActivityMatrix class. Initializes
+        the ROS node and all of the subscribers.
+
+        Arguments
+        ----------
+        None. 
+
+        Returns
+        ----------
+        returns: None
+        """
         rospy.init_node('activity_matrix', anonymous=True)
         rospy.Subscriber('/joint_mvmt_dof', Int16, self.set_dof)
         rospy.Subscriber('/imu_activated', Int16, self.imu_mvmt)
@@ -37,10 +67,36 @@ class ActivityMatrix():
         rospy.spin()
 
     def set_dof(self, data):
+        """
+        A ROS callback for setting the current DOF 
+        that is being actuated.
+
+        Arguments
+        ----------
+        `data`: `Int16`
+            `Int16` message of the actuated DOF
+
+        Returns
+        ----------
+        returns: None
+        """
         # set current dof being actuated
         self.current_dof = data.data
 
     def imu_mvmt(self, data):
+        """
+        A ROS callback for setting a value in the activity
+        matrix based on if it was activated or not.
+
+        Arguments
+        ----------
+        `data`: `Int16`
+            `Int16` message of the activated IMU
+
+        Returns
+        ----------
+        returns: None
+        """
         if self.current_dof is not None and self.current_dof in range(7):
             # If no DoF has been set then we are just moving the robot to the starting pose
             print('DOF:', self.current_dof, 'IMU:', type(data))
@@ -50,6 +106,21 @@ class ActivityMatrix():
 
 
     def calibration_complete(self, data):
+        """
+        A ROS callback for saving the final 
+        activity matrix to a file when calibration
+        is complete.
+
+        Arguments
+        ----------
+        `data`: `Bool`
+            `Bool` message that determines if calibration
+            is complete.
+
+        Returns
+        ----------
+        returns: None
+        """
         if data.data == True:
             print("****** ACTIVITY MATRIX ******")
             print(self.activity_matrix)

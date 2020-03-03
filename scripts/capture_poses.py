@@ -146,6 +146,7 @@ class CapturePose():
 
 if __name__ == "__main__":
 
+    # get the path of ros_robotic_skin
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
 
@@ -159,6 +160,7 @@ if __name__ == "__main__":
         raise Exception('Real Sawyer support is currently not supported.')
 
     try:
+        # keep capturing the poses.
         cp = CapturePose(ros_robotic_skin_path, is_sim=is_sim, 
                             robot_type=robot_type, filename=filename)
         rospy.spin()
