@@ -21,10 +21,35 @@ import utils
 RAD2DEG = 180.0/np.pi
 
 def reject_outliers(data, m=1):
+    """
+    Rejects one outlier.
+
+    Arguments
+    ---------
+    `data`: `np.array`
+        The data
+
+    `m`: `int`
+        The number of standard deviations from the mean to 
+        reject data points.
+
+    """
     is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
     return data[is_in_std, :]
 
 def reject_outlier(data, m=1):
+    """
+    Rejects one outlier.
+
+    Arguments
+    ---------
+    `data`: `np.array`
+        The data
+
+    `m`: `int`
+        The number of standard deviations from the mean to 
+        reject data points.
+    """
     is_in_std = np.absolute(data - np.mean(data)) < m * np.std(data)
     return data[is_in_std, :]
 
@@ -81,7 +106,11 @@ class StaticPoseData():
     
     def clean_data(self, verbose=False):
         """
-        verbose: bool
+        Cleans the data
+
+        Arguments
+        ---------
+        `verbose`: `bool`
         """
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
@@ -102,6 +131,11 @@ class StaticPoseData():
     def save(self, data):
         """
         Save both the original collected data and the averaged data
+
+        Arguments
+        ---------
+        `data`: `OrderedDict`
+            The data from static data collection, saved to a pickle file.
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')

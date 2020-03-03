@@ -7,6 +7,14 @@ DEG2RAD = math.pi / 180.0
 
 class SawyerJointControl():
     def __init__(self, limb="right"):
+        """
+        Sawyer Joint control class.
+
+        Arguments
+        ----------
+        `limb`: `str` 
+            The limb used to initialize `self._limb`.    
+        """
         # initialize sawyer joints
         self._limb = intera_interface.Limb(limb)
         print("Getting robot state... ")
@@ -20,6 +28,10 @@ class SawyerJointControl():
         self.positions = {name: -0.2*i for i, name in enumerate(self._limb.joint_names())}
 
     def spin(self):
+        """
+        Spin for Sawyer. Oscillates the robot.
+   
+        """
         dt = 0.01
         t = 0.0
         freq = 2.0
@@ -37,6 +49,10 @@ class SawyerJointControl():
             rospy.sleep(dt)
 
     def set_random_pose(self):
+        """
+        Moves the robot to semi-random poses.
+
+        """
         random_joint = lambda low, high: (high-low)*np.random.rand() + low
 
         limits = np.array([[0, -180, 0, 0, 0, 0, 0],

@@ -58,7 +58,7 @@ roslaunch ros_robotic_skin simulation.launch
 
 ## Running Real Panda
 
-Perform similar steps as what you would do for running the Panda Gazebo simulation, and then run"
+Perform similar steps as what you would do for running the Panda Gazebo simulation, and then run:
 ```sh
 source devel/setup.bash
 roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
@@ -69,14 +69,18 @@ For this section to work, you must first be running 1 of 3 tasks:
 - The Franka Panda simulation
 - Franka ROS for the real Franka Panda
 - The Sawyer Robot simulation
+
 Otherwise, this code will **not** work.
 
-If you want to be able to capture certain poses of the robot, run `roslaunch ros_robotic_skin collect_poses.launch is_sim:=<true|false> save_file:=<filename.txt> robot_type:=<sawyer|panda>`.
+If you want to be able to capture certain poses of the robot, run
+```sh
+roslaunch ros_robotic_skin collect_poses.launch is_sim:=<true|false> save_file:=<filename.txt> robot_type:=<sawyer|panda>
+```
 
 `is_sim` specifies if the robot is being run in simulation, `save_file` specifies where to save the file of collected poses, and `robot_type` specifies the type of robot (there's only two choices - Sawyer and Panda). This will save a file of the poses in the `data` folder, which should serve helpful later on.
 
 ## Activity Matrix Generation
-The activity matrix generation currently needs to be done for three separate files, but we have a roslaunch file to handle the running of the three matrices. To do so, from the root of your catkin workspace, run:
+The activity matrix generation currently needs to be done for three separate files, but we have a roslaunch file to handle this. To do so, from the root of your catkin workspace, run:
 
 ```sh
 
@@ -88,6 +92,13 @@ roslaunch activity_matrix.launch is_sim:=<sim_bool> filename:=<txt_filename>
 Where `sim_bool` should be `true` is you are running the Panda in simulation, and `sim_bool` should be `false` if you are running the Panda in real life. These series of commands will run the Panda through a variety of poses and generate the necessary activity matrix. The activity matrix will be saved in the `data` folder of this package, under `txt_filename`. By default,
 `txt_filename` is `positions.txt`.
 
+## Miscellaneous
+
+It is **highly** recommended to add the line 
+```sh
+source <path to your workspace>/devel/setup.bash
+```
+to your `.bashrc` file.
 
 # Setting
 Set these environment variables

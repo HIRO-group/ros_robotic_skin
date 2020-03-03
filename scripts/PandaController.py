@@ -34,6 +34,15 @@ class PandaController(object):
 
     def __init__(self, is_sim=True):
         # Create Publishers and Init Node
+        """
+        Panda Controller class for controlling the panda in
+        both simulation and in real life
+
+        Arguments
+        ---------
+        `is_sim`: `bool`
+            Whether the controlled robot is from simulation or not.
+        """
         self.is_sim = is_sim
         self.trajectory_pub = self.get_trajectory_publisher(is_sim)
         rospy.init_node('panda_pose', anonymous=True)
@@ -73,38 +82,100 @@ class PandaController(object):
 
     @property
     def joint_names(self):
+        """
+        Gets the joint names of the Panda.
+        """
         return self.msg.joint_names
 
     @property
     def joint_angles(self):
+        """
+        Gets the current joint angles of the Panda.
+        """
         index = [self.joint_states.name.index(joint_name) for joint_name in self.joint_names]
         return [self.joint_states.position[idx] for idx in index]
     
     @property
     def joint_velocities(self):
+        """
+        Gets the current joint velocities of the Panda.
+        """
         index = [self.joint_states.name.index(joint_name) for joint_name in self.joint_names]
         return [self.joint_states.velocity[idx] for idx in index]
 
     def joint_state_callback(self, joint_states):
+        """
+        Joint state callback for the Panda.
+
+        Arguments 
+        ---------
+        `joint_states`: `JointState`
+            The joint state message received from the Subscriber.
+        
+        """
         self.joint_states = joint_states
 
     def joint_angle(self, joint_name):
+        """
+        Gets the joint angle for the Panda's
+        corresponding joint name.
+
+        Arguments 
+        ---------
+        `joint_name`: `str`
+            The name of the joint on the Panda.
+        
+        """
         idx = self.joint_states.name.index(joint_name)
         return self.joint_states.position[idx]
     
     def joint_velocity(self, joint_name):
+        """
+        Gets the joint velocity for the Panda's
+        corresponding joint name.
+
+        Arguments 
+        ---------
+        `joint_name`: `str`
+            The name of the joint on the Panda.
+        
+        """
         idx = self.joint_states.name.index(joint_name)
         return self.joint_states.velocity[idx]
 
     def set_joint_position_speed(self, speed=1.0):
+        """
+        Sets the joint position speed for the Panda.
+        However, this is not implemented yet.
+
+        Arguments 
+        ---------
+        `speed`: `float`
+            The speed in rad/s of the joints.
+        
+        """
         rospy.logerr('Set Joint Position Speed Not Implemented for Panda')
 
     # General Utilities
     def get_trajectory_publisher(self, is_sim):
+        """
+        Sets the correct topic to publish a `JointTrajectory`
+        message to. This is dependent on if we are in simulation or 
+        not.
+
+        Arguments 
+        ---------
+        `is_sim`: `bool`
+            If Panda is in simulation or not.
+        
+        """
         topic_string = '/panda_arm_controller/command' if is_sim else '/joint_trajectory_controller/command'
         return rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
 
     def send_once(self):
+        """
+        Sends one `JointTrajectory` message.
+        """
         self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
         self.trajectory_pub.publish(self.msg)
@@ -299,6 +370,7 @@ class PandaController(object):
             self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 if __name__ == "__main__":
+    # just 2 poses for now.
     poses_list = [
         [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']

@@ -10,9 +10,13 @@ from sensor_msgs.msg import Imu
 class IMUBoxStateManager():
     def __init__(self, model_names, init_poses=None, sdf=True):
         """
-        init_poses: List of geometry_msgs.msg.Pose
+        IMUBoxStateManager class.
+
+        Arguments
+        ---------
+        `init_poses`: `List[geometry_msgs.msg.Pose]`
             [Pose(Position xyz, Orientation quaternion)]
-        sdf: bool
+        `sdf: `bool`
             launch from sdf or urdf
         """
         self.model_names = model_names
@@ -53,10 +57,22 @@ class IMUBoxStateManager():
         self.req.model_xml = xml_string
 
     def imu_callback(self, data):
+        """
+        IMU callback.
+
+        Arguments
+        ---------
+        `data`: `sensor_msgs.msg.Imu`
+            The `Imu` message, sed to get orientation.
+
+        """
         # self.imu_q = data
         self.imu_q = data.orientation
     
     def spawn(self):
+        """
+        Spawns the model
+        """
         for model_name, pose in zip(self.model_names, self.init_poses):
             try:
                 self.req.model_name = model_name
@@ -66,10 +82,32 @@ class IMUBoxStateManager():
                 rospy.loginfo("Service call failed: %s" % e)
 
     def set_poses(self, names, poses):
+        """
+        Sets the poses of the IMU.
+        
+        Arguments
+        ---------
+        `names`: `List[str]`
+            The names of the IMUs
+
+        `poses`: `List[geometry_msgs.msg.Pose]`
+            The poses of the IMUs
+        """
         for name, pose in zip(names, poses):
             self.set_pose(name, pose)
 
     def set_pose(self, name, pose=None):
+        """
+        Sets a pose of an IMU
+        
+        Arguments
+        ---------
+        `name`: `str`
+            The name of the IMU
+
+        `poses`: `geometry_msgs.msg.Pose`
+            The pose of the IMU
+        """
         pose = Pose(position=self.position, orientation=self.imu_q)
 
         if self.sdf:

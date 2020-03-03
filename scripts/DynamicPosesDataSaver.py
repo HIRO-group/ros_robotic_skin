@@ -19,9 +19,26 @@ from PandaController import PandaController
 RAD2DEG = 180.0/np.pi
 OSCILLATION_TIME = 3.0
 
+# converts numpy array to string
 n2s = lambda x, precision=2:  np.array2string(x, precision=precision, separator=',', suppress_small=True)
 
 def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
+    """
+    Implementation of Hampel Filter for outlier detection.
+    
+    Arguments
+    ----------
+    `input_series`: `np.array`
+        The input data to use for outlier detection.
+
+    `window_size`: `int`
+        The sliding window size to use for the filter on
+        `input_series`.
+    
+    `n_sigmas`: `int`
+        The number of standard deviations to determine
+        what data points are outliers.
+    """
     n = len(input_series)
     new_series = input_series.copy()
     k = 1.4826 # scale factor for Gaussian distribution
@@ -45,7 +62,8 @@ class DynamicPoseData():
     """
     def __init__(self, pose_names, joint_names, imu_names, filepath):
         """
-        Initialize StaticPoseData class. 
+        Initialize StaticPoseData class.
+         
         Arguments
         ----------
         pose_names: list[str]
@@ -75,6 +93,7 @@ class DynamicPoseData():
         """
         Append data to a dictionary whose keys are 
         [pose_name][joint_name][imu_name]
+        
         Arguments
         ----------
         pose_name: str
@@ -92,7 +111,11 @@ class DynamicPoseData():
     
     def clean_data(self, verbose=False):
         """
-        verbose: bool
+        Cleans the data.
+
+        Arguments
+        ----------
+        `verbose`: `bool`
         """
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
@@ -141,7 +164,12 @@ class DynamicPoseData():
 
     def save(self, data):
         """
-        Save data
+        Saves the data to a pickle file.
+
+        Arguments
+        ----------
+        `data`: `OrderedDict`
+            The data to be saved
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
@@ -156,6 +184,7 @@ class DynamicPoseDataSaver():
     def __init__(self, controller, poses_list, filepath='data/dynamic_data'):
         """
         Initializes DynamicPoseDataSaver class.
+
         Arguments
         -----------
         controller: 
@@ -290,6 +319,14 @@ class DynamicPoseDataSaver():
     def save(self, save=True, verbose=False):
         """
         Save data to a pickle file.
+        
+
+        Arguments
+        ----------
+        `save`: `bool`
+            If the data will be saved
+
+        `verbose`: `bool`
         """
         
         data = self.data_storage.clean_data(verbose)

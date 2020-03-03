@@ -38,6 +38,17 @@ class ActivityMatrixController():
         print(self.pos_mat)
 
     def spin(self):
+        """
+        Goes through all of the joints and positions.
+
+        Arguments
+        ---------
+        None
+
+        Returns
+        ----------
+        returns: None
+        """
         joint_int = 0
         self.controller.send_once()
         while not rospy.is_shutdown():
@@ -74,7 +85,7 @@ if __name__ == '__main__':
 
     if robot_type == 'sawyer' and is_simulation == False:
         raise Exception('Real Sawyer support is currently not supported.')
-
+    # controller was determined from roslaunch file.
     controller = PandaController(is_sim=is_simulation) if robot_type == 'panda' else SawyerController()
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')

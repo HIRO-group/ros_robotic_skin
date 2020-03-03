@@ -14,9 +14,17 @@ from PandaController import PandaController
 class EstimatedIMUBoxStateManager():
     def __init__(self, model_names, init_poses=None, sdf=True):
         """
-        init_poses: List of geometry_msgs.msg.Pose
-            [Pose(Position xyz, Orientation quaternion)]
-        sdf: bool
+        Spawns the IMU model.
+        
+        Arguments
+        ---------
+        `model_names`: `List[str]`
+            The model names for the IMU
+
+        `init_poses`: `List[geometry_msgs.msg.Pose]`
+            `[Pose(Position xyz, Orientation quaternion)]`
+        
+        `sdf`: `bool`
             launch from sdf or urdf
         """
         self.model_names = model_names
@@ -52,6 +60,10 @@ class EstimatedIMUBoxStateManager():
         self.req.model_xml = xml_string
     
     def spawn(self):
+        """
+        Spawns the IMU model with the poses defined earlier in
+        `__init__`
+        """
         for model_name, pose in zip(self.model_names, self.init_poses):
             try:
                 self.req.model_name = model_name
@@ -69,10 +81,32 @@ class EstimatedIMUBoxStateManager():
                 rospy.loginfo("Service call failed: %s" % e)
 
     def set_poses(self, names, poses):
+        """
+        Sets the poses of the IMU.
+        
+        Arguments
+        ---------
+        `names`: `List[str]`
+            The names of the IMUs
+
+        `poses`: `List[geometry_msgs.msg.Pose]`
+            The poses of the IMUs
+        """
         for name, pose in zip(names, poses):
             self.set_pose(name, pose)
 
     def set_pose(self, name, pose):
+        """
+        Sets a pose of an IMU
+        
+        Arguments
+        ---------
+        `name`: `str`
+            The name of the IMU
+
+        `poses`: `geometry_msgs.msg.Pose`
+            The pose of the IMU
+        """
         if self.sdf:
             try:
                 state_msg = ModelState()
@@ -95,6 +129,14 @@ class EstimatedIMUBoxStateManager():
 
 class TrueIMUBoxStateManager():
     def __init__(self, names):
+        """
+        TrueIMUBoxStateManager class.
+
+        Arguments
+        ---------
+        `names`: `List[str]`
+            The names of the IMUs
+        """
         self.names = names
         self.n = len(names)
 
@@ -102,6 +144,10 @@ class TrueIMUBoxStateManager():
         rospy.wait_for_service('/gazebo/get_link_state')
 
     def get_poses(self):
+        """
+        Gets the poses of the given links
+
+        """
         poses = np.zeros((self.n, 7))
         for i, name in enumerate(self.names):
             resp = self.get_link_state(name, 'world')
@@ -113,6 +159,14 @@ class TrueIMUBoxStateManager():
         return poses
 
 def load_estimated_poses(filename):
+    """
+    Loads the poses 
+
+    Arguments
+    ---------
+    `filename`: `str`
+        The filename to get the `np.array`
+    """
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     return np.loadtxt(os.path.join(ros_robotic_skin_path, 'data', filename))
 
