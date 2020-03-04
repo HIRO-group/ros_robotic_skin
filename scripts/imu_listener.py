@@ -9,6 +9,24 @@ import numpy as np
 class ImuListener():
 
     def __init__(self, num_imus, acc_thresh=0.3):
+        """
+        ImuListener class for registering when IMUs are
+        activated; that is, the IMU is moved enough.
+
+        Arguments
+        ----------
+        `num_imus`: `int`
+            Amount of IMUs on the robot
+
+        `acc_thresh`: `float`
+            The default threshold used to determine the
+            minimal difference between two consecutive 
+            IMU readings to constitute an 'activated' IMU.
+
+        Returns
+        ----------
+        returns: None
+        """
 
         self.prev_imu_matrix = np.full((num_imus, 3), np.nan)
         self.acc_thresh = acc_thresh
@@ -23,6 +41,20 @@ class ImuListener():
 
 
     def imu_callback(self, data):
+        """
+        A ROS callback for checking IMU data and 
+        publishing a message if a certain IMU is
+        activated.
+
+        Arguments
+        ----------
+        `data`: `Imu`
+            `Imu` message from the IMU
+
+        Returns
+        ----------
+        returns: None
+        """
         imu_num = int(data.header.frame_id[-1])
         is_nan = np.isnan(self.prev_imu_matrix[imu_num])
         # if the measurements are unitialized, initialize them
@@ -57,4 +89,5 @@ class ImuListener():
             self.prev_imu_matrix[imu_num,2] = data.linear_acceleration.z
 
 if __name__ == '__main__':
+    # create the IMU listener, and spin.
     imu_listener = ImuListener(num_imus=7)

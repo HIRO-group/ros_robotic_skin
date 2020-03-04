@@ -30,6 +30,16 @@ class SawyerController(object):
     """
 
     def __init__(self, limb="right"):
+        """
+        SawyerController class. Currently tested in simulation.
+        
+        Arguments
+        ---------
+        `limb`: `str`
+            The limb string used to initialize
+            `self._limb.`
+        
+        """
         # Create Publishers and Init Node
         rospy.init_node('sawyer_controller', anonymous=True)
         # Set Initial position of the robot
@@ -52,23 +62,61 @@ class SawyerController(object):
 
     @property
     def joint_names(self):
+        """
+        Gets the joint names of the Sawyer robot.
+        """
         return self._limb.joint_names()
     
     @property
     def joint_angles(self):
+        """
+        Gets the current joint angles of the Sawyer robot.
+        """
         return self._limb.joint_angles()
 
     @property
     def joint_velocities(self):
+        """
+        Gets the current joint velocities of the Sawyer robot.
+        """
         return self._limb.joint_velocities()
 
     def joint_angle(self, joint_name):
+        """
+        Gets the joint angle for the Sawyer's
+        corresponding joint name.
+
+        Arguments 
+        ---------
+        `joint_name`: `str`
+            The name of the joint on the Panda.
+        
+        """
         return self._limb.joint_angle(joint_name)
     
     def joint_velocity(self, joint_name):
+        """
+        Gets the joint velocity for the Sawyer's
+        corresponding joint name.
+
+        Arguments 
+        ---------
+        `joint_name`: `str`
+            The name of the joint on the Panda.
+        
+        """
         return self._limb.joint_velocity(joint_name)
 
     def set_joint_position_speed(self, speed=1.0):
+        """
+        Sets the joint position speed for Sawyer.
+
+        Arguments 
+        ---------
+        `speed`: `float`
+            The speed in rad/s of the joints.
+        
+        """
         return self._limb.set_joint_position_speed(speed=speed)
 
     def publish_positions(self, positions, sleep):
@@ -248,5 +296,6 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     controller = SawyerController()
-    while True:
-        controller.set_trajectory_list(poses_list, sleep=1)
+    controller.publish_positions([0,0,0,0,0,0,0], 5)
+    # while True:
+    #     controller.set_trajectory_list(poses_list, sleep=1)

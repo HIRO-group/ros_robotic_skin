@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   franka_control
   franka_gripper
+  imu_filter_madgwick
 )
 
 find_package(catkin REQUIRED)
@@ -141,7 +142,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/ros_robotic_skin_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/main.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -163,9 +164,9 @@ include_directories(
 #############
 
 
-install(DIRECTORY robot
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+#install(DIRECTORY robot
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#)
 
 
 # all install targets should use catkin DESTINATION variables
@@ -223,4 +224,8 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(launch/test.test)
 endif()
+
+# Add PoseEstimation CMakeLists.txt here so that it will be compiled
+add_subdirectory(scripts/PoseEstimation)
+
 

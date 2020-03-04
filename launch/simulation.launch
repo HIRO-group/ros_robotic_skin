@@ -49,9 +49,47 @@
     <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
 
     <!-- launch robot control node for moveit motion planning -->
-    <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/>
+    <!-- <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/> -->
 
     <!--    Add Params YAML File-->
     <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
+
+    <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
+    <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
+    <node name="Pose0EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE0" output="screen">
+        <param name="imu_pose_publisher_name" value="imu0_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data0" />   
+    </node>
+
+    <node name="Pose1EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE1" output="screen">
+        <param name="imu_pose_publisher_name" value="imu1_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data1" />   
+    </node>
+
+    <node name="Pose2EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE2" output="screen">
+        <param name="imu_pose_publisher_name" value="imu2_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data2" />   
+    </node>
+
+    <node name="Pose3EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE3" output="screen">
+        <param name="imu_pose_publisher_name" value="imu3_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data3" />   
+    </node>
+
+    <node name="Pose4EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE4" output="screen">
+        <param name="imu_pose_publisher_name" value="imu4_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data4" />   
+    </node>
+
+    <node name="Pose5EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE5" output="screen">
+        <param name="imu_pose_publisher_name" value="imu5_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data5" />   
+    </node>
+
+    <node name="Pose6EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE6" output="screen">
+        <param name="imu_pose_publisher_name" value="imu6_pose" /> 
+        <param name="original_imu_publisher_name" value="/imu_data6" />   
+    </node>
+
 </launch>

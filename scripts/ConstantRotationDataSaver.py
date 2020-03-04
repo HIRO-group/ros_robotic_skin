@@ -25,6 +25,22 @@ CONSTANT_VELOCITY = 2.0
 n2s = lambda x, precision=2:  np.array2string(x, precision=precision, separator=',', suppress_small=True)
 
 def reject_outliers(data, m=1):
+    """
+    Rejects outliers in a dataset.
+
+    Arguments
+    ----------
+    `data`: `np.array`
+        The data.
+    
+    `m`: `int`
+        The amount of standard deviations from
+        the mean which is considered an outlier. 
+
+    Returns
+    ----------
+    returns: None
+    """
     is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
     indices = np.where(is_in_std==True)
     return data[indices], indices
@@ -40,6 +56,7 @@ class ConstantRotationData():
     def __init__(self, pose_names, joint_names, imu_names, filepath):
         """
         Initialize StaticPoseData class. 
+
         Arguments
         ----------
         pose_names: list[str]
@@ -69,6 +86,7 @@ class ConstantRotationData():
         """
         Append data to a dictionary whose keys are 
         [pose_name][joint_name][imu_name]
+
         Arguments
         ----------
         pose_name: str
@@ -86,7 +104,11 @@ class ConstantRotationData():
     
     def clean_data(self, verbose=False):
         """
-        verbose: bool
+        Cleans the data.
+
+        Arguments
+        ----------
+        `verbose`: `bool`
         """
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
@@ -102,7 +124,16 @@ class ConstantRotationData():
 
     def save(self, data, filter=False):
         """
-        Save data
+        Saves the data to a pickle file.
+
+        Arguments
+        ----------
+        `data`: `OrderedDict`
+            The data to be saved
+        
+        `filter`: `bool`
+            Whether the data is filtered of values
+            that are not near the constant velocity defined in this file.
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
@@ -115,6 +146,11 @@ class ConstantRotationData():
     def filter_data(self, data):
         """
         Filters the data along values near `CONSTANT_VELOCITY`
+
+        Arguments
+        ----------
+        `data`: `OrderedDict`
+            The data from the data collection.
         """
         for pose in data.keys():
             poses_dict = data[pose]
@@ -141,6 +177,7 @@ class ConstantRotationDataSaver():
     def __init__(self, controller, poses_list, filepath='data/constant_data'):
         """
         Initializes DynamicPoseDataSaver class.
+
         Arguments
         -----------
         controller: 
