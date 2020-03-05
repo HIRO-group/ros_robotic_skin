@@ -67,7 +67,7 @@ roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
 ## Capture Poses
 For this section to work, you must first be running 1 of 3 tasks:
 - The Franka Panda simulation
-- Franka ROS for the real Franka Panda
+- The **real** Franka Panda running ROS
 - The Sawyer Robot simulation
 
 Otherwise, this code will **not** work.
