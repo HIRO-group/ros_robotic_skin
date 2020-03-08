@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-import os, sys
-from collections import OrderedDict 
+import os
+import sys
+from collections import OrderedDict
 import copy
-import datetime
-import math
-from math import pi
 import numpy as np
 import pickle
 
@@ -16,9 +14,9 @@ import utils
 from SawyerController import SawyerController
 from PandaController import PandaController
 
-import utils
 
 RAD2DEG = 180.0/np.pi
+
 
 def reject_outliers(data, m=1):
     """
@@ -30,12 +28,14 @@ def reject_outliers(data, m=1):
         The data
 
     `m`: `int`
-        The number of standard deviations from the mean to 
+        The number of standard deviations from the mean to
         reject data points.
 
     """
-    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
+    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0))
+                       < m * np.std(data, axis=0), axis=1)
     return data[is_in_std, :]
+
 
 def reject_outlier(data, m=1):
     """
@@ -47,24 +47,26 @@ def reject_outlier(data, m=1):
         The data
 
     `m`: `int`
-        The number of standard deviations from the mean to 
+        The number of standard deviations from the mean to
         reject data points.
     """
     is_in_std = np.absolute(data - np.mean(data)) < m * np.std(data)
     return data[is_in_std, :]
 
+
 class StaticPoseData():
     """
     Class to store static poses into a nested dictionary.
-    It is stored as in [20 poses][7 IMUs][data]. 
+    It is stored as in [20 poses][7 IMUs][data].
     self.data[pose_name][imu_name] = np.ndarray
-    The data is defined as below. 
-    data = [mean x y z acceleration]. 
-    so the np.ndarray's dimension is (No. of collected data  x  xyz accelerations)
+    The data is defined as below.
+    data = [mean x y z acceleration].
+    so the np.ndarray's dimension is (No. of collected data
+    x  xyz accelerations)
     """
     def __init__(self, pose_names, imu_names, filepath):
         """
-        Initialize StaticPoseData class. 
+        Initialize StaticPoseData class.
 
         Arguments
         ----------
@@ -84,11 +86,11 @@ class StaticPoseData():
         for pose_name in pose_names:
             self.data[pose_name] = OrderedDict()
             for imu_name in imu_names:
-                self.data[pose_name][imu_name] = np.empty((0, 10), float) 
+                self.data[pose_name][imu_name] = np.empty((0, 10), float)
 
     def append(self, pose_name, imu_name, data):
         """
-        Append data to a dictionary whose keys are 
+        Append data to a dictionary whose keys are
         [pose_name][imu_name]
 
         Arguments
@@ -98,12 +100,12 @@ class StaticPoseData():
         imu_name: str
             Names of imus
         data: np.array
-            Numpy array of size (1,3). 
+            Numpy array of size (1,3).
             Includes an accelerometer measurement.
         """
         self.data[pose_name][imu_name] = \
             np.append(self.data[pose_name][imu_name], np.array([data]), axis=0)
-    
+
     def clean_data(self, verbose=False):
         """
         Cleans the data
@@ -118,13 +120,15 @@ class StaticPoseData():
             for imu_name in self.imu_names:
                 d = reject_outliers(self.data[pose_name][imu_name][:, :3])
                 m = np.mean(d, axis=0)
-                s = np.std(d, axis=0)
+                # s = np.std(d, axis=0)
                 joints = reject_outliers(self.data[pose_name][imu_name][:, 3:])
                 j = np.mean(joints, axis=0)
                 data[pose_name][imu_name] = np.r_[m, j]
 
                 if verbose:
-                    rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)'%(pose_name, imu_name, m[0], m[1], m[2]))
+                    rospy.loginfo('[%s, %s] Mean Acceleration: \
+                    (%.3f %.3f %.3f)' % (pose_name, imu_name,
+                                         m[0], m[1], m[2]))
 
         return data
 
@@ -139,9 +143,10 @@ class StaticPoseData():
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
-        
+
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
+
 
 class StaticPoseDataSaver():
     """
@@ -153,11 +158,12 @@ class StaticPoseDataSaver():
 
         Arguments
         -----------
-        controller: 
+        controller:
             Wrapped controller to control either Panda or Sawyer robot.
         poses_list: list
-            A list of poses. Each pose is a list. 
-            It includes 7 joint positiosn, 7 joint velociites, and the Pose name
+            A list of poses. Each pose is a list.
+            It includes 7 joint positiosn, 7 joint velociites,
+            and the Pose name
         filepath: str
             File path to save the collected data
         """
@@ -166,14 +172,17 @@ class StaticPoseDataSaver():
 
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
-        self.curr_pose_name = self.pose_names[0] 
+        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
+                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
+        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
+                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
+        self.curr_pose_name = self.pose_names[0]
         self.ready = False
-        
+
         # data storage
-        self.data_storage = StaticPoseData(self.pose_names, self.imu_names, filepath)
-        
+        self.data_storage = StaticPoseData(self.pose_names,
+                                           self.imu_names, filepath)
+
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
@@ -181,20 +190,21 @@ class StaticPoseDataSaver():
     def callback(self, data):
         """
         A callback function for IMU topics
-        
+
         Arguments
         ----------
         data: sensor_msgs.msg.Imu
-            IMU data. Please refer to the official documentation. 
+            IMU data. Please refer to the official documentation.
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
         if self.ready:
             accel = data.linear_acceleration
-            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
+            joint_angles = [self.controller.joint_angle(name)
+                            for name in self.joint_names]
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
-                data.header.frame_id,           # for each imu  
+                data.header.frame_id,           # for each imu
                 np.array([accel.x, accel.y, accel.z] + joint_angles))
 
     def set_poses(self, time=3.0):
@@ -208,7 +218,8 @@ class StaticPoseDataSaver():
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]
             self.controller.publish_positions(positions, 0.1)
-            print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
+            print('At Position: ' + pose_name,
+                  map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
             self.ready = True
@@ -224,6 +235,7 @@ class StaticPoseDataSaver():
         if save:
             self.data_storage.save(data)
 
+
 if __name__ == "__main__":
     # get poses from file?
     robot = sys.argv[1]
@@ -234,15 +246,15 @@ if __name__ == "__main__":
         controller = SawyerController()
     else:
         raise ValueError("Must be either panda or sawyer")
-    
+
     if len(sys.argv) > 2:
         try:
             poses_list = utils.get_poses_list_file(sys.argv[2])
-        except:
+        except Exception:
             raise Exception("Could not initiate poses_lists from file!")
     else:
         # Poses Configuration
-        poses_list = [        
+        poses_list = [
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 'Pose_1'],
             [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_2'],
             [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_3'],
@@ -263,9 +275,9 @@ if __name__ == "__main__":
             [[2.52, -2.54, 2.07, 0.55, 3.26, 2.31, 4.72], [], 'Pose_18'],
             [[4.63, -0.70, 3.14, 3.41, 3.55, 0.69, 6.10], [], 'Pose_19'],
             [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
-        ]    
+        ]
 
     filepath = '_'.join(['data/static_data', robot])
     sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
-    #sd.save(save=True, verbose=True)
+    # sd.save(save=True, verbose=True)

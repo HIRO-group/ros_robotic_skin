@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-import rospy 
-from std_msgs.msg import String, Int16, Bool
+import rospy
+from std_msgs.msg import Int16
 from sensor_msgs.msg import Imu
 
 import numpy as np
+
 
 class ImuListener():
 
@@ -20,7 +21,7 @@ class ImuListener():
 
         `acc_thresh`: `float`
             The default threshold used to determine the
-            minimal difference between two consecutive 
+            minimal difference between two consecutive
             IMU readings to constitute an 'activated' IMU.
 
         Returns
@@ -31,18 +32,18 @@ class ImuListener():
         self.prev_imu_matrix = np.full((num_imus, 3), np.nan)
         self.acc_thresh = acc_thresh
         rospy.init_node('skin_calibration', anonymous=True)
-        self.imu_mvmt_pub = rospy.Publisher('/imu_activated', Int16, queue_size=1)
+        self.imu_mvmt_pub = rospy.Publisher(
+            '/imu_activated', Int16, queue_size=1)
         self.imu_num_msg = Int16()
         # create subscribers for num_imus topics
         for i in range(num_imus):
             rospy.Subscriber('imu_data{}'.format(i), Imu, self.imu_callback)
-        
-        rospy.spin()
 
+        rospy.spin()
 
     def imu_callback(self, data):
         """
-        A ROS callback for checking IMU data and 
+        A ROS callback for checking IMU data and
         publishing a message if a certain IMU is
         activated.
 
@@ -59,12 +60,12 @@ class ImuListener():
         is_nan = np.isnan(self.prev_imu_matrix[imu_num])
         # if the measurements are unitialized, initialize them
         if np.all(is_nan):
-            self.prev_imu_matrix[imu_num,0] = data.linear_acceleration.x
-            self.prev_imu_matrix[imu_num,1] = data.linear_acceleration.y
-            self.prev_imu_matrix[imu_num,2] = data.linear_acceleration.z
+            self.prev_imu_matrix[imu_num, 0] = data.linear_acceleration.x
+            self.prev_imu_matrix[imu_num, 1] = data.linear_acceleration.y
+            self.prev_imu_matrix[imu_num, 2] = data.linear_acceleration.z
         else:
             # data from previous callback was already initialized
-            prev_imu_acc = self.prev_imu_matrix[imu_num] 
+            prev_imu_acc = self.prev_imu_matrix[imu_num]
             x_diff = np.abs(prev_imu_acc[0] - data.linear_acceleration.x)
             y_diff = np.abs(prev_imu_acc[1] - data.linear_acceleration.y)
             z_diff = np.abs(prev_imu_acc[2] - data.linear_acceleration.z)
@@ -77,16 +78,17 @@ class ImuListener():
                 print('y: {}'.format(data.linear_acceleration.y))
                 print('z: {}'.format(data.linear_acceleration.z))
                 print('OLD DATA')
-                print('x: {}'.format(self.prev_imu_matrix[imu_num,0]))
-                print('y: {}'.format(self.prev_imu_matrix[imu_num,1]))
-                print('z: {}'.format(self.prev_imu_matrix[imu_num,2]))
+                print('x: {}'.format(self.prev_imu_matrix[imu_num, 0]))
+                print('y: {}'.format(self.prev_imu_matrix[imu_num, 1]))
+                print('z: {}'.format(self.prev_imu_matrix[imu_num, 2]))
                 print('')
-                # publish the imu message if the acceleration is above a certain threshold.
+                # publish the imu message if the acceleration
+                # is above a certain threshold.
                 self.imu_mvmt_pub.publish(Int16(imu_num))
-       
-            self.prev_imu_matrix[imu_num,0] = data.linear_acceleration.x
-            self.prev_imu_matrix[imu_num,1] = data.linear_acceleration.y
-            self.prev_imu_matrix[imu_num,2] = data.linear_acceleration.z
+            self.prev_imu_matrix[imu_num, 0] = data.linear_acceleration.x
+            self.prev_imu_matrix[imu_num, 1] = data.linear_acceleration.y
+            self.prev_imu_matrix[imu_num, 2] = data.linear_acceleration.z
+
 
 if __name__ == '__main__':
     # create the IMU listener, and spin.

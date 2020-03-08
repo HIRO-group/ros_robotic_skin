@@ -1,16 +1,25 @@
 """
-This script is the output of my frustration with Gazebo, when I want to place reusable blocks, which passing some
-strings as parameters. Also to change origin and orientation using quaternion mathematics. Wish me luck.
+This script is the output of my frustration with Gazebo,
+when I want to place reusable blocks, which passing some
+strings as parameters. Also to change origin and orientation
+using quaternion mathematics. Wish me luck.
 
 Usage:
-1) Make the required changes in generate_xacro class's __init__ definition constants and just run the python file. This
-will take panda_arm_reference.xacro as base, generated required xacro blocks and rewrites the old panda_arm.xacro. So
-make a backup of working and stable panda_arm.xacro before attempting to do any changes for peace of your own mind.
-2) You don't need to run the python file every time, only when you want to change the xacro settings
-3) If you want to change the xacro, you can, but later update the changes in this file's xacro template, so that next
+1) Make the required changes in generate_xacro class's __init__
+definition constants and just run the python file. This
+will take panda_arm_reference.xacro as base, generated required
+xacro blocks and rewrites the old panda_arm.xacro. So
+make a backup of working and stable panda_arm.xacro before
+attempting to do any changes for peace of your own mind.
+2) You don't need to run the python file every time, only
+when you want to change the xacro settings
+3) If you want to change the xacro, you can, but later
+update the changes in this file's xacro template, so that next
 time they are auto-magically generated for you
-4) This python file should be one stop destination relating to generating the xacro for all needs
-5) The variables are named programmatically and clearly, so I won't comment. Everything is self explanatory
+4) This python file should be one stop destination
+relating to generating the xacro for all needs
+5) The variables are named programmatically and clearly,
+so I won't comment. Everything is self explanatory
 """
 import numpy as np
 import os
@@ -61,7 +70,7 @@ sensor_block = """
     </gazebo>
 
 
-"""
+"""  # noqa: E501,W291
 
 axes_blocks = """
 
@@ -141,7 +150,7 @@ axes_blocks = """
     </gazebo>
 
 
-"""
+"""  # noqa: E501,W293
 
 
 # End XML Blocks
@@ -159,7 +168,8 @@ def list_to_string(my_list):
 
 class generate_xacro:
     def __init__(self):
-        # Below we set all the constants required for generating required config files
+        # Below we set all the constants required for generating
+        # required config files
         # Sensor Settings
         self.real_imu_joint = "imu_link_joint"
         self.imu_parent = "${arm_id}_link"
@@ -214,7 +224,8 @@ class generate_xacro:
         x = z_original
         y = y_original
         z = -x_original
-        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        # According to above arrange we similarly the offset too,
+        # 0 index is for x 1 for y 2 for z
         self.real_visual_imu_xyz_3 = np.array([x, y, z])
         # IMU 3 end
 
@@ -227,7 +238,8 @@ class generate_xacro:
         x = z_original
         y = y_original
         z = -x_original
-        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        # According to above arrange we similarly the offset too,
+        # 0 index is for x 1 for y 2 for z
         self.real_visual_imu_xyz_4 = np.array([x, y, z])
         # IMU 4 end
 
@@ -239,7 +251,8 @@ class generate_xacro:
         x = -x_original
         y = z_original
         z = y_original
-        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        # According to above arrange we similarly
+        # the offset too, 0 index is for x 1 for y 2 for z
         self.real_visual_imu_xyz_5 = np.array([x, y, z])
 
         x_original = 0.13
@@ -249,7 +262,8 @@ class generate_xacro:
         x = y_original
         y = z_original
         z = x_original
-        # According to above arrange we similarly the offset too, 0 index is for x 1 for y 2 for z
+        # According to above arrange we similarly the
+        # offset too, 0 index is for x 1 for y 2 for z
         self.real_visual_imu_xyz_6 = np.array([x, y, z])
 
         self.real_imu_visual_rpy_0 = [1.57, 0, 1.57]
@@ -297,7 +311,8 @@ class generate_xacro:
 
         self.starting_string = ""
 
-    def make_sensor(self, imu_joint, imu_parent, imu_link, imu_sensor, imu_data, visual_xyz, visual_rpy):
+    def make_sensor(self, imu_joint, imu_parent, imu_link,
+                    imu_sensor, imu_data, visual_xyz, visual_rpy):
         global sensor_block
         return sensor_block.format(
             imu_joint=imu_joint,
@@ -309,7 +324,8 @@ class generate_xacro:
             visual_rpy=list_to_string(visual_rpy)
         )
 
-    def make_axes(self, imu_joint, imu_parent, imu_link, visual_xyz, joint_rotation_rpy, visual_rpy_x, visual_rpy_y,
+    def make_axes(self, imu_joint, imu_parent, imu_link,
+                  visual_xyz, joint_rotation_rpy, visual_rpy_x, visual_rpy_y,
                   visual_rpy_z):
         global axes_blocks
         return axes_blocks.format(
@@ -331,27 +347,53 @@ class generate_xacro:
             # for sensor_int in ['6']:
             for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
                 self.starting_string += self.make_sensor(
-                    imu_joint=getattr(self, type_of_imu + 'imu_joint') + sensor_int,
+                    imu_joint=getattr(
+                        self, type_of_imu + 'imu_joint') + sensor_int,
+
                     imu_parent=getattr(self, 'imu_parent') + sensor_int,
-                    imu_link=getattr(self, type_of_imu + 'imu_link') + sensor_int,
-                    imu_sensor=getattr(self, type_of_imu + 'imu_sensor') + sensor_int,
-                    imu_data=getattr(self, type_of_imu + 'imu_data') + sensor_int,
-                    visual_xyz=getattr(self, type_of_imu + 'visual_imu_xyz_' + sensor_int),
-                    visual_rpy=getattr(self, type_of_imu + 'imu_visual_rpy_' + sensor_int)
+
+                    imu_link=getattr(
+                        self, type_of_imu + 'imu_link') + sensor_int,
+
+                    imu_sensor=getattr(
+                        self, type_of_imu + 'imu_sensor') + sensor_int,
+
+                    imu_data=getattr(
+                        self, type_of_imu + 'imu_data') + sensor_int,
+
+                    visual_xyz=getattr(
+                        self, type_of_imu + 'visual_imu_xyz_' + sensor_int),
+
+                    visual_rpy=getattr(
+                        self, type_of_imu + 'imu_visual_rpy_' + sensor_int)
                 )
         # Generating all Axes
         for type_of_imu in ['real_']:
             # for sensor_int in ['6']:
             for sensor_int in ['0', '1', '2', '3', '4', '5', '6']:
                 self.starting_string += self.make_axes(
-                    imu_joint=getattr(self, type_of_imu + 'imu_joint') + sensor_int,
+                    imu_joint=getattr(
+                        self, type_of_imu + 'imu_joint') + sensor_int,
+
                     imu_parent=getattr(self, 'imu_parent') + sensor_int,
-                    imu_link=getattr(self, type_of_imu + 'imu_link_axes') + sensor_int,
-                    visual_xyz=getattr(self, type_of_imu + 'visual_imu_xyz_' + sensor_int),
-                    joint_rotation_rpy=getattr(self, type_of_imu + 'imu_visual_rpy_' + sensor_int),
-                    visual_rpy_x=getattr(self, type_of_imu + 'imu_rpy_x_' + sensor_int),
-                    visual_rpy_y=getattr(self, type_of_imu + 'imu_rpy_y_' + sensor_int),
-                    visual_rpy_z=getattr(self, type_of_imu + 'imu_rpy_z_' + sensor_int)
+
+                    imu_link=getattr(
+                        self, type_of_imu + 'imu_link_axes') + sensor_int,
+
+                    visual_xyz=getattr(
+                        self, type_of_imu + 'visual_imu_xyz_' + sensor_int),
+
+                    joint_rotation_rpy=getattr(
+                        self, type_of_imu + 'imu_visual_rpy_' + sensor_int),
+
+                    visual_rpy_x=getattr(
+                        self, type_of_imu + 'imu_rpy_x_' + sensor_int),
+
+                    visual_rpy_y=getattr(
+                        self, type_of_imu + 'imu_rpy_y_' + sensor_int),
+
+                    visual_rpy_z=getattr(
+                        self, type_of_imu + 'imu_rpy_z_' + sensor_int)
                 )
 
     def write_config(self):
@@ -361,7 +403,8 @@ class generate_xacro:
         """
 
         script_directory = os.path.dirname(os.path.realpath(__file__))
-        reference_file = open(script_directory + '/panda_arm_reference.xacro', 'r').read()
+        reference_file = open(
+            script_directory + '/panda_arm_reference.xacro', 'r').read()
         final_file = reference_file + self.starting_string + final_closing_tags
         open(script_directory + '/panda_arm.xacro', 'w').close()
         with open(script_directory + '/panda_arm.xacro', 'w') as f:
