@@ -123,8 +123,8 @@ class ActivityMatrix():
         if data.data is True:
             print("****** ACTIVITY MATRIX ******")
             print(self.activity_matrix)
-            _, final_matrix, _, _, _ = \
-                ConvertToLT(self.activity_matrix).get_lt_matrix_infos()
+            _, final_matrix, _, _, _ = ConvertToLT(  # noqa: F841
+                    self.activity_matrix).get_lt_matrix_infos()
             # convert the activity matrix to upper triangular
 
             save_mat_path = os.path.join(self.save_dir, 'activity_matrix.txt')

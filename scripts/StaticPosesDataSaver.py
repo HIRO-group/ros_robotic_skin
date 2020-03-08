@@ -216,7 +216,7 @@ class StaticPoseDataSaver():
             Time to collect the IMU data
         """
         for pose in self.poses_list:
-            positions, _, pose_name = pose[0], pose[1], pose[2]
+            positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.controller.publish_positions(positions, 0.1)
             print('At Position: ' + pose_name,
                   map(int, RAD2DEG*np.array(positions)))
