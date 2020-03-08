@@ -314,7 +314,8 @@ class DynamicPoseDataSaver():
         A = rospy.get_param('/oscillation_magnitude')
 
         for pose in self.poses_list:
-            positions, _, pose_name = pose[0], pose[1], pose[2] # noqa: F841
+            positions, \
+             _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_positions = positions
             self.curr_pose_name = pose_name
             self.controller.publish_positions(positions, sleep=1)
