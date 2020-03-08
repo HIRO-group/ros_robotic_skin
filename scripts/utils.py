@@ -5,6 +5,18 @@ import rospkg
 
 
 def n2s(x, precision=2):
+    """
+    converts numpy array to string.
+
+    Arguments
+    ---------
+    `x`: `np.array`
+        The numpy array to convert to a string.
+
+    `precision`: `int`
+        The precision desired on each entry in the array.
+
+    """
     return np.array2string(x, precision=precision,
                            separator=',', suppress_small=True)
 
