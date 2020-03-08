@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run a one-line script
-      run: pip install flake8
+      run: pip install wheel && pip install flake8
     - name: Run a multi-line script
       run: |
         echo Add other actions to build,
