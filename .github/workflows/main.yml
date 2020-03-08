@@ -9,7 +9,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses:
     - name: Install flake8
       run: sudo apt-get install flake8 && sudo apt-get install python-rostest
     - name: Run flake8 on the entire repository
