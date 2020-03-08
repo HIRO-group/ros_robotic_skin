@@ -1,6 +1,6 @@
 # General
 ## Current Release
-- `0.0.1` as of 2020/1/27
+- `0.0.1` as of 2020/3/07
 
 ## Supporting version
 `ROS Melodic`
@@ -100,6 +100,13 @@ source <path to your workspace>/devel/setup.bash
 ```
 to your `.bashrc` file.
 
+# Flake8 Testing
+
+In order to have the Github Actions build pass, we use `flake8` for style enforcement. To test this, simply run
+```sh
+flake8 .
+``` 
+within this repository (after cloning and changing directories to `ros_robotic_skin`).
 # Setting
 Set these environment variables
 
