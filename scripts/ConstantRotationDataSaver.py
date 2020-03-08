@@ -50,7 +50,7 @@ class ConstantRotationData():
     It is stored as in [20 poses][7 excited joints][7 IMUs][data].
     self.data[pose_name][joint_name][imu_name] = np.ndarray
     The data is defined as below.
-    data = [max acceleration, theta at the point].
+    data = [acceleration, joint angles, joint velocities].
     """
     def __init__(self, pose_names, joint_names, imu_names, filepath):
         """

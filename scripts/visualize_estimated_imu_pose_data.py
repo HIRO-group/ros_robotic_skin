@@ -40,20 +40,20 @@ class IMUBoxStateManager():
         if sdf:
             rospy.wait_for_service('/gazebo/spawn_sdf_model')
             self.spawn_model = rospy.ServiceProxy(
-                    '/gazebo/spawn_sdf_model', SpawnModel)
+                               '/gazebo/spawn_sdf_model', SpawnModel)
             model_path = os.path.join(
                     ros_robotic_skin_path, 'robots/imubox/model.sdf')
             self.set_model_state = rospy.ServiceProxy(
-                    '/gazebo/set_model_state', SetModelState)
+                                   '/gazebo/set_model_state', SetModelState)
             with open(model_path, 'r') as f:
                 xml_string = f.read().replace('\n', '')
         else:
             rospy.wait_for_service('/gazebo/spawn_urdf_model')
             self.spawn_model = rospy.ServiceProxy(
-                    '/gazebo/spawn_urdf_model', SpawnModel)
+                               '/gazebo/spawn_urdf_model', SpawnModel)
             model_path = os.path.join(ros_robotic_skin_path, 'robots/imu.urdf')
             self.set_link_state = rospy.ServiceProxy(
-                    '/gazebo/set_link_state', SetLinkState)
+                                  '/gazebo/set_link_state', SetLinkState)
             with open(model_path, 'r') as f:
                 xml_string = f.read()
 
