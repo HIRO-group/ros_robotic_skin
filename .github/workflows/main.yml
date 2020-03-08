@@ -13,5 +13,5 @@ jobs:
       run: sudo apt-get install flake8
     - name: Run a multi-line script
       run: |
-        flake8 --ignore=F841
+        flake8
         echo test, and deploy your project.
