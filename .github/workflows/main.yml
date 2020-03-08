@@ -9,9 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Run a one-line script
+    - name: Install flake8
       run: sudo apt-get install flake8
-    - name: Run a multi-line script
-      run: |
-        flake8 .
-        echo test, and deploy your project.
+    - name: Run flake8 on the entire repository
+      run: flake8 .
