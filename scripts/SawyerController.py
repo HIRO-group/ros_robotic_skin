@@ -242,7 +242,7 @@ class SawyerController(object):
         return: None
         """
         for pose in poses:
-            positions, _, pose_name = pose[0], pose[1], pose[2]
+            positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.pose_name = pose_name
             self.publish_positions(positions, sleep)
 
@@ -264,7 +264,7 @@ class SawyerController(object):
         return: None
         """
         for each_pose in poses:
-            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
+            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
             self.pose_name = pose_name
             self.publish_velocities(velocities, sleep)
 
