@@ -1,0 +1,17 @@
+name: ROS_Robotic_Skin CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install flake8
+      run: sudo apt-get install flake8 && sudo apt-get install python-rostest && sudo apt-get install -y python-rospy
+    - name: Run flake8 on the entire repository
+      run: flake8 .
+    - name: Run ROS tests
+      run: python tests/test_main.py

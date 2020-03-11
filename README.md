@@ -1,6 +1,6 @@
 # General
 ## Current Release
-- `0.0.1` as of 2020/1/27
+- `0.0.1` as of 2020/3/07
 
 ## Supporting version
 `ROS Melodic`
@@ -67,7 +67,7 @@ roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
 ## Capture Poses
 For this section to work, you must first be running 1 of 3 tasks:
 - The Franka Panda simulation
-- Franka ROS for the real Franka Panda
+- The **real** Franka Panda running ROS
 - The Sawyer Robot simulation
 
 Otherwise, this code will **not** work.
@@ -99,6 +99,31 @@ It is **highly** recommended to add the line
 source <path to your workspace>/devel/setup.bash
 ```
 to your `.bashrc` file.
+
+# Documentation Generation
+
+We use [`rosdoc_lite`](http://wiki.ros.org/rosdoc_lite) for documentation generation. You can check it out
+[here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, you can update the documentation with the following steps (assuming you are on the master branch):
+
+```sh
+
+git pull origin master
+git checkout gh-pages
+git merge master
+./docs_generate.sh
+
+```
+
+These commands and scripts will ensure that the `gh-pages` branch is up to date with your changes. From here, you can commit and push to the remote branch, and https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
+
+# Flake8 Testing
+
+In order to have the Github Actions build pass, we use `flake8` for style enforcement. To test this, simply run
+
+```sh
+flake8 .
+``` 
+within this repository (after cloning and changing directories to `ros_robotic_skin`).
 
 # Setting
 Set these environment variables

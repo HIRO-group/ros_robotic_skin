@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import os, sys
+import os
+import sys
 from collections import OrderedDict
 import copy
-import datetime
 import math
 from math import pi
 import numpy as np
@@ -19,13 +19,11 @@ from PandaController import PandaController
 RAD2DEG = 180.0/np.pi
 OSCILLATION_TIME = 3.0
 
-# converts numpy array to string
-n2s = lambda x, precision=2:  np.array2string(x, precision=precision, separator=',', suppress_small=True)
 
 def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
     """
     Implementation of Hampel Filter for outlier detection.
-    
+
     Arguments
     ----------
     `input_series`: `np.array`
@@ -34,36 +32,40 @@ def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
     `window_size`: `int`
         The sliding window size to use for the filter on
         `input_series`.
-    
+
     `n_sigmas`: `int`
         The number of standard deviations to determine
         what data points are outliers.
     """
     n = len(input_series)
     new_series = input_series.copy()
-    k = 1.4826 # scale factor for Gaussian distribution
+    k = 1.4826  # scale factor for Gaussian distribution
     indices = []
-    # possibly use np.nanmedian 
-    for i in range((window_size),(n - window_size)):
+    # possibly use np.nanmedian
+    for i in range((window_size), (n - window_size)):
         x0 = np.median(input_series[(i - window_size):(i + window_size)])
-        S0 = k * np.median(np.abs(input_series[(i - window_size):(i + window_size)] - x0))
+        S0 = k * np.median(
+                    np.abs(
+                        input_series[
+                            (i - window_size):(i + window_size)] - x0))
         if (np.abs(input_series[i] - x0) > n_sigmas * S0):
             new_series[i] = x0
             indices.append(i)
     return new_series, indices
 
+
 class DynamicPoseData():
     """
-    Class to store dynamic pose data into a nested dictionary. 
-    It is stored as in [20 poses][7 excited joints][7 IMUs][data]. 
+    Class to store dynamic pose data into a nested dictionary.
+    It is stored as in [20 poses][7 excited joints][7 IMUs][data].
     self.data[pose_name][joint_name][imu_name] = np.ndarray
-    The data is defined as below. 
-    data = [max acceleration, theta at the point]. 
+    The data is defined as below.
+    data = [max acceleration, theta at the point].
     """
     def __init__(self, pose_names, joint_names, imu_names, filepath):
         """
         Initialize StaticPoseData class.
-         
+
         Arguments
         ----------
         pose_names: list[str]
@@ -87,13 +89,14 @@ class DynamicPoseData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 12), float)
+                    self.data[pose_name][joint_name][imu_name] = \
+                        np.empty((0, 12), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
-        Append data to a dictionary whose keys are 
+        Append data to a dictionary whose keys are
         [pose_name][joint_name][imu_name]
-        
+
         Arguments
         ----------
         pose_name: str
@@ -103,12 +106,14 @@ class DynamicPoseData():
         imu_name: str
             Names of imus
         data: np.array
-            Numpy array of size (1,4). 
+            Numpy array of size (1,4).
             Includes an accelerometer measurement and a joint angle.
         """
         self.data[pose_name][joint_name][imu_name] = \
-            np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
-    
+            np.append(
+                    self.data[pose_name][joint_name][imu_name],
+                    np.array([data]), axis=0)
+
     def clean_data(self, verbose=False):
         """
         Cleans the data.
@@ -131,23 +136,41 @@ class DynamicPoseData():
                     w = d[:, 3]
                     w, outliers_index = hampel_filter_forloop(w, 10, 1)
                     max_w_idx = np.argmax(w)
-                    
+
                     joint_accel = d[:, 4]
-                    ja, outliers_index = hampel_filter_forloop(joint_accel, 10, 1)
-                    max_ja_idx = np.argmax(ja)
+                    ja, outliers_index = \
+                        hampel_filter_forloop(joint_accel, 10, 1)
+                    # max_ja_idx = np.argmax(ja)
                     """
                     joints = d[:, 4:]
                     window = 50
-                    #rospy.loginfo(n2s(self.data[pose_name][joint_name][imu_name][idx-window:idx+window+1, :7], 3))
-                    if joint_name == self.joint_names[0] and (imu_name in self.imu_names[:2]):
-                        rospy.loginfo('[%s, %s, %s]'%(pose_name, joint_name, imu_name))
-                        rospy.loginfo(n2s(d[:window+1, :9], 3))
-                        rospy.loginfo('[%ith Norm=%.3f (%.2f, %.2f, %.2f), w=%.2f, joint accel=%.2f'%\
-                            (idx, norms[idx], d[idx,0], d[idx,1], d[idx,2], w[idx], ja[idx]))
-                        rospy.loginfo('[%ith Norm=%.3f (%.2f, %.2f, %.2f), w=%.2f, joint accel=%.2f'%\
-                            (max_w_idx, norms[max_w_idx], d[max_w_idx,0], d[max_w_idx,1], d[max_w_idx,2], w[max_w_idx], ja[max_w_idx]))
-                        rospy.loginfo('[%ith Norm=%.3f (%.2f, %.2f, %.2f), w=%.2f, joint accel=%.2f'%\
-                            (max_ja_idx, norms[max_ja_idx], d[max_ja_idx,0], d[max_ja_idx,1], d[max_ja_idx,2], w[max_ja_idx], ja[max_ja_idx]))
+                    rospy.loginfo(
+                      utils.n2s(
+                      self.data[pose_name]
+                      [joint_name]
+                      [imu_name][idx-window:idx+window+1, :7], 3))
+                    if joint_name == self.joint_names[0]
+                        and (imu_name in self.imu_names[:2]):
+                        rospy.loginfo(
+                            '[%s, %s, %s]'%(pose_name, joint_name, imu_name))
+                        rospy.loginfo(utils.n2s(d[:window+1, :9], 3))
+                        rospy.loginfo(
+                            '[%ith Norm=%.3f (%.2f, %.2f, %.2f),
+                            w=%.2f, joint accel=%.2f'%\
+                            (idx, norms[idx], d[idx,0],
+                            d[idx,1], d[idx,2], w[idx], ja[idx]))
+                        rospy.loginfo(
+                            '[%ith Norm=%.3f (%.2f, %.2f, %.2f),
+                            w=%.2f, joint accel=%.2f'%\
+                            (max_w_idx,
+                            norms[max_w_idx], d[max_w_idx,0],
+                            d[max_w_idx,1], d[max_w_idx,2],
+                            w[max_w_idx], ja[max_w_idx]))
+                        rospy.loginfo('[%ith Norm=%.3f (%.2f, %.2f, %.2f),
+                            w=%.2f, joint accel=%.2f'%\
+                            (max_ja_idx, norms[max_ja_idx],
+                            d[max_ja_idx,0], d[max_ja_idx,1],
+                            d[max_ja_idx,2], w[max_ja_idx], ja[max_ja_idx]))
                     """
 
                     data[pose_name][joint_name][imu_name] = \
@@ -158,8 +181,10 @@ class DynamicPoseData():
                     if verbose:
                         rospy.loginfo(data[pose_name][joint_name][imu_name])
                         d = data[pose_name][joint_name][imu_name]
-                        rospy.loginfo('[%s, %s, %s] (%.3f, %.3f, %.3f)'%(pose_name, joint_name, imu_name, d[0], d[1], d[2]))
-        
+                        rospy.loginfo(
+                            '[%s, %s, %s] (%.3f, %.3f, %.3f)'
+                            % (pose_name, joint_name, imu_name,
+                               d[0], d[1], d[2]))
         return data
 
     def save(self, data):
@@ -173,13 +198,14 @@ class DynamicPoseData():
         """
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
         filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
-        
+
         with open(filepath, 'wb') as f:
             pickle.dump(data, f)
 
+
 class DynamicPoseDataSaver():
     """
-    Class for collecting dynamic pose data nd save them as a pickle file
+    Class for collecting dynamic pose data and save them as a pickle file
     """
     def __init__(self, controller, poses_list, filepath='data/dynamic_data'):
         """
@@ -187,11 +213,11 @@ class DynamicPoseDataSaver():
 
         Arguments
         -----------
-        controller: 
+        controller:
             Wrapped controller to control either Panda or Sawyer robot.
         poses_list: list
-            A list of poses. Each pose is a list. 
-            It includes 7 joint positiosn, 7 joint velociites, and the Pose name
+            A list of poses. Each pose is a list.
+            It includes 7 joint position, 7 joint velociites, and Pose name
         filepath: str
             File path to save the collected data
         """
@@ -202,8 +228,10 @@ class DynamicPoseDataSaver():
         # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2', 'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
+        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
+                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
+        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
+                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
         self.ready = False
         self.curr_positions = [0, 0, 0, 0, 0, 0, 0]
@@ -216,51 +244,61 @@ class DynamicPoseDataSaver():
 
         rospy.loginfo(self.joint_names)
 
-        # data storage 
-        self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
+        # data storage
+        self.data_storage = \
+            DynamicPoseData(self.pose_names,
+                            self.joint_names, self.imu_names, filepath)
         rospy.sleep(1)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
-    
+
     def callback(self, data):
         """
         A callback function for IMU topics
-        
+
         Arguments
         ----------
         data: sensor_msgs.msg.Imu
-            IMU data. Please refer to the official documentation. 
+            IMU data. Please refer to the official documentation.
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
         if self.ready:
             accel = data.linear_acceleration
-            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
+            joint_angles = [
+                self.controller.joint_angle(name) for name in self.joint_names]
 
-            if self.curr_joint_name == self.joint_names[0] and data.header.frame_id == 'imu_link0':
+            if self.curr_joint_name == self.joint_names[0] and \
+               data.header.frame_id == 'imu_link0':
                 pass
-                #rospy.loginfo(n2s(np.array([accel.x, accel.y, accel.z])))
+                # rospy.loginfo(utils.n2s(
+                #   np.array([accel.x, accel.y, accel.z])))
 
             curr_t = rospy.get_rostime().to_sec()
             dt = curr_t - self.prev_t
-            
+
             curr_w = self.controller.joint_velocity(self.curr_joint_name)
             curr_A = abs(curr_w)
 
             try:
                 self.curr_acc = (curr_w - self.prev_w) / dt
-            except:
+            except Exception:
                 pass
 
             if curr_A > self.max_angular_velocity:
                 self.max_angular_velocity = curr_A
-                #rospy.loginfo(self.curr_joint_name + ' ' + data.header.frame_id + ' ' + 'Max Angular Velocity: %.4f'%(curr_A))
+                # rospy.loginfo
+                #   (self.curr_joint_name + ' ' +
+                #   data.header.frame_id + ' ' +
+                #   'Max Angular Velocity: %.4f'%(curr_A))
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
-                data.header.frame_id,           # for each imu  
-                np.array([accel.x, accel.y, accel.z, self.max_angular_velocity, self.curr_acc] + joint_angles))
+                data.header.frame_id,           # for each imu
+                np.array([
+                    accel.x, accel.y, accel.z,
+                    self.max_angular_velocity, self.curr_acc] + joint_angles))
 
             self.prev_w = curr_w
             self.prev_t = curr_t
@@ -268,7 +306,7 @@ class DynamicPoseDataSaver():
     def move_like_sine_dynamic(self):
         """
         This will move the joint of the robot arm like a sine wave
-        for all joints for all defined poses. 
+        for all joints for all defined poses.
         """
         self.controller.set_joint_position_speed(speed=1.0)
 
@@ -276,16 +314,19 @@ class DynamicPoseDataSaver():
         A = rospy.get_param('/oscillation_magnitude')
 
         for pose in self.poses_list:
-            positions, _, pose_name = pose[0], pose[1], pose[2]
+            positions, \
+             _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_positions = positions
             self.curr_pose_name = pose_name
             self.controller.publish_positions(positions, sleep=1)
-            print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
+            print('At Position: ' + pose_name,
+                  map(int, RAD2DEG*np.array(positions)))
 
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
                 self.max_angular_velocity = -np.inf
-                self.prev_w = self.controller.joint_velocity(self.curr_joint_name)
+                self.prev_w = \
+                    self.controller.joint_velocity(self.curr_joint_name)
                 self.prev_t = rospy.get_rostime().to_sec()
 
                 # Prepare for publishing a trajectory
@@ -303,12 +344,13 @@ class DynamicPoseDataSaver():
                     position = A/(2*pi*freq)*(1-math.cos(2 * pi * freq * t))
                     velocity = A*math.sin(2 * pi * freq * t)
                     acceleration = 2*pi*freq*A*math.cos(2 * pi * freq * t)
-                    
+
                     poss[i] = positions[i] + position
                     velocities[i] = velocity
                     accelerations[i] = acceleration
-                    
-                    self.controller.publish_trajectory(poss, velocities, accelerations, None)
+
+                    self.controller.publish_trajectory(
+                        poss, velocities, accelerations, None)
 
                     if t > OSCILLATION_TIME:
                         break
@@ -319,7 +361,7 @@ class DynamicPoseDataSaver():
     def save(self, save=True, verbose=False):
         """
         Save data to a pickle file.
-        
+
 
         Arguments
         ----------
@@ -328,7 +370,7 @@ class DynamicPoseDataSaver():
 
         `verbose`: `bool`
         """
-        
+
         data = self.data_storage.clean_data(verbose)
 
         if save:
@@ -350,10 +392,10 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         try:
             poses_list = utils.get_poses_list_file(sys.argv[2])
-        except:
+        except Exception:
             raise Exception("Could not initiate poses_lists from file!")
     else:
-        poses_list = [        
+        poses_list = [
             [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 'Pose_1'],
             [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_2'],
             [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_3'],
@@ -374,11 +416,11 @@ if __name__ == "__main__":
             [[2.52, -2.54, 2.07, 0.55, 3.26, 2.31, 4.72], [], 'Pose_18'],
             [[4.63, -0.70, 3.14, 3.41, 3.55, 0.69, 6.10], [], 'Pose_19'],
             [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
-        ]    
+        ]
         """
         ]
         """
-   
+
     filepath = '_'.join(['data/dynamic_data', robot])
     dd = DynamicPoseDataSaver(controller, poses_list, filepath)
     dd.move_like_sine_dynamic()

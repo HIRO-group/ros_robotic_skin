@@ -1,21 +1,24 @@
 #!/usr/bin/env python
 import os
-import math
 import numpy as np
-import rospy, rospkg, tf
-from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState, GetLinkState
-from gazebo_msgs.msg import ModelState, LinkState
-from geometry_msgs.msg import *
+import rospy
+import rospkg
+import tf
+from gazebo_msgs.srv import SpawnModel, \
+    SpawnModelRequest, SetModelState, SetLinkState, GetLinkState
+from gazebo_msgs.msg import ModelState, LinkState, Pose, Quaternion, \
+    Point
 
-import utils
+import sys
 from SawyerController import SawyerController
 from PandaController import PandaController
+
 
 class EstimatedIMUBoxStateManager():
     def __init__(self, model_names, init_poses=None, sdf=True):
         """
         Spawns the IMU model.
-        
+
         Arguments
         ---------
         `model_names`: `List[str]`
@@ -23,7 +26,7 @@ class EstimatedIMUBoxStateManager():
 
         `init_poses`: `List[geometry_msgs.msg.Pose]`
             `[Pose(Position xyz, Orientation quaternion)]`
-        
+
         `sdf`: `bool`
             launch from sdf or urdf
         """
@@ -35,19 +38,24 @@ class EstimatedIMUBoxStateManager():
         rospy.wait_for_service('/gazebo/set_model_state')
         if sdf:
             rospy.wait_for_service('/gazebo/spawn_sdf_model')
-            self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-            model_path = os.path.join(ros_robotic_skin_path, 'robots/imubox/model.sdf')
-            self.set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+            self.spawn_model = rospy.ServiceProxy(
+                               '/gazebo/spawn_sdf_model', SpawnModel)
+            model_path = os.path.join(
+                    ros_robotic_skin_path, 'robots/imubox/model.sdf')
+            self.set_model_state = rospy.ServiceProxy(
+                                   '/gazebo/set_model_state', SetModelState)
             with open(model_path, 'r') as f:
                 xml_string = f.read().replace('\n', '')
         else:
             rospy.wait_for_service('/gazebo/spawn_urdf_model')
-            self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
+            self.spawn_model = rospy.ServiceProxy(
+                               '/gazebo/spawn_urdf_model', SpawnModel)
             model_path = os.path.join(ros_robotic_skin_path, 'robots/imu.urdf')
-            self.set_link_state = rospy.ServiceProxy('/gazebo/set_link_state', SetLinkState)
+            self.set_link_state = rospy.ServiceProxy(
+                                  '/gazebo/set_link_state', SetLinkState)
             with open(model_path, 'r') as f:
                 xml_string = f.read()
-        
+
         if init_poses is None:
             q = tf.transformations.quaternion_from_euler(0, 0, 0)
             orientation = Quaternion(q[0], q[1], q[2], q[3])
@@ -58,7 +66,7 @@ class EstimatedIMUBoxStateManager():
         self.init_poses = init_poses
         self.req = SpawnModelRequest()
         self.req.model_xml = xml_string
-    
+
     def spawn(self):
         """
         Spawns the IMU model with the poses defined earlier in
@@ -77,14 +85,15 @@ class EstimatedIMUBoxStateManager():
                 init_pose.orientation.w = pose.orientation[3]
                 print(init_pose)
                 self.req.initial_pose = init_pose
-                res = self.spawn_model(self.req) 
-            except rospy.ServiceException, e:
+                res = self.spawn_model(self.req)
+                print(res)
+            except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
 
     def set_poses(self, names, poses):
         """
         Sets the poses of the IMU.
-        
+
         Arguments
         ---------
         `names`: `List[str]`
@@ -99,7 +108,7 @@ class EstimatedIMUBoxStateManager():
     def set_pose(self, name, pose):
         """
         Sets a pose of an IMU
-        
+
         Arguments
         ---------
         `name`: `str`
@@ -114,19 +123,20 @@ class EstimatedIMUBoxStateManager():
                 state_msg.model_name = name
                 state_msg.pose = pose
                 state_msg.reference_frame = "world"
-                res = self.set_model_state(state_msg) 
-            except rospy.ServiceException, e:
+                res = self.set_model_state(state_msg)
+            except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
         else:
             try:
                 link_msg = LinkState()
-                link_msg.link_name = name 
+                link_msg.link_name = name
                 link_msg.pose = pose
                 link_msg.reference_frame = "world"
-                res = self.set_link_state(state_msg) 
+                res = self.set_link_state(state_msg)
                 print(res)
-            except rospy.ServiceException, e:
+            except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
+
 
 class TrueIMUBoxStateManager():
     def __init__(self, names):
@@ -141,7 +151,8 @@ class TrueIMUBoxStateManager():
         self.names = names
         self.n = len(names)
 
-        self.get_link_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
+        self.get_link_state = rospy.ServiceProxy(
+                              '/gazebo/get_link_state', GetLinkState)
         rospy.wait_for_service('/gazebo/get_link_state')
 
     def get_poses(self):
@@ -159,9 +170,10 @@ class TrueIMUBoxStateManager():
 
         return poses
 
+
 def load_estimated_poses(filename):
     """
-    Loads the poses 
+    Loads the poses
 
     Arguments
     ---------
@@ -170,6 +182,7 @@ def load_estimated_poses(filename):
     """
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     return np.loadtxt(os.path.join(ros_robotic_skin_path, 'data', filename))
+
 
 if __name__ == '__main__':
     # rospy.init_node("set_estimated_imu_positions")
@@ -185,20 +198,24 @@ if __name__ == '__main__':
         controller = SawyerController()
     else:
         raise ValueError("Must be either panda or sawyer")
-    
+
     poses = load_estimated_poses(filename)
     positions = np.zeros(poses.shape[0])
     controller.publish_positions(positions, sleep=1)
 
-    imu_names = ['imu_link0', 'imu_link1', 'imu_link2', 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
+    imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
+                 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
     link_names = ['panda::'+imu_name for imu_name in imu_names]
     panda_imu_manager = TrueIMUBoxStateManager(link_names)
     defined_poses = panda_imu_manager.get_poses()
 
-    # Set initial poses    
-    model_names = ['imu%i'%(i) for i in range(n_imu)]
-    init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
-    state_manager = EstimatedIMUBoxStateManager(model_names, init_poses) 
+    # Set initial poses
+    model_names = ['imu%i' % (i)
+                   for i in range(n_imu)]
+    init_poses = [Pose(
+                    position=pose[:3],
+                    orientation=pose[3:]) for pose in poses]
+    state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
     state_manager.spawn()
 
     error = np.linalg.norm(defined_poses - poses)
