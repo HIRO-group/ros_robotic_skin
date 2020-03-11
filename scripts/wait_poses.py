@@ -28,8 +28,7 @@ class WaitPose():
         rospy.init_node("wait_poses", anonymous=True)
 
         self.pose_num_pub = rospy.Publisher("zero_g_pose_num", Int16)
-        self.is_in_captured_pose_pub = rospy.Publisher(
-                                "is_in_captured_pose", Bool)
+        self.is_in_captured_pose_pub = rospy.Publisher("is_in_captured_pose", Bool)
         self.poses = rospy.get_param("/zero_g_poses", default=11)
 
         self.pose_num = 0

@@ -12,6 +12,6 @@ jobs:
     - name: Install flake8
       run: sudo apt-get install flake8 && sudo apt-get install python-rostest && sudo apt-get install -y python-rospy
     - name: Run flake8 on the entire repository
-      run: flake8 .
+      run: flake8 --ignore=E121,E123,E126,E226,E24,E704,W503,W504,E501
     - name: Run ROS tests
       run: python tests/test_main.py

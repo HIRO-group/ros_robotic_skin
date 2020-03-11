@@ -3,8 +3,7 @@ import os
 import rospy
 import rospkg
 import tf
-from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, \
-    SetModelState, SetLinkState
+from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState
 from gazebo_msgs.msg import ModelState, LinkState, Quaternion, Point, Pose
 from sensor_msgs.msg import Imu
 
@@ -34,21 +33,16 @@ class IMUBoxStateManager():
         rospy.wait_for_service('/gazebo/set_model_state')
         if sdf:
             rospy.wait_for_service('/gazebo/spawn_sdf_model')
-            self.spawn_model = rospy.ServiceProxy(
-                               '/gazebo/spawn_sdf_model', SpawnModel)
-            model_path = os.path.join(
-                         ros_robotic_skin_path, 'robots/imubox/model.sdf')
-            self.set_model_state = rospy.ServiceProxy(
-                                   '/gazebo/set_model_state', SetModelState)
+            self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+            model_path = os.path.join(ros_robotic_skin_path, 'robots/imubox/model.sdf')
+            self.set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
             with open(model_path, 'r') as f:
                 xml_string = f.read().replace('\n', '')
         else:
             rospy.wait_for_service('/gazebo/spawn_urdf_model')
-            self.spawn_model = rospy.ServiceProxy(
-                               '/gazebo/spawn_urdf_model', SpawnModel)
+            self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
             model_path = os.path.join(ros_robotic_skin_path, 'robots/imu.urdf')
-            self.set_link_state = rospy.ServiceProxy(
-                                  '/gazebo/set_link_state', SetLinkState)
+            self.set_link_state = rospy.ServiceProxy('/gazebo/set_link_state', SetLinkState)
             with open(model_path, 'r') as f:
                 xml_string = f.read()
 
