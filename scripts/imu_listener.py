@@ -32,8 +32,7 @@ class ImuListener():
         self.prev_imu_matrix = np.full((num_imus, 3), np.nan)
         self.acc_thresh = acc_thresh
         rospy.init_node('skin_calibration', anonymous=True)
-        self.imu_mvmt_pub = rospy.Publisher(
-            '/imu_activated', Int16, queue_size=1)
+        self.imu_mvmt_pub = rospy.Publisher('/imu_activated', Int16, queue_size=1)
         self.imu_num_msg = Int16()
         # create subscribers for num_imus topics
         for i in range(num_imus):

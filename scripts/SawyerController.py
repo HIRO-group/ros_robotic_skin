@@ -8,10 +8,8 @@ This is a sawyer pose library, this is comprised of three main types of classes
     Used for dynamic data collection only
 Each Pose should be defined in this way
 poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4],
-            [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
-        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4],
-            [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
 Which is basically:
 poses_list = [
@@ -140,16 +138,14 @@ class SawyerController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list should be 7, \
-            as sawyer has 7 joints.")
+            raise Exception("The length of input list should be 7, as sawyer has 7 joints.")
 
         for joint_name, position in zip(self._limb.joint_names(), positions):
             self.positions[joint_name] = position
 
         if not rospy.is_shutdown():
             try:
-                self._limb.move_to_joint_positions(self.positions,
-                                                   timeout=sleep)
+                self._limb.move_to_joint_positions(self.positions, timeout=sleep)
             except rospy.ROSInterruptException:
                 print('Set Joint Positions Failed')
 
@@ -174,8 +170,7 @@ class SawyerController(object):
         return: None
         """
         if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, \
-            as sawyer has 7 arms")
+            raise Exception("The length of input list should be 7, as sawyer has 7 arms")
 
         for joint_name, velocity in zip(self._limb.joint_names(), velocities):
             self.velocities[joint_name] = velocity
@@ -209,23 +204,17 @@ class SawyerController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list should be 7, \
-            as sawyer has 7 joints")
+            raise Exception("The length of input list should be 7, as sawyer has 7 joints")
         if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, \
-            as sawyer has 7 joints")
+            raise Exception("The length of input list should be 7, as sawyer has 7 joints")
 
-        for joint_name, position, velocity \
-                in zip(self._limb.joint_names(), positions, velocities):
+        for joint_name, position, velocity in zip(self._limb.joint_names(), positions, velocities):
             self.positions[joint_name] = position
             self.velocities[joint_name] = velocity
 
         if not rospy.is_shutdown():
             try:
-                self._limb.set_joint_trajectory(self._limb.joint_names(),
-                                                positions,
-                                                velocities,
-                                                accelerations)
+                self._limb.set_joint_trajectory(self._limb.joint_names(), positions, velocities, accelerations)
             except rospy.ROSInternalException:
                 print('Set Joint Trajectory Failed')
 
@@ -253,7 +242,7 @@ class SawyerController(object):
         return: None
         """
         for pose in poses:
-            positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
+            positions, _, pose_name = pose[0], pose[1], pose[2]
             self.pose_name = pose_name
             self.publish_positions(positions, sleep)
 
@@ -275,7 +264,7 @@ class SawyerController(object):
         return: None
         """
         for each_pose in poses:
-            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841,E501
+            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
             self.pose_name = pose_name
             self.publish_velocities(velocities, sleep)
 
@@ -298,20 +287,16 @@ class SawyerController(object):
         """
         # TODO: add accelerations
         for each_pose in poses:
-            positions, velocities, pose_name = \
-                each_pose[0], each_pose[1], each_pose[2]
+            positions, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
             accelerations = np.zeros(7)
             self.pose_name = pose_name
-            self.publish_trajectory(positions,
-                                    velocities, accelerations, sleep)
+            self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 
 if __name__ == "__main__":
     poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4],
-            [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
-        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4],
-            [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     controller = SawyerController()
     controller.publish_positions([0, 0, 0, 0, 0, 0, 0], 5)

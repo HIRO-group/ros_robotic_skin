@@ -26,8 +26,7 @@ class SawyerJointControl():
         print(self._limb.joint_angles())
 
         self.velocities = {name: 0.0 for name in self._limb.joint_names()}
-        self.positions = {name: -0.2*i for i, name in
-                          enumerate(self._limb.joint_names())}
+        self.positions = {name: -0.2*i for i, name in enumerate(self._limb.joint_names())}
 
     def spin(self):
         """
@@ -60,16 +59,14 @@ class SawyerJointControl():
 
         limits = np.array([[0, -180, 0, 0, 0, 0, 0],
                            [350, 0, 350, 350, 340, 340, 540]])
-        positions = [DEG2RAD*random_joint(low=limits[0, i],
-                                          high=limits[1, i]) for i in range(7)]
+        positions = [DEG2RAD*random_joint(low=limits[0, i], high=limits[1, i]) for i in range(7)]
         for joint_name, position in zip(self._limb.joint_names(), positions):
             print(joint_name, position*180.0/np.pi)
             self.positions[joint_name] = position
 
         if not rospy.is_shutdown():
             try:
-                print(' '.
-                      join(['%.2f' % (position) for position in positions]))
+                print(' '.join(['%.2f' % (position) for position in positions]))
                 self._limb.move_to_joint_positions(self.positions, timeout=5)
             except rospy.ROSInterruptException:
                 print('Set Joint Positions Failed')
