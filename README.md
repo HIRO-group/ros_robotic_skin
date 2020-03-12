@@ -123,7 +123,7 @@ These commands and scripts will ensure that the `gh-pages` branch is up to date 
 In order to have the Github Actions build pass, we use `flake8` for style enforcement. To test this, simply run
 
 ```sh
-flake8 .
+flake8 . --max-complexity=10 --max-line-length=140
 ``` 
 within this repository (after cloning and changing directories to `ros_robotic_skin`).
 
