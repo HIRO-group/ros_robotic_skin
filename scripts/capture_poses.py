@@ -50,8 +50,7 @@ class CapturePose():
         # get max number of poses from ros params
         self.is_sim = is_sim
         rospy.init_node("capture_poses", anonymous=True)
-        rospy.Subscriber("/is_in_captured_pose", Bool,
-                         self.get_is_captured_callback)
+        rospy.Subscriber("/is_in_captured_pose", Bool, self.get_is_captured_callback)
         rospy.Subscriber("/zero_g_pose_num", Int16, self.get_pose_num_callback)
         # topic string is based on simulation and panda type
         if robot_type == 'sawyer':
@@ -60,8 +59,7 @@ class CapturePose():
             self._limb = intera_interface.Limb("right")
         else:
             self.robot_type = 'panda'
-            topic_string = "/joint_states" if is_sim else \
-                "/franka_state_controller/joint_states"
+            topic_string = "/joint_states" if is_sim else "/franka_state_controller/joint_states"
             rospy.Subscriber(topic_string, JointState,
                              self.capture_pose_callback)
 
@@ -118,8 +116,7 @@ class CapturePose():
             for joint_name in joint_states_dict:
                 # get the joint number
                 joint_num = int(joint_name[-1])
-                self.captured_positions[self.pose_num, joint_num] = \
-                    joint_states_dict[joint_name]
+                self.captured_positions[self.pose_num, joint_num] = joint_states_dict[joint_name]
                 if self.pose_num == self.total_num_poses - 1:
                     np.savetxt(self.save_path, self.captured_positions)
 

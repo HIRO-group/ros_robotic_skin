@@ -17,8 +17,7 @@ def n2s(x, precision=2):
         The precision desired on each entry in the array.
 
     """
-    return np.array2string(x, precision=precision,
-                           separator=',', suppress_small=True)
+    return np.array2string(x, precision=precision, separator=',', suppress_small=True)
 
 
 def get_poses_list_file(filename):
@@ -41,8 +40,7 @@ def get_poses_list_file(filename):
     """
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     # load the matrix, where the shape is n poses by j joints
-    poses_mat = np.loadtxt(
-                        os.path.join(ros_robotic_skin_path, 'data', filename))
+    poses_mat = np.loadtxt(os.path.join(ros_robotic_skin_path, 'data', filename))
     poses_list = []
     for idx, pose in enumerate(poses_mat):
         poses_list.append([list(pose), [], 'Pose_{}'.format(idx+1)])

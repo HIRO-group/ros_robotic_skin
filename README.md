@@ -100,13 +100,31 @@ source <path to your workspace>/devel/setup.bash
 ```
 to your `.bashrc` file.
 
+# Documentation Generation
+
+We use [`rosdoc_lite`](http://wiki.ros.org/rosdoc_lite) for documentation generation. You can check it out
+[here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, you can update the documentation with the following steps (assuming you are on the master branch):
+
+```sh
+
+git pull origin master
+git checkout gh-pages
+git merge master
+./docs_generate.sh
+
+```
+
+These commands and scripts will ensure that the `gh-pages` branch is up to date with your changes. From here, you can commit and push to the remote branch, and https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
+
 # Flake8 Testing
 
 In order to have the Github Actions build pass, we use `flake8` for style enforcement. To test this, simply run
+
 ```sh
 flake8 .
 ``` 
 within this repository (after cloning and changing directories to `ros_robotic_skin`).
+
 # Setting
 Set these environment variables
 

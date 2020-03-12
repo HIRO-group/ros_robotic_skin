@@ -32,8 +32,7 @@ def reject_outliers(data, m=1):
         reject data points.
 
     """
-    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0))
-                       < m * np.std(data, axis=0), axis=1)
+    is_in_std = np.all(np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0), axis=1)
     return data[is_in_std, :]
 
 
@@ -126,9 +125,7 @@ class StaticPoseData():
                 data[pose_name][imu_name] = np.r_[m, j]
 
                 if verbose:
-                    rospy.loginfo('[%s, %s] Mean Acceleration: \
-                    (%.3f %.3f %.3f)' % (pose_name, imu_name,
-                                         m[0], m[1], m[2]))
+                    rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)' % (pose_name, imu_name, m[0], m[1], m[2]))
 
         return data
 
@@ -180,8 +177,7 @@ class StaticPoseDataSaver():
         self.ready = False
 
         # data storage
-        self.data_storage = StaticPoseData(self.pose_names,
-                                           self.imu_names, filepath)
+        self.data_storage = StaticPoseData(self.pose_names, self.imu_names, filepath)
 
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
@@ -199,8 +195,7 @@ class StaticPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
-            joint_angles = [self.controller.joint_angle(name)
-                            for name in self.joint_names]
+            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
@@ -218,8 +213,7 @@ class StaticPoseDataSaver():
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.controller.publish_positions(positions, 0.1)
-            print('At Position: ' + pose_name,
-                  map(int, RAD2DEG*np.array(positions)))
+            print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
             self.ready = True
