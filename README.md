@@ -9,12 +9,12 @@
 
 # Installation
 ## `robotic_skin` python package
-```
+```sh
 pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
 ```
 
 ## `ros_robotic_skin`
-```
+```sh
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 git clone git@github.com:HIRO-group/ros_robotic_skin.git
@@ -26,7 +26,7 @@ catkin_make
 Please refer to the Franka Install Guide [here](https://hiro-group.ronc.one/franka_installation_tutorial.html) for dependencies. <br>
 Be careful to install `melodic` dependencies.
 
-For the panda simulator install `panda_simulation` as
+For the panda simulator, install `panda_simulation` as
 ```sh
 cd ~/catkin_ws/src
 git clone https://github.com/HIRO-group/panda_simulation
@@ -37,7 +37,7 @@ sudo apt-get install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
 ```
 
-You can install `libfranka` via `apt-get` or from source
+You can install `libfranka` via `apt-get` or from source.
 
 Via `apt-get`:
 
@@ -59,14 +59,16 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
+Making the workspace
 ```sh
 cd ~/catkin_ws/src
+# append the -DFranka_DIR part if you built libfranka from source.
 catkin_make -DFranka_DIR:PATH=/path/to/libfranka/build
 ```
 
-## (Optional) Install Sawyer Gazebo Simulator
-```
-cd catkin_ws/src
+## (Optional but Recommended) Install Sawyer Gazebo Simulator
+```sh
+cd ~/catkin_ws/src
 wstool init
 wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
 wstool update
