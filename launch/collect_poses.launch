@@ -1,4 +1,7 @@
 <?xml version="1.0" ?>
+<!-- launch file for collecting poses from the robot. -->
+<!-- Runs two nodes - one to wait for user input, -->
+<!-- and the other to capture the actual pose. -->
 <launch>
   <!-- options are in panda or sawyer simulation, and on real panda  -->
   <arg name="is_sim" default="true" />

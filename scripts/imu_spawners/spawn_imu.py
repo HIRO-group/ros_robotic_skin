@@ -8,8 +8,10 @@ from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLin
 from gazebo_msgs.msg import ModelState, LinkState, Pose, Quaternion, Point
 
 import sys
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+# import scripts.utils
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 
 class EstimatedIMUBoxStateManager():

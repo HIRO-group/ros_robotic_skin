@@ -8,11 +8,17 @@ import rospkg
 import os
 import numpy as np
 
-from PandaController import PandaController
-from SawyerController import SawyerController
+
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 
 class ActivityMatrixController():
+    """
+    Activity matrix controller for the panda and sawyer robot arms
+    """
     def __init__(self, controller, desired_positions_path, is_sim=True):
         """
         Panda Trajectory control class for sending

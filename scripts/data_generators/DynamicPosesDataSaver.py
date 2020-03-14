@@ -12,9 +12,11 @@ import rospy
 import rospkg
 from sensor_msgs.msg import Imu
 
-import utils
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts.utils import get_poses_list_file  # noqa: E402
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+
 
 RAD2DEG = 180.0/np.pi
 OSCILLATION_TIME = 3.0
@@ -362,7 +364,7 @@ if __name__ == "__main__":
     robot = sys.argv[1]
     if robot == 'panda':
         controller = PandaController()
-        poses_list = utils.get_poses_list_file('positions.txt')
+        poses_list = get_poses_list_file('positions.txt')
     elif robot == 'sawyer':
         controller = SawyerController()
     else:
@@ -370,7 +372,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 2:
         try:
-            poses_list = utils.get_poses_list_file(sys.argv[2])
+            poses_list = get_poses_list_file(sys.argv[2])
         except Exception:
             raise Exception("Could not initiate poses_lists from file!")
     else:
