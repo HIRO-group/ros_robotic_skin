@@ -66,7 +66,7 @@ cd ~/catkin_ws/src
 catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=/path/to/libfranka/build
 ```
 
-## (Optional but Recommended) Install Sawyer Gazebo Simulator
+## Install Sawyer Gazebo Simulator
 ```sh
 cd ~/catkin_ws/src
 wstool init
