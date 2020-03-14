@@ -13,7 +13,7 @@ import rospkg
 from sensor_msgs.msg import Imu
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-# import scripts.utils
+from scripts.utils import get_poses_list_file  # noqa: E402
 from scripts.Controllers.PandaController import PandaController  # noqa: E402
 from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
 
@@ -363,7 +363,7 @@ if __name__ == "__main__":
     robot = sys.argv[1]
     if robot == 'panda':
         controller = PandaController()
-        poses_list = utils.get_poses_list_file('positions.txt')
+        poses_list = get_poses_list_file('positions.txt')
     elif robot == 'sawyer':
         controller = SawyerController()
     else:
@@ -371,7 +371,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 2:
         try:
-            poses_list = utils.get_poses_list_file(sys.argv[2])
+            poses_list = get_poses_list_file(sys.argv[2])
         except Exception:
             raise Exception("Could not initiate poses_lists from file!")
     else:

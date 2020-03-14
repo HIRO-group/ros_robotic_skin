@@ -13,7 +13,7 @@ from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-# import scripts.utils
+from scripts.utils import get_poses_list_file  # noqa: E402
 from scripts.Controllers.PandaController import PandaController  # noqa: E402
 from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
 
@@ -302,7 +302,7 @@ class ConstantRotationDataSaver():
 if __name__ == "__main__":
 
     # used to get poses
-    poses_list = utils.get_poses_list_file('positions.txt')
+    poses_list = get_poses_list_file('positions.txt')
     # Poses Configuration
 
     poses_list = [
