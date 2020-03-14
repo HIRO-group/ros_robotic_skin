@@ -8,9 +8,11 @@ import rospkg
 import os
 import numpy as np
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from scripts.Controllers.PandaController import PandaController  # noqa: E402
-from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
+
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 
 class ActivityMatrixController():

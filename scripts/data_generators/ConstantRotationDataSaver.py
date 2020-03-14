@@ -14,8 +14,8 @@ from geometry_msgs.msg import Quaternion
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts.utils import get_poses_list_file  # noqa: E402
-from scripts.Controllers.PandaController import PandaController  # noqa: E402
-from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
