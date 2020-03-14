@@ -5,7 +5,6 @@ import rospkg
 import tf
 from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState
 from gazebo_msgs.msg import ModelState, LinkState, Quaternion, Point, Pose
-from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import Imu
 
 
