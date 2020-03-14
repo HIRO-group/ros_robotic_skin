@@ -8,8 +8,10 @@ from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLin
 from gazebo_msgs.msg import ModelState, LinkState, Pose, Quaternion, Point
 
 import sys
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+# import scripts.utils
+from scripts.Controllers.PandaController import PandaController  # noqa: E402
+from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
 
 
 class EstimatedIMUBoxStateManager():

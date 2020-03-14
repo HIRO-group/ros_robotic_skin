@@ -7,8 +7,10 @@ from std_msgs.msg import Bool, Int16
 import rospkg
 import os
 import numpy as np
-from PandaController import PandaController
-from SawyerController import SawyerController
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from scripts.Controllers.PandaController import PandaController  # noqa: E402
+from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
 
 
 class ActivityMatrixController():

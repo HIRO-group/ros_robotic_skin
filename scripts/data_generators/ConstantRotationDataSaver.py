@@ -12,9 +12,10 @@ import rospkg
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
-import utils
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+# import scripts.utils
+from scripts.Controllers.PandaController import PandaController  # noqa: E402
+from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
