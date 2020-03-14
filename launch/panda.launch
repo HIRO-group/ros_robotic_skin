@@ -1,6 +1,6 @@
+<?xml version="1.0" ?>
 <!-- launch file for control of the real -->
 <!-- franka panda robot arm. -->
-<?xml version="1.0" ?>
 <launch>
   <!-- robot ip of the panda must be specified -->
   <arg name="robot_ip" />

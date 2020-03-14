@@ -1,7 +1,7 @@
+<?xml version="1.0" ?>
 <!-- This launch file will run the other nodes for activity-->
 <!-- matrix generation. Can be run from panda simulation/real life -->
 <!-- and sawyer simulation. -->
-<?xml version="1.0" ?>
 <launch>
     <arg name="is_sim" default="true" />
     <arg name="filename" default="positions.txt" />
