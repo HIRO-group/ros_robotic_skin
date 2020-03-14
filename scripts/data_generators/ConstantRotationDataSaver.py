@@ -12,7 +12,7 @@ import rospkg
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.append(os.path.join(rospkg.RosPack().get_path('ros_robotic_skin'), 'scripts'))
 from scripts.utils import get_poses_list_file  # noqa: E402
 from scripts.Controllers.PandaController import PandaController  # noqa: E402
 from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
