@@ -2,7 +2,7 @@
 
 # General
 ## Current Release
-- `0.0.1` as of 2020/3/07
+- `0.0.1` as of 2020/3/13
 
 ## Supporting version
 `ROS Melodic`
@@ -15,10 +15,11 @@ pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
 
 ## `ros_robotic_skin`
 ```
+mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 git clone git@github.com:HIRO-group/ros_robotic_skin.git
-cd ~/catkin_ws
-cakin_make
+cd ..
+catkin_make
 ```
 
 ## Franka Panda Gazebo Simulator
@@ -27,16 +28,40 @@ Be careful to install `melodic` dependencies.
 
 For the panda simulator install `panda_simulation` as
 ```sh
-mkdir -p catkin_ws/src
-cd catkin_ws/src
-git clone https://github.com/erdalpekel/panda_simulation.git
-git clone https://github.com/erdalpekel/panda_moveit_config.git
-git clone --branch simulation https://github.com/erdalpekel/franka_ros.git
+cd ~/catkin_ws/src
+git clone https://github.com/HIRO-group/panda_simulation
+git clone https://github.com/erdalpekel/panda_moveit_config
+git clone --branch simulation https://github.com/HIRO-group/franka_ros
 cd ..
 sudo apt-get install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
-cd ..
-catkin_make
+```
+
+You can install `libfranka` via `apt-get` or from source
+
+Via `apt-get`:
+
+```sh
+sudo apt-get install ros-melodic-libfranka
+```
+
+From source:
+
+```sh
+sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
+
+git clone --recursive https://github.com/frankaemika/libfranka
+cd libfranka
+
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
+```
+
+```sh
+cd ~/catkin_ws/src
+catkin_make -DFranka_DIR:PATH=/path/to/libfranka/build
 ```
 
 ## (Optional) Install Sawyer Gazebo Simulator
