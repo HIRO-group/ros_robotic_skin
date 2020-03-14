@@ -12,9 +12,10 @@ import rospkg
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
-import utils
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts.utils import get_poses_list_file  # noqa: E402
+from scripts.Controllers.PandaController import PandaController  # noqa: E402
+from scripts.Controllers.SawyerController import SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
@@ -301,7 +302,7 @@ class ConstantRotationDataSaver():
 if __name__ == "__main__":
 
     # used to get poses
-    poses_list = utils.get_poses_list_file('positions.txt')
+    poses_list = get_poses_list_file('positions.txt')
     # Poses Configuration
 
     poses_list = [

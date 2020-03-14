@@ -29,7 +29,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 class PandaController(object):
     """
-    This is the main PandaPose class.
+    This is the main PandaController class.
     The main reason this class needs to be overridden is
     that you can rospy.init_node
     once. Hence. You need to call this super method.
