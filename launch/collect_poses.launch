@@ -1,3 +1,6 @@
+<!-- launch file for collecting poses from the robot. -->
+<!-- Runs two nodes - one to wait for user input, -->
+<!-- and the other to capture the actual pose. -->
 <?xml version="1.0" ?>
 <launch>
   <!-- options are in panda or sawyer simulation, and on real panda  -->

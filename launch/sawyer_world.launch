@@ -1,3 +1,5 @@
+<!-- launch file for running the sawyer -->
+<!-- robot simulation in gazebo. -->
 <?xml version="1.0" encoding="utf-8"?>
 <launch>
 

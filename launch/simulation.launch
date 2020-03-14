@@ -1,5 +1,7 @@
-<!-- This is the main launch file which should be launched when Panda along with all accelerometers needs to be seen. Then you can run some python files like joint_movement.py etc -->
-<!-- to see the Panda robot move -->
+<!-- This is the main launch file which should be  -->
+<!-- launched when Panda along with all accelerometers needs -->
+<!-- to be seen. Then you can run some python files like joint_movement.py etc -->
+<!-- to see the Panda robot move. -->
 <launch>
     <param name="robot_description_with_imu" command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand.urdf.xacro"/>
 
