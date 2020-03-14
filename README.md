@@ -10,7 +10,10 @@
 # Installation
 ## `robotic_skin` python package
 ```sh
+# Using HTTPS:
 pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
+# Using SSH:
+pip install --upgrade git+ssh://git@github.com/HIRO-group/robotic_skin.git
 ```
 
 ## `ros_robotic_skin`
@@ -34,7 +37,6 @@ git clone https://github.com/erdalpekel/panda_moveit_config
 git clone --branch simulation https://github.com/HIRO-group/franka_ros
 cd ..
 sudo apt-get install libboost-filesystem-dev
-rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
 ```
 
 You can install `libfranka` via `apt-get` or from source.
@@ -51,6 +53,7 @@ From source:
 sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
 
 git clone --recursive https://github.com/frankaemika/libfranka
+rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
 cd libfranka
 
 mkdir build
