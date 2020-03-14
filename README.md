@@ -66,7 +66,7 @@ Making the workspace
 ```sh
 cd ~/catkin_ws/src
 # append the -DFranka_DIR part if you built libfranka from source.
-catkin_make -DFranka_DIR:PATH=/path/to/libfranka/build
+catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=/path/to/libfranka/build
 ```
 
 ## (Optional but Recommended) Install Sawyer Gazebo Simulator
