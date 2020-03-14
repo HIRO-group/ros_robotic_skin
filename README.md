@@ -10,7 +10,10 @@
 # Installation
 ## `robotic_skin` python package
 ```sh
+# Using HTTPS:
 pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
+# Using SSH:
+pip install --upgrade git+ssh://git@github.com/HIRO-group/robotic_skin.git
 ```
 
 ## `ros_robotic_skin`
