@@ -1,15 +1,9 @@
 #!/bin/bash
 
-# options for:
-# git ssh vs https
-# build libfranka from source or not
-GIT_OPTION="ssh"
-FRANKA_BUILD="apt"
 
-
-THREE_DOTS=$(cd ../../.. && ls)
-FOUR_DOTS=$(cd ../../../.. && ls)
-if [[ -d ../../src && $THREE_DOTS != $FOUR_DOTS ]]; then
+TWO_DOTS=$(cd ../../ && pwd)
+THREE_DOTS=$(cd ../../.. && pwd)
+if [[ -d ../../src && $TWO_DOTS != $THREE_DOTS ]]; then
     echo "Dir exists"
 else
     echo "Not a valid catkin workspace!"
@@ -48,6 +42,18 @@ case $key in
     ;;
 esac
 done
+
+if [[ -z "$GIT_OPTION" ]]
+then
+    echo "--git-option was not set. Setting it to ssh by default."
+    GIT_OPTION="ssh"
+fi
+
+if [[ -z "$FRANKA_BUILD" ]]
+then
+    echo "--franka-build was not set. Setting it to apt by default."
+    FRANKA_BUILD="apt"
+fi
 
 source /opt/ros/melodic/setup.bash
 
