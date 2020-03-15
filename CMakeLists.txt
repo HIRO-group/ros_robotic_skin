@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(catkin REQUIRED)
 catkin_package(CATKIN_DEPENDS xacro)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -111,7 +112,7 @@ catkin_package(CATKIN_DEPENDS xacro)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS ../../../fun_ws/src/imu_tools/imu_filter_madgwick/include/imu_filter_madgwick
+#  INCLUDE_DIRS include
 #  LIBRARIES ros_robotic_skin
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
@@ -123,15 +124,15 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# message(${catkin_INCLUDE_DIRS})
 include_directories(
-  include
+# include
   ${catkin_INCLUDE_DIRS}
-  /home/peasant98/Desktop/Robotics/HIRO/catkin_ws/src/imu_tools/imu_filter_madgwick/include
 )
 
-
 ## Declare a C++ library
+# add_library(${PROJECT_NAME}
+#   src/${PROJECT_NAME}/ros_robotic_skin.cpp
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
