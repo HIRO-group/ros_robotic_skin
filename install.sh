@@ -18,7 +18,6 @@ case $key in
         GIT_OPTION="$2"
     else
         echo "ssh or https not selected. Resorting to ssh git option."
-        GIT_OPTION="ssh"
     fi
     shift # past argument
     shift # past value
@@ -34,7 +33,6 @@ case $key in
         FRANKA_BUILD="$2"
     else
         echo "source or apt not selected. Resorting to apt option."
-        FRANKA_BUILD="apt"
     fi
     shift # past argument
     shift # past value
