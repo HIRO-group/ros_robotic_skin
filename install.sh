@@ -24,7 +24,7 @@ then
   cmake -DCMAKE_BUILD_TYPE=Release ..
   cmake --build .
   cd ../../..
-  catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=/path/to/libfranka/build
+  catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
 
 else
   sudo apt-get install ros-melodic-libfranka
