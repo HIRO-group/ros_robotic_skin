@@ -100,5 +100,9 @@ sudo apt-get install -y ros-melodic-joystick-drivers
 sudo apt-get install -y ros-melodic-image-proc
 
 sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulator/sawyer_sim_controllers/CMakeLists.txt
-
-catkin_make -DFranka_DIR:PATH=$(pwd)/src/libfranka/builds
+if [[ $FRANKA_BUILD = "source" ]]
+then
+  catkin_make -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
+else
+  catkin_make
+fi
