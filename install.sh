@@ -2,7 +2,6 @@
 
 # options for:
 # git ssh vs https
-# desired name of workspace name
 # build libfranka from source or not
 GIT_OPTION="ssh"
 FRANKA_BUILD="apt"
