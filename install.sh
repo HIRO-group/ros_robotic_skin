@@ -14,7 +14,7 @@ rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
 sudo apt-get install ros-melodic-imu-madgwick
 cd src
 
-if [$1 = source]
+if [[ $1 == 'source' ]]
 then
   sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
   git clone --recursive https://github.com/frankaemika/libfranka
