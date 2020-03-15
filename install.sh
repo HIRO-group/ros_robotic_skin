@@ -41,8 +41,5 @@ cd ..
 sudo apt-get install -y ros-melodic-joystick-drivers
 sudo apt-get install -y ros-melodic-image-proc
 
-cd src/sawyer_simulator/sawyer_sim_controllers
-rm CMakeLists.txt
-wget https://gist.githubusercontent.com/peasant98/5d1f1e6ee23d909f406995846dfffb50/raw/23a9a9ae16b42093f7449a9670ba41fda9809c32/CMakeLists.txt
-cd ../../..
+sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulator/sawyer_sim_controllers/CMakeLists.txt
 catkin_make
