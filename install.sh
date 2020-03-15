@@ -11,6 +11,7 @@ git clone --branch simulation https://github.com/HIRO-group/franka_ros
 cd ..
 sudo apt-get install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
+sudo apt-get install ros-melodic-imu-madgwick
 cd src
 
 if [$1 = source]
