@@ -6,7 +6,7 @@
 # build libfranka from source or not
 GIT_OPTION="ssh"
 WORKSPACE_NAME="catkin_ws"  
-FRANKA_BUILD="apt-get"
+FRANKA_BUILD="apt"
 
 while [[ $# -gt 0 ]]
 do
@@ -29,12 +29,12 @@ case $key in
     shift # past value
     ;;
     --franka-build)
-    if [[ "$2" == "source" || "$2" == "apt-get" ]]
+    if [[ "$2" == "source" || "$2" == "apt" ]]
     then
         FRANKA_BUILD="$2"
     else
-        echo "source or apt-get not selected. Resorting to apt-get option."
-        FRANKA_BUILD="apt-get"
+        echo "source or apt not selected. Resorting to apt option."
+        FRANKA_BUILD="apt"
     fi
     shift # past argument
     shift # past value
@@ -68,9 +68,9 @@ git clone https://github.com/HIRO-group/panda_simulation
 git clone https://github.com/erdalpekel/panda_moveit_config
 git clone --branch simulation https://github.com/HIRO-group/franka_ros
 cd ..
-sudo apt-get install libboost-filesystem-dev
+sudo apt install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin
-sudo apt-get install ros-melodic-imu-madgwick
+sudo apt install ros-melodic-imu-madgwick
 cd src
 
 if [[ $FRANKA_BUILD = "source" ]]
@@ -85,7 +85,7 @@ then
   cd ../../..
 
 else
-  sudo apt-get install ros-melodic-libfranka
+  sudo apt install ros-melodic-libfranka
   cd ..
 fi
 
@@ -94,8 +94,8 @@ wstool init
 wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
 wstool update
 cd ..
-sudo apt-get install -y ros-melodic-joystick-drivers
-sudo apt-get install -y ros-melodic-image-proc
+sudo apt install -y ros-melodic-joystick-drivers
+sudo apt install -y ros-melodic-image-proc
 
 sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulator/sawyer_sim_controllers/CMakeLists.txt
 if [[ $FRANKA_BUILD = "source" ]]
