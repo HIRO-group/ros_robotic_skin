@@ -4,4 +4,5 @@
 .vscode/
 data/
 scripts/PoseEstimation/cmake-build-debug
+config/publisher_variables.yaml
 

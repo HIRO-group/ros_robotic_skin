@@ -7,7 +7,9 @@ from robotic_skin.sensor.lsm6ds3_accel import LSM6DS3_acclerometer
 import os
 from sensor_msgs.msg import Imu
 import rospy
-import json
+import rospkg
+import rosparam
+import argparse
 
 # Global Variables
 # I know setting them is bad, this is just a clean straight example of a Proof-Of-Concept
@@ -16,20 +18,23 @@ import json
 # Also make sure no white spaces in the variables
 
 if __name__ == "__main__":
-    # Getting all environment variables from the constants file in the same directory
-    current_script_path = os.path.dirname(os.path.realpath(__file__))
-    config_file = current_script_path + "/constants.json"
-    with open(config_file, 'r') as f:
-        data = json.load(f)
-    imu_number = data["imu_number"]
-    GRAVITATIONAL_CONSTANT = data["GRAVITATIONAL_CONSTANT"]
-    RPi_bus_num = data["RPi_bus_num"]
-    ros_core_ip = data["ros_core_ip"]  # The ROS Core IP
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config_file', action="store",
+                        dest="config_file", required=True,
+                        help="The configuration yaml file name in package's config folder")
+    args = parser.parse_args()
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+    config_file = ros_robotic_skin_path + "/config/" + args.config_file
+    config_data = rosparam.load_file(config_file)
+    imu_number = rospy.get_param("imu_number", config_data)
+    GRAVITATIONAL_CONSTANT = rospy.get_param("GRAVITATIONAL_CONSTANT", config_data)
+    RPi_bus_num = rospy.get_param("RPi_bus_num", config_data)
+    ros_core_ip = rospy.get_param("ros_core_ip", config_data)  # The ROS Core IP
     # 11311 is the default port, you shouldn't change this unless you know what you are doing
-    ros_core_port = data["ros_core_port"]
-    RPi_IP = data["RPi_IP"]  # The IP of RPi which will be sending packets
+    ros_core_port = rospy.get_param("ros_core_port", config_data)
+    RPi_IP = rospy.get_param("RPi_IP", config_data)  # The IP of RPi which will be sending packets
     # First Let's initialize all the environment variables so that ROS doesn't whine about it
-    os.environ["ROS_MASTER_URI"] = f'http://{ros_core_ip}:{ros_core_port}'
+    os.environ["ROS_MASTER_URI"] = 'http://%s:%d' % (ros_core_ip, ros_core_port)
     os.environ["ROS_IP"] = RPi_IP
     # Okay so now lets initialize the accelerometer and send the packets to ROS Core
     accel = LSM6DS3_acclerometer(bus_num=RPi_bus_num)
