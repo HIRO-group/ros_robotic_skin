@@ -5,8 +5,19 @@
 # desired name of workspace name
 # build libfranka from source or not
 GIT_OPTION="ssh"
-WORKSPACE_NAME="catkin_ws"  
 FRANKA_BUILD="apt"
+
+
+THREE_DOTS=$(cd ../../.. && ls)
+FOUR_DOTS=$(cd ../../../.. && ls)
+if [[ -d ../../src && $THREE_DOTS != $FOUR_DOTS ]]; then
+    echo "Dir exists"
+else
+    echo "Not a valid catkin workspace!"
+    echo "Terminating installation..."
+    exit 1
+fi
+
 
 while [[ $# -gt 0 ]]
 do
@@ -22,11 +33,7 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    --ws-name)
-    WORKSPACE_NAME="$2"
-    shift # past argument
-    shift # past value
-    ;;
+    
     --franka-build)
     if [[ "$2" == "source" || "$2" == "apt" ]]
     then
@@ -47,21 +54,12 @@ source /opt/ros/melodic/setup.bash
 
 if [[ $GIT_OPTION = "ssh" ]]
 then
-  pip3 install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
-else
   pip3 install --upgrade git+ssh://git@github.com/HIRO-group/robotic_skin.git
-fi
-
-mkdir -p $WORKSPACE_NAME/src
-cd $WORKSPACE_NAME/src
-
-if [[ $GIT_OPTION = "ssh" ]]
-then
-  git clone git@github.com:HIRO-group/ros_robotic_skin.git
 else
-  git clone https://github.com/HIRO-group/ros_robotic_skin
+  pip3 install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
 fi
-  
+
+
 git clone https://github.com/HIRO-group/panda_simulation
 git clone https://github.com/erdalpekel/panda_moveit_config
 git clone --branch simulation https://github.com/HIRO-group/franka_ros
