@@ -25,9 +25,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     config_file = ros_robotic_skin_path + "/config/" + args.config_file
+    params_file = ros_robotic_skin_path + "/config/params.yaml"
     config_data = rosparam.load_file(config_file)
     imu_number = rospy.get_param("imu_number", config_data)
-    GRAVITATIONAL_CONSTANT = rospy.get_param("GRAVITATIONAL_CONSTANT", config_data)
+    GRAVITATIONAL_CONSTANT = rospy.get_param("GRAVITATIONAL_CONSTANT", params_file)
     RPi_bus_num = rospy.get_param("RPi_bus_num", config_data)
     ros_core_ip = rospy.get_param("ros_core_ip", config_data)  # The ROS Core IP
     # 11311 is the default port, you shouldn't change this unless you know what you are doing

@@ -5,7 +5,6 @@
   # preferable to add some variables to existing files rather creating a new ones
   # With great power comes great responsibility
   "imu_number": 0,
-  "GRAVITATIONAL_CONSTANT": 9.819,
   "RPi_bus_num": 1,
   "ros_core_ip": "192.168.50.118",
   "ros_core_port": 11311,
