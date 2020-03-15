@@ -1,70 +1,47 @@
 #!/bin/bash
-# The above line is required for shellcheck which is a great linter, to parse
-# the script and interpret it as a bash not zsh, it's a hack and it works
-# CATKIN_WORKSPACE will be used as path where the path script resides
-CATKIN_WORKSPACE=$(pwd)
-LIBFRANKA_BUILD_DIR=$CATKIN_WORKSPACE/src/libfranka/build
-# Activate sources
-source /opt/ros/melodic/setup.bash
-# Install all the dependencies required
+
+pip3 install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/src
+
+git clone https://github.com/HIRO-group/ros_robotic_skin
+git clone https://github.com/HIRO-group/panda_simulation
+git clone https://github.com/erdalpekel/panda_moveit_config
+git clone --branch simulation https://github.com/HIRO-group/franka_ros
+cd ..
+sudo apt-get install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
-rosdep install --from-paths src --ignore-src -y --skip-keys ros_robotic_skin
-# I don't know why but rosdep doesn't install the below package which is required
-# Raise an issue for that maybe?
-sudo apt install ros-melodic-imu-filter-madgwick
-sudo apt install ros-melodic-effort-controllers
-# End installing
-if [ -d "src/libfranka/build" ]; then
-    echo "libfranka build already exists. Good!"
-else
-  cd src/libfranka
-  git submodule update --init
+cd src
+
+if [$1 = source]
+then
+  sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
+  git clone --recursive https://github.com/frankaemika/libfranka
+  cd libfranka
   mkdir build
-  cd "$CATKIN_WORKSPACE"
-fi
-if ! cd src/libfranka/build; then
-  echo "cd to libfranka not possible. Something went wrong, check if build directory was created in libfranka"
-fi
-echo "in libfranka build directory"
-# Delete all files to make a clean install homie!
-if ! rm -rf * ; then
-    echo "Unable to delete files in libfranks build. Exiting..."
-    exit 1
-fi
-if ! cmake -DCMAKE_BUILD_TYPE=Release .. ; then
-    echo "Unable to generate make files for libfranka, maybe some dependency missing? Check logs above. Exiting..."
-    exit 1
-fi
-if ! make ; then
-    echo "Unable to build libfranka, maybe some missing dependency? Exiting..."
-    exit 1
-fi
-# All good, lets run catkin_make
-if ! cmake .. ; then
-    echo "Unable to generate make files for libfranka, maybe some dependency missing? Check logs above. Exiting..."
-    exit 1
-fi
-if ! cd $CATKIN_WORKSPACE ; then
-    echo "cd to catkin workspace failed, you might be running the script at wrong place"
-    exit 1
-fi
-if ! catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=$LIBFRANKA_BUILD_DIR ; then
-    echo "cd to catkin workspace failed, you might be running the script at wrong place"
-    exit 1
-fi
-if [ -d "$CATKIN_WORKSPACE/build" ]; then
-  rm -rf "$CATKIN_WORKSPACE/build"
-  echo "Deleted build"
+  cd build
+  cmake -DCMAKE_BUILD_TYPE=Release ..
+  cmake --build .
+  cd ../../..
+  catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=/path/to/libfranka/build
+
+else
+  sudo apt-get install ros-melodic-libfranka
+  cd ..
+  catkin_make -j4 -DCMAKE_BUILD_TYPE=Release
 fi
 
-if [ -d "$CATKIN_WORKSPACE/devel" ]; then
-  rm -rf "$CATKIN_WORKSPACE/devel"
-  echo "Deleted devel"
-fi
+cd src
+wstool init
+wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
+wstool update
+cd ..
+sudo apt-get install -y ros-melodic-joystick-drivers
+sudo apt-get install -y ros-melodic-image-proc
 
-if [ -d "$CATKIN_WORKSPACE/install" ]; then
-  rm -rf "$CATKIN_WORKSPACE/install"
-  echo "Deleted install"
-fi
-# Finally do catk make install
-catkin_make install
+cd src/sawyer_simulator/sawyer_sim_controllers
+rm CMakeLists.txt
+wget https://gist.githubusercontent.com/peasant98/5d1f1e6ee23d909f406995846dfffb50/raw/23a9a9ae16b42093f7449a9670ba41fda9809c32/CMakeLists.txt
+source /opt/ros/melodic/setup.bash
+cd ../../..
+catkin_make
