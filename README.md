@@ -2,7 +2,7 @@
 
 # General
 ## Current Release
-- `0.0.1` as of 2020/3/07
+- `0.0.1` as of 2020/3/13
 
 ## Supporting version
 `ROS Melodic`
