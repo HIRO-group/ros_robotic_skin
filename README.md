@@ -72,7 +72,7 @@ curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.li
 
 sudo apt update
 
-sudo apt install nvidia-docker2
+sudo apt install nvidia-docker2 nvidia-container-runtime
 ```
 
 Then to run, you will need to specify the nvidia runtime:
