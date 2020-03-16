@@ -40,6 +40,55 @@ Here's an example of someone who would want to build `libfranka` from source and
 ./install.sh --git-option ssh --franka-build source
 ```
 
+# Docker
+
+We have added Dockerfile support for this repository.
+To build, run the following command:
+
+```sh
+sudo apt install docker
+docker build . -t <image-name>
+
+# running the image
+docker run -it \
+    --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    -env="XAUTHORITY=$XAUTH" \
+    --volume="$XAUTH:$XAUTH" \
+    <image-name>
+```
+
+For systems that use nvidia drivers for gazebo, you will need nvidia runtime. To install:
+
+```sh
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \
+  sudo apt-key add -
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+
+sudo apt update
+
+sudo apt-get install -y nvidia-docker2 nvidia-container-runtime
+```
+
+Then to run, you will need to specify the nvidia runtime:
+
+```sh
+
+docker run -it \
+    --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    -env="XAUTHORITY=$XAUTH" \
+    --volume="$XAUTH:$XAUTH" \
+    --runtime=nvidia \
+    <image-name>
+
+```
+
 ## Running Simulation
 
 In order to run the Panda Gazebo simulation, make sure that you have built your workspace, then run (from `catkin_ws`, or the root of your catkin workspace)
