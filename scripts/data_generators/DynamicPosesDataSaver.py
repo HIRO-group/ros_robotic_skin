@@ -12,9 +12,11 @@ import rospy
 import rospkg
 from sensor_msgs.msg import Imu
 
-import utils
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts.utils import get_poses_list_file  # noqa: E402
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+
 
 RAD2DEG = 180.0/np.pi
 OSCILLATION_TIME = 3.0
@@ -44,10 +46,7 @@ def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
     # possibly use np.nanmedian
     for i in range((window_size), (n - window_size)):
         x0 = np.median(input_series[(i - window_size):(i + window_size)])
-        S0 = k * np.median(
-                    np.abs(
-                        input_series[
-                            (i - window_size):(i + window_size)] - x0))
+        S0 = k * np.median(np.abs(input_series[(i - window_size):(i + window_size)] - x0))
         if (np.abs(input_series[i] - x0) > n_sigmas * S0):
             new_series[i] = x0
             indices.append(i)
@@ -89,8 +88,7 @@ class DynamicPoseData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = \
-                        np.empty((0, 12), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 12), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -110,9 +108,7 @@ class DynamicPoseData():
             Includes an accelerometer measurement and a joint angle.
         """
         self.data[pose_name][joint_name][imu_name] = \
-            np.append(
-                    self.data[pose_name][joint_name][imu_name],
-                    np.array([data]), axis=0)
+            np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
     def clean_data(self, verbose=False):
         """
@@ -138,8 +134,7 @@ class DynamicPoseData():
                     max_w_idx = np.argmax(w)
 
                     joint_accel = d[:, 4]
-                    ja, outliers_index = \
-                        hampel_filter_forloop(joint_accel, 10, 1)
+                    ja, outliers_index = hampel_filter_forloop(joint_accel, 10, 1)
                     # max_ja_idx = np.argmax(ja)
                     """
                     joints = d[:, 4:]
@@ -173,18 +168,15 @@ class DynamicPoseData():
                             d[max_ja_idx,2], w[max_ja_idx], ja[max_ja_idx]))
                     """
 
-                    data[pose_name][joint_name][imu_name] = \
-                        self.data[pose_name][joint_name][imu_name][idx, :]
+                    data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][idx, :]
                     data[pose_name][joint_name][imu_name][3] = w[idx]
                     data[pose_name][joint_name][imu_name][4] = w[max_w_idx]
 
                     if verbose:
                         rospy.loginfo(data[pose_name][joint_name][imu_name])
                         d = data[pose_name][joint_name][imu_name]
-                        rospy.loginfo(
-                            '[%s, %s, %s] (%.3f, %.3f, %.3f)'
-                            % (pose_name, joint_name, imu_name,
-                               d[0], d[1], d[2]))
+                        rospy.loginfo('[%s, %s, %s] (%.3f, %.3f, %.3f)'
+                                      % (pose_name, joint_name, imu_name, d[0], d[1], d[2]))
         return data
 
     def save(self, data):
@@ -245,9 +237,7 @@ class DynamicPoseDataSaver():
         rospy.loginfo(self.joint_names)
 
         # data storage
-        self.data_storage = \
-            DynamicPoseData(self.pose_names,
-                            self.joint_names, self.imu_names, filepath)
+        self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
         rospy.sleep(1)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
@@ -265,11 +255,9 @@ class DynamicPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
-            joint_angles = [
-                self.controller.joint_angle(name) for name in self.joint_names]
+            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
 
-            if self.curr_joint_name == self.joint_names[0] and \
-               data.header.frame_id == 'imu_link0':
+            if self.curr_joint_name == self.joint_names[0] and data.header.frame_id == 'imu_link0':
                 pass
                 # rospy.loginfo(utils.n2s(
                 #   np.array([accel.x, accel.y, accel.z])))
@@ -287,18 +275,14 @@ class DynamicPoseDataSaver():
 
             if curr_A > self.max_angular_velocity:
                 self.max_angular_velocity = curr_A
-                # rospy.loginfo
-                #   (self.curr_joint_name + ' ' +
-                #   data.header.frame_id + ' ' +
-                #   'Max Angular Velocity: %.4f'%(curr_A))
+                # rospy.loginfo(self.curr_joint_name + ' ' + data.header.frame_id + ' ' + Max Angular Velocity: %.4f'%(curr_A))
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu
-                np.array([
-                    accel.x, accel.y, accel.z,
-                    self.max_angular_velocity, self.curr_acc] + joint_angles))
+                np.array([accel.x, accel.y, accel.z,
+                          self.max_angular_velocity, self.curr_acc] + joint_angles))
 
             self.prev_w = curr_w
             self.prev_t = curr_t
@@ -314,8 +298,7 @@ class DynamicPoseDataSaver():
         A = rospy.get_param('/oscillation_magnitude')
 
         for pose in self.poses_list:
-            positions, \
-             _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
+            positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_positions = positions
             self.curr_pose_name = pose_name
             self.controller.publish_positions(positions, sleep=1)
@@ -325,8 +308,7 @@ class DynamicPoseDataSaver():
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
                 self.max_angular_velocity = -np.inf
-                self.prev_w = \
-                    self.controller.joint_velocity(self.curr_joint_name)
+                self.prev_w = self.controller.joint_velocity(self.curr_joint_name)
                 self.prev_t = rospy.get_rostime().to_sec()
 
                 # Prepare for publishing a trajectory
@@ -349,8 +331,7 @@ class DynamicPoseDataSaver():
                     velocities[i] = velocity
                     accelerations[i] = acceleration
 
-                    self.controller.publish_trajectory(
-                        poss, velocities, accelerations, None)
+                    self.controller.publish_trajectory(poss, velocities, accelerations, None)
 
                     if t > OSCILLATION_TIME:
                         break
@@ -383,7 +364,7 @@ if __name__ == "__main__":
     robot = sys.argv[1]
     if robot == 'panda':
         controller = PandaController()
-        poses_list = utils.get_poses_list_file('positions.txt')
+        poses_list = get_poses_list_file('positions.txt')
     elif robot == 'sawyer':
         controller = SawyerController()
     else:
@@ -391,7 +372,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 2:
         try:
-            poses_list = utils.get_poses_list_file(sys.argv[2])
+            poses_list = get_poses_list_file(sys.argv[2])
         except Exception:
             raise Exception("Could not initiate poses_lists from file!")
     else:

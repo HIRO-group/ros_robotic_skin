@@ -29,7 +29,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 class PandaController(object):
     """
-    This is the main PandaPose class.
+    This is the main PandaController class.
     The main reason this class needs to be overridden is
     that you can rospy.init_node
     once. Hence. You need to call this super method.
@@ -85,8 +85,7 @@ class PandaController(object):
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_name = ''
 
-        rospy.Subscriber(
-                '/joint_states', JointState, self.joint_state_callback)
+        rospy.Subscriber('/joint_states', JointState, self.joint_state_callback)
         self.joint_states = JointState()
 
     @property
@@ -101,8 +100,7 @@ class PandaController(object):
         """
         Gets the current joint angles of the Panda.
         """
-        index = [self.joint_states.name.index(joint_name)
-                 for joint_name in self.joint_names]
+        index = [self.joint_states.name.index(joint_name) for joint_name in self.joint_names]
         return [self.joint_states.position[idx] for idx in index]
 
     @property
@@ -110,8 +108,7 @@ class PandaController(object):
         """
         Gets the current joint velocities of the Panda.
         """
-        index = [self.joint_states.name.index(joint_name)
-                 for joint_name in self.joint_names]
+        index = [self.joint_states.name.index(joint_name) for joint_name in self.joint_names]
         return [self.joint_states.velocity[idx] for idx in index]
 
     def joint_state_callback(self, joint_states):
@@ -180,8 +177,7 @@ class PandaController(object):
             If Panda is in simulation or not.
 
         """
-        topic_string = '/panda_arm_controller/command' if is_sim \
-            else '/joint_trajectory_controller/command'
+        topic_string = '/panda_arm_controller/command' if is_sim else '/joint_trajectory_controller/command'
         return rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
 
     def send_once(self):
@@ -209,8 +205,7 @@ class PandaController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list \
-            should be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(self.point.positions):
             self.point.positions[index] = positions[index]
 
@@ -232,8 +227,7 @@ class PandaController(object):
         return: None
         """
         if len(velocities) != 7:
-            raise Exception("The length of input list \
-            should be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(velocities):
             self.point.velocities[index] = velocities[index]
 
@@ -255,8 +249,7 @@ class PandaController(object):
         return: None
         """
         if len(accelerations) != 7:
-            raise Exception("The length of input list should \
-            be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, _ in enumerate(accelerations):
             self.point.accelerations[index] = accelerations[index]
 
@@ -280,11 +273,9 @@ class PandaController(object):
         return: None
         """
         if len(positions) != 7:
-            raise Exception("The length of input list should \
-            be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
         if len(velocities) != 7:
-            raise Exception("The length of input list should \
-            be 7, as panda has 7 arms")
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
 
         for index, _ in enumerate(positions):
             self.point.positions[index] = positions[index]
@@ -336,7 +327,7 @@ class PandaController(object):
         return: None
         """
         for each_pose in poses:
-            positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841,E501
+            positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
             self.pose_name = pose_name
             self.publish_positions(positions, sleep)
 
@@ -358,7 +349,7 @@ class PandaController(object):
         return: None
         """
         for each_pose in poses:
-            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841,E501
+            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
             self.pose_name = pose_name
             self.publish_velocities(velocities, sleep)
 
@@ -381,21 +372,17 @@ class PandaController(object):
         """
         # TODO: add accelerations
         for each_pose in poses:
-            positions, velocities, pose_name = \
-                each_pose[0], each_pose[1], each_pose[2]
+            positions, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
             accelerations = np.zeros(7)
             self.pose_name = pose_name
-            self.publish_trajectory(positions,
-                                    velocities, accelerations, sleep)
+            self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 
 if __name__ == "__main__":
     # just 2 poses for now.
     poses_list = [
-        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4],
-            [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
-        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4],
-            [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
+        [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
+        [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     controller = PandaController()
     while True:

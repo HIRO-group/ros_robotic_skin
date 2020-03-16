@@ -1,50 +1,47 @@
+![ROS_Robotic_Skin CI](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS_Robotic_Skin%20CI/badge.svg)
+
 # General
 ## Current Release
-- `0.0.1` as of 2020/3/07
+- `0.0.1` as of 2020/3/13
 
 ## Supporting version
 `ROS Melodic`
 
+## Examples
+![](images/sawyer_example.png)
+![](images/panda_example.png)
+
 # Installation
-## `robotic_skin` python package
-```
-pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
-```
 
-## `ros_robotic_skin`
-```
-cd ~/catkin_ws/src
-git clone git@github.com:HIRO-group/ros_robotic_skin.git
-cd ~/catkin_ws
-cakin_make
-```
+We have an `install.sh` script that will install the following packages:
 
-## Franka Panda Gazebo Simulator
-Please refer to the Franka Install Guide [here](https://hiro-group.ronc.one/franka_installation_tutorial.html) for dependencies. <br>
-Be careful to install `melodic` dependencies.
+- Installs our Python `robotic_skin` package [here](https://github.com/HIRO-group/robotic_skin)
 
-For the panda simulator install `panda_simulation` as
+- The Franka Panda Gazebo Simulator package [here](https://github.com/HIRO-group/panda_simulation)
+
+- The Sawyer Gazebo simulator
+
+In order to run the install script
+
+Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
+
+Usage:
+
 ```sh
-mkdir -p catkin_ws/src
-cd catkin_ws/src
-git clone https://github.com/erdalpekel/panda_simulation.git
-git clone https://github.com/erdalpekel/panda_moveit_config.git
-git clone --branch simulation https://github.com/erdalpekel/franka_ros.git
-cd ..
-sudo apt-get install libboost-filesystem-dev
-rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
-cd ..
-catkin_make
+
+./install.sh --git-option https|ssh --franka-build apt|source
+
 ```
 
-## (Optional) Install Sawyer Gazebo Simulator
-```
-cd catkin_ws/src
-wstool init
-wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
-wstool update
-cd ..
-catkin_make
+`--git-option` specifies if we clone the `HIRO` repos via https or ssh.
+`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`.
+
+If you don't set these, by default, `--git-option` will be `ssh` and `--franka-build` will be `apt`.
+
+Here's an example of someone who would want to build `libfranka` from source and use ssh for git:
+
+```sh
+./install.sh --git-option ssh --franka-build source
 ```
 
 ## Running Simulation
@@ -94,7 +91,7 @@ Where `sim_bool` should be `true` is you are running the Panda in simulation, an
 
 ## Miscellaneous
 
-It is **highly** recommended to add the line 
+It is **highly** recommended to add the line
 ```sh
 source <path to your workspace>/devel/setup.bash
 ```
@@ -121,8 +118,8 @@ These commands and scripts will ensure that the `gh-pages` branch is up to date 
 In order to have the Github Actions build pass, we use `flake8` for style enforcement. To test this, simply run
 
 ```sh
-flake8 .
-``` 
+flake8 . --max-complexity=10 --max-line-length=140
+```
 within this repository (after cloning and changing directories to `ros_robotic_skin`).
 
 # Setting

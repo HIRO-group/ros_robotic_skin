@@ -8,11 +8,17 @@ import rospkg
 import os
 import numpy as np
 
-from PandaController import PandaController
-from SawyerController import SawyerController
+
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 
 class ActivityMatrixController():
+    """
+    Activity matrix controller for the panda and sawyer robot arms
+    """
     def __init__(self, controller, desired_positions_path, is_sim=True):
         """
         Panda Trajectory control class for sending
@@ -29,10 +35,8 @@ class ActivityMatrixController():
         # get the controller, either sawyer or panda
         self.controller = controller
 
-        self.joint_dof_pub = rospy.Publisher(
-                '/joint_mvmt_dof', Int16, queue_size=1)
-        self.calibration_pub = rospy.Publisher(
-                '/calibration_complete', Bool, queue_size=1)
+        self.joint_dof_pub = rospy.Publisher('/joint_mvmt_dof', Int16, queue_size=1)
+        self.calibration_pub = rospy.Publisher('/calibration_complete', Bool, queue_size=1)
         # rospy.init_node('calibration_joint_mvmt_node', anonymous=True)
         self.pos_mat = np.loadtxt(desired_positions_path)
         print(self.pos_mat)
@@ -86,16 +90,12 @@ if __name__ == '__main__':
     if robot_type == 'sawyer' and is_sim is False:
         raise Exception('Real Sawyer support is currently not supported.')
     # controller was determined from roslaunch file.
-    controller = PandaController(is_sim=is_sim) if robot_type == 'panda' \
-        else SawyerController()
+    controller = PandaController(is_sim=is_sim) if robot_type == 'panda' else SawyerController()
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
-    desired_positions_path = os.path.join(
-            ros_robotic_skin_path, 'data', filename)
+    desired_positions_path = os.path.join(ros_robotic_skin_path, 'data', filename)
     try:
-        activity_matrix_control = \
-            ActivityMatrixController(controller, desired_positions_path,
-                                     is_sim=is_sim)
+        activity_matrix_control = ActivityMatrixController(controller, desired_positions_path, is_sim=is_sim)
         activity_matrix_control.spin()
 
     except rospy.ROSInterruptException:

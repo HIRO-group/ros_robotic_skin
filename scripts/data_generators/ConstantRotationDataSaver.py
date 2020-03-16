@@ -12,9 +12,10 @@ import rospkg
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
-import utils
-from SawyerController import SawyerController
-from PandaController import PandaController
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts.utils import get_poses_list_file  # noqa: E402
+from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
@@ -38,8 +39,7 @@ def reject_outliers(data, m=1):
     ----------
     returns: None
     """
-    is_in_std = np.absolute(data - np.mean(data, axis=0)) \
-        < m * np.std(data, axis=0)
+    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
     indices = np.where(is_in_std is True)
     return data[indices], indices
 
@@ -79,8 +79,7 @@ class ConstantRotationData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = \
-                        np.empty((0, 15), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 15), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -100,8 +99,7 @@ class ConstantRotationData():
             Includes an accelerometer measurement and a joint angle.
         """
         self.data[pose_name][joint_name][imu_name] = \
-            np.append(self.data[pose_name][joint_name][imu_name],
-                      np.array([data]), axis=0)
+            np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
     def clean_data(self, verbose=False):
         """
@@ -116,13 +114,9 @@ class ConstantRotationData():
         for pose_name in self.pose_names:
             for joint_name in self.joint_names:
                 for imu_name in self.imu_names:
-                    norm = \
-                        np.linalg.norm(
-                            self.data[pose_name][joint_name][imu_name][:, :3],
-                            axis=1)
+                    norm = np.linalg.norm(self.data[pose_name][joint_name][imu_name][:, :3], axis=1)
                     norm, in_std = reject_outliers(norm)
-                    data[pose_name][joint_name][imu_name] = \
-                        self.data[pose_name][joint_name][imu_name][in_std, :]
+                    data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][in_std, :]
 
         return data
 
@@ -208,9 +202,7 @@ class ConstantRotationDataSaver():
         self.curr_joint_name = self.joint_names[0]
 
         # data storage
-        self.data_storage = ConstantRotationData(self.pose_names,
-                                                 self.joint_names,
-                                                 self.imu_names, filepath)
+        self.data_storage = ConstantRotationData(self.pose_names, self.joint_names, self.imu_names, filepath)
         rospy.sleep(1)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
@@ -233,11 +225,8 @@ class ConstantRotationDataSaver():
             accel = data.linear_acceleration
             q = self.Q[data.header.frame_id]
             # get the orientation of the imu
-            J = np.array(
-                    [self.controller.joint_angle(name)
-                        for name in self.joint_names])
-            joint_velocity = \
-                self.controller.joint_velocity(self.curr_joint_name)
+            J = np.array([self.controller.joint_angle(name) for name in self.joint_names])
+            joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
             # if self.curr_joint_name == 'right_j0'
             # and data.header.frame_id == 'imu_link0':
             # rospy.loginfo(utils.n2s(np.array([accel.x, accel.y, accel.z])))
@@ -249,7 +238,8 @@ class ConstantRotationDataSaver():
                     q.x, q.y, q.z, q.w,
                     accel.x, accel.y, accel.z,
                     J[0], J[1], J[2], J[3], J[4], J[5], J[6],
-                    joint_velocity]))
+                    joint_velocity])
+            )
 
     def rotate_at_constant_vel(self):
         """
@@ -281,16 +271,13 @@ class ConstantRotationDataSaver():
                     dt = (rospy.get_rostime() - now).to_sec()
                     pos += (velocities*dt)
 
-                    self.controller.publish_trajectory(
-                        pos, velocities, accelerations, None)
+                    self.controller.publish_trajectory(pos, velocities, accelerations, None)
                     if dt > DATA_COLLECTION_TIME:
                         break
 
                     for imu_name in self.imu_names:
                         try:
-                            (trans, rot) = \
-                                self.tf_listener.lookupTransform(
-                                    '/world', imu_name, rospy.Time(0))
+                            (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
                             self.Q[imu_name].x = rot[0]
                             self.Q[imu_name].y = rot[1]
                             self.Q[imu_name].z = rot[2]
@@ -315,7 +302,7 @@ class ConstantRotationDataSaver():
 if __name__ == "__main__":
 
     # used to get poses
-    poses_list = utils.get_poses_list_file('positions.txt')
+    poses_list = get_poses_list_file('positions.txt')
     # Poses Configuration
 
     poses_list = [
