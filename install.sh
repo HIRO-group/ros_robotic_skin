@@ -63,6 +63,10 @@ fi
 
 # needed for ros
 source /opt/ros/melodic/setup.bash
+sudo apt update
+sudo apt upgrade
+sudo apt install python3-pip
+
 
 if [[ $GIT_OPTION = "ssh" ]]
 then
@@ -70,7 +74,7 @@ then
 else
   pip3 install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
 fi
-
+cd ..
 # clone repositories for simulation
 git clone https://github.com/HIRO-group/panda_simulation
 git clone https://github.com/erdalpekel/panda_moveit_config
@@ -78,7 +82,7 @@ git clone --branch simulation https://github.com/HIRO-group/franka_ros
 cd ..
 sudo apt install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin
-sudo apt install ros-melodic-imu-madgwick
+sudo apt install ros-melodic-imu-filter-madgwick
 cd src
 
 # if franka build is desired from source

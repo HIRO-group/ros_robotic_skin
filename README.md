@@ -7,6 +7,10 @@
 ## Supporting version
 `ROS Melodic`
 
+## Examples
+![](images/sawyer_example.png)
+![](images/panda_example.png)
+
 # Installation
 
 We have an `install.sh` script that will install the following packages:
@@ -30,7 +34,7 @@ Usage:
 ```
 
 `--git-option` specifies if we clone the `HIRO` repos via https or ssh.
-`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`. 
+`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`.
 
 If you don't set these, by default, `--git-option` will be `ssh` and `--franka-build` will be `apt`.
 
@@ -141,7 +145,7 @@ Where `sim_bool` should be `true` is you are running the Panda in simulation, an
 
 ## Miscellaneous
 
-It is **highly** recommended to add the line 
+It is **highly** recommended to add the line
 ```sh
 source <path to your workspace>/devel/setup.bash
 ```
@@ -169,7 +173,7 @@ In order to have the Github Actions build pass, we use `flake8` for style enforc
 
 ```sh
 flake8 . --max-complexity=10 --max-line-length=140
-``` 
+```
 within this repository (after cloning and changing directories to `ros_robotic_skin`).
 
 # Setting
@@ -217,7 +221,7 @@ Good article explaining everything in more detail: https://krishnachaitanya9.git
 ### How to run test
 ```
 cd ~/catkin_ws
-cakin_make run_tests
+catkin run_tests
 ```
 
 ### How to add test

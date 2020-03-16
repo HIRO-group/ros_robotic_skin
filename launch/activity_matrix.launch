@@ -4,7 +4,7 @@
 <!-- and sawyer simulation. -->
 <launch>
     <arg name="is_sim" default="true" />
-    <arg name="filename" default="positions.txt" />
+    <arg name="filename" default="panda_positions.txt" />
 
     <arg name="robot_type" default="panda" />
 
