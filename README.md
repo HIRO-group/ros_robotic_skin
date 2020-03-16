@@ -167,7 +167,7 @@ Good article explaining everything in more detail: https://krishnachaitanya9.git
 ### How to run test
 ```
 cd ~/catkin_ws
-cakin_make run_tests
+catkin run_tests
 ```
 
 ### How to add test

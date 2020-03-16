@@ -5,7 +5,7 @@
 <launch>
   <!-- options are in panda or sawyer simulation, and on real panda  -->
   <arg name="is_sim" default="true" />
-  <arg name="save_file" default="positions.txt" />
+  <arg name="save_file" default="panda_positions.txt" />
 
   <!-- if robot_type is sawyer, and is_sim is false, this will cause an error later. -->
   <arg name="robot_type" default="panda" />
