@@ -8,75 +8,36 @@
 `ROS Melodic`
 
 # Installation
-## `robotic_skin` python package
+
+We have an `install.sh` script that will install the following packages:
+
+- Installs our Python `robotic_skin` package [here](https://github.com/HIRO-group/robotic_skin)
+
+- The Franka Panda Gazebo Simulator package [here](https://github.com/HIRO-group/panda_simulation)
+
+- The Sawyer Gazebo simulator
+
+In order to run the install script
+
+Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
+
+Usage:
+
 ```sh
-# Using HTTPS:
-pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
-# Using SSH:
-pip install --upgrade git+ssh://git@github.com/HIRO-group/robotic_skin.git
+
+./install.sh --git-option https|ssh --franka-build apt|source
+
 ```
 
-## `ros_robotic_skin`
-```sh
-mkdir -p ~/catkin_ws/src
-cd ~/catkin_ws/src
-git clone git@github.com:HIRO-group/ros_robotic_skin.git
-cd ..
-catkin_make
-```
+`--git-option` specifies if we clone the `HIRO` repos via https or ssh.
+`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`. 
 
-## Franka Panda Gazebo Simulator
-Please refer to the Franka Install Guide [here](https://hiro-group.ronc.one/franka_installation_tutorial.html) for dependencies. <br>
-Be careful to install `melodic` dependencies.
+If you don't set these, by default, `--git-option` will be `ssh` and `--franka-build` will be `apt`.
 
-For the panda simulator, install `panda_simulation` as
-```sh
-cd ~/catkin_ws/src
-git clone https://github.com/HIRO-group/panda_simulation
-git clone https://github.com/erdalpekel/panda_moveit_config
-git clone --branch simulation https://github.com/HIRO-group/franka_ros
-cd ..
-sudo apt-get install libboost-filesystem-dev
-rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
-```
-
-You can install `libfranka` via `apt-get` or from source.
-
-Via `apt-get`:
+Here's an example of someone who would want to build `libfranka` from source and use ssh for git:
 
 ```sh
-sudo apt-get install ros-melodic-libfranka
-```
-
-From source:
-
-```sh
-sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
-
-git clone --recursive https://github.com/frankaemika/libfranka
-cd libfranka
-
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
-```
-
-Making the workspace
-```sh
-cd ~/catkin_ws/src
-# append the -DFranka_DIR part if you built libfranka from source.
-catkin_make -j4 -DCMAKE_BUILD_TYPE=Release -DFranka_DIR:PATH=/path/to/libfranka/build
-```
-
-## Install Sawyer Gazebo Simulator
-```sh
-cd ~/catkin_ws/src
-wstool init
-wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
-wstool update
-cd ..
-catkin_make
+./install.sh --git-option ssh --franka-build source
 ```
 
 ## Running Simulation
