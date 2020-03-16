@@ -93,7 +93,7 @@ if __name__ == '__main__':
     controller = PandaController(is_sim=is_sim) if robot_type == 'panda' else SawyerController()
     rospack = rospkg.RosPack()
     ros_robotic_skin_path = rospack.get_path('ros_robotic_skin')
-    desired_positions_path = os.path.join(ros_robotic_skin_path, 'data', filename)
+    desired_positions_path = os.path.join(ros_robotic_skin_path, 'config', filename)
     try:
         activity_matrix_control = ActivityMatrixController(controller, desired_positions_path, is_sim=is_sim)
         activity_matrix_control.spin()

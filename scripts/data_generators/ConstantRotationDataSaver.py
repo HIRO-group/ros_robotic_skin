@@ -302,17 +302,22 @@ class ConstantRotationDataSaver():
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
+
     if robot == 'panda':
-        # used to get poses
-        poses_list = utils.get_poses_list_file('panda_positions.txt')
         controller = PandaController()
+        filename = 'panda_positions.txt'
     elif robot == 'sawyer':
-        poses_list = utils.get_poses_list_file('sawyer_positions.txt')
         controller = SawyerController()
+        filename = 'sawyer_positions.txt'
     else:
         raise ValueError("Must be either panda or sawyer")
 
+    if len(sys.argv) > 2:
+        filename = sys.argv[2]
+
+    poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/constant_data', robot])
+
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
     cr.rotate_at_constant_vel()
     cr.save(verbose=True, filter=True)

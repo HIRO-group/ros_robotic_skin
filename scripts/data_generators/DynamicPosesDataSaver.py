@@ -13,7 +13,7 @@ import rospkg
 from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.utils import get_poses_list_file  # noqa: E402
+from scripts import utils  # noqa: E402
 from scripts.controllers.PandaController import PandaController  # noqa: E402
 from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
@@ -362,16 +362,22 @@ class DynamicPoseDataSaver():
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
+
     if robot == 'panda':
-        poses_list = get_poses_list_file('panda_positions.txt')
         controller = PandaController()
+        filename = 'panda_positions.txt'
     elif robot == 'sawyer':
-        poses_list = get_poses_list_file('sawyer_positions.txt')
         controller = SawyerController()
+        filename = 'sawyer_positions.txt'
     else:
         raise ValueError("Must be either panda or sawyer")
 
+    if len(sys.argv) > 2:
+        filename = sys.argv[2]
+
+    poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/dynamic_data', robot])
+
     dd = DynamicPoseDataSaver(controller, poses_list, filepath)
     dd.move_like_sine_dynamic()
     dd.save(save=True, verbose=False)
