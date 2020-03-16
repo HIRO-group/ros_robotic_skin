@@ -6,9 +6,9 @@ RUN apt-get install wget
 RUN sudo apt install -y python3-pip
 RUN mkdir -p /root/catkin_ws/src/ros_robotic_skin
 COPY . /root/catkin_ws/src/ros_robotic_skin
-RUN cd /root/catkin_ws/src && git clone https://github.com/HIRO-group//panda_simulation.git \
+RUN cd /root/catkin_ws/src && git clone https://github.com/erdalpekel/panda_simulation.git \
     && git clone https://github.com/erdalpekel/panda_moveit_config.git \
-    && git clone --branch simulation https://github.com/HIRO-group//franka_ros.git \
+    && git clone --branch simulation https://github.com/erdalpekel/franka_ros.git \
     && cd .. \
     && sudo apt-get install libboost-filesystem-dev \
     && rosdep install --from-paths src --ignore-src -y -r --skip-keys libfranka \
@@ -18,7 +18,7 @@ RUN cd /root/catkin_ws/src && git clone https://github.com/HIRO-group//panda_sim
     && wstool update \
     && sudo apt-get install -y ros-melodic-libfranka \
     && cd .. \
-    rosdep install --from-paths src --ignore-src -y -r --skip-keys libgazebo7-dev \
+    && rosdep install --from-paths src --ignore-src -y -r --skip-keys libgazebo7-dev \
     && cd src/sawyer_simulator/sawyer_sim_controllers \
     && rm CMakeLists.txt \
     && wget https://gist.githubusercontent.com/peasant98/5d1f1e6ee23d909f406995846dfffb50/raw/23a9a9ae16b42093f7449a9670ba41fda9809c32/CMakeLists.txt
