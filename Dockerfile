@@ -4,9 +4,9 @@ FROM ros:melodic-ros-base
 RUN apt-get update
 RUN apt-get install wget
 RUN sudo apt install -y python3-pip
-RUN mkdir -p catkin_ws/src/ros_robotic_skin
-COPY . catkin_ws/src/ros_robotic_skin
-RUN cd catkin_ws/src && git clone https://github.com/erdalpekel/panda_simulation.git \
+RUN mkdir -p ~/catkin_ws/src/ros_robotic_skin
+COPY . ~/catkin_ws/src/ros_robotic_skin
+RUN cd ~/catkin_ws/src && git clone https://github.com/erdalpekel/panda_simulation.git \
     && git clone https://github.com/erdalpekel/panda_moveit_config.git \
     && git clone --branch simulation https://github.com/erdalpekel/franka_ros.git \
     && cd .. \
@@ -24,10 +24,10 @@ RUN cd catkin_ws/src && git clone https://github.com/erdalpekel/panda_simulation
     && rm CMakeLists.txt \
     && wget https://gist.githubusercontent.com/peasant98/5d1f1e6ee23d909f406995846dfffb50/raw/23a9a9ae16b42093f7449a9670ba41fda9809c32/CMakeLists.txt
 
-RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make'
-RUN /bin/bash -c 'source catkin_ws/devel/setup.bash'
-RUN sed -i "\$i source catkin_ws/devel/setup.bash" ros_entrypoint.sh
-# RUN echo 'source catkin_ws/devel/setup.bash' >> ros_entrypoint.sh
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd ~/catkin_ws; catkin_make'
+RUN /bin/bash -c 'source ~/catkin_ws/devel/setup.bash'
+RUN echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc
+RUN sed -i "\$i source ~/catkin_ws/devel/setup.bash" ros_entrypoint.sh
 ENV NVIDIA_VISIBLE_DEVICES \
     ${NVIDIA_VISIBLE_DEVICES:-all}
 ENV NVIDIA_DRIVER_CAPABILITIES \
