@@ -34,6 +34,12 @@ Usage:
 
 If you don't set these, by default, `--git-option` will be `ssh` and `--franka-build` will be `apt`.
 
+Here's an example of someone who would want to build `libfranka` from source and use ssh for git:
+
+```sh
+./install.sh --git-option ssh --franka-build source
+```
+
 ## Running Simulation
 
 In order to run the Panda Gazebo simulation, make sure that you have built your workspace, then run (from `catkin_ws`, or the root of your catkin workspace)
