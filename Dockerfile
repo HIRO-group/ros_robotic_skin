@@ -28,6 +28,9 @@ RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make'
 RUN /bin/bash -c 'source catkin_ws/devel/setup.bash'
 RUN sed -i "\$i source catkin_ws/devel/setup.bash" ros_entrypoint.sh
 # RUN echo 'source catkin_ws/devel/setup.bash' >> ros_entrypoint.sh
-
+ENV NVIDIA_VISIBLE_DEVICES \
+    ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
 
