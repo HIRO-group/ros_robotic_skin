@@ -83,6 +83,22 @@ sudo pkill -SIGHUP dockerd
 
 ```
 
+Make sure that your `/etc/docker/daemon.json` has the `nvidia` entry
+in `runtimes`. If not, make sure to add it in.
+
+```sh
+{
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+
+
+```
+
 Then to run, you will need to specify the nvidia runtime:
 
 ```sh
