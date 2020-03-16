@@ -24,8 +24,11 @@ In order to run the install script
 ./install.sh --git-option https|ssh --franka-build apt|source
 
 ```
+
 `--git-option` specifies if we clone the `HIRO` repos via https or ssh.
-`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`.
+`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`. 
+
+If you don't set these, by default, `--git-option` will be `ssh` and `--franka-build` will be `apt`.
 
 ## Running Simulation
 
