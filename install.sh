@@ -63,6 +63,8 @@ fi
 
 # needed for ros
 source /opt/ros/melodic/setup.bash
+sudo apt update
+sudo apt upgrade
 
 if [[ $GIT_OPTION = "ssh" ]]
 then
