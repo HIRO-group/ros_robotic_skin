@@ -42,7 +42,9 @@ Here's an example of someone who would want to build `libfranka` from source and
 
 # Docker
 
-We have added Dockerfile support for this repository.
+We have added Dockerfile support for this repository.  
+To run the dockerfile you should clone the repository and then run docker build. The dockerfile 
+is not independent so please beware of that.  
 To build, run the following command:
 
 ```sh
