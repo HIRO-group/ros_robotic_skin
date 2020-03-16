@@ -65,6 +65,8 @@ fi
 source /opt/ros/melodic/setup.bash
 sudo apt update
 sudo apt upgrade
+sudo apt install python3-pip
+
 
 if [[ $GIT_OPTION = "ssh" ]]
 then
