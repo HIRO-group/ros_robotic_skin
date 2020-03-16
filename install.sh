@@ -70,7 +70,7 @@ then
 else
   pip3 install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
 fi
-
+cd ..
 # clone repositories for simulation
 git clone https://github.com/HIRO-group/panda_simulation
 git clone https://github.com/erdalpekel/panda_moveit_config
