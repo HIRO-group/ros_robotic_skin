@@ -19,6 +19,10 @@ We have an `install.sh` script that will install the following packages:
 
 In order to run the install script
 
+Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
+
+Usage:
+
 ```sh
 
 ./install.sh --git-option https|ssh --franka-build apt|source
