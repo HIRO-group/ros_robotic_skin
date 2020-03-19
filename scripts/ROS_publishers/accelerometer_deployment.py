@@ -1,6 +1,4 @@
 from robotic_skin.sensor.lsm6ds3_accel import LSM6DS3_acclerometer
-import json
-import os
 from sensor_msgs.msg import Imu
 import rospy
 import argparse

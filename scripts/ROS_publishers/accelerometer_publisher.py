@@ -4,11 +4,9 @@ By setting all environment variables as clearly explained in my blog
 https://krishnachaitanya9.github.io/posts/ros_publish_subscribe/
 """
 from robotic_skin.sensor.lsm6ds3_accel import LSM6DS3_acclerometer
-import os
 from sensor_msgs.msg import Imu
 import rospy
 import rospkg
-import rosparam
 import argparse
 
 # Global Variables

@@ -3,7 +3,6 @@
 """
 This is a ROS proximity data publisher
 """
-import sys
 import rospy
 from sensor_msgs.msg import Range
 from robotic_skin.sensor.vl53l1x import VL53L1X_ProximitySensor
