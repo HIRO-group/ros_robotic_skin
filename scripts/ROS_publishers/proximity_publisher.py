@@ -27,7 +27,9 @@ def publish_proximity(config_file, debug):
     # Reference: https://www.st.com/resource/en/datasheet/vl53l1x.pdf
     range_msg.field_of_view = 39.60
     while not rospy.is_shutdown():
+        range_msg.header.stamp = rospy.Time.now()
         range_msg.range = ps.read()
+        print(ps.read())
         if debug:
             print(range_msg)
         pub.publish(range_msg)
