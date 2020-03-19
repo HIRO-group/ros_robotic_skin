@@ -9,11 +9,6 @@ import rospy
 import rospkg
 import argparse
 
-# Global Variables
-# I know setting them is bad, this is just a clean straight example of a Proof-Of-Concept
-# That can be used to understand how things work
-# You need to set all of them below, Else script might misbehave
-# Also make sure no white spaces in the variables
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
