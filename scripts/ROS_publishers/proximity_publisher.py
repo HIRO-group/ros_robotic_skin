@@ -6,7 +6,7 @@ This is a ROS proximity data publisher
 import sys
 import rospy
 from sensor_msgs.msg import Range
-import vl53l1x
+from robotic_skin.sensor.vl53l1x import VL53L1X_ProximitySensor
 import argparse
 import rospkg
 
@@ -15,7 +15,7 @@ def publish_proximity(config_file, debug):
     """
     publish_proximity() function
     """
-    ps = vl53l1x.VL53L1X_ProximitySensor(config_file)
+    ps = VL53L1X_ProximitySensor(config_file)
     rospy_node_name = 'proximity_publisher_%s' % (ps.config_dict['proximity_sensor_number'])
     rospy.init_node(rospy_node_name, anonymous=True)
     pub = rospy.Publisher('/proximity_data%s' % (ps.config_dict['proximity_sensor_number']), Range, queue_size=10)
