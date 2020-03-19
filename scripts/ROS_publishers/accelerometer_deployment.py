@@ -3,32 +3,39 @@ import json
 import os
 from sensor_msgs.msg import Imu
 import rospy
+import argparse
+import rospkg
 
 if __name__ == "__main__":
-    current_script_path = os.path.dirname(os.path.realpath(__file__))
-    config_file = current_script_path + "/deployment_info.json"
-    with open(config_file, 'r') as f:
-        data = json.load(f)
-    i2c_0_id = data["I2C-0"]["imu_id"]
-    i2c_1_id = data["I2C-1"]["imu_id"]
-    accel_0 = LSM6DS3_acclerometer(bus_num=0)
-    accel_1 = LSM6DS3_acclerometer(bus_num=1)
-    rospy.init_node('talker_' + str(i2c_0_id) + "_" + str(i2c_1_id), anonymous=True)
-    pub0 = rospy.Publisher('/imu_data' + str(i2c_0_id), Imu, queue_size=10)
-    pub1 = rospy.Publisher('/imu_data' + str(i2c_1_id), Imu, queue_size=10)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--accel1_config_file', action="store",
+                        dest="accel1_config_file", required=True,
+                        help="The configuration yaml file name of acceleromter 1 in package's config folder")
+    parser.add_argument('--accel2_config_file', action="store",
+                        dest="accel2_config_file", required=True,
+                        help="The configuration yaml file name of acceleromter 2 in package's config folder")
+    args = parser.parse_args()
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+    config_file_accel1 = ros_robotic_skin_path + "/config/" + args.accel1_config_file
+    config_file_accel2 = ros_robotic_skin_path + "/config/" + args.accel2_config_file
+    accel_0 = LSM6DS3_acclerometer(config_file_accel1)
+    accel_1 = LSM6DS3_acclerometer(config_file_accel2)
+    ros_node_name = 'talker_%s_%s' % (str(accel_0.config_dict['imu_number']), str(accel_1.config_dict['imu_number']))
+    rospy.init_node(ros_node_name, anonymous=True)
+    pub0 = rospy.Publisher('/imu_data' + str(accel_0.config_dict['imu_number']), Imu, queue_size=10)
+    pub1 = rospy.Publisher('/imu_data' + str(accel_1.config_dict['imu_number']), Imu, queue_size=10)
     r = rospy.Rate(100)
     imu_msg0 = Imu()
     imu_msg1 = Imu()
-    GRAVITATIONAL_CONSTANT = 9.819
     while not rospy.is_shutdown():
         data0_list = accel_0.read()
         data1_list = accel_1.read()
-        imu_msg0.linear_acceleration.x = data0_list[0] * GRAVITATIONAL_CONSTANT
-        imu_msg0.linear_acceleration.y = data0_list[1] * GRAVITATIONAL_CONSTANT
-        imu_msg0.linear_acceleration.z = data0_list[2] * GRAVITATIONAL_CONSTANT
+        imu_msg0.linear_acceleration.x = data0_list[0]
+        imu_msg0.linear_acceleration.y = data0_list[1]
+        imu_msg0.linear_acceleration.z = data0_list[2]
         pub0.publish(imu_msg0)
-        imu_msg1.linear_acceleration.x = data1_list[0] * GRAVITATIONAL_CONSTANT
-        imu_msg1.linear_acceleration.y = data1_list[1] * GRAVITATIONAL_CONSTANT
-        imu_msg1.linear_acceleration.z = data1_list[2] * GRAVITATIONAL_CONSTANT
+        imu_msg1.linear_acceleration.x = data1_list[0]
+        imu_msg1.linear_acceleration.y = data1_list[1]
+        imu_msg1.linear_acceleration.z = data1_list[2]
         pub1.publish(imu_msg0)
         r.sleep()

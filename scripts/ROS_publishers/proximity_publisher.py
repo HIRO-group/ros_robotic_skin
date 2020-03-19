@@ -7,16 +7,19 @@ import sys
 import rospy
 from sensor_msgs.msg import Range
 import vl53l1x
+import argparse
+import rospkg
 
 
-def publish_proximity(debug=False):
+def publish_proximity(config_file, debug):
     """
     publish_proximity() function
     """
-    rospy.init_node('proximity_publisher', anonymous=True)
-    pub = rospy.Publisher('/proximity', Range, queue_size=10)
+    ps = vl53l1x.VL53L1X_ProximitySensor(config_file)
+    rospy_node_name = 'proximity_publisher_%s' % (ps.config_dict['proximity_sensor_number'])
+    rospy.init_node(rospy_node_name, anonymous=True)
+    pub = rospy.Publisher('/proximity_data%s' % (ps.config_dict['proximity_sensor_number']), Range, queue_size=10)
     rate = rospy.Rate(100)  # Start publishing at 100hz
-    ps = vl53l1x.VL53L1X_ProximitySensor()
     range_msg = Range()
     range_msg.radiation_type = 1
     range_msg.min_range = 0
@@ -33,11 +36,14 @@ def publish_proximity(debug=False):
 
 
 if __name__ == "__main__":
-    try:
-        if len(sys.argv) == 2:
-            debug = bool(sys.argv[1])
-            publish_proximity(debug)
-        else:
-            publish_proximity()
-    except rospy.ROSInterruptException:
-        print("Stopped publishing proximity data")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config_file', action="store",
+                        dest="config_file", required=True,
+                        help="The configuration yaml file name in package's config folder")
+    parser.add_argument('--DEBUG', action="store",
+                        dest="debug", required=False, default=False,
+                        help="Whether to print debug strings or not")
+    args = parser.parse_args()
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+    config_file = ros_robotic_skin_path + "/config/" + args.config_file
+    publish_proximity(config_file, args.debug)
