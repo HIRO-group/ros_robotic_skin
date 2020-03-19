@@ -29,7 +29,6 @@ def publish_proximity(config_file, debug):
     while not rospy.is_shutdown():
         range_msg.header.stamp = rospy.Time.now()
         range_msg.range = ps.read()
-        print(ps.read())
         if debug:
             print(range_msg)
         pub.publish(range_msg)
