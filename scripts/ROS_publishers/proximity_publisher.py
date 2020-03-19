@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-
-"""
-This is a ROS proximity data publisher
-"""
 import rospy
 from sensor_msgs.msg import Range
 from robotic_skin.sensor.vl53l1x import VL53L1X_ProximitySensor
@@ -12,7 +8,13 @@ import rospkg
 
 def publish_proximity(config_file, debug):
     """
-    publish_proximity() function
+    Publish Proximity Values from sensor in ROS Range msg
+    :param config_file: str
+        The full path of config_file which contains all required files mentioned in the fields of respective sensor's
+        docstring
+    :param debug: bool
+        To turn On or Off the debug messages printing to std out
+    :return: None
     """
     ps = VL53L1X_ProximitySensor(config_file)
     rospy_node_name = 'proximity_publisher_%s' % (ps.config_dict['proximity_sensor_number'])
