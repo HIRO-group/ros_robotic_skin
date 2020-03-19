@@ -18,7 +18,7 @@ else
     # exit the whole thing
     exit 1
 fi
-cd ../.. #  Move to catkin_workspace
+cd ../.. #  Move to catkin_workspace to install
 catkin_make
 
 
