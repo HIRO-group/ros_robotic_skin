@@ -28,4 +28,5 @@ jobs:
     - name: Run a multi-line script
       run: |
         git checkout gh-pages
-        echo test, and deploy your project.
+        git merge master
+        ./docs_generate.sh
