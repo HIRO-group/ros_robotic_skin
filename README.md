@@ -172,8 +172,7 @@ to your `.bashrc` file.
 We use [`rosdoc_lite`](http://wiki.ros.org/rosdoc_lite) for documentation generation. You can check it out
 [here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, Github Actions will update the documentation automatically:
 
-
-These commands and scripts will ensure that the `gh-pages` branch is up to date with your changes. From here, you can commit and push to the remote branch, and https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
+The GH action will ensure that the `gh-pages` branch is up to date with your changes. From here, https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
 
 # Flake8 Testing
 
