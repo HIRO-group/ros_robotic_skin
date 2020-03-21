@@ -28,5 +28,5 @@ jobs:
     - name: Run a multi-line script
       run: |
         git checkout gh-pages
-        git merge master
+        git pull origin master
         ./docs_generate.sh
