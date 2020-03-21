@@ -34,10 +34,12 @@ jobs:
         sudo apt-get install ros-melodic-rosdoc-lite
         source /opt/ros/melodic/setup.bash
         rosdoc_lite .
-        cp doc/html/* .
+        mkdir build
+        cp doc/html/* build/
         
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: master # The branch the action should deploy to.
+        FOLDER: build
