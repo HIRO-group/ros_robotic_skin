@@ -170,16 +170,8 @@ to your `.bashrc` file.
 # Documentation Generation
 
 We use [`rosdoc_lite`](http://wiki.ros.org/rosdoc_lite) for documentation generation. You can check it out
-[here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, you can update the documentation with the following steps (assuming you are on the master branch):
+[here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, Github Actions will update the documentation automatically:
 
-```sh
-
-git pull origin master
-git checkout gh-pages
-git merge master
-./docs_generate.sh
-
-```
 
 These commands and scripts will ensure that the `gh-pages` branch is up to date with your changes. From here, you can commit and push to the remote branch, and https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
 

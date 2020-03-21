@@ -1,5 +1,6 @@
 #include "PoseEstimationPublisher.h"
 
+// all of the publishers
 
 ros::NodeHandle* PosePublisher::nh;
 ros::Publisher PosePublisher::imu_pose;
