@@ -40,7 +40,7 @@ def reject_outliers(data, m=1):
     returns: None
     """
     is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
-    indices = np.where(is_in_std is True)
+    indices = np.where(is_in_std)
     return data[indices], indices
 
 
