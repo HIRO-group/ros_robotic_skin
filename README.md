@@ -165,7 +165,8 @@ It is **highly** recommended to add the line
 ```sh
 source <path to your workspace>/devel/setup.bash
 ```
-to your `.bashrc` file.
+to your `.bashrc` file, so you don't have to do it everytime you open
+a terminal.
 
 # Documentation Generation
 
