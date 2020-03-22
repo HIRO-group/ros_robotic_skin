@@ -61,37 +61,37 @@
 
     <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
     <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
-    <node name="Pose0EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE0" output="screen">
+    <node name="Pose0EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE0" output="screen">
         <param name="imu_pose_publisher_name" value="imu0_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data0" />   
     </node>
 
-    <node name="Pose1EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE1" output="screen">
+    <node name="Pose1EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE1" output="screen">
         <param name="imu_pose_publisher_name" value="imu1_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data1" />   
     </node>
 
-    <node name="Pose2EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE2" output="screen">
+    <node name="Pose2EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE2" output="screen">
         <param name="imu_pose_publisher_name" value="imu2_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data2" />   
     </node>
 
-    <node name="Pose3EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE3" output="screen">
+    <node name="Pose3EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE3" output="screen">
         <param name="imu_pose_publisher_name" value="imu3_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data3" />   
     </node>
 
-    <node name="Pose4EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE4" output="screen">
+    <node name="Pose4EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE4" output="screen">
         <param name="imu_pose_publisher_name" value="imu4_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data4" />   
     </node>
 
-    <node name="Pose5EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE5" output="screen">
+    <node name="Pose5EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE5" output="screen">
         <param name="imu_pose_publisher_name" value="imu5_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data5" />   
     </node>
 
-    <node name="Pose6EstimationPublisher" pkg="ros_robotic_skin" type="PoseEstimation" args="IMU_POSE6" output="screen">
+    <node name="Pose6EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE6" output="screen">
         <param name="imu_pose_publisher_name" value="imu6_pose" /> 
         <param name="original_imu_publisher_name" value="/imu_data6" />   
     </node>
