@@ -127,7 +127,15 @@ fi
 
 # setup sawyer simulation
 cd src
-wstool init
+
+if [ -d "sawyer_robot" ]
+then
+  wstool init
+
+else
+  echo "wstool initialized already, skipping"
+fi
+
 wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
 wstool update
 cd ..
