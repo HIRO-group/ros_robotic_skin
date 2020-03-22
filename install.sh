@@ -76,9 +76,32 @@ else
 fi
 cd ..
 # clone repositories for simulation
-git clone https://github.com/HIRO-group/panda_simulation
-git clone https://github.com/erdalpekel/panda_moveit_config
-git clone --branch simulation https://github.com/HIRO-group/franka_ros
+
+if [ -d "panda_simulation" ]
+then
+  git clone https://github.com/HIRO-group/panda_simulation
+
+else
+  echo "panda_simulation package exists, skipping"
+fi
+
+if [ -d "panda_moveit_config" ]
+then
+  git clone https://github.com/erdalpekel/panda_moveit_config
+
+else
+  echo "panda_moveit_config package exists, skipping"
+fi
+
+
+if [ -d "franka_ros" ]
+then
+  git clone --branch simulation https://github.com/HIRO-group/franka_ros
+
+else
+  echo "franka_ros package exists, skipping"
+fi
+
 cd ..
 sudo apt install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin
