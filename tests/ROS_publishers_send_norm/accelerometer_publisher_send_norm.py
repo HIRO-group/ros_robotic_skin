@@ -24,6 +24,8 @@ if __name__ == "__main__":
         norm = math.sqrt(data0_list[0]*data0_list[0] +
                          data0_list[1]*data0_list[1] +
                          data0_list[2]*data0_list[2])
+        if norm < 9.81:
+            print("Norm less than 9.81")
         norm_float.data = norm
         pub.publish(norm_float)
         r.sleep()
