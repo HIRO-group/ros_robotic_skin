@@ -65,7 +65,7 @@ fi
 source /opt/ros/melodic/setup.bash
 sudo apt update
 sudo apt upgrade
-sudo apt install python3-pip
+sudo apt install python3-pip python-catkin-tools
 
 
 if [[ $GIT_OPTION = "ssh" ]]
@@ -145,7 +145,7 @@ rosdep install --from-paths src --ignore-src -y -r --skip-keys libgazebo7-dev
 sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulator/sawyer_sim_controllers/CMakeLists.txt
 if [[ $FRANKA_BUILD = "source" ]]
 then
-  catkin_make -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
+  catkin build -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
 else
-  catkin_make
+  catkin build
 fi

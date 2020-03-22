@@ -3,7 +3,7 @@ FROM osrf/ros:melodic-desktop-full-bionic
 # install the necessary packages
 RUN apt update
 RUN apt install wget
-RUN apt install -y python3-pip
+RUN apt install -y python3-pip python-catkin-tools
 RUN mkdir -p /root/catkin_ws/src/ros_robotic_skin
 COPY . /root/catkin_ws/src/ros_robotic_skin
 RUN cd /root/catkin_ws/src && git clone https://github.com/erdalpekel/panda_simulation.git \
@@ -23,7 +23,7 @@ RUN cd /root/catkin_ws/src && git clone https://github.com/erdalpekel/panda_simu
     && rm CMakeLists.txt \
     && wget https://gist.githubusercontent.com/peasant98/5d1f1e6ee23d909f406995846dfffb50/raw/23a9a9ae16b42093f7449a9670ba41fda9809c32/CMakeLists.txt
 
-RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd /root/catkin_ws; catkin_make'
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; cd /root/catkin_ws; catkin build'
 RUN /bin/bash -c 'source /root/catkin_ws/devel/setup.bash'
 RUN echo 'source /root/catkin_ws/devel/setup.bash' >> ~/.bashrc
 RUN sed -i "\$i source /root/catkin_ws/devel/setup.bash" ros_entrypoint.sh
