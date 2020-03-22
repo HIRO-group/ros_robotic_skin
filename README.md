@@ -7,10 +7,6 @@
 ## Supporting version
 `ROS Melodic`
 
-## Examples
-![](images/sawyer_example.png)
-![](images/panda_example.png)
-
 # Installation
 
 We have an `install.sh` script that will install the following packages:
@@ -122,6 +118,8 @@ source devel/setup.bash
 roslaunch ros_robotic_skin simulation.launch
 ```
 
+![](images/panda_example.png)
+
 
 ## Running Real Panda
 
@@ -130,6 +128,15 @@ Perform similar steps as what you would do for running the Panda Gazebo simulati
 source devel/setup.bash
 roslaunch ros_robotic_skin panda.launch robot_ip:=172.16.0.172
 ```
+
+## Running Sawyer
+```sh
+source devel/setup.bash
+roslaunch ros_robotic_skin sawyer_world.launch
+```
+
+![](images/sawyer_example.png)
+
 
 ## Capture Poses
 For this section to work, you must first be running 1 of 3 tasks:
