@@ -15,8 +15,8 @@ if __name__ == "__main__":
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     config_file = ros_robotic_skin_path + "/config/" + args.config_file
     accel = LSM6DS3_acclerometer(config_file)
-    rospy.init_node('talker_' + str(accel.config_dict['imu_number']), anonymous=True)
-    pub = rospy.Publisher('/imu_data' + str(accel.config_dict['imu_number']) + 'norm', Float32, queue_size=10)
+    rospy.init_node('talker_%s' % str(accel.config_dict['imu_number']), anonymous=True)
+    pub = rospy.Publisher('/imu_data%s' % str(accel.config_dict['imu_number']) + 'norm', Float32, queue_size=10)
     r = rospy.Rate(100)
     norm_float = Float32()
     while not rospy.is_shutdown():

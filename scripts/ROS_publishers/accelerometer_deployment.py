@@ -14,14 +14,14 @@ if __name__ == "__main__":
                         help="The configuration yaml file name of acceleromter 2 in package's config folder")
     args = parser.parse_args()
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-    config_file_accel1 = ros_robotic_skin_path + "/config/" + args.accel1_config_file
-    config_file_accel2 = ros_robotic_skin_path + "/config/" + args.accel2_config_file
+    config_file_accel1 = "%s/config/%s" % (ros_robotic_skin_path, args.accel1_config_file)
+    config_file_accel2 = "%s/config/%s" % (ros_robotic_skin_path, args.accel2_config_file)
     accel_0 = LSM6DS3_acclerometer(config_file_accel1)
     accel_1 = LSM6DS3_acclerometer(config_file_accel2)
     ros_node_name = 'talker_%s_%s' % (str(accel_0.config_dict['imu_number']), str(accel_1.config_dict['imu_number']))
     rospy.init_node(ros_node_name, anonymous=True)
-    pub0 = rospy.Publisher('/imu_data' + str(accel_0.config_dict['imu_number']), Imu, queue_size=10)
-    pub1 = rospy.Publisher('/imu_data' + str(accel_1.config_dict['imu_number']), Imu, queue_size=10)
+    pub0 = rospy.Publisher('/imu_data%s' % str(accel_0.config_dict['imu_number']), Imu, queue_size=10)
+    pub1 = rospy.Publisher('/imu_data%s' % str(accel_1.config_dict['imu_number']), Imu, queue_size=10)
     r = rospy.Rate(100)
     imu_msg0 = Imu()
     imu_msg1 = Imu()
