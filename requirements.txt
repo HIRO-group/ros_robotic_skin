@@ -1,2 +1,5 @@
 -e git@github.com:HIRO-group/robotic_skin.git#egg=robotic_skin
+rospy
+rospkg
+rosparam
 flake8==3.7.9
