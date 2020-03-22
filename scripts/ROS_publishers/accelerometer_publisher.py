@@ -30,7 +30,5 @@ if __name__ == "__main__":
         imu_msg.linear_acceleration.x = data0_list[0]
         imu_msg.linear_acceleration.y = data0_list[1]
         imu_msg.linear_acceleration.z = data0_list[2]
-        norm = math.sqrt(data0_list[0]*data0_list[0] + data0_list[1]*data0_list[1] + data0_list[2]*data0_list[2])
-        print("Norm is %f" % norm)
         pub.publish(imu_msg)
         r.sleep()
