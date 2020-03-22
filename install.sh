@@ -81,7 +81,7 @@ git clone https://github.com/erdalpekel/panda_moveit_config
 git clone --branch simulation https://github.com/HIRO-group/franka_ros
 cd ..
 sudo apt install libboost-filesystem-dev
-rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin
+rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin --skip-keys libgazebo7-dev
 sudo apt install ros-melodic-imu-filter-madgwick
 cd src
 
