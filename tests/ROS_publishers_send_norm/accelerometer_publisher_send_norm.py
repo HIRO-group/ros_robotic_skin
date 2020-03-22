@@ -1,4 +1,5 @@
 from robotic_skin.sensor.lsm6ds3_accel import LSM6DS3_acclerometer
+from std_msgs.msg import Float32
 import rospy
 import rospkg
 import argparse
@@ -17,10 +18,12 @@ if __name__ == "__main__":
     rospy.init_node('talker_' + str(accel.config_dict['imu_number']), anonymous=True)
     pub = rospy.Publisher('/imu_data' + str(accel.config_dict['imu_number']) + 'norm', float, queue_size=10)
     r = rospy.Rate(100)
+    norm_float = Float32()
     while not rospy.is_shutdown():
         data0_list = accel.read()
         norm = math.sqrt(data0_list[0]*data0_list[0] +
                          data0_list[1]*data0_list[1] +
                          data0_list[2]*data0_list[2])
-        pub.publish(norm)
+        norm_float.data = norm
+        pub.publish(norm_float)
         r.sleep()
