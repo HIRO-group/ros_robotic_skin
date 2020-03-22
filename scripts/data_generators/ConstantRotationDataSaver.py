@@ -13,7 +13,7 @@ from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.utils import get_poses_list_file  # noqa: E402
+from scripts import utils  # noqa: E402
 from scripts.controllers.PandaController import PandaController  # noqa: E402
 from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
@@ -40,7 +40,7 @@ def reject_outliers(data, m=1):
     returns: None
     """
     is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
-    indices = np.where(is_in_std is True)
+    indices = np.where(is_in_std)
     return data[indices], indices
 
 
@@ -300,44 +300,24 @@ class ConstantRotationDataSaver():
 
 
 if __name__ == "__main__":
-
-    # used to get poses
-    poses_list = get_poses_list_file('positions.txt')
-    # Poses Configuration
-
-    poses_list = [
-        [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [], 'Pose_1'],
-        [[3.47, -2.37, 1.38, 0.22, 3.13, 1.54, 1.16], [], 'Pose_2'],
-        [[-1.10, -2.08, 5.68, 1.41, 4.13, 0.24, 2.70], [], 'Pose_3'],
-        [[-0.75, -1.60, 1.56, 4.43, 1.54, 4.59, 6.61], [], 'Pose_4'],
-        [[-0.61, -0.54, 3.76, 3.91, 5.05, 0.92, 6.88], [], 'Pose_5'],
-        [[-1.39, -0.87, 4.01, 3.75, 5.56, 2.98, 4.88], [], 'Pose_6'],
-        [[1.51, -2.47, 3.20, 1.29, 0.24, 4.91, 8.21], [], 'Pose_7'],
-        [[0.25, -0.18, 5.13, 5.43, 2.78, 3.86, 6.72], [], 'Pose_8'],
-        [[0.76, -1.96, 2.24, 1.54, 4.19, 5.22, 7.46], [], 'Pose_9'],
-        [[0.03, -1.09, 2.63, 0.33, 3.87, 0.88, 2.92], [], 'Pose_10'],
-        [[0.72, -1.00, 6.09, 2.61, 1.10, 4.13, 3.06], [], 'Pose_11'],
-        [[1.69, -2.72, 0.14, 1.08, 2.14, 0.08, 9.13], [], 'Pose_12'],
-        [[0.81, -1.89, 3.26, 1.42, 5.64, 0.14, 8.34], [], 'Pose_13'],
-        [[-0.90, -3.10, 3.24, 0.16, 4.81, 4.94, 4.35], [], 'Pose_14'],
-        [[1.36, -1.89, 2.73, 1.20, 3.08, 3.29, 3.88], [], 'Pose_15'],
-        [[-0.36, -2.19, 3.91, 0.04, 2.15, 3.19, 5.18], [], 'Pose_16'],
-        [[5.25, -0.55, 0.98, 4.15, 5.65, 3.65, 9.27], [], 'Pose_17'],
-        [[2.52, -2.54, 2.07, 0.55, 3.26, 2.31, 4.72], [], 'Pose_18'],
-        [[4.63, -0.70, 3.14, 3.41, 3.55, 0.69, 6.10], [], 'Pose_19'],
-        [[5.41, -0.90, 5.86, 0.41, 1.69, 1.23, 4.34], [], 'Pose_20']
-    ]
-
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
+
     if robot == 'panda':
         controller = PandaController()
+        filename = 'panda_positions.txt'
     elif robot == 'sawyer':
         controller = SawyerController()
+        filename = 'sawyer_positions.txt'
     else:
         raise ValueError("Must be either panda or sawyer")
 
+    if len(sys.argv) > 2:
+        filename = sys.argv[2]
+
+    poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/constant_data', robot])
+
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
     cr.rotate_at_constant_vel()
     cr.save(verbose=True, filter=True)

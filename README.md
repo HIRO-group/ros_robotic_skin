@@ -2,51 +2,116 @@
 
 # General
 ## Current Release
-- `0.0.1` as of 2020/3/07
+- `0.0.1` as of 2020/3/13
 
 ## Supporting version
 `ROS Melodic`
 
+## Examples
+![](images/sawyer_example.png)
+![](images/panda_example.png)
+
 # Installation
-## `robotic_skin` python package
-```
-pip install --upgrade git+https://github.com/HIRO-group/robotic_skin.git
-```
 
-## `ros_robotic_skin`
-```
-cd ~/catkin_ws/src
-git clone git@github.com:HIRO-group/ros_robotic_skin.git
-cd ~/catkin_ws
-cakin_make
-```
+We have an `install.sh` script that will install the following packages:
 
-## Franka Panda Gazebo Simulator
-Please refer to the Franka Install Guide [here](https://hiro-group.ronc.one/franka_installation_tutorial.html) for dependencies. <br>
-Be careful to install `melodic` dependencies.
+- Installs our Python `robotic_skin` package [here](https://github.com/HIRO-group/robotic_skin)
 
-For the panda simulator install `panda_simulation` as
+- The Franka Panda Gazebo Simulator package [here](https://github.com/HIRO-group/panda_simulation)
+
+- The Sawyer Gazebo simulator
+
+In order to run the install script
+
+Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
+
+Usage:
+
 ```sh
-mkdir -p catkin_ws/src
-cd catkin_ws/src
-git clone https://github.com/erdalpekel/panda_simulation.git
-git clone https://github.com/erdalpekel/panda_moveit_config.git
-git clone --branch simulation https://github.com/erdalpekel/franka_ros.git
-cd ..
-sudo apt-get install libboost-filesystem-dev
-rosdep install --from-paths src --ignore-src -y --skip-keys libfranka
-cd ..
-catkin_make
+
+./install.sh --git-option https|ssh --franka-build apt|source
+
 ```
 
-## (Optional) Install Sawyer Gazebo Simulator
+`--git-option` specifies if we clone the `HIRO` repos via https or ssh.
+`franka_build` specifies whether we want to build `libfranka` from source or install it via `apt`.
+
+If you don't set these, by default, `--git-option` will be `ssh` and `--franka-build` will be `apt`.
+
+Here's an example of someone who would want to build `libfranka` from source and use ssh for git:
+
+```sh
+./install.sh --git-option ssh --franka-build source
 ```
-cd catkin_ws/src
-wstool init
-wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
-wstool update
-cd ..
-catkin_make
+
+# Docker
+
+We have added Dockerfile support for this repository.  
+To run the dockerfile you should clone the repository and then run docker build. The dockerfile 
+is not independent so please beware of that.  
+To build, run the following command:
+
+```sh
+sudo apt install docker
+docker build . -t <image-name>
+
+# running the image
+docker run -it \
+    --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    -env="XAUTHORITY=$XAUTH" \
+    --volume="$XAUTH:$XAUTH" \
+    <image-name>
+```
+
+For systems that use nvidia drivers for gazebo, you will need nvidia runtime. To install:
+
+```sh
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
+  sudo apt-key add -
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+
+sudo apt update
+
+sudo apt install nvidia-docker2 nvidia-container-runtime
+sudo pkill -SIGHUP dockerd
+
+```
+
+Make sure that your `/etc/docker/daemon.json` has the `nvidia` entry
+in `runtimes`. If not, make sure to add it in.
+
+```sh
+{
+    "runtimes": {
+        "nvidia": {
+            "path": "nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+
+
+```
+
+Then to run, you will need to specify the nvidia runtime:
+
+```sh
+
+docker run -it \
+    --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    -env="XAUTHORITY=$XAUTH" \
+    --volume="$XAUTH:$XAUTH" \
+    --runtime=nvidia \
+    <image-name>
+
 ```
 
 ## Running Simulation
@@ -96,27 +161,19 @@ Where `sim_bool` should be `true` is you are running the Panda in simulation, an
 
 ## Miscellaneous
 
-It is **highly** recommended to add the line 
+It is **highly** recommended to add the line
 ```sh
 source <path to your workspace>/devel/setup.bash
 ```
-to your `.bashrc` file.
+to your `.bashrc` file, so you don't have to do it everytime you open
+a terminal.
 
 # Documentation Generation
 
 We use [`rosdoc_lite`](http://wiki.ros.org/rosdoc_lite) for documentation generation. You can check it out
-[here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, you can update the documentation with the following steps (assuming you are on the master branch):
+[here](https://hiro-group.ronc.one/ros_robotic_skin). When you are making a pull request to this repository, and you get your PR merged, Github Actions will update the documentation automatically:
 
-```sh
-
-git pull origin master
-git checkout gh-pages
-git merge master
-./docs_generate.sh
-
-```
-
-These commands and scripts will ensure that the `gh-pages` branch is up to date with your changes. From here, you can commit and push to the remote branch, and https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
+The GH action will ensure that the `gh-pages` branch is up to date with your changes. From here, https://hiro-group.ronc.one/ros_robotic_skin should be updated fairly soon.
 
 # Flake8 Testing
 
@@ -124,7 +181,7 @@ In order to have the Github Actions build pass, we use `flake8` for style enforc
 
 ```sh
 flake8 . --max-complexity=10 --max-line-length=140
-``` 
+```
 within this repository (after cloning and changing directories to `ros_robotic_skin`).
 
 # Setting
@@ -172,7 +229,7 @@ Good article explaining everything in more detail: https://krishnachaitanya9.git
 ### How to run test
 ```
 cd ~/catkin_ws
-cakin_make run_tests
+catkin run_tests
 ```
 
 ### How to add test

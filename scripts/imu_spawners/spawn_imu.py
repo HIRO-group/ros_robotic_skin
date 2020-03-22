@@ -73,11 +73,12 @@ class EstimatedIMUBoxStateManager():
                 init_pose = Pose()
                 init_pose.position.x = pose.position[0]
                 init_pose.position.y = pose.position[1]
-                init_pose.position.z = pose.position[2] + 0.77
+                init_pose.position.z = pose.position[2] + 0.91488
                 init_pose.orientation.x = pose.orientation[0]
                 init_pose.orientation.y = pose.orientation[1]
                 init_pose.orientation.z = pose.orientation[2]
                 init_pose.orientation.w = pose.orientation[3]
+                print(init_pose)
                 self.req.initial_pose = init_pose
                 res = self.spawn_model(self.req)
                 print(res)
@@ -208,5 +209,5 @@ if __name__ == '__main__':
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
     state_manager.spawn()
 
-    error = np.sum(np.linalg.norm(defined_poses - poses))
-    print()
+    error = np.linalg.norm(defined_poses - poses)
+    print(error)
