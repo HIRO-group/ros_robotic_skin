@@ -140,9 +140,15 @@ wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3
 wstool update
 cd ..
 rosdep install --from-paths src --ignore-src -y -r --skip-keys libgazebo7-dev
+sudo apt install ros-melodic-moveit-visual-tools
+
+
 
 # fix error from ld command
 sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulator/sawyer_sim_controllers/CMakeLists.txt
+# clean things up before the show!
+rm -rf devel
+rm -rf build
 if [[ $FRANKA_BUILD = "source" ]]
 then
   catkin build -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
