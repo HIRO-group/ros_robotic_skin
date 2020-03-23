@@ -9,6 +9,7 @@ import pickle
 import tf
 import rospy
 import rospkg
+from std_msgs.msg import Float32
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
@@ -197,16 +198,22 @@ class ConstantRotationDataSaver():
         self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
                            'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
-        self.ready = False
+        self.collecting_data = False
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
 
         # data storage
         self.data_storage = ConstantRotationData(self.pose_names, self.joint_names, self.imu_names, filepath)
+
         rospy.sleep(1)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
+
+        self.pubs = {}
+        for imu_name in self.imu_names:
+            self.pubs[imu_name] = rospy.Publisher('/Anorm%s'%(list(imu_name)[-1]), Float32, queue_size=10)
+
         self.tf_listener = tf.TransformListener()
         self.Q = {imu_name: Quaternion() for imu_name in self.imu_names}
 
@@ -220,16 +227,18 @@ class ConstantRotationDataSaver():
             IMU data. Please refer to the official documentation.
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
-        if self.ready:
+        accel = data.linear_acceleration
+        msg = Float32()
+        msg.data = np.linalg.norm(np.array([accel.x, accel.y, accel.z]))
+        self.pubs[data.header.frame_id].publish(msg)
+
+        if self.collecting_data:
             # acceleration of skin unit, followed by its acceleration
-            accel = data.linear_acceleration
             q = self.Q[data.header.frame_id]
             # get the orientation of the imu
             J = np.array([self.controller.joint_angle(name) for name in self.joint_names])
             joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
-            # if self.curr_joint_name == 'right_j0'
-            # and data.header.frame_id == 'imu_link0':
-            # rospy.loginfo(utils.n2s(np.array([accel.x, accel.y, accel.z])))
+            
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
@@ -240,6 +249,7 @@ class ConstantRotationDataSaver():
                     J[0], J[1], J[2], J[3], J[4], J[5], J[6],
                     joint_velocity])
             )
+
 
     def rotate_at_constant_vel(self):
         """
@@ -265,14 +275,18 @@ class ConstantRotationDataSaver():
                 accelerations = np.zeros(len(self.joint_names))
 
                 # stopping time
-                self.ready = True
-                now = rospy.get_rostime()
+                self.collecting_data = True
+                then = rospy.get_rostime()
+                start = then
                 while True:
-                    dt = (rospy.get_rostime() - now).to_sec()
+                    now = rospy.get_rostime()
+                    dt = (now - then).to_sec()
+                    then = now
                     pos += (velocities*dt)
 
                     self.controller.publish_trajectory(pos, velocities, accelerations, None)
-                    if dt > DATA_COLLECTION_TIME:
+                    # self.controller.publish_velocities(velocities, None)
+                    if (now - start).to_sec() > DATA_COLLECTION_TIME:
                         break
 
                     for imu_name in self.imu_names:
@@ -286,8 +300,8 @@ class ConstantRotationDataSaver():
                                 tf.ConnectivityException,
                                 tf.ExtrapolationException):
                             continue
-
-                self.ready = False
+                    
+                self.collecting_data = False
                 rospy.sleep(1)
 
     def save(self, verbose=False, filter=False):
