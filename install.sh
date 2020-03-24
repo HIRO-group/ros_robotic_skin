@@ -79,28 +79,28 @@ cd ..
 
 if [ -d "panda_simulation" ]
 then
-  echo "panda_simulation package exists, skipping"
+    echo "panda_simulation package exists, skipping"
 
 else
   
-  git clone https://github.com/HIRO-group/panda_simulation
+    git clone https://github.com/HIRO-group/panda_simulation
 fi
 
 if [ -d "panda_moveit_config" ]
 then
-  echo "panda_moveit_config package exists, skipping"
+    echo "panda_moveit_config package exists, skipping"
 
 else
-  git clone https://github.com/erdalpekel/panda_moveit_config
+    git clone https://github.com/erdalpekel/panda_moveit_config
 fi
 
 
 if [ -d "franka_ros" ]
 then
-  echo "franka_ros package exists, skipping"
+    echo "franka_ros package exists, skipping"
 
 else
-  git clone --branch simulation https://github.com/HIRO-group/franka_ros
+    git clone --branch simulation https://github.com/HIRO-group/franka_ros
 fi
 
 cd ..
@@ -131,10 +131,10 @@ cd src
 
 if [ -d "sawyer_robot" ]
 then
-  echo "wstool initialized already, skipping"
+    echo "wstool initialized already, skipping"
 
 else
-  wstool init
+    wstool init
   
 fi
 
