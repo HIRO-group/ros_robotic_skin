@@ -177,7 +177,7 @@ class PandaController(object):
             If Panda is in simulation or not.
 
         """
-        topic_string = '/panda_arm_controller/command' if is_sim else '/joint_trajectory_controller/command'
+        topic_string = '/panda_joint_trajectory_controller/command' if is_sim else '/joint_trajectory_controller/command'
         return rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
 
     def send_once(self):
