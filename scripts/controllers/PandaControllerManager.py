@@ -57,7 +57,7 @@ class PandaControllerManager():
                 switch_controller = rospy.ServiceProxy(self.controller_service_name, SwitchController)
                 # switch the controllers
                 switch_controller(self.controller_names[desired_mode],
-                                  self.controller_names[self.mode], 2)
+                                  self.controller_names[self.mode], 2, True, 10)
                 print("Mode successfully changed!")
                 self.mode = desired_mode
             except rospy.ServiceException as e:
