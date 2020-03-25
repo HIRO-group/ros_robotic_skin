@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from controller_manager_msgs.srv import SwitchController, ListControllers
 import rospy
 from enum import Enum
