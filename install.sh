@@ -79,27 +79,28 @@ cd ..
 
 if [ -d "panda_simulation" ]
 then
-  git clone https://github.com/HIRO-group/panda_simulation
+    echo "panda_simulation package exists, skipping"
 
 else
-  echo "panda_simulation package exists, skipping"
+  
+    git clone https://github.com/HIRO-group/panda_simulation
 fi
 
 if [ -d "panda_moveit_config" ]
 then
-  git clone https://github.com/erdalpekel/panda_moveit_config
+    echo "panda_moveit_config package exists, skipping"
 
 else
-  echo "panda_moveit_config package exists, skipping"
+    git clone https://github.com/erdalpekel/panda_moveit_config
 fi
 
 
 if [ -d "franka_ros" ]
 then
-  git clone --branch simulation https://github.com/HIRO-group/franka_ros
+    echo "franka_ros package exists, skipping"
 
 else
-  echo "franka_ros package exists, skipping"
+    git clone --branch simulation https://github.com/HIRO-group/franka_ros
 fi
 
 cd ..
@@ -130,19 +131,26 @@ cd src
 
 if [ -d "sawyer_robot" ]
 then
-  wstool init
+    echo "wstool initialized already, skipping"
 
 else
-  echo "wstool initialized already, skipping"
+    wstool init
+  
 fi
 
 wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
 wstool update
 cd ..
 rosdep install --from-paths src --ignore-src -y -r --skip-keys libgazebo7-dev
+sudo apt install ros-melodic-moveit-visual-tools
+
+
 
 # fix error from ld command
 sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulator/sawyer_sim_controllers/CMakeLists.txt
+# clean things up before the show!
+rm -rf devel
+rm -rf build
 if [[ $FRANKA_BUILD = "source" ]]
 then
   catkin build -DFranka_DIR:PATH=$(pwd)/src/libfranka/build

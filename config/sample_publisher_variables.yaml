@@ -1,0 +1,15 @@
+---
+  # These constants are used by publishers. They can be used to set ROS environment variables
+  # This is just a sample. You should make your own publisher_variables.yaml and then put it in this directory
+  # For publisher variables to work.
+  # Also be sure to ignore these files in your main gitignore, not project wide gitignore
+  # Debug:  http://yaml-online-parser.appspot.com/
+  RPi_bus_num: 1
+  imu_number: 0
+  imu_i2c_address: 0x6b
+  proximity_sensor_number: 1
+  proximity_i2c_address: 0x29
+  ros_core_ip: '10.0.0.10'
+  ros_core_port: 11311
+  RPi_IP: '10.0.0.183'
+

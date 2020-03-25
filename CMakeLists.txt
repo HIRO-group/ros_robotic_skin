@@ -225,5 +225,5 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(launch/test.test)
 endif()
 
-# Add PoseEstimation CMakeLists.txt here so that it will be compiled
-add_subdirectory(scripts/PoseEstimation)
+
+
