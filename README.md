@@ -1,11 +1,9 @@
 ![ROS_Robotic_Skin CI](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS_Robotic_Skin%20CI/badge.svg)
 
 # General
-## Current Release
-- `0.0.1` as of 2020/3/25
-
-## Supporting version
-`ROS Melodic`
+- **Current Release**: `0.0.1` as of 2020/3/25
+- **Suporting Version**: `ROS Melodic`
+- **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
 # Installation
 
