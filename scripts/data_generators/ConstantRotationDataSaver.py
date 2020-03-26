@@ -257,11 +257,13 @@ class ConstantRotationDataSaver():
                 self.curr_joint_name = joint_name
                 print(joint_name)
 
+                self.controller.publish_positions(positions)
+                print('At Position: ' + pose_name,
+                    map(int, RAD2DEG*np.array(positions)))
+
                 # Prepare for publishing a trajectory
-                pos = copy.deepcopy(positions)
                 velocities = np.zeros(len(self.joint_names))
                 velocities[i] = CONSTANT_VELOCITY
-                accelerations = np.zeros(len(self.joint_names))
 
                 # stopping time
                 self.ready = True
