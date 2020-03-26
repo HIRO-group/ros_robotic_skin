@@ -250,28 +250,26 @@ class ConstantRotationDataSaver():
 
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_pose_name = pose_name
-            self.controller.publish_positions(positions, sleep=1)
-            print('At Position: ' + pose_name,
-                  map(int, RAD2DEG*np.array(positions)))
 
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
                 print(joint_name)
 
+                self.controller.publish_positions(positions)
+                print('At Position: ' + pose_name,
+                    map(int, RAD2DEG*np.array(positions)))
+
                 # Prepare for publishing a trajectory
-                pos = copy.deepcopy(positions)
                 velocities = np.zeros(len(self.joint_names))
                 velocities[i] = CONSTANT_VELOCITY
-                accelerations = np.zeros(len(self.joint_names))
 
                 # stopping time
                 self.ready = True
                 now = rospy.get_rostime()
                 while True:
                     dt = (rospy.get_rostime() - now).to_sec()
-                    pos += (velocities*dt)
 
-                    self.controller.publish_trajectory(pos, velocities, accelerations, None)
+                    self.controller.publish_velocities(velocities, 1)
                     if dt > DATA_COLLECTION_TIME:
                         break
 
