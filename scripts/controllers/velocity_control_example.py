@@ -30,9 +30,11 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         try:
             # Current position vector
-            transformation = tfBuffer.lookup_transform('panda_link8', 'world', rospy.Time())
+            transformation = \
+                tfBuffer.lookup_transform('panda_link8', 'world', rospy.Time())
             translation = transformation.transform.translation
-            vector_0_EE = np.array([translation.x, translation.y, translation.z])
+            vector_0_EE = \
+                np.array([translation.x, translation.y, translation.z])
             # Desired position vector
             vector_0_EE_d = points[0]
             # Error vector
