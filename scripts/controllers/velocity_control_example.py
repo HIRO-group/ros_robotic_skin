@@ -26,15 +26,13 @@ if __name__ == '__main__':
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
 
-    rate = rospy.Rate(FREQUENCY) 
+    rate = rospy.Rate(FREQUENCY)
     while not rospy.is_shutdown():
         try:
-            # Current position vector 
-            transformation = \
-                tfBuffer.lookup_transform('panda_link8', 'world', rospy.Time())
+            # Current position vector
+            transformation = tfBuffer.lookup_transform('panda_link8', 'world', rospy.Time())
             translation = transformation.transform.translation
-            vector_0_EE = \
-                np.array([translation.x, translation.y, translation.z])
+            vector_0_EE = np.array([translation.x, translation.y, translation.z])
             # Desired position vector
             vector_0_EE_d = points[0, :]
             # Error vector
@@ -43,11 +41,11 @@ if __name__ == '__main__':
             vector_error_unit = vector_error / vector_error_norm
 
             # End effector cartesian velocity
-            velocity = VMAX * vector_error_unit     
+            velocity = VMAX * vector_error_unit
             # TODO
             # q = Jinv * velocity
-            # pc.publish_velocities(q, PERIOD)           
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, 
+            # pc.publish_velocities(q, PERIOD)
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
                 tf2_ros.ExtrapolationException):
-            rate.sleep()
-            continue   
+            continue
+        rate.sleep()
