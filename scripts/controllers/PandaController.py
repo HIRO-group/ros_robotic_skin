@@ -427,7 +427,7 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     controller = PandaController()
-    controller.publish_velocities([0,0.5,0.5,0,0,0,0])
+    controller.publish_velocities([0,0.5,0.5,0,0,0,0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],0)
     # while True:
         # controller.set_trajectory_list(poses_list, sleep=1)
