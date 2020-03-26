@@ -212,7 +212,7 @@ class PandaController(object):
         self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
 
-    def publish_positions(self, positions):
+    def publish_positions(self, positions, sleep):
         """
         Set joint positions of the panda with the 
         Panda Joint Position Controller
@@ -233,7 +233,7 @@ class PandaController(object):
             raise Exception("The length of input list should be 7, as panda has 7 joints")
         for index, pos in enumerate(positions):
             self.position_pubs[index].publish(Float64(pos))
-
+        rospy.sleep(sleep)
 
     def publish_velocities(self, velocities, sleep):
         """
@@ -367,7 +367,7 @@ class PandaController(object):
         for each_pose in poses:
             positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
             self.pose_name = pose_name
-            self.publish_positions(positions)
+            self.publish_positions(positions, sleep)
 
     def set_velocities_list(self, poses, sleep):
         """
@@ -428,6 +428,6 @@ if __name__ == "__main__":
     ]
     controller = PandaController()
     controller.publish_velocities([0,0.5,0.5,0,0,0,0], 1)
-    # controller.publish_positions([0,0,0,0,0,0,0])
+    # controller.publish_positions([0,0,0,0,0,0,0],5)
     # while True:
         # controller.set_trajectory_list(poses_list, sleep=1)

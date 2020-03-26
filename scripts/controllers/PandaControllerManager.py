@@ -49,7 +49,7 @@ class PandaControllerManager():
         # check if mode is running
 
         if desired_mode == self.mode:
-            pass
+            print("Desired controller already running.")
         else:
             rospy.wait_for_service(self.controller_service_name)
 
@@ -58,7 +58,10 @@ class PandaControllerManager():
                 # switch the controllers
                 switch_controller(self.controller_names[desired_mode],
                                   self.controller_names[self.mode], 2, True, 10)
+                print("Mode successfully changed!")
                 self.mode = desired_mode
             except rospy.ServiceException as e:
                 print("Controller Manager Service exception", e)
+
+
 

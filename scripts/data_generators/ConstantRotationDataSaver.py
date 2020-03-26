@@ -19,7 +19,7 @@ from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
-CONSTANT_VELOCITY = 2.0
+CONSTANT_VELOCITY = 1.0
 
 
 def reject_outliers(data, m=1):
@@ -250,10 +250,9 @@ class ConstantRotationDataSaver():
 
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_pose_name = pose_name
-            self.controller.publish_positions(positions)
+            self.controller.publish_positions(positions, 5)
             print('At Position: ' + pose_name,
                   map(int, RAD2DEG*np.array(positions)))
-
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
                 print(joint_name)
@@ -269,9 +268,7 @@ class ConstantRotationDataSaver():
                 now = rospy.get_rostime()
                 while True:
                     dt = (rospy.get_rostime() - now).to_sec()
-                    pos += (velocities*dt)
-
-                    self.controller.publish_trajectory(pos, velocities, accelerations, None)
+                    self.controller.publish_velocities(velocities, 1)
                     if dt > DATA_COLLECTION_TIME:
                         break
 
