@@ -1,0 +1,9 @@
+<!-- [WIP]  -->
+<!-- Launch file for Flacco paper  -->
+<launch>
+    <!--    Original simulation.launch-->
+    <include file="$(find panda_simulation)/launch/simulation.launch"></include>
+    <!--    Add Params YAML File-->
+    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
+    <rosparam command="load" file="$(arg constants_file_yaml)"/>
+</launch>
