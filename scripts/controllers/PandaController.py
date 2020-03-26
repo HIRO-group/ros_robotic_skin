@@ -367,7 +367,7 @@ class PandaController(object):
         for each_pose in poses:
             positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
             self.pose_name = pose_name
-            self.publish_positions(positions, sleep)
+            self.publish_positions(positions)
 
     def set_velocities_list(self, poses, sleep):
         """
@@ -428,6 +428,6 @@ if __name__ == "__main__":
     ]
     controller = PandaController()
     controller.publish_velocities([0,0.5,0.5,0,0,0,0], 1)
-    # controller.publish_positions([0,0,0,0,0,0,0],0)
+    # controller.publish_positions([0,0,0,0,0,0,0])
     # while True:
         # controller.set_trajectory_list(poses_list, sleep=1)
