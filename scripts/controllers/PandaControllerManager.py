@@ -49,7 +49,7 @@ class PandaControllerManager():
         # check if mode is running
 
         if desired_mode == self.mode:
-            print("Desired controller already running.")
+            pass
         else:
             rospy.wait_for_service(self.controller_service_name)
 
@@ -58,13 +58,7 @@ class PandaControllerManager():
                 # switch the controllers
                 switch_controller(self.controller_names[desired_mode],
                                   self.controller_names[self.mode], 2, True, 10)
-                print("Mode successfully changed!")
                 self.mode = desired_mode
             except rospy.ServiceException as e:
                 print("Controller Manager Service exception", e)
 
-
-if __name__ == "__main__":
-    pcm = PandaControllerManager()
-    # switches the mode to velocity. Will do nothing if already in velocity mode.
-    pcm.switch_mode(ControllerType.VELOCITY)
