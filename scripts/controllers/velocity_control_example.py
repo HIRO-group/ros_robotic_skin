@@ -34,7 +34,7 @@ if __name__ == '__main__':
             translation = transformation.transform.translation
             vector_0_EE = np.array([translation.x, translation.y, translation.z])
             # Desired position vector
-            vector_0_EE_d = points[0, :]
+            vector_0_EE_d = points[0]
             # Error vector
             vector_error = vector_0_EE_d - vector_0_EE
             vector_error_norm = np.linalg.norm(vector_error)
