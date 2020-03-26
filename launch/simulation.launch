@@ -30,7 +30,14 @@
 
 
     <!-- load the controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller panda_arm_controller" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_trajectory_controller joint_state_controller" />
+    <node name="controller_spawn" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped panda_joint1_position_controller panda_joint2_position_controller
+            panda_joint3_position_controller panda_joint4_position_controller panda_joint5_position_controller
+            panda_joint6_position_controller panda_joint7_position_controller
+            panda_joint1_velocity_controller panda_joint2_velocity_controller
+            panda_joint3_velocity_controller panda_joint4_velocity_controller
+            panda_joint5_velocity_controller panda_joint6_velocity_controller
+            panda_joint7_velocity_controller" />
     <node if="$(arg load_gripper)" name="controller_spawner_hand" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_hand_controller" />
 
 
