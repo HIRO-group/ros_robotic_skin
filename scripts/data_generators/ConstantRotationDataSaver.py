@@ -9,6 +9,7 @@ import pickle
 import tf
 import rospy
 import rospkg
+from std_msgs.msg import Float32
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
@@ -200,6 +201,9 @@ class ConstantRotationDataSaver():
         self.ready = False
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
+        self.pubs = {}
+        for imu_name in self.imu_names:
+            self.pubs[imu_name] = rospy.Publisher('/Anorm%s' % (list(imu_name)[-1]), Float32, queue_size=10)
 
         # data storage
         self.data_storage = ConstantRotationData(self.pose_names, self.joint_names, self.imu_names, filepath)
@@ -220,6 +224,10 @@ class ConstantRotationDataSaver():
             IMU data. Please refer to the official documentation.
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
+        accel = data.linear_acceleration
+        msg = Float32()
+        msg.data = np.linalg.norm(np.array([accel.x, accel.y, accel.z]))
+        self.pubs[data.header.frame_id].publish(msg)
         if self.ready:
             # acceleration of skin unit, followed by its acceleration
             accel = data.linear_acceleration
@@ -315,4 +323,4 @@ if __name__ == "__main__":
 
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
     cr.rotate_at_constant_vel()
-    cr.save(verbose=True, filter=True)
+    cr.save(verbose=True, filter=False)

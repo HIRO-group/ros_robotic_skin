@@ -187,18 +187,18 @@ class PandaController(object):
 
     def get_velocity_publishers(self):
         # create a list of velocity publishers.
-        self.joint_velocity_controller_names = ['panda_joint%s_velocity_controller'%(i) for i in range(1,8)]
+        self.joint_velocity_controller_names = ['panda_joint%s_velocity_controller' % (i) for i in range(1, 8)]
         joint_velocity_pubs = []
         for name in self.joint_velocity_controller_names:
-            pub = rospy.Publisher('/%s/command'%(name), Float64, queue_size=10)
+            pub = rospy.Publisher('/%s/command' % (name), Float64, queue_size=10)
             joint_velocity_pubs.append(pub)
         return joint_velocity_pubs
 
     def get_position_publishers(self):
-        self.joint_position_controller_names = ['panda_joint{}_position_controller'.format(i) for i in range(1,8)]
+        self.joint_position_controller_names = ['panda_joint%s_position_controller' % (i) for i in range(1, 8)]
         joint_position_pubs = []
         for name in self.joint_position_controller_names:
-            pub = rospy.Publisher('/%s/command'%(name), Float64, queue_size=10)
+            pub = rospy.Publisher('/%s/command' % (name), Float64, queue_size=10)
             joint_position_pubs.append(pub)
         return joint_position_pubs
 
@@ -214,7 +214,7 @@ class PandaController(object):
 
     def publish_positions(self, positions, sleep):
         """
-        Set joint positions of the panda with the 
+        Set joint positions of the panda with the
         Panda Joint Position Controller
 
         Arguments
@@ -427,7 +427,7 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     controller = PandaController()
-    controller.publish_velocities([0,0.5,0.5,0,0,0,0], 1)
+    controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],5)
     # while True:
-        # controller.set_trajectory_list(poses_list, sleep=1)
+    #     controller.set_trajectory_list(poses_list, sleep=1)

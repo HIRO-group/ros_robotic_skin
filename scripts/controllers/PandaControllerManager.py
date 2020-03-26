@@ -18,8 +18,8 @@ class PandaControllerManager():
         velocity, or trajectory.
         """
         self.controller_service_name = "/controller_manager/switch_controller"
-        velocity_controller_names = ["panda_joint{}_velocity_controller".format(i) for i in range(1,8)]
-        position_controller_names = ["panda_joint{}_position_controller".format(i) for i in range(1,8)]
+        velocity_controller_names = ["panda_joint{}_velocity_controller".format(i) for i in range(1, 8)]
+        position_controller_names = ["panda_joint{}_position_controller".format(i) for i in range(1, 8)]
         self.controller_names = {
             ControllerType.POSITION: position_controller_names,
             ControllerType.VELOCITY: velocity_controller_names,
@@ -62,6 +62,3 @@ class PandaControllerManager():
                 self.mode = desired_mode
             except rospy.ServiceException as e:
                 print("Controller Manager Service exception", e)
-
-
-
