@@ -250,6 +250,9 @@ class ConstantRotationDataSaver():
 
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_pose_name = pose_name
+            self.controller.publish_positions(positions)
+            print('At Position: ' + pose_name,
+                  map(int, RAD2DEG*np.array(positions)))
 
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
