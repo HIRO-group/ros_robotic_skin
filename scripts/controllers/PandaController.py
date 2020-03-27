@@ -54,7 +54,7 @@ class PandaController(object):
         self.position_pubs = self.get_position_publishers()
         self.velocity_pubs = self.get_velocity_publishers()
 
-        self.pcm = PandaControllerManager()
+        self.panda_controller_manager = PandaControllerManager()
         # Prepare msg to send
         self.msg = JointTrajectory()
         self.msg.header.stamp = rospy.Time.now()
@@ -206,7 +206,7 @@ class PandaController(object):
         """
         Sends one `JointTrajectory` message.
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
         self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
         self.trajectory_pub.publish(self.msg)
@@ -228,7 +228,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.POSITION)
+        self.panda_controller_manager.switch_mode(ControllerType.POSITION)
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 joints")
         for index, pos in enumerate(positions):
@@ -251,7 +251,7 @@ class PandaController(object):
         return: None
         """
 
-        self.pcm.switch_mode(ControllerType.VELOCITY)
+        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
         if len(velocities) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, vel in enumerate(velocities):
@@ -278,7 +278,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         if len(accelerations) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
@@ -304,7 +304,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
@@ -333,7 +333,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         self.msg.points = [self.point]
         self.msg.header.stamp = rospy.Time.now()
@@ -364,7 +364,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.POSITION)
+        self.panda_controller_manager.switch_mode(ControllerType.POSITION)
 
         for each_pose in poses:
             positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
@@ -388,7 +388,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.VELOCITY)
+        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
 
         for each_pose in poses:
             _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
@@ -412,7 +412,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         # TODO: add accelerations
         for each_pose in poses:
