@@ -21,7 +21,7 @@ from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
 CONSTANT_VELOCITY = 1.0
-
+JOINT_ROT_TIME = 0.5
 
 def reject_outliers(data, m=1):
     """
@@ -274,7 +274,7 @@ class ConstantRotationDataSaver():
                 now = rospy.get_rostime()
                 while True:
                     dt = (rospy.get_rostime() - now).to_sec()
-                    self.controller.publish_velocities(velocities, 1)
+                    self.controller.publish_velocities(velocities, JOINT_ROT_TIME)
                     if dt > DATA_COLLECTION_TIME:
                         break
 
