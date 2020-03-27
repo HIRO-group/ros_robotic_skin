@@ -70,6 +70,7 @@ class PandaController(object):
         self.point.accelerations = [0, 0, 0, 0, 0, 0, 0]
         self.point.time_from_start.secs = 1
         self.msg.points = [self.point]
+        self.desired_positions = None
         # TODO: Look up do we need to have one message to init the robot?
         # If I only send one message,
         #  then the franka bottom-most joint does not move in simulation.
@@ -127,6 +128,13 @@ class PandaController(object):
 
         """
         self.joint_states = joint_states
+        if self.desired_positions is not None:
+            # compare positions
+            dist_vec = np.array(self.desired_positions) - np.array(self.joint_states.position[2:])
+            dist = np.linalg.norm(dist_vec)
+            if dist <= 0.005:
+                # close enough to position, switch controller
+                self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
 
     def joint_angle(self, joint_name):
         """
@@ -229,6 +237,7 @@ class PandaController(object):
         return: None
         """
         self.panda_controller_manager.switch_mode(ControllerType.POSITION)
+        self.desired_positions = positions
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 joints")
         for index, pos in enumerate(positions):
@@ -429,8 +438,8 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     # uncomment the below code for things in action!
-    controller = PandaController()
+    # controller = PandaController()
     # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],5)
-    while True:
-        controller.set_trajectory_list(poses_list, sleep=1)
+    # while True:
+    # controller.set_trajectory_list(poses_list, sleep=1)
