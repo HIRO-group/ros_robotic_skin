@@ -161,7 +161,7 @@ class ConstantRotationData():
                     delete_idxs = []
                     for ind, val in enumerate(imu_points):
                         joint_vel = val[-1]
-                        if abs(joint_vel - CONSTANT_VELOCITY) >= 0.25:
+                        if abs(joint_vel - CONSTANT_VELOCITY) >= 0.2:
                             delete_idxs.append(ind)
                     res = np.delete(imu_points, delete_idxs, 0)
                     y = np.expand_dims(res, axis=0)
@@ -199,7 +199,7 @@ class ConstantRotationDataSaver():
         self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
                            'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
-        self.ready = False
+        self.collecting_data = False
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
         self.pubs = {}
@@ -229,7 +229,7 @@ class ConstantRotationDataSaver():
         msg = Float32()
         msg.data = np.linalg.norm(np.array([accel.x, accel.y, accel.z]))
         self.pubs[data.header.frame_id].publish(msg)
-        if self.ready:
+        if self.collecting_data:
             # acceleration of skin unit, followed by its acceleration
             accel = data.linear_acceleration
             q = self.Q[data.header.frame_id]
@@ -271,7 +271,7 @@ class ConstantRotationDataSaver():
                 velocities[i] = CONSTANT_VELOCITY
 
                 # stopping time
-                self.ready = True
+                self.collecting_data = True
                 now = rospy.get_rostime()
                 while True:
                     dt = (rospy.get_rostime() - now).to_sec()
@@ -291,7 +291,7 @@ class ConstantRotationDataSaver():
                                 tf.ExtrapolationException):
                             continue
 
-                self.ready = False
+                self.collecting_data = False
                 rospy.sleep(1)
 
     def save(self, verbose=False, filter=False):
@@ -324,4 +324,4 @@ if __name__ == "__main__":
 
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
     cr.rotate_at_constant_vel()
-    cr.save(verbose=True, filter=False)
+    cr.save(verbose=True, filter=True)

@@ -235,6 +235,25 @@ class PandaController(object):
             self.position_pubs[index].publish(Float64(pos))
         rospy.sleep(sleep)
 
+    def send_velocities(self, velocities):
+        """
+        Sends one velocity command. Should be called during a control loop.
+
+        Arguments
+        ----------
+        velocities: list
+            Set the joint velocities according to the list that you get
+
+        Returns
+        ----------
+        return: None
+        """
+        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
+        if len(velocities) != 7:
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
+        for index, vel in enumerate(velocities):
+            self.velocity_pubs[index].publish(Float64(vel))
+
     def publish_velocities(self, velocities, sleep):
         """
         Set joint velocities of the panda with
@@ -250,18 +269,11 @@ class PandaController(object):
         ----------
         return: None
         """
-
-        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
-        if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, as panda has 7 arms")
-        for index, vel in enumerate(velocities):
-            self.velocity_pubs[index].publish(Float64(vel))
+        self.send_velocity(velocities)
         # sleep a bit of time
         rospy.sleep(sleep)
         for pub in self.velocity_pubs:
             pub.publish(Float64(0.0))
-
-        # self._publish_all_values(sleep)
 
     def publish_accelerations(self, accelerations, sleep):
         """
@@ -429,8 +441,8 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     # uncomment the below code for things in action!
-    controller = PandaController()
+    # controller = PandaController()
     # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],5)
-    while True:
-        controller.set_trajectory_list(poses_list, sleep=1)
+    # while True:
+    # controller.set_trajectory_list(poses_list, sleep=1)
