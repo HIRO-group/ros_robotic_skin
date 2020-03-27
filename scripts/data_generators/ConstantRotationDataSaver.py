@@ -23,6 +23,7 @@ DATA_COLLECTION_TIME = 3.0
 CONSTANT_VELOCITY = 1.0
 JOINT_ROT_TIME = 0.5
 
+
 def reject_outliers(data, m=1):
     """
     Rejects outliers in a dataset.
