@@ -54,7 +54,7 @@ class PandaController(object):
         self.position_pubs = self.get_position_publishers()
         self.velocity_pubs = self.get_velocity_publishers()
 
-        self.pcm = PandaControllerManager()
+        self.panda_controller_manager = PandaControllerManager()
         # Prepare msg to send
         self.msg = JointTrajectory()
         self.msg.header.stamp = rospy.Time.now()
@@ -187,18 +187,18 @@ class PandaController(object):
 
     def get_velocity_publishers(self):
         # create a list of velocity publishers.
-        self.joint_velocity_controller_names = ['panda_joint%s_velocity_controller'%(i) for i in range(1,8)]
+        self.joint_velocity_controller_names = ['panda_joint%s_velocity_controller' % (i) for i in range(1, 8)]
         joint_velocity_pubs = []
         for name in self.joint_velocity_controller_names:
-            pub = rospy.Publisher('/%s/command'%(name), Float64, queue_size=10)
+            pub = rospy.Publisher('/%s/command' % (name), Float64, queue_size=10)
             joint_velocity_pubs.append(pub)
         return joint_velocity_pubs
 
     def get_position_publishers(self):
-        self.joint_position_controller_names = ['panda_joint{}_position_controller'.format(i) for i in range(1,8)]
+        self.joint_position_controller_names = ['panda_joint%s_position_controller' % (i) for i in range(1, 8)]
         joint_position_pubs = []
         for name in self.joint_position_controller_names:
-            pub = rospy.Publisher('/%s/command'%(name), Float64, queue_size=10)
+            pub = rospy.Publisher('/%s/command' % (name), Float64, queue_size=10)
             joint_position_pubs.append(pub)
         return joint_position_pubs
 
@@ -206,7 +206,7 @@ class PandaController(object):
         """
         Sends one `JointTrajectory` message.
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
         self.trajectory_pub.publish(self.msg)
         rospy.sleep(1)
         self.trajectory_pub.publish(self.msg)
@@ -214,7 +214,7 @@ class PandaController(object):
 
     def publish_positions(self, positions, sleep):
         """
-        Set joint positions of the panda with the 
+        Set joint positions of the panda with the
         Panda Joint Position Controller
 
         Arguments
@@ -228,7 +228,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.POSITION)
+        self.panda_controller_manager.switch_mode(ControllerType.POSITION)
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 joints")
         for index, pos in enumerate(positions):
@@ -251,7 +251,7 @@ class PandaController(object):
         return: None
         """
 
-        self.pcm.switch_mode(ControllerType.VELOCITY)
+        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
         if len(velocities) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
         for index, vel in enumerate(velocities):
@@ -278,7 +278,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         if len(accelerations) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
@@ -304,7 +304,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         if len(positions) != 7:
             raise Exception("The length of input list should be 7, as panda has 7 arms")
@@ -333,9 +333,11 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         self.msg.points = [self.point]
+        self.msg.header.stamp = rospy.Time.now()
+
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.trajectory_pub.publish(self.msg)
@@ -362,7 +364,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.POSITION)
+        self.panda_controller_manager.switch_mode(ControllerType.POSITION)
 
         for each_pose in poses:
             positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
@@ -386,7 +388,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.VELOCITY)
+        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
 
         for each_pose in poses:
             _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
@@ -410,7 +412,7 @@ class PandaController(object):
         --------
         return: None
         """
-        self.pcm.switch_mode(ControllerType.TRAJECTORY)
+        self.panda_controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
         # TODO: add accelerations
         for each_pose in poses:
@@ -426,8 +428,9 @@ if __name__ == "__main__":
         [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
+    # uncomment the below code for things in action!
     controller = PandaController()
-    controller.publish_velocities([0,0.5,0.5,0,0,0,0], 1)
+    # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],5)
-    # while True:
-        # controller.set_trajectory_list(poses_list, sleep=1)
+    while True:
+        controller.set_trajectory_list(poses_list, sleep=1)

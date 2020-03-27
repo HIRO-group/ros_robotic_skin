@@ -41,6 +41,9 @@ def get_poses_list_file(filename):
     # load the matrix, where the shape is n poses by j joints
     poses_mat = np.loadtxt(os.path.join(ros_robotic_skin_path, 'config', filename))
     poses_list = []
+    if len(poses_mat.shape) == 1:
+        # only one pose, but need to add on a dimension
+        poses_mat = np.expand_dims(poses_mat, axis=0)
     for idx, pose in enumerate(poses_mat):
         poses_list.append([list(pose), [], 'Pose_{}'.format(idx+1)])
     return poses_list
