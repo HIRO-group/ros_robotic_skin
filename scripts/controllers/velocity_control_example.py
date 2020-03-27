@@ -24,9 +24,11 @@ if __name__ == '__main__':
 
     pc = PandaController()
 
+    # tf
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
 
+    # Moveit
     robot_commander = moveit_commander.RobotCommander()
     group_names = robot_commander.get_group_names()
     move_group_commander = moveit_commander.move_group.MoveGroupCommander(group_names[1])
@@ -46,22 +48,28 @@ if __name__ == '__main__':
             # Error vector
             vector_error = vector_0_EE_d - vector_0_EE
             vector_error_norm = np.linalg.norm(vector_error)
-            vector_error_unit = vector_error / vector_error_norm * 123545612315645656564654655555555555555555555555555555555555555
+            vector_error_unit = vector_error / vector_error_norm
             # Get Jacobian
             q = move_group_commander.get_current_joint_values()
             J = move_group_commander.get_jacobian_matrix(q)
 
             # End effector cartesian velocity
-            velocity = VMAX * vector_error_unit
+            velocity_translation = VMAX * vector_error_unit
+            velocity_rotation = np.array([0, 0, 0])
+            velocity = np.block([velocity_translation, velocity_rotation])
+            velocity.shape = (6, 1)
 
             # Convert cartesian velocities to joint velocities
-            q_dot = np.array([0.1, 0, 0, 0, 0, 0, 0])
+            q_dot = np.linalg.pinv(J) * velocity
             pc.publish_velocities(q_dot, PERIOD)
 
             # Print debug data every second
             if t % FREQUENCY == 0:
-                print('End effector data: \n{}'.format(transformation.transform.translation))
-                print('Jacobian: \n{}'.format(J))
+                print('End effector position: \n[{} ,{}, {}]').format(transformation.transform.translation.x,
+                                                                      transformation.transform.translation.y,
+                                                                      transformation.transform.translation.z)
+                print('End effector desired position: \n{}').format(vector_0_EE_d)
+                print('------------------------------')
 
             t = t + 1
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
