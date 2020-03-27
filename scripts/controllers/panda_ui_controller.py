@@ -1,5 +1,8 @@
 """
 Panda UI Controller.
+To use this please install the dependencies:
+sudo pip install kivy
+sudo pip install pygame
 """
 from kivy.app import App
 from kivy.uix.slider import Slider
