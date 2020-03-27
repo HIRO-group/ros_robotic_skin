@@ -235,6 +235,25 @@ class PandaController(object):
             self.position_pubs[index].publish(Float64(pos))
         rospy.sleep(sleep)
 
+    def send_velocity(self, velocities):
+        """
+        Sends one velocity command. Should be called during a control loop.
+
+        Arguments
+        ----------
+        velocities: list
+            Set the joint velocities according to the list that you get
+
+        Returns
+        ----------
+        return: None
+        """
+        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
+        if len(velocities) != 7:
+            raise Exception("The length of input list should be 7, as panda has 7 arms")
+        for index, vel in enumerate(velocities):
+            self.velocity_pubs[index].publish(Float64(vel))
+
     def publish_velocities(self, velocities, sleep):
         """
         Set joint velocities of the panda with
@@ -250,18 +269,11 @@ class PandaController(object):
         ----------
         return: None
         """
-
-        self.panda_controller_manager.switch_mode(ControllerType.VELOCITY)
-        if len(velocities) != 7:
-            raise Exception("The length of input list should be 7, as panda has 7 arms")
-        for index, vel in enumerate(velocities):
-            self.velocity_pubs[index].publish(Float64(vel))
+        self.send_velocity(velocities)
         # sleep a bit of time
         rospy.sleep(sleep)
         for pub in self.velocity_pubs:
             pub.publish(Float64(0.0))
-
-        # self._publish_all_values(sleep)
 
     def publish_accelerations(self, accelerations, sleep):
         """
