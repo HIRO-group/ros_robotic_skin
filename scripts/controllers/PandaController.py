@@ -336,6 +336,8 @@ class PandaController(object):
         self.pcm.switch_mode(ControllerType.TRAJECTORY)
 
         self.msg.points = [self.point]
+        self.msg.header.stamp = rospy.Time.now()
+
         if not rospy.is_shutdown():
             # publish message to actuate the dof
             self.trajectory_pub.publish(self.msg)
@@ -426,8 +428,9 @@ if __name__ == "__main__":
         [[-1, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, 0.5, 0, 0, 0, 0], 'Pose_1'],
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
-    # controller = PandaController()
+    # uncomment the below code for things in action!
+    controller = PandaController()
     # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],5)
-    # while True:
-    #     controller.set_trajectory_list(poses_list, sleep=1)
+    while True:
+        controller.set_trajectory_list(poses_list, sleep=1)
