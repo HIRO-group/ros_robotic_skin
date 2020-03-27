@@ -161,7 +161,7 @@ class ConstantRotationData():
                     delete_idxs = []
                     for ind, val in enumerate(imu_points):
                         joint_vel = val[-1]
-                        if abs(joint_vel - CONSTANT_VELOCITY) >= 0.1 and abs(joint_vel - 0) >= 0.05:
+                        if abs(joint_vel - CONSTANT_VELOCITY) >= 0.2:
                             delete_idxs.append(ind)
                     res = np.delete(imu_points, delete_idxs, 0)
                     y = np.expand_dims(res, axis=0)
