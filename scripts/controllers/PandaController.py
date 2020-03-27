@@ -235,7 +235,7 @@ class PandaController(object):
             self.position_pubs[index].publish(Float64(pos))
         rospy.sleep(sleep)
 
-    def send_velocity(self, velocities):
+    def send_velocities(self, velocities):
         """
         Sends one velocity command. Should be called during a control loop.
 
