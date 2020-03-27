@@ -9,6 +9,7 @@ import moveit_commander
 VMAX = .1
 FREQUENCY = 100.
 PERIOD = 1. / FREQUENCY
+ERROR_THRESHOLD = 0.01
 
 
 def switch_point():
@@ -17,10 +18,12 @@ def switch_point():
 
 if __name__ == '__main__':
 
+    # List of points in desired trajectory
     points = np.array([[.6, .5, .5],
                        [.6, .5, 1],
                        [.6, 1, 1],
                        [.6, 1, .5]])
+    points = points / 2.
 
     pc = PandaController()
 
@@ -36,6 +39,8 @@ if __name__ == '__main__':
     rate = rospy.Rate(FREQUENCY)
 
     t = 0
+    points_idx = 4 % len(points)
+
     while not rospy.is_shutdown():
         try:
             # Current position vector
@@ -44,7 +49,7 @@ if __name__ == '__main__':
             vector_0_EE = np.array([translation.x, translation.y, translation.z])
 
             # Desired position vector
-            vector_0_EE_d = points[0]
+            vector_0_EE_d = points[points_idx]
             # Error vector
             vector_error = vector_0_EE_d - vector_0_EE
             vector_error_norm = np.linalg.norm(vector_error)
@@ -68,11 +73,14 @@ if __name__ == '__main__':
                 print('End effector position: \n[{} ,{}, {}]').format(transformation.transform.translation.x,
                                                                       transformation.transform.translation.y,
                                                                       transformation.transform.translation.z)
-                print('End effector desired position: \n{}').format(vector_0_EE_d)
+                print('End effector desired position {}: \n{}').format(points_idx, vector_0_EE_d)
                 print('------------------------------')
+
+            # Decide if it's time to switch to the next point
+            if vector_error_norm <= ERROR_THRESHOLD:
+                points_idx = (points_idx + 1) % len(points)
 
             t = t + 1
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
                 tf2_ros.ExtrapolationException):
             continue
-        rate.sleep()
