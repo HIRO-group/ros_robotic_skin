@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Panda UI Controller.
 To use this please install the dependencies:
@@ -22,6 +23,8 @@ class panda_position_mover(GridLayout):
         self.controller.publish_positions([0.0, 0.0, 0.0, -0.0698, 0.0, 0.0, 0.0], 0.1)
         # GUI starting
         self.cols = 3
+        # The limits are from the website:
+        # https://frankaemika.github.io/docs/control_parameters.html
         my_slider1 = Slider(min=-2.8973, max=2.8973, step=0.001, value=0, id="Joint 1")
         my_slider2 = Slider(min=-1.7628, max=1.7628, step=0.001, value=0, id="Joint 2")
         my_slider3 = Slider(min=-2.8973, max=2.8973, step=0.001, value=0, id="Joint 3")
