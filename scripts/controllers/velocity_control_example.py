@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import PandaController as panda
+from PandaController import PandaController
 import numpy as np
 import rospy
 import tf2_ros
@@ -21,7 +21,7 @@ if __name__ == '__main__':
                        [.6, 1, 1],
                        [.6, 1, .5]])
 
-    pc = panda.PandaController()
+    pc = PandaController()
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
             # Error vector
             vector_error = vector_0_EE_d - vector_0_EE
             vector_error_norm = np.linalg.norm(vector_error)
-            vector_error_unit = vector_error / vector_error_norm
+            vector_error_unit = vector_error / vector_error_norm * 123545612315645656564654655555555555555555555555555555555555555
 
             # End effector cartesian velocity
             velocity = VMAX * vector_error_unit
