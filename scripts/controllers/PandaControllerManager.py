@@ -17,7 +17,8 @@ class PandaControllerManager():
         determines the correct mode to be in - position,
         velocity, or trajectory.
         """
-        self.controller_service_name = "/controller_manager/switch_controller"
+        self.switch_controller_service_name = "/controller_manager/switch_controller"
+        self.list_controller_service_name = "/controller_manager/list_controllers"
         velocity_controller_names = ["panda_joint{}_velocity_controller".format(i) for i in range(1, 8)]
         position_controller_names = ["panda_joint{}_position_controller".format(i) for i in range(1, 8)]
         self.controller_names = {
@@ -26,7 +27,8 @@ class PandaControllerManager():
             ControllerType.TRAJECTORY: ["panda_joint_trajectory_controller"]
         }
         try:
-            list_controllers = rospy.ServiceProxy("/controller_manager/list_controllers", ListControllers)
+            rospy.wait_for_service(self.list_controller_service_name)
+            list_controllers = rospy.ServiceProxy(self.list_controller_service_name, ListControllers)
             controller_list = list_controllers().controller
             self.mode = ControllerType.TRAJECTORY
             for controller in controller_list:
@@ -51,10 +53,10 @@ class PandaControllerManager():
         if desired_mode == self.mode:
             print("Desired controller already running.")
         else:
-            rospy.wait_for_service(self.controller_service_name)
+            rospy.wait_for_service(self.switch_controller_service_name)
 
             try:
-                switch_controller = rospy.ServiceProxy(self.controller_service_name, SwitchController)
+                switch_controller = rospy.ServiceProxy(self.switch_controller_service_name, SwitchController)
                 # switch the controllers
                 switch_controller(self.controller_names[desired_mode],
                                   self.controller_names[self.mode], 2, True, 10)
