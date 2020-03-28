@@ -39,7 +39,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(FREQUENCY)
 
     t = 0
-    points_idx = 4 % len(points)
+    points_idx = 2 % len(points)
 
     while not rospy.is_shutdown():
         try:
@@ -48,10 +48,14 @@ if __name__ == '__main__':
             translation = transformation.transform.translation
             vector_0_EE = np.array([translation.x, translation.y, translation.z])
 
+            transformation = move_group_commander.get_current_pose()
+            translation = transformation.pose.position
+            vector_0_EE2 = np.array([translation.x, translation.y, translation.z])
+
             # Desired position vector
             vector_0_EE_d = points[points_idx]
             # Error vector
-            vector_error = vector_0_EE_d - vector_0_EE
+            vector_error = vector_0_EE_d - vector_0_EE2
             vector_error_norm = np.linalg.norm(vector_error)
             vector_error_unit = vector_error / vector_error_norm
             # Get Jacobian
@@ -66,14 +70,15 @@ if __name__ == '__main__':
 
             # Convert cartesian velocities to joint velocities
             q_dot = np.linalg.pinv(J) * velocity
-            pc.publish_velocities(q_dot, PERIOD)
+            pc.send_velocities(q_dot)
 
             # Print debug data every second
             if t % FREQUENCY == 0:
-                print('End effector position: \n[{} ,{}, {}]').format(transformation.transform.translation.x,
-                                                                      transformation.transform.translation.y,
-                                                                      transformation.transform.translation.z)
-                print('End effector desired position {}: \n{}').format(points_idx, vector_0_EE_d)
+                print(rospy.get_time())
+                print('End effector position from tf: \n[{}]').format(vector_0_EE)
+                print('End effector position from moveit: \n[{}]').format(vector_0_EE2)
+                print('End effector desired position [{}]: \n{}').format(points_idx, vector_0_EE_d)
+                print('Jacobian : \n{}'.format(J))
                 print('------------------------------')
 
             # Decide if it's time to switch to the next point
@@ -81,6 +86,10 @@ if __name__ == '__main__':
                 points_idx = (points_idx + 1) % len(points)
 
             t = t + 1
+            rate.sleep()
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
                 tf2_ros.ExtrapolationException):
             continue
+        finally:
+            # Stop
+            pc.send_velocities([0, 0, 0, 0, 0, 0, 0])
