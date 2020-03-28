@@ -41,7 +41,7 @@ if __name__ == '__main__':
     t = 0
     points_idx = 2 % len(points)
 
-    while not rospy.is_shutdown():
+    while True:
         try:
             # Current position vector
             transformation = tfBuffer.lookup_transform('panda_link8', 'world', rospy.Time())
@@ -90,6 +90,7 @@ if __name__ == '__main__':
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
                 tf2_ros.ExtrapolationException):
             continue
-        finally:
-            # Stop
-            pc.send_velocities([0, 0, 0, 0, 0, 0, 0])
+        if rospy.is_shutdown():
+            break
+    print('Stop!')
+    pc.send_velocities([0, 0, 0, 0, 0, 0, 0])
