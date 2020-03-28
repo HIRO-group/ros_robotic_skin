@@ -269,7 +269,7 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.send_velocity(velocities)
+        self.send_velocities(velocities)
         # sleep a bit of time
         rospy.sleep(sleep)
         for pub in self.velocity_pubs:
