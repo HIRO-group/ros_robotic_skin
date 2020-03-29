@@ -108,7 +108,7 @@ sudo apt install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin --skip-keys libgazebo7-dev
 sudo apt install ros-melodic-imu-filter-madgwick ros-melodic-ros-control ros-melodic-ros-controllers
 cd src
-
+git clone git@github.com:HIRO-group/Custom_IMU_Madgwick_Filter.git
 # if franka build is desired from source
 if [[ $FRANKA_BUILD = "source" ]]
 then
@@ -143,6 +143,7 @@ wstool update
 cd ..
 rosdep install --from-paths src --ignore-src -y -r --skip-keys libgazebo7-dev
 sudo apt install ros-melodic-moveit-visual-tools
+
 
 
 
