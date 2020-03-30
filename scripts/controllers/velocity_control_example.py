@@ -3,17 +3,18 @@
 from PandaController import PandaController
 import numpy as np
 import rospy
-import tf2_ros
 import moveit_commander
 
 VMAX = .1
 FREQUENCY = 100.
 PERIOD = 1. / FREQUENCY
 ERROR_THRESHOLD = 0.01
+q_dot_before = [.1 for i in range(7)]
 
 
-def switch_point():
-    pass
+def stop():
+    q_dot = [0 for i in range(7)]
+    pc.send_velocities(q_dot)
 
 
 if __name__ == '__main__':
@@ -23,13 +24,9 @@ if __name__ == '__main__':
                        [.6, .5, 1],
                        [.6, 1, 1],
                        [.6, 1, .5]])
-    points = points / 2.
+    points = points / 2
 
     pc = PandaController()
-
-    # tf
-    tfBuffer = tf2_ros.Buffer()
-    listener = tf2_ros.TransformListener(tfBuffer)
 
     # Moveit
     robot_commander = moveit_commander.RobotCommander()
@@ -37,60 +34,53 @@ if __name__ == '__main__':
     move_group_commander = moveit_commander.move_group.MoveGroupCommander(group_names[1])
 
     rate = rospy.Rate(FREQUENCY)
+    rospy.on_shutdown(stop)
 
     t = 0
-    points_idx = 2 % len(points)
+    # Start point
+    points_idx = 0 % len(points)
+    points_idx_before = points_idx
 
-    while True:
-        try:
-            # Current position vector
-            transformation = tfBuffer.lookup_transform('panda_link8', 'world', rospy.Time())
-            translation = transformation.transform.translation
-            vector_0_EE = np.array([translation.x, translation.y, translation.z])
+    while not rospy.is_shutdown():
 
-            transformation = move_group_commander.get_current_pose()
-            translation = transformation.pose.position
-            vector_0_EE2 = np.array([translation.x, translation.y, translation.z])
+        # Current position vector
+        transformation = move_group_commander.get_current_pose()
+        translation = transformation.pose.position
+        vector_0_EE = np.array([translation.x, translation.y, translation.z])
 
-            # Desired position vector
-            vector_0_EE_d = points[points_idx]
-            # Error vector
-            vector_error = vector_0_EE_d - vector_0_EE2
-            vector_error_norm = np.linalg.norm(vector_error)
-            vector_error_unit = vector_error / vector_error_norm
-            # Get Jacobian
-            q = move_group_commander.get_current_joint_values()
-            J = move_group_commander.get_jacobian_matrix(q)
+        # Desired position vector
+        vector_0_EE_d = points[points_idx]
 
-            # End effector cartesian velocity
-            velocity_translation = VMAX * vector_error_unit
-            velocity_rotation = np.array([0, 0, 0])
-            velocity = np.block([velocity_translation, velocity_rotation])
-            velocity.shape = (6, 1)
+        # Error vector
+        vector_error = vector_0_EE_d - vector_0_EE
+        vector_error_norm = np.linalg.norm(vector_error)
+        vector_error_unit = vector_error / vector_error_norm
 
-            # Convert cartesian velocities to joint velocities
-            q_dot = np.linalg.pinv(J) * velocity
-            pc.send_velocities(q_dot)
+        # Get Jacobian
+        q = move_group_commander.get_current_joint_values()
+        J = move_group_commander.get_jacobian_matrix(q)
 
-            # Print debug data every second
-            if t % FREQUENCY == 0:
-                print(rospy.get_time())
-                print('End effector position from tf: \n[{}]').format(vector_0_EE)
-                print('End effector position from moveit: \n[{}]').format(vector_0_EE2)
-                print('End effector desired position [{}]: \n{}').format(points_idx, vector_0_EE_d)
-                print('Jacobian : \n{}'.format(J))
-                print('------------------------------')
+        # End effector cartesian velocity
+        velocity_translation = VMAX * vector_error_unit
+        velocity_rotation = np.array([0, 0, 0])
+        velocity = np.block([velocity_translation, velocity_rotation])
+        velocity.shape = (6, 1)
 
-            # Decide if it's time to switch to the next point
-            if vector_error_norm <= ERROR_THRESHOLD:
-                points_idx = (points_idx + 1) % len(points)
+        # Convert cartesian velocities to joint velocities
+        q_dot = np.linalg.pinv(J) * velocity
+        pc.send_velocities(q_dot)
 
-            t = t + 1
-            rate.sleep()
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
-                tf2_ros.ExtrapolationException):
-            continue
-        if rospy.is_shutdown():
-            break
-    print('Stop!')
-    pc.send_velocities([0, 0, 0, 0, 0, 0, 0])
+        # Print debug data every second
+        if t % FREQUENCY == 0 or points_idx != points_idx_before:
+            print('ROS Time: {}'.format(rospy.get_time()))
+            print('Desired position [{}]: \n{}').format(points_idx, vector_0_EE_d)
+            print('Current position: \n[{}]').format(vector_0_EE)
+            print('------------------------------')
+
+        # Decide if it's time to switch to the next point
+        points_idx_before = points_idx
+        if vector_error_norm <= ERROR_THRESHOLD:
+            points_idx = (points_idx + 1) % len(points)
+
+        t = t + 1
+        rate.sleep()
