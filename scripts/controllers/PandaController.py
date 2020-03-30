@@ -269,7 +269,9 @@ class PandaController(object):
         ----------
         return: None
         """
-        self.send_velocity(velocities)
+
+        self.send_velocities(velocities)
+
         # sleep a bit of time
         rospy.sleep(sleep)
         for pub in self.velocity_pubs:
@@ -441,8 +443,14 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     # uncomment the below code for things in action!
+<<<<<<< HEAD
     # controller = PandaController()
     # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     # controller.publish_positions([0,0,0,0,0,0,0],5)
+=======
+    controller = PandaController()
+    # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
+    controller.publish_positions([0, 0, 0, 0, 0, 0, 0], 5)
+>>>>>>> master
     # while True:
     # controller.set_trajectory_list(poses_list, sleep=1)
