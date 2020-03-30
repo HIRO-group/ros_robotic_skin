@@ -2,9 +2,8 @@
 import sys
 import rospy
 import rospkg
-from std_msgs.msg import Float64
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.controllers.PandaController import PandaController
+from scripts.controllers.PandaController import PandaController  # noqa: E402
 
 COMMAND_SWITCHING_TIME = 5
 POSITION1 = [0, 0, 0, 0, 0, 0, 0]
@@ -23,7 +22,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 3:
         POSITION2 = float(sys.argv[3])
 
-    #rospy.init_node('periodical_position_publisher', anonymous=True)
+    # rospy.init_node('periodical_position_publisher', anonymous=True)
     controller = PandaController()
 
     curr_pos = 1
