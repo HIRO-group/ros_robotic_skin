@@ -5,7 +5,7 @@ import numpy as np
 import rospy
 import moveit_commander
 
-VMAX = .1
+VMAX = .2
 FREQUENCY = 100.
 PERIOD = 1. / FREQUENCY
 ERROR_THRESHOLD = 0.01
@@ -14,7 +14,7 @@ q_dot_before = [.1 for i in range(7)]
 
 def stop():
     q_dot = [0 for i in range(7)]
-    pc.send_velocities(q_dot)
+    panda_controller.send_velocities(q_dot)
 
 
 if __name__ == '__main__':
@@ -26,11 +26,12 @@ if __name__ == '__main__':
                        [.6, 1, .5]])
     points = points / 2
 
-    pc = PandaController()
+    panda_controller = PandaController()
 
     # Moveit
     robot_commander = moveit_commander.RobotCommander()
     group_names = robot_commander.get_group_names()
+    # Select panda_arm move group
     move_group_commander = moveit_commander.move_group.MoveGroupCommander(group_names[1])
 
     rate = rospy.Rate(FREQUENCY)
@@ -68,7 +69,7 @@ if __name__ == '__main__':
 
         # Convert cartesian velocities to joint velocities
         q_dot = np.linalg.pinv(J) * velocity
-        pc.send_velocities(q_dot)
+        panda_controller.send_velocities(q_dot)
 
         # Print debug data every second
         if t % FREQUENCY == 0 or points_idx != points_idx_before:
