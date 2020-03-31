@@ -40,7 +40,7 @@ class PandaControllerManager():
                     elif controller.name == "panda_joint_trajectory_controller":
                         self.mode = ControllerType.TRAJECTORY
         except rospy.ServiceException as e:
-            print("Controller Manager Service exception", e)
+            rospy.logerr("Controller Manager service exception:", e)
 
     def switch_mode(self, desired_mode):
         """
@@ -51,16 +51,16 @@ class PandaControllerManager():
         # check if mode is running
 
         if desired_mode == self.mode:
-            print("Desired controller already running.")
+            rospy.loginfo("Desired controller already running.")
         else:
-            rospy.wait_for_service(self.switch_controller_service_name)
-
             try:
+                rospy.wait_for_service(self.switch_controller_service_name)
                 switch_controller = rospy.ServiceProxy(self.switch_controller_service_name, SwitchController)
                 # switch the controllers
                 switch_controller(self.controller_names[desired_mode],
-                                  self.controller_names[self.mode], 2, True, 10)
-                print("Mode successfully changed!")
+                                  self.controller_names[self.mode], 1, True, 10)
+                rospy.loginfo("Mode successfully changed.")
+
                 self.mode = desired_mode
             except rospy.ServiceException as e:
-                print("Controller Manager Service exception", e)
+                rospy.logerr("Controller Manager service exception:", e)
