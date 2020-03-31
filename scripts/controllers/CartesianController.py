@@ -22,7 +22,7 @@ class CartesianController(object):
         self.rate = rospy.Rate(self.FREQUENCY)
         rospy.on_shutdown(self.stop)
 
-        self.P = self.__get_current_end_effector_position()
+        self.position = self.__get_current_end_effector_position()
 
     def __get_current_end_effector_position(self):
         """
@@ -42,13 +42,13 @@ class CartesianController(object):
                     tf.ExtrapolationException):
                 continue
 
-    def __compute_command_velocity(self, Pd):
+    def __compute_command_velocity(self, position_desired):
         """
-        Compute the velocity vector in cartesian coordinates that leads to the Point Pd at a given time instant.
+        Compute the velocity vector in cartesian coordinates that leads to the Point position_desired at a given time instant.
 
         Parameters
         ----------
-        Pd : numpy.ndarray
+        position_desired : numpy.ndarray
             3x1 end effector desired position vector
 
         Returns
@@ -57,7 +57,7 @@ class CartesianController(object):
             6x1 velocity vector in cartesian coordinates
 
         """
-        self.error = Pd - self.P
+        self.error = position_desired - self.position
         v_trans = self.K * self.error / np.linalg.norm(self.error)
         v_rot = np.array([0, 0, 0])
         v = np.block([v_trans, v_rot])
@@ -83,21 +83,21 @@ class CartesianController(object):
         q_dot = np.linalg.pinv(J) * v
         return q_dot
 
-    def command_point(self, Pd):
+    def command_point(self, position_desired):
         """
         Move to a point an stop when arrived
 
         Parameters
         ----------
-        Pd : numpy.ndarray
+        position_desired : numpy.ndarray
             3x1 end effector desired position vector
         """
-        Pd = np.array(Pd)
-        self.error = Pd - self.P
+        position_desired = np.array(position_desired)
+        self.error = position_desired - self.position
         while not np.linalg.norm(self.error) < self.ERROR_THRESHOLD:
-            self.P = self.__get_current_end_effector_position()
-            v = self.__compute_command_velocity(Pd)
-            q_dot = self.__compute_command_q_dot(v)
+            self.position = self.__get_current_end_effector_position()
+            velocity = self.__compute_command_velocity(position_desired)
+            q_dot = self.__compute_command_q_dot(velocity)
             self.panda_controller.send_velocities(q_dot)
         self.stop()
         return 0
