@@ -49,7 +49,7 @@ class PandaController(object):
             Whether the controlled robot is from simulation or not.
         """
         self.is_sim = is_sim
-        rospy.init_node('panda_pose', anonymous=True)
+        rospy.init_node('panda_controller', anonymous=True)
         self.trajectory_pub = self.get_trajectory_publisher(is_sim)
         self.position_pubs = self.get_position_publishers()
         self.velocity_pubs = self.get_velocity_publishers()
