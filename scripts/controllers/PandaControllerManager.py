@@ -51,7 +51,8 @@ class PandaControllerManager():
         # check if mode is running
 
         if desired_mode == self.mode:
-            print("Desired controller already running.")
+            # print("Desired controller already running.")
+            pass
         else:
             rospy.wait_for_service(self.switch_controller_service_name)
 
