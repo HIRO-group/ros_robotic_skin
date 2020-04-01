@@ -49,7 +49,7 @@ class PandaController(object):
             Whether the controlled robot is from simulation or not.
         """
         self.is_sim = is_sim
-        rospy.init_node('panda_pose', anonymous=True)
+        rospy.init_node('panda_controller', anonymous=True)
         self.trajectory_pub = self.get_trajectory_publisher(is_sim)
         self.position_pubs = self.get_position_publishers()
         self.velocity_pubs = self.get_velocity_publishers()
@@ -269,7 +269,9 @@ class PandaController(object):
         ----------
         return: None
         """
+
         self.send_velocities(velocities)
+
         # sleep a bit of time
         rospy.sleep(sleep)
         for pub in self.velocity_pubs:
@@ -441,8 +443,10 @@ if __name__ == "__main__":
         [[-0.5, -pi / 3, -pi / 4, 1, 1, 1, -pi / 4], [0, 0, -0.5, 0, 0, 0, 0], 'Pose_2']
     ]
     # uncomment the below code for things in action!
+
     controller = PandaController()
     # controller.publish_velocities([0, 0.5, 0.5, 0, 0, 0, 0], 1)
     controller.publish_positions([0, 0, 0, 0, 0, 0, 0], 5)
+
     # while True:
     # controller.set_trajectory_list(poses_list, sleep=1)
