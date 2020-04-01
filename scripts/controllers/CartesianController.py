@@ -15,16 +15,14 @@ class CartesianController(object):
     # TODO: Fix: When trajectory points are to close to each other, the movement is intermittent, because self.stop() is called too much.
     # TODO: Avoid self collision
 
-    gain = .2
-    FREQUENCY = 100.
-    ERROR_THRESHOLD = 0.01
-
     def __init__(self):
         self.panda_controller = PandaController()
         self.move_group_commander = moveit_commander.move_group.MoveGroupCommander('panda_arm')
         self.tf_listener = tf.TransformListener()
-        self.rate = rospy.Rate(self.FREQUENCY)
+        self.rate = rospy.Rate(rospy.get_param('/cartesian_controller_frequency'))
         self.q_dot = np.zeros(7)
+        self.p_gain = rospy.get_param('/cartesian_controller_p_gain')
+        self.error_threshold = rospy.get_param('/cartesian_error_threshold')
         rospy.on_shutdown(self.stop)
 
         self.position = self.__get_current_end_effector_position()
@@ -63,7 +61,8 @@ class CartesianController(object):
 
         """
         self.error = position_desired - self.position
-        v_trans = self.gain * self.error / np.linalg.norm(self.error)
+
+        v_trans = self.p_gain * self.error / np.linalg.norm(self.error)
         v_rot = np.array([0, 0, 0])
         v = np.block([v_trans, v_rot])
         v.shape = (6, 1)
@@ -99,7 +98,7 @@ class CartesianController(object):
         """
         position_desired = np.array(position_desired)
         self.error = position_desired - self.position
-        while not np.linalg.norm(self.error) < self.ERROR_THRESHOLD:
+        while not np.linalg.norm(self.error) < self.error_threshold:
             self.position = self.__get_current_end_effector_position()
             velocity = self.__compute_command_velocity(position_desired)
             self.q_dot = self.__compute_command_q_dot(velocity)
