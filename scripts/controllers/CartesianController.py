@@ -95,10 +95,11 @@ class CartesianController(object):
         ----------
         position_desired : numpy.ndarray
             3x1 end effector desired position vector
+            Only position, not orientation
         """
         position_desired = np.array(position_desired)
         self.error = position_desired - self.position
-        while not np.linalg.norm(self.error) < self.error_threshold:
+        while np.linalg.norm(self.error) > self.error_threshold:
             self.position = self.__get_current_end_effector_position()
             velocity = self.__compute_command_velocity(position_desired)
             self.q_dot = self.__compute_command_q_dot(velocity)
@@ -109,12 +110,13 @@ class CartesianController(object):
 
     def go_to_points_in_trajectory(self, trajectory):
         """
-        Move through a series of points and stop when arrived
+        Move through a series of points and stop when arrived.
 
         Parameters
         ----------
         trajectory : list
-            list containing as many np.ndarray vectors as desired
+            List containing as many 3x1 np.ndarray position vectors as desired.
+            Position vectors do not specify rotation
         """
         for point in trajectory:
             self.go_to_point(point)
@@ -133,17 +135,17 @@ class CartesianController(object):
 
 if __name__ == "__main__":
 
-    # Get trajectory points in a circle at plane x = X, centered at (X,a,b), with radius r
+    # Get trajectory points in a circle at plane x = X, centered at (x0, y0, z0), with radius r
 
     trajectory = []
-    X = 0.3
-    a = 0.0
-    b = 0.3
+    x0 = 0.3
+    y0 = 0.0
+    z0 = 0.3
     r = 0.1
     for theta in np.arange(0, 2*np.pi, 0.2):
-        x = X
-        y = a + r * np.cos(theta)
-        z = b + r * np.sin(theta)
+        x = x0
+        y = y0 + r * np.cos(theta)
+        z = z0 + r * np.sin(theta)
         trajectory.append([x, y, z])
 
     # Loop that trajectory
