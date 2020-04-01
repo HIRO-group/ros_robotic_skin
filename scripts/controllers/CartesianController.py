@@ -24,7 +24,7 @@ class CartesianController(object):
         self.move_group_commander = moveit_commander.move_group.MoveGroupCommander('panda_arm')
         self.tf_listener = tf.TransformListener()
         self.rate = rospy.Rate(self.FREQUENCY)
-        self.q_dot = np.array([0 for i in range(7)])
+        self.q_dot = np.zeros(7)
         rospy.on_shutdown(self.stop)
 
         self.position = self.__get_current_end_effector_position()
@@ -127,7 +127,7 @@ class CartesianController(object):
         """
         Stop all joints
         """
-        q_dot = [0 for i in range(7)]
+        q_dot = np.zeros(7)
         self.panda_controller.send_velocities(q_dot)
         return 0
 
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     a = 0.0
     b = 0.3
     r = 0.1
-    for theta in np.arange(0, 2*3.14, 0.2):
+    for theta in np.arange(0, 2*np.pi, 0.2):
         x = X
         y = a + r * np.cos(theta)
         z = b + r * np.sin(theta)
