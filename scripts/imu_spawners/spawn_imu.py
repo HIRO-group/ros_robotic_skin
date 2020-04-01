@@ -5,7 +5,9 @@ import rospy
 import rospkg
 import tf
 from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState, GetLinkState
-from gazebo_msgs.msg import ModelState, LinkState, Pose, Quaternion, Point
+from gazebo_msgs.msg import ModelState, LinkState
+from geometry_msgs.msg import Pose, Quaternion, Point
+
 
 import sys
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
@@ -73,7 +75,7 @@ class EstimatedIMUBoxStateManager():
                 init_pose = Pose()
                 init_pose.position.x = pose.position[0]
                 init_pose.position.y = pose.position[1]
-                init_pose.position.z = pose.position[2] + 0.91488
+                init_pose.position.z = pose.position[2]  # + 0.91488
                 init_pose.orientation.x = pose.orientation[0]
                 init_pose.orientation.y = pose.orientation[1]
                 init_pose.orientation.z = pose.orientation[2]
