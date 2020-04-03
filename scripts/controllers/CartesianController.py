@@ -124,6 +124,39 @@ class CartesianController(object):
         self.stop()
         return 0
 
+    def get_trajectory_points_in_circle_yz_plane(self, r, x0, y0, z0, resolution):
+        # Get trajectory points in a circle at plane x = X, centered at (x0, y0, z0), with radius r
+        """
+        Get trajectory points in a circle at plane x = X, centered at (x0, y0, z0), with radius r
+
+        Parameters
+        ----------
+        r: float
+            [description]
+        x0: float
+            [description]
+        y0: float
+            [description]
+        z0: float
+            [description]
+        resolution: float
+            [description]
+
+        Returns
+        -------
+        trajectory: list
+            [description]
+        """
+
+        trajectory = []
+
+        for theta in np.arange(0, 2*np.pi, resolution):
+            x = x0
+            y = y0 + r * np.cos(theta)
+            z = z0 + r * np.sin(theta)
+            trajectory.append([x, y, z])
+        return trajectory
+
     def stop(self):
         """
         Stop all joints
@@ -134,21 +167,14 @@ class CartesianController(object):
 
 
 if __name__ == "__main__":
-
-    # Get trajectory points in a circle at plane x = X, centered at (x0, y0, z0), with radius r
-
-    trajectory = []
     x0 = 0.3
     y0 = 0.0
     z0 = 0.3
     r = 0.1
-    for theta in np.arange(0, 2*np.pi, 0.2):
-        x = x0
-        y = y0 + r * np.cos(theta)
-        z = z0 + r * np.sin(theta)
-        trajectory.append([x, y, z])
+    resolution = 0.2
 
     # Loop that trajectory
     cartesian_controller = CartesianController()
+    trajectory = cartesian_controller.get_trajectory_points_in_circle_yz_plane(r, x0, y0, z0, resolution)
     while not rospy.is_shutdown():
         cartesian_controller.go_to_points_in_trajectory(trajectory)
