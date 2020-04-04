@@ -272,7 +272,6 @@ class DynamicPoseDataSaver():
                 np.array([accel.x, accel.y, accel.z,
                           curr_w, self.A] + joint_angles))
 
-
     def move_like_sine_dynamic(self):
         """
         This will move the joint of the robot arm like a sine wave
