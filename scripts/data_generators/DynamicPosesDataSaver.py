@@ -3,7 +3,6 @@ import os
 import sys
 from collections import OrderedDict
 import copy
-import math
 from math import pi
 import numpy as np
 import pickle
@@ -318,8 +317,8 @@ class DynamicPoseDataSaver():
 
                 # Prepare for publishing a trajectory
                 velocities = np.zeros(len(self.joint_names))
-                accelerations = np.zeros(len(self.joint_names))
-                poss = copy.deepcopy(positions)
+                # accelerations = np.zeros(len(self.joint_names))
+                # poss = copy.deepcopy(positions)
 
                 # stopping time
                 self.ready = True
