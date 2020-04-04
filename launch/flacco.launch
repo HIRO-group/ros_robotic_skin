@@ -1,58 +1,8 @@
+<!-- Launch file for the implementation of the flacco paper -->
 <launch>
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find franka_description)/robots/panda_arm_hand.urdf.xacro"/>
-
-    <!-- GAZEBO arguments -->
-    <arg name="paused" default="false"/>
-    <arg name="use_sim_time" default="true"/>
-    <arg name="gui" default="true"/>
-    <arg name="headless" default="false"/>
-    <arg name="debug" default="false"/>
-    <arg name="load_gripper" default="true"/>
-
-    <!--launch GAZEBO with own world configuration -->
-    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <!-- <arg name="world_name" value="$(find robotics_assisted_tomography)/worlds/tomography.world"/> -->
-        <arg name="debug" value="$(arg debug)"/>
-        <arg name="gui" value="$(arg gui)"/>
-        <arg name="paused" value="$(arg paused)"/>
-        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-        <arg name="headless" value="$(arg headless)"/>
-    </include>
-
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model panda"/>
-
-    <!-- Load joint controller configurations from YAML file to parameter server -->
-    <rosparam file="$(find panda_simulation)/config/panda_control.yaml" command="load"/>
-
-
-    <!-- load the controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_trajectory_controller joint_state_controller" />
-    <node name="controller_spawn" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped panda_joint1_position_controller panda_joint2_position_controller
-            panda_joint3_position_controller panda_joint4_position_controller panda_joint5_position_controller
-            panda_joint6_position_controller panda_joint7_position_controller
-            panda_joint1_velocity_controller panda_joint2_velocity_controller
-            panda_joint3_velocity_controller panda_joint4_velocity_controller
-            panda_joint5_velocity_controller panda_joint6_velocity_controller
-            panda_joint7_velocity_controller" />
-    <node if="$(arg load_gripper)" name="controller_spawner_hand" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_hand_controller" />
-
-
-    <!-- convert joint states to TF transforms for rviz, etc -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
-
-    <!-- launch robot control node for moveit motion planning -->
-    <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/>
-
-    <!--    Add Params YAML File-->
-    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
-    <rosparam command="load" file="$(arg constants_file_yaml)"/>
-
+    <!-- simulation.launch -->
+    <include file="$(find ros_robotic_skin)/launch/simulation.launch"/>>
     <!-- Control points tf broadcaster -->
     <node pkg="ros_robotic_skin" type="control_points_broadcaster"
           name="control_points_broadcaster" />
-
-    <!-- Rviz -->
-    <arg name="command_args" value="-d $(find my_package)/launch/rviz.rviz" />
-    <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
-	    args="$(arg command_args)" output="screen"/>
 </launch>
