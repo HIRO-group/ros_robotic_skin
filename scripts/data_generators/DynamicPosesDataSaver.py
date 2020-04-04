@@ -232,6 +232,8 @@ class DynamicPoseDataSaver():
         self.prev_w = 0.0
         self.prev_t = 0.000001
         self.curr_acc = 0.0
+        self.freq = rospy.get_param('/oscillation_frequency')
+        self.A = rospy.get_param('/oscillation_magnitude')
 
         rospy.loginfo(self.joint_names)
 
@@ -261,32 +263,15 @@ class DynamicPoseDataSaver():
                 # rospy.loginfo(utils.n2s(
                 #   np.array([accel.x, accel.y, accel.z])))
 
-            curr_t = rospy.get_rostime().to_sec()
-            dt = curr_t - self.prev_t
-
             curr_w = self.controller.joint_velocity(self.curr_joint_name)
-            abs_curr_w = abs(curr_w)
-
-            try:
-                # current acceleration from now from pervious angular velocity.
-                self.curr_acc = (curr_w - self.prev_w) / dt
-            except Exception:
-                pass
-
-            if abs_curr_w > self.max_angular_velocity:
-                # ultimately, this value should be A from the oscillation equation.
-                self.max_angular_velocity = abs_curr_w
-                # rospy.loginfo(self.curr_joint_name + ' ' + data.header.frame_id + ' ' + Max Angular Velocity: %.4f'%(curr_A))
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu
                 np.array([accel.x, accel.y, accel.z,
-                          self.max_angular_velocity, self.curr_acc] + joint_angles))
+                          curr_w, self.A] + joint_angles))
 
-            self.prev_w = curr_w
-            self.prev_t = curr_t
 
     def move_like_sine_dynamic(self):
         """
@@ -294,9 +279,6 @@ class DynamicPoseDataSaver():
         for all joints for all defined poses.
         """
         self.controller.set_joint_position_speed(speed=1.0)
-
-        freq = rospy.get_param('/oscillation_frequency')
-        A = rospy.get_param('/oscillation_magnitude')
 
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
@@ -317,8 +299,6 @@ class DynamicPoseDataSaver():
 
                 # Prepare for publishing a trajectory
                 velocities = np.zeros(len(self.joint_names))
-                # accelerations = np.zeros(len(self.joint_names))
-                # poss = copy.deepcopy(positions)
 
                 # stopping time
                 self.ready = True
@@ -326,17 +306,11 @@ class DynamicPoseDataSaver():
                 while True:
                     t = (rospy.get_rostime() - now).to_sec()
 
-                    # Oscillated Pos, Vel, Acc
-                    # position = A/(2*np.pi*freq)*(1-np.cos(2 * np.pi * freq * t))
-                    velocity = A*np.sin(2 * pi * freq * t)
-                    # acceleration = 2*np.pi*freq*A*np.cos(2 * np.pi * freq * t)
+                    # Oscillated Velocity
+                    velocity = self.A*np.sin(2 * pi * self.freq * t)
 
-                    # poss[i] = positions[i] + position
                     velocities[i] = velocity
-                    # accelerations[i] = acceleration
                     self.controller.send_velocities(velocities)
-
-                    # self.controller.publish_trajectory(poss, velocities, accelerations, None)
 
                     if t > OSCILLATION_TIME:
                         break
