@@ -63,7 +63,7 @@ class DynamicPoseData():
     """
     def __init__(self, pose_names, joint_names, imu_names, filepath):
         """
-        Initialize StaticPoseData class.
+        Initialize DynamicPoseData class.
 
         Arguments
         ----------
@@ -266,15 +266,17 @@ class DynamicPoseDataSaver():
             dt = curr_t - self.prev_t
 
             curr_w = self.controller.joint_velocity(self.curr_joint_name)
-            curr_A = abs(curr_w)
+            abs_curr_w = abs(curr_w)
 
             try:
+                # current acceleration from now from pervious angular velocity.
                 self.curr_acc = (curr_w - self.prev_w) / dt
             except Exception:
                 pass
 
-            if curr_A > self.max_angular_velocity:
-                self.max_angular_velocity = curr_A
+            if abs_curr_w > self.max_angular_velocity:
+                # ultimately, this value should be A from the oscillation equation.
+                self.max_angular_velocity = abs_curr_w
                 # rospy.loginfo(self.curr_joint_name + ' ' + data.header.frame_id + ' ' + Max Angular Velocity: %.4f'%(curr_A))
 
             self.data_storage.append(
@@ -301,12 +303,15 @@ class DynamicPoseDataSaver():
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
             self.curr_positions = positions
             self.curr_pose_name = pose_name
-            self.controller.publish_positions(positions, sleep=1)
+            # first, move to the position from <robot>_positions.txt
+            self.controller.publish_positions(positions, sleep=2)
             print('At Position: ' + pose_name,
                   map(int, RAD2DEG*np.array(positions)))
 
+            # each joint in pose p
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
+                # max_angular velocity
                 self.max_angular_velocity = -np.inf
                 self.prev_w = self.controller.joint_velocity(self.curr_joint_name)
                 self.prev_t = rospy.get_rostime().to_sec()
@@ -323,15 +328,16 @@ class DynamicPoseDataSaver():
                     t = (rospy.get_rostime() - now).to_sec()
 
                     # Oscillated Pos, Vel, Acc
-                    position = A/(2*pi*freq)*(1-math.cos(2 * pi * freq * t))
-                    velocity = A*math.sin(2 * pi * freq * t)
-                    acceleration = 2*pi*freq*A*math.cos(2 * pi * freq * t)
+                    # position = A/(2*np.pi*freq)*(1-np.cos(2 * np.pi * freq * t))
+                    velocity = A*np.sin(2 * pi * freq * t)
+                    # acceleration = 2*np.pi*freq*A*np.cos(2 * np.pi * freq * t)
 
-                    poss[i] = positions[i] + position
+                    # poss[i] = positions[i] + position
                     velocities[i] = velocity
-                    accelerations[i] = acceleration
+                    # accelerations[i] = acceleration
+                    self.controller.send_velocities(velocities)
 
-                    self.controller.publish_trajectory(poss, velocities, accelerations, None)
+                    # self.controller.publish_trajectory(poss, velocities, accelerations, None)
 
                     if t > OSCILLATION_TIME:
                         break
