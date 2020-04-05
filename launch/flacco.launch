@@ -1,0 +1,11 @@
+<!-- Launch file for the implementation of the flacco paper -->
+<launch>
+    <!-- simulation.launch -->
+    <include file="$(find ros_robotic_skin)/launch/simulation.launch">
+        <arg name="gui" value="false"/>
+        <arg name="with_imu" value="false"/>
+    </include>
+    <!-- Control points tf broadcaster -->
+    <node pkg="ros_robotic_skin" type="control_points_broadcaster"
+          name="control_points_broadcaster" />
+</launch>
