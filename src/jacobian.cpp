@@ -70,6 +70,7 @@ int main(int argc, char** argv)
     eeFrame.Make4x4(d);
 
     print_matrix(d, 4, 4);
+    std::cout <<"-------------------------------"<< std::endl;
 
     KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain);
     KDL::Jacobian  J;
@@ -83,19 +84,26 @@ int main(int argc, char** argv)
     qdot.qdot(1) = 0.1;
     qdot.qdot(2) = 0.1;
 
+    std::vector <float> vector;
+
     for (unsigned int i = 0 ; i < 6 ; i++)
     {
         xdot(i) = 0;
         for (unsigned int j = 0 ; j < 3 ; j++)
+        {
             xdot(i) += J(i,j) * qdot.qdot(j);
+            vector.push_back(J(i,j));
+        }
+
+
     }
 
-    for(int x = 0; x < 6; x++)
+    double arr[vector.size()];
+    for (int i = 0; i < vector.size(); i++)
     {
-        for(int y = 0; y < 3; y++)
-        {
-            std::cout << std::to_string(J(x,y)) << "  ";  // display the current element out of the array
-        }
-    std::cout << std::endl;  // when the inner loop is done, go to a new line
+        arr[i] = vector[i];
     }
+
+    print_matrix(arr, 6, kdlChain.getNrOfJoints());
+
 }
