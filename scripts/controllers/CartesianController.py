@@ -38,7 +38,7 @@ class CartesianController(object):
         """
         while True:
             try:
-                (trans, rot) = self.tf_listener.lookupTransform('world', 'panda_hand', rospy.Time(0))
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'panda_link8', rospy.Time(0))
                 return np.array(trans)
             except (tf.LookupException,
                     tf.ConnectivityException,
@@ -180,6 +180,6 @@ if __name__ == "__main__":
 
     # Loop that trajectory
     cartesian_controller = CartesianController()
-    trajectory = cartesian_controller.get_trajectory_points_in_circle_yz_plane(r, x0, y0, z0, resolution)
+    trajectory = np.array([[0.4, 0, 0.3], [0.7, 0, 0.3]])
     while not rospy.is_shutdown():
         cartesian_controller.go_to_points_in_trajectory(trajectory)
