@@ -22,6 +22,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(catkin REQUIRED)
 catkin_package(CATKIN_DEPENDS xacro)
 
+find_package(Eigen3 REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -127,6 +129,7 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -143,6 +146,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(control_points_broadcaster src/control_points_broadcaster.cpp)
+add_executable(jacobian src/jacobian.cpp)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,6 +161,7 @@ add_executable(control_points_broadcaster src/control_points_broadcaster.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(control_points_broadcaster ${catkin_LIBRARIES})
+target_link_libraries(jacobian ${catkin_LIBRARIES})
 
 #############
 ## Install ##
