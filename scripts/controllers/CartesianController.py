@@ -23,7 +23,7 @@ class CartesianController(object):
         self.q_dot = np.zeros(7)
         self.p_gain = rospy.get_param('/cartesian_controller_p_gain')
         self.error_threshold = rospy.get_param('/cartesian_error_threshold')
-        rospy.on_shutdown(self.stop)
+        rospy.on_shutdown(self.return_home)
 
         self.position = self.__get_current_end_effector_position()
 
@@ -165,9 +165,14 @@ class CartesianController(object):
         self.panda_controller.send_velocities(q_dot)
         return 0
 
+    def return_home(self):
+        self.stop()
+        q = [0, np.pi/8, 0, -np.pi/2, 0, 3 * np.pi / 4, np.pi/8]
+        self.panda_controller.publish_positions(q, 2)
+
 
 if __name__ == "__main__":
-    x0 = 0.3
+    x0 = 0.6
     y0 = 0.0
     z0 = 0.3
     r = 0.1
