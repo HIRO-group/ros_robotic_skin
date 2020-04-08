@@ -3,10 +3,11 @@
 from PandaController import PandaController
 import numpy as np
 import rospy
-import moveit_commander
 import tf
 
 from ros_robotic_skin.srv import getJacobian
+from sensor_msgs.msg import JointState
+
 
 class CartesianController(object):
     """
@@ -16,17 +17,24 @@ class CartesianController(object):
     # TODO: Fix: When trajectory points are to close to each other, the movement is intermittent, because self.stop() is called too much.
     # TODO: Avoid self collision
 
+    def callback_joint_states(self, data):
+        self.q = data.position
+
     def __init__(self):
         self.panda_controller = PandaController()
-        self.move_group_commander = moveit_commander.move_group.MoveGroupCommander('panda_arm')
         self.tf_listener = tf.TransformListener()
         self.rate = rospy.Rate(rospy.get_param('/cartesian_controller_frequency'))
+        self.q = [0 for i in range(9)]
         self.q_dot = np.zeros(7)
         self.p_gain = rospy.get_param('/cartesian_controller_p_gain')
         self.error_threshold = rospy.get_param('/cartesian_error_threshold')
         rospy.on_shutdown(self.return_home)
 
         self.position = self.__get_current_end_effector_position()
+
+        rospy.wait_for_service('get_jacobian')
+        self.get_jacobian = rospy.ServiceProxy('get_jacobian', getJacobian)
+        rospy.Subscriber("joint_states", JointState, self.callback_joint_states)
 
     def __get_current_end_effector_position(self):
         """
@@ -83,14 +91,9 @@ class CartesianController(object):
         q_dot : numpy.ndarray
             7x1 joint velocity vector
         """
-        q = self.move_group_commander.get_current_joint_values()
-        q = [0, 0] + q
-        rospy.wait_for_service('get_jacobian')
-        get_jacobian = rospy.ServiceProxy('get_jacobian', getJacobian)
-        Jacobian_message = get_jacobian(q, 'panda_link8')
+        Jacobian_message = self.get_jacobian(self.q, 'panda_link8')
         J = np.array(Jacobian_message.J.J)
         J.shape = (Jacobian_message.J.rows, Jacobian_message.J.columns)
-        print(J)
         q_dot = np.dot(np.linalg.pinv(J), v)
         return q_dot
 

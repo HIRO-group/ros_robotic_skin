@@ -10,76 +10,100 @@
 #include <ros/console.h>
 #include <kdl/tree.hpp>
 
+#include "ros/ros.h"
+#include "ros_robotic_skin/getJacobian.h"
+
 
 
 // https://medium.com/@sarvagya.vaish/forward-kinematics-using-orocos-kdl-da7035f9c8e
 // http://mirror.umd.edu/roswiki/pr2_mechanism(2f)Tutorials(2f)Coding(20)a(20)realtime(20)Cartesian(20)controller(20)with(20)KDL.html
 
-
-int main(int argc, char** argv)
+bool compute_jacobian(ros_robotic_skin::getJacobian::Request& req,
+                      ros_robotic_skin::getJacobian::Response& res)
 {
-    KDL::Chain kdlChain;
+    // Get KDL::Tree from URDF file
     KDL::Tree kdlTree;
-    std::string filename = "/home/ander/catkin_ws/src/ros_robotic_skin/panda_arm_hand.urdf";
+    std::string filename = "/home/ander/catkin_ws/src/ros_robotic_skin/robots/panda_arm_hand.urdf";
     if (!kdl_parser::treeFromFile(filename, kdlTree)){
       ROS_ERROR("Failed to construct kdl tree");
       return false;
     }
 
-    kdlTree.getChain("panda_link0", "panda_link8", kdlChain);
+    // Select the end effector and get the chain from base (panda_link0) to selected end effector
+    KDL::Chain kdlChain;
+    kdlTree.getChain("panda_link0", req.end_effector_name, kdlChain);
+    int number_joints = kdlChain.getNrOfJoints();
 
-    KDL::JntArray jointAngles = KDL::JntArray(kdlChain.getNrOfJoints());
-    jointAngles(0) = 0;
-    jointAngles(1) = 0;
-    jointAngles(2) = 0;
-    jointAngles(3) = 0;
-    jointAngles(4) = 0;
-    jointAngles(5) = 0;
-    jointAngles(6) = 0;
+    // Current joint positions
+    KDL::JntArray jointAngles = KDL::JntArray(number_joints);
+    for (int i = 0; i < number_joints; i++)
+    {
+        jointAngles(i) = req.joint_states[i+2];
+    }
 
-
-    KDL::ChainFkSolverPos_recursive FKSolver =
-        KDL::ChainFkSolverPos_recursive(kdlChain);
-    KDL::Frame eeFrame;
-    FKSolver.JntToCart(jointAngles, eeFrame);
-
-    double d[16];
-    eeFrame.Make4x4(d);
-
-    std::cout <<"-------------------------------"<< std::endl;
-
+    // Compute jacobian
     KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain);
     KDL::Jacobian  J;
-    J.resize(kdlChain.getNrOfJoints());
+    J.resize(number_joints);
     JSolver.JntToJac(jointAngles, J);
 
-
-    KDL::Twist xdot;
-    KDL::JntArrayVel qdot = KDL::JntArrayVel(kdlChain.getNrOfJoints());
-    qdot.qdot(0) = 0.1;
-    qdot.qdot(1) = 0.1;
-    qdot.qdot(2) = 0.1;
-    qdot.qdot(3) = 0.1;
-    qdot.qdot(4) = 0.1;
-    qdot.qdot(5) = 0.1;
-    qdot.qdot(6) = 0.1;
-
-    std::vector <float> vector;
-
+    // Get jacobian in list form
+    std::vector <double> J_vector;
     for (unsigned int i = 0 ; i < 6 ; i++)
     {
-        xdot(i) = 0;
-        for (unsigned int j = 0 ; j < kdlChain.getNrOfJoints() ; j++)
-        {
-            xdot(i) += J(i,j) * qdot.qdot(j);
-            vector.push_back(J(i,j));
-        }
-        std::cout << xdot(i) << std::endl;
+        for (unsigned int j = 0 ; j < number_joints ; j++)
+            J_vector.push_back(J(i,j));
     }
 
-    double arr[vector.size()];
-    for (int i = 0; i < vector.size(); i++)
-    {
-        arr[i] = vector[i];
-    }
+    res.J.end_effector_name = req.end_effector_name;
+    res.J.rows = 6;
+    res.J.columns = number_joints;
+    res.J.J = J_vector;
+
+    return true;
+}
+
+
+int main(int argc, char** argv)
+{
+    ros::init(argc, argv, "KDL_server");
+    ros::NodeHandle n;
+
+    ros::ServiceServer service = n.advertiseService("get_jacobian", compute_jacobian);
+    ROS_INFO("Ready to compute Jacobian");
+    ros::spin();
+
+    return 0;
+
+    // CODE CURRENTLY NOT IN USE
+
+    // KDL::ChainFkSolverPos_recursive FKSolver =
+    //     KDL::ChainFkSolverPos_recursive(kdlChain);
+    // KDL::Frame eeFrame;
+    // FKSolver.JntToCart(jointAngles, eeFrame);
+
+    // double d[16];
+    // eeFrame.Make4x4(d);
+
+    // std::cout <<"-------------------------------"<< std::endl;
+
+    // KDL::Twist xdot;
+    // KDL::JntArrayVel qdot = KDL::JntArrayVel(kdlChain.getNrOfJoints());
+    // qdot.qdot(0) = 0.1;
+    // qdot.qdot(1) = 0.1;
+    // qdot.qdot(2) = 0.1;
+    // qdot.qdot(3) = 0.1;
+    // qdot.qdot(4) = 0.1;
+    // qdot.qdot(5) = 0.1;
+    // qdot.qdot(6) = 0.1;
+
+    // for (unsigned int i = 0 ; i < 6 ; i++)
+    // {
+    //     xdot(i) = 0;
+    //     for (unsigned int j = 0 ; j < kdlChain.getNrOfJoints() ; j++)
+    //     {
+    //         xdot(i) += J(i,j) * qdot.qdot(j);
+    //     }
+    //     std::cout << xdot(i) << std::endl;
+    // }
 }
