@@ -17,10 +17,10 @@ find_package(catkin REQUIRED COMPONENTS
   franka_control
   franka_gripper
   imu_filter_madgwick
+  message_generation
 )
 
 find_package(catkin REQUIRED)
-catkin_package(CATKIN_DEPENDS xacro)
 
 find_package(Eigen3 REQUIRED)
 
@@ -58,18 +58,16 @@ find_package(Eigen3 REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  Jacobian.msg
+)
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  getJacobian.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -79,10 +77,10 @@ find_package(Eigen3 REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -113,12 +111,7 @@ find_package(Eigen3 REQUIRED)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES ros_robotic_skin
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
-)
+catkin_package(CATKIN_DEPENDS xacro message_runtime)
 
 ###########
 ## Build ##
@@ -157,7 +150,7 @@ add_executable(jacobian src/jacobian.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(jacobian ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(control_points_broadcaster ${catkin_LIBRARIES})
