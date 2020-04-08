@@ -1,3 +1,4 @@
+float64[9] joint_states
 string end_effector_name
 ---
 Jacobian J

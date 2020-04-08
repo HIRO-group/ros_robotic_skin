@@ -6,6 +6,7 @@ import rospy
 import moveit_commander
 import tf
 
+from ros_robotic_skin.srv import getJacobian
 
 class CartesianController(object):
     """
@@ -83,8 +84,14 @@ class CartesianController(object):
             7x1 joint velocity vector
         """
         q = self.move_group_commander.get_current_joint_values()
-        J = self.move_group_commander.get_jacobian_matrix(q)
-        q_dot = np.linalg.pinv(J) * v
+        q = [0, 0] + q
+        rospy.wait_for_service('get_jacobian')
+        get_jacobian = rospy.ServiceProxy('get_jacobian', getJacobian)
+        Jacobian_message = get_jacobian(q, 'panda_link8')
+        J = np.array(Jacobian_message.J.J)
+        J.shape = (Jacobian_message.J.rows, Jacobian_message.J.columns)
+        print(J)
+        q_dot = np.dot(np.linalg.pinv(J), v)
         return q_dot
 
     def go_to_point(self, position_desired):
