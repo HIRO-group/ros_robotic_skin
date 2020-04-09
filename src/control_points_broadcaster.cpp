@@ -2,6 +2,8 @@
 #include <tf/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
 
+int NUMBER_OF_CONTROL_POINTS = 5;
+
 void publish_control_point(tf::TransformBroadcaster& br,
                            tf::Transform& transform,
                            ros::Publisher& marker_pub,
@@ -54,7 +56,7 @@ void visualize_sphere(ros::Publisher& marker_pub, visualization_msgs::Marker& ma
     marker.color.b = 0.0f;
     marker.color.a = 0.5;
 
-    marker.lifetime = ros::Duration(1);
+    marker.lifetime = ros::Duration();
 
     marker_pub.publish(marker);
 }
@@ -76,15 +78,11 @@ int main(int argc, char** argv){
     while (node.ok())
     {
 
-        publish_control_point(br, transform, marker_pub, 3, -0.15, 0.2);
-        publish_control_point(br, transform, marker_pub, 5, -0.15, 0.2);
 
-        for (int i = 1; i < 3; i++)
+        for (int i = 0; i < NUMBER_OF_CONTROL_POINTS; i++)
         {
             visualize_sphere(marker_pub, marker, i);
         }
-
-
         rate.sleep();
     }
     return 0;
