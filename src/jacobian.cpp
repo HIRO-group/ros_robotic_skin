@@ -18,15 +18,18 @@
 // https://medium.com/@sarvagya.vaish/forward-kinematics-using-orocos-kdl-da7035f9c8e
 // http://mirror.umd.edu/roswiki/pr2_mechanism(2f)Tutorials(2f)Coding(20)a(20)realtime(20)Cartesian(20)controller(20)with(20)KDL.html
 
+std::string robot_desc_string;
+
 bool compute_jacobian(ros_robotic_skin::getJacobian::Request& req,
                       ros_robotic_skin::getJacobian::Response& res)
 {
-    // Get KDL::Tree from URDF file
+
+
+    // Get KDL::Tree from parameter server
     KDL::Tree kdlTree;
-    std::string filename = "/home/ander/catkin_ws/src/ros_robotic_skin/robots/panda_arm_hand.urdf";
-    if (!kdl_parser::treeFromFile(filename, kdlTree)){
-      ROS_ERROR("Failed to construct kdl tree");
-      return false;
+    if (!kdl_parser::treeFromString(robot_desc_string, kdlTree)){
+        ROS_ERROR("Failed to construct kdl tree");
+        return false;
     }
 
     // Select the end effector and get the chain from base (panda_link0) to selected end effector
@@ -68,6 +71,8 @@ int main(int argc, char** argv)
 {
     ros::init(argc, argv, "KDL_server");
     ros::NodeHandle n;
+
+    n.param("robot_description", robot_desc_string, std::string());
 
     ros::ServiceServer service = n.advertiseService("get_jacobian", compute_jacobian);
     ROS_INFO("Ready to compute Jacobian");
