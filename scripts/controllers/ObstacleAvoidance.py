@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 from CartesianController import CartesianController
 import numpy as np
 import rospy
@@ -50,6 +49,20 @@ class ObstacleAvoidance(CartesianController):
 
         return xc
 
+    def body_algorithm(self):
+
+        # Returns restrictions
+        q_dot_min = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
+        q_dot_max = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
+        return (q_dot_min, q_dot_max)
+
+    def apply_restrictions(self, q_dot_min, q_dot_max):
+        for i in range(7):
+            if self.q[i] > q_dot_max[i]:
+                self.q[i] = q_dot_max[i]
+            elif self.q[i] < q_dot_min[i]:
+                self.q[i] = q_dot_min[i]
+
     def is_array_in_list(self, element, list_of_vectors):
         for vector in list_of_vectors:
             if np.array_equal(element, vector):
@@ -82,8 +95,8 @@ class ObstacleAvoidance(CartesianController):
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
-            # restrictions = self.body_algorithm()
-            # q_restricted = self.apply_restrictions()
+            (q_dot_min, q_dot_max) = self.body_algorithm()
+            self.apply_restrictions(q_dot_min, q_dot_max)
             # Publish velocities
             self.panda_controller.send_velocities(self.q_dot)
             self.rate.sleep()
@@ -94,7 +107,8 @@ class ObstacleAvoidance(CartesianController):
 if __name__ == "__main__":
     controller = ObstacleAvoidance()
     # controller.get_control_points()
-    while not rospy.is_shutdown():
-        controller.go_to_point([0.65, 0, 0.3])
-        controller.go_to_point([0.4, 0, 0.3])
-        controller.go_to_point([0.65, 0, 0.3])
+    controller.q = np.array([10, -10, 0.1, -0.1, 5, -5, 0])
+    q_dot_min = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
+    q_dot_max = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
+    controller.apply_restrictions(q_dot_min, q_dot_max)
+    print(controller.q)
