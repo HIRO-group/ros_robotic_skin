@@ -7,6 +7,10 @@ import tf
 
 
 NUMBER_OF_CONTROL_POINTS = 8
+ALPHA = 6
+RHO = 0.4
+Q_DOT_MIN = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
+Q_DOT_MAX = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
 
 
 class ObstacleAvoidance(CartesianController):
@@ -42,6 +46,21 @@ class ObstacleAvoidance(CartesianController):
             D_vectors = D_vectors + [d_vectors_i]
         return D_vectors
 
+    def search_smallest_vector(self, vectors_list):
+        norms = [np.linalg.norm(v) for v in vectors_list]
+        i = norms.index(min(norms))
+        return vectors_list[i]
+
+    def select_most_restrictive(self, q_dot_max_list, q_dot_min_list):
+        q_dot_max = Q_DOT_MAX
+        q_dot_min = Q_DOT_MIN
+        for i in range(7):
+            max_values = [vector[i] for vector in q_dot_max_list]
+            min_values = [vector[i] for vector in q_dot_min_list]
+            q_dot_max[i] = min(max_values)
+            q_dot_min[i] = max(min_values)
+        return (q_dot_min, q_dot_max)
+
     def end_effector_algorithm(self, xd):
         np.array(xd)
         V_max = 1  # m/s
@@ -61,11 +80,34 @@ class ObstacleAvoidance(CartesianController):
         return xc
 
     def body_algorithm(self):
+        D = self.get_distance_vectors_body()
 
-        # Returns restrictions
-        q_dot_min = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
-        q_dot_max = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
+        q_dot_max_list = []
+        q_dot_min_list = []
 
+        for (i, distances_control_point_i) in enumerate(D):
+            smallest_distance = self.search_smallest_vector(distances_control_point_i)
+            distance_norm = np.linalg.norm(smallest_distance)
+            unit_distance = smallest_distance / distance_norm
+            # Risk function
+            f = 1 / (1 + np.exp(distance_norm * 2 / RHO - 1) * ALPHA)
+            # Get partial jacobian i
+            Jacobian_message = self.get_jacobian(self.q, 'control_point{}'.format(i))
+            J = np.array(Jacobian_message.J.J)
+            J.shape = (Jacobian_message.J.rows, Jacobian_message.J.columns)
+            # Risk vector projected in joint space
+            s = np.dot(np.linalg.pinv(J)[:, :3], unit_distance) * f
+            q_dot_max_i = Q_DOT_MAX
+            q_dot_min_i = Q_DOT_MIN
+            for i in range(len(s)):
+                if s[i] >= 0:
+                    q_dot_max_i[i] = Q_DOT_MAX[i] * (1 - f)
+                else:
+                    q_dot_min_i[i] = Q_DOT_MIN[i] * (1 - f)
+            q_dot_max_list = q_dot_max_list + [q_dot_max_i]
+            q_dot_min_list = q_dot_min_list + [q_dot_min_i]
+
+        (q_dot_min, q_dot_max) = self.select_most_restrictive(q_dot_max_list, q_dot_min_list)
         return (q_dot_min, q_dot_max)
 
     def apply_restrictions(self, q_dot_min, q_dot_max):
@@ -82,7 +124,7 @@ class ObstacleAvoidance(CartesianController):
         return False
 
     def get_obstacle_points(self):
-        self.obstacle_points = [np.array([0., 0.,  0.333]), np.array([0., 0.,  0.333])]
+        self.obstacle_points = [np.array([0.5, 0.,  0.5]), np.array([0., 0.,  0.8])]
 
     def go_to_point(self, position_desired):
         """
@@ -98,6 +140,7 @@ class ObstacleAvoidance(CartesianController):
         self.error = position_desired - self.position
         while np.linalg.norm(self.error) > self.error_threshold:
             self.get_control_points()
+            self.get_obstacle_points()
             xd_dot = self.compute_command_velocity(position_desired)
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
             # TODO: Calc |D(P,P)|
@@ -120,6 +163,4 @@ if __name__ == "__main__":
     controller = ObstacleAvoidance()
     controller.get_control_points()
     controller.get_obstacle_points()
-    D = controller.get_distance_vectors_body()
-    print(D)
-    print(len(D[0]))
+    print(controller.body_algorithm())
