@@ -4,9 +4,10 @@ from CartesianController import CartesianController
 import numpy as np
 import rospy
 import tf
+import time
 
 
-NUMBER_OF_CONTROL_POINTS = 8
+NUMBER_OF_CONTROL_POINTS = 1
 ALPHA = 6
 RHO = 0.4
 Q_DOT_MIN = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
@@ -21,6 +22,8 @@ class ObstacleAvoidance(CartesianController):
         self.control_points = []
 
     def get_control_points(self):
+        # t = time.time()
+        self.control_points = []
         while True:
             try:
                 (trans, rot) = self.tf_listener.lookupTransform('world', 'end_effector', rospy.Time(0))
@@ -34,8 +37,10 @@ class ObstacleAvoidance(CartesianController):
                     tf.ConnectivityException,
                     tf.ExtrapolationException):
                 continue
+        # print(time.time() - t)
 
     def get_distance_vectors_body(self):
+        # t = time.time()
         D_vectors = []
         number_of_control_points = len(self.control_points)
         number_of_obstacle_points = len(self.obstacle_points)
@@ -44,6 +49,8 @@ class ObstacleAvoidance(CartesianController):
             for j in range(number_of_obstacle_points):
                 d_vectors_i = d_vectors_i + [self.obstacle_points[j] - self.control_points[i]]
             D_vectors = D_vectors + [d_vectors_i]
+
+        # print(time.time() - t)
         return D_vectors
 
     def search_smallest_vector(self, vectors_list):
@@ -80,6 +87,7 @@ class ObstacleAvoidance(CartesianController):
         return xc
 
     def body_algorithm(self):
+        # t = time.time()
         D = self.get_distance_vectors_body()
 
         q_dot_max_list = []
@@ -108,6 +116,7 @@ class ObstacleAvoidance(CartesianController):
             q_dot_min_list = q_dot_min_list + [q_dot_min_i]
 
         (q_dot_min, q_dot_max) = self.select_most_restrictive(q_dot_max_list, q_dot_min_list)
+        # print(time.time() - t)
         return (q_dot_min, q_dot_max)
 
     def apply_restrictions(self, q_dot_min, q_dot_max):
