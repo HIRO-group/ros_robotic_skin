@@ -2,7 +2,7 @@
 #include <tf/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
 
-int NUMBER_OF_CONTROL_POINTS = 5;
+int NUMBER_OF_CONTROL_POINTS = 8;
 
 void publish_control_point(tf::TransformBroadcaster& br,
                            tf::Transform& transform,
@@ -45,7 +45,7 @@ void visualize_sphere(ros::Publisher& marker_pub, visualization_msgs::Marker& ma
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
 
-    float radius = 0.15;
+    float radius = 0.35;
 
     marker.scale.x = radius;
     marker.scale.y = radius;

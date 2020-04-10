@@ -7,29 +7,47 @@ import rospy
 import tf
 
 
+NUMBER_OF_CONTROL_POINTS = 8
+
+
 class ObstacleAvoidance(CartesianController):
     def __init__(self):
 
         super(ObstacleAvoidance, self).__init__()
-
+        self.position = np.zeros(3)
         self.control_points = []
+
+    def get_control_points(self):
+        while True:
+            try:
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'end_effector', rospy.Time(0))
+                self.position = np.array(trans)
+                for i in range(NUMBER_OF_CONTROL_POINTS):
+                    (trans, rot) = self.tf_listener.lookupTransform('world', 'control_point{}'.format(i), rospy.Time(0))
+                    self.control_points.append(np.array(trans))
+                break
+
+            except (tf.LookupException,
+                    tf.ConnectivityException,
+                    tf.ExtrapolationException):
+                continue
 
     def end_effector_algorithm(self, xd):
         np.array(xd)
-        V_max = 1 # m/s
-        alpha = 6 # shape vector
-        rho = 0.4 # m
+        V_max = 1  # m/s
+        alpha = 6  # shape vector
+        rho = 0.4  # m
 
         D = xd[0:2]
         D_norm = np.linalg.norm(D)
         D_unit_vec = D/D_norm
-       
-        v_repulse = (V_max/(1+ np.exp((D_norm*(rho/2)-1)*alpha)))*D_unit_vec
-        
+
+        v_repulse = (V_max / (1 + np.exp((D_norm*(rho/2)-1)*alpha)))*D_unit_vec
+
         xd[0:2] = D + v_repulse
-        
+
         xc = xd
-        
+
         return xc
 
     def is_array_in_list(self, element, list_of_vectors):
@@ -54,7 +72,7 @@ class ObstacleAvoidance(CartesianController):
         position_desired = np.array(position_desired)
         self.error = position_desired - self.position
         while np.linalg.norm(self.error) > self.error_threshold:
-            self.position = self.get_current_end_effector_position()
+            self.get_control_points()
             xd_dot = self.compute_command_velocity(position_desired)
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
             # TODO: Calc |D(P,P)|
@@ -75,7 +93,7 @@ class ObstacleAvoidance(CartesianController):
 
 if __name__ == "__main__":
     controller = ObstacleAvoidance()
-    #controller.get_control_points()
+    # controller.get_control_points()
     while not rospy.is_shutdown():
         controller.go_to_point([0.65, 0, 0.3])
         controller.go_to_point([0.4, 0, 0.3])
