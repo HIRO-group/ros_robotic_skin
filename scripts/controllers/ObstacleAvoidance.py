@@ -4,7 +4,6 @@ from CartesianController import CartesianController
 import numpy as np
 import rospy
 import tf
-import time
 
 
 NUMBER_OF_CONTROL_POINTS = 1
