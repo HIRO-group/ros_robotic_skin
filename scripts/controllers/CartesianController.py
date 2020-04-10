@@ -30,13 +30,13 @@ class CartesianController(object):
         self.error_threshold = rospy.get_param('/cartesian_error_threshold')
         rospy.on_shutdown(self.return_home)
 
-        self.position = self.__get_current_end_effector_position()
+        self.position = self.get_current_end_effector_position()
 
         rospy.wait_for_service('get_jacobian')
         self.get_jacobian = rospy.ServiceProxy('get_jacobian', getJacobian)
         rospy.Subscriber("joint_states", JointState, self.callback_joint_states)
 
-    def __get_current_end_effector_position(self):
+    def get_current_end_effector_position(self):
         """
         Get the current end effector position in cartesian coordinates
 
@@ -47,14 +47,14 @@ class CartesianController(object):
         """
         while True:
             try:
-                (trans, rot) = self.tf_listener.lookupTransform('world', 'panda_link8', rospy.Time(0))
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'end_effector', rospy.Time(0))
                 return np.array(trans)
             except (tf.LookupException,
                     tf.ConnectivityException,
                     tf.ExtrapolationException):
                 continue
 
-    def __compute_command_velocity(self, position_desired):
+    def compute_command_velocity(self, position_desired):
         """
         Compute the velocity vector in cartesian coordinates that leads to the Point position_desired at a given time instant.
 
@@ -77,7 +77,7 @@ class CartesianController(object):
         v.shape = (6, 1)
         return v
 
-    def __compute_command_q_dot(self, v):
+    def compute_command_q_dot(self, v):
         """
         Convert cartesian velocity vector to joint space through Jacobian
 
@@ -110,9 +110,9 @@ class CartesianController(object):
         position_desired = np.array(position_desired)
         self.error = position_desired - self.position
         while np.linalg.norm(self.error) > self.error_threshold:
-            self.position = self.__get_current_end_effector_position()
-            velocity = self.__compute_command_velocity(position_desired)
-            self.q_dot = self.__compute_command_q_dot(velocity)
+            self.position = self.get_current_end_effector_position()
+            velocity = self.compute_command_velocity(position_desired)
+            self.q_dot = self.compute_command_q_dot(velocity)
             self.panda_controller.send_velocities(self.q_dot)
             self.rate.sleep()
         self.stop()

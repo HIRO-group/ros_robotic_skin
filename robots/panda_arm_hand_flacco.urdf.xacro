@@ -18,7 +18,7 @@
   <xacro:control_point point_id='2' parent_id='4' rpy='0 0 0' xyz='0 0 0'/>
   <xacro:control_point point_id='3' parent_id='5' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
   <!-- end effector control point -->
-  <xacro:control_point point_id='4' parent_id='8' rpy='0 0 0' xyz='0 0 0.0584'/>
+  <xacro:end_effector/>
 
 
   <!-- for simulation -->

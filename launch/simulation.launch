@@ -12,9 +12,9 @@
 
     <!-- Load URDF in the parameter server -->
     <param unless="$(arg with_imu)" name="robot_description"
-           command="$(find xacro)/xacro --inorder $(find franka_description)/robots/panda_arm_hand.urdf.xacro"/>
+           command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand_flacco.urdf.xacro"/>
     <param if="$(arg with_imu)" name="robot_description_with_imu"
-           command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand.urdf.xacro"/>
+           command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand_flacco.urdf.xacro"/>
 
     <!-- Launch Gazebo with an empty world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
