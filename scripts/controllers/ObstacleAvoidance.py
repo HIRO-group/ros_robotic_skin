@@ -112,10 +112,10 @@ class ObstacleAvoidance(CartesianController):
 
     def apply_restrictions(self, q_dot_min, q_dot_max):
         for i in range(7):
-            if self.q[i] > q_dot_max[i]:
-                self.q[i] = q_dot_max[i]
-            elif self.q[i] < q_dot_min[i]:
-                self.q[i] = q_dot_min[i]
+            if self.q_dot[i] > q_dot_max[i]:
+                self.q_dot[i] = q_dot_max[i]
+            elif self.q_dot[i] < q_dot_min[i]:
+                self.q_dot[i] = q_dot_min[i]
 
     def is_array_in_list(self, element, list_of_vectors):
         for vector in list_of_vectors:
@@ -124,7 +124,7 @@ class ObstacleAvoidance(CartesianController):
         return False
 
     def get_obstacle_points(self):
-        self.obstacle_points = [np.array([0.5, 0.,  0.5]), np.array([0., 0.,  0.8])]
+        self.obstacle_points = np.array([0.65, 0, 0.3])
 
     def go_to_point(self, position_desired):
         """
@@ -146,12 +146,15 @@ class ObstacleAvoidance(CartesianController):
             # TODO: Calc |D(P,P)|
             # TODO: Calc v(P,O)
             # TODO: Return xc_dot
-            xc_dot = self.end_effector_algorithm(xd_dot)
+            # xc_dot = self.end_effector_algorithm(xd_dot)
+            xc_dot = xd_dot
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
             (q_dot_min, q_dot_max) = self.body_algorithm()
             self.apply_restrictions(q_dot_min, q_dot_max)
+            # print("min", q_dot_min)
+            # print("max", q_dot_max)
             # Publish velocities
             self.panda_controller.send_velocities(self.q_dot)
             self.rate.sleep()
@@ -161,6 +164,6 @@ class ObstacleAvoidance(CartesianController):
 
 if __name__ == "__main__":
     controller = ObstacleAvoidance()
-    controller.get_control_points()
-    controller.get_obstacle_points()
-    print(controller.body_algorithm())
+    while not rospy.is_shutdown():
+        controller.go_to_point(np.array([0.4, 0, 0.3]))
+        controller.go_to_point(np.array([0.65, 0, 0.3]))
