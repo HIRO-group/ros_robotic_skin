@@ -15,7 +15,21 @@ class ObstacleAvoidance(CartesianController):
         self.control_points = []
 
     def end_effector_algorithm(self, xd):
+        np.array(xd)
+        V_max = 1 # m/s
+        alpha = 6 # shape vector
+        rho = 0.4 # m
+
+        D = xd[0:2]
+        D_norm = np.linalg.norm(D)
+        D_unit_vec = D/D_norm
+       
+        v_repulse = (V_max/(1+ np.exp((D_norm*(rho/2)-1)*alpha)))*D_unit_vec
+        
+        xd[0:2] = D + v_repulse
+        
         xc = xd
+        
         return xc
 
     def is_array_in_list(self, element, list_of_vectors):
@@ -43,6 +57,9 @@ class ObstacleAvoidance(CartesianController):
             self.position = self.get_current_end_effector_position()
             xd_dot = self.compute_command_velocity(position_desired)
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
+            # TODO: Calc |D(P,P)|
+            # TODO: Calc v(P,O)
+            # TODO: Return xc_dot
             xc_dot = self.end_effector_algorithm(xd_dot)
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
@@ -58,7 +75,8 @@ class ObstacleAvoidance(CartesianController):
 
 if __name__ == "__main__":
     controller = ObstacleAvoidance()
-    controller.get_control_points()
+    #controller.get_control_points()
     while not rospy.is_shutdown():
         controller.go_to_point([0.65, 0, 0.3])
         controller.go_to_point([0.4, 0, 0.3])
+        controller.go_to_point([0.65, 0, 0.3])
