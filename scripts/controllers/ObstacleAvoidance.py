@@ -31,6 +31,17 @@ class ObstacleAvoidance(CartesianController):
                     tf.ExtrapolationException):
                 continue
 
+    def get_distance_vectors_body(self):
+        D_vectors = []
+        number_of_control_points = len(self.control_points)
+        number_of_obstacle_points = len(self.obstacle_points)
+        for i in range(number_of_control_points):
+            d_vectors_i = []
+            for j in range(number_of_obstacle_points):
+                d_vectors_i = d_vectors_i + [self.obstacle_points[j] - self.control_points[i]]
+            D_vectors = D_vectors + [d_vectors_i]
+        return D_vectors
+
     def end_effector_algorithm(self, xd):
         np.array(xd)
         V_max = 1  # m/s
@@ -54,6 +65,7 @@ class ObstacleAvoidance(CartesianController):
         # Returns restrictions
         q_dot_min = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
         q_dot_max = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
+
         return (q_dot_min, q_dot_max)
 
     def apply_restrictions(self, q_dot_min, q_dot_max):
@@ -70,7 +82,7 @@ class ObstacleAvoidance(CartesianController):
         return False
 
     def get_obstacle_points(self):
-        self.obstacle_points = [np.array([0., 0.,  0.333])]
+        self.obstacle_points = [np.array([0., 0.,  0.333]), np.array([0., 0.,  0.333])]
 
     def go_to_point(self, position_desired):
         """
@@ -106,9 +118,8 @@ class ObstacleAvoidance(CartesianController):
 
 if __name__ == "__main__":
     controller = ObstacleAvoidance()
-    # controller.get_control_points()
-    controller.q = np.array([10, -10, 0.1, -0.1, 5, -5, 0])
-    q_dot_min = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
-    q_dot_max = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
-    controller.apply_restrictions(q_dot_min, q_dot_max)
-    print(controller.q)
+    controller.get_control_points()
+    controller.get_obstacle_points()
+    D = controller.get_distance_vectors_body()
+    print(D)
+    print(len(D[0]))
