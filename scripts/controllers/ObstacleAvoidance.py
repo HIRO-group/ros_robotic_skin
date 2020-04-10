@@ -5,10 +5,12 @@ import numpy as np
 import rospy
 import tf
 
-
+MAX_RATE = 0.5
 NUMBER_OF_CONTROL_POINTS = 8
 ALPHA = 6
+C = 5
 RHO = 0.4
+V_MAX = 1
 Q_DOT_MIN = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
 Q_DOT_MAX = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
 
@@ -19,6 +21,7 @@ class ObstacleAvoidance(CartesianController):
         super(ObstacleAvoidance, self).__init__()
         self.position = np.zeros(3)
         self.control_points = []
+        self.Vi = 0
 
     def get_control_points(self):
         while True:
@@ -35,6 +38,15 @@ class ObstacleAvoidance(CartesianController):
                     tf.ExtrapolationException):
                 continue
 
+    def get_distance_vectors_end_effector(self):
+        d_vectors_i = []
+        number_of_obstacle_points = len(self.obstacle_points)
+
+        for j in range(number_of_obstacle_points):
+            d_vectors_i = d_vectors_i + [self.obstacle_points[j] - self.position]
+
+        return d_vectors_i
+
     def get_distance_vectors_body(self):
         D_vectors = []
         number_of_control_points = len(self.control_points)
@@ -46,9 +58,56 @@ class ObstacleAvoidance(CartesianController):
             D_vectors = D_vectors + [d_vectors_i]
         return D_vectors
 
+    def get_repulsive_distance(self):
+        repulse_vector = []
+        distance_vectors = self.get_distance_vectors_end_effector()
+
+        for D in distance_vectors:
+
+            D_norm = np.linalg.norm(D)
+            D_unit_vec = D/D_norm
+
+            v_mag_repulse = (V_MAX / (1 + np.exp((D_norm*(RHO/2)-1)*ALPHA)))
+            v_repulse = v_mag_repulse*D_unit_vec
+
+            repulse_vector.append(v_repulse)
+
+        max_repulse_vector = self.search_largest_vector(repulse_vector)
+
+
+        return max_repulse_vector
+
+    def get_repulsive_distance_velocity(self):
+
+        Vi = self.get_repulsive_distance()
+
+        Vi_dot = Vi-self.Vi
+        self.V_i = Vi
+
+        a = Vi_dot / np.linalg.norm(Vi_dot)
+        r = Vi / np.linalg.norm(Vi)
+        beta = np.dot(a, r)
+
+        if beta > np.pi / 2:
+            # The obstacle is moving away from us.
+            # Don't use velocity information
+            return Vi
+        else:
+            n = np.cross(a, r)
+            v = np.cross(n, a)
+            new_angle = beta - (np.pi/2 - beta) * np.exp(-(C * (2 / MAX_RATE * np.linalg.norm(Vi_dot)-1)))
+            V_new = np.linalg.norm(Vi) * (np.cos(new_angle) * a + np.sin(new_angle) * v)
+
+            return V_new
+
     def search_smallest_vector(self, vectors_list):
         norms = [np.linalg.norm(v) for v in vectors_list]
         i = norms.index(min(norms))
+        return vectors_list[i]
+
+    def search_largest_vector(self, vectors_list):
+        norms = [np.linalg.norm(v) for v in vectors_list]
+        i = norms.index(max(norms))
         return vectors_list[i]
 
     def select_most_restrictive(self, q_dot_max_list, q_dot_min_list):
@@ -62,21 +121,8 @@ class ObstacleAvoidance(CartesianController):
         return (q_dot_min, q_dot_max)
 
     def end_effector_algorithm(self, xd):
-        np.array(xd)
-        V_max = 1  # m/s
-        alpha = 6  # shape vector
-        rho = 0.4  # m
-
-        D = xd[0:2]
-        D_norm = np.linalg.norm(D)
-        D_unit_vec = D/D_norm
-
-        v_repulse = (V_max / (1 + np.exp((D_norm*(rho/2)-1)*alpha)))*D_unit_vec
-
-        xd[0:2] = D + v_repulse
-
-        xc = xd
-
+        xc = xd + self.get_repulsive_distance()
+        # xc = xd + self.get_repulsive_distance_velocity()
         return xc
 
     def body_algorithm(self):
@@ -124,7 +170,7 @@ class ObstacleAvoidance(CartesianController):
         return False
 
     def get_obstacle_points(self):
-        self.obstacle_points = np.array([0.65, 0, 0.3])
+        self.obstacle_points = np.array([[0.65, 0, 0.3], [0, 0, 0]])
 
     def go_to_point(self, position_desired):
         """
@@ -151,8 +197,8 @@ class ObstacleAvoidance(CartesianController):
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
-            (q_dot_min, q_dot_max) = self.body_algorithm()
-            self.apply_restrictions(q_dot_min, q_dot_max)
+            # (q_dot_min, q_dot_max) = self.body_algorithm()
+            # self.apply_restrictions(q_dot_min, q_dot_max)
             # print("min", q_dot_min)
             # print("max", q_dot_max)
             # Publish velocities
@@ -164,6 +210,9 @@ class ObstacleAvoidance(CartesianController):
 
 if __name__ == "__main__":
     controller = ObstacleAvoidance()
-    while not rospy.is_shutdown():
-        controller.go_to_point(np.array([0.4, 0, 0.3]))
-        controller.go_to_point(np.array([0.65, 0, 0.3]))
+    controller.get_obstacle_points()
+    controller.get_control_points()
+    print(controller.get_distance_vectors_end_effector())
+    print(controller.get_repulsive_distance())
+    controller.V_i = np.array([ 0, 0 ,0.1])
+    print(controller.get_repulsive_distance_velocity())
