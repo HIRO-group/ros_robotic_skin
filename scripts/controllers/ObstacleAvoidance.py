@@ -4,18 +4,14 @@ from CartesianController import CartesianController
 import numpy as np
 import rospy
 import tf
+import matplotlib.pyplot as plt
 
-<<<<<<< HEAD
 MAX_RATE = 0.5
 NUMBER_OF_CONTROL_POINTS = 8
-=======
-
-NUMBER_OF_CONTROL_POINTS = 1
->>>>>>> 74162fb3203b726e115beb8af16224968ec98094
-ALPHA = 6
-C = 5
+ALPHA = 6.0
+C = 5.0
 RHO = 0.4
-V_MAX = 1
+V_MAX = 0.21
 Q_DOT_MIN = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
 Q_DOT_MAX = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
 
@@ -78,13 +74,17 @@ class ObstacleAvoidance(CartesianController):
             D_norm = np.linalg.norm(D)
             D_unit_vec = D/D_norm
 
-            v_mag_repulse = (V_MAX / (1 + np.exp((D_norm*(RHO/2)-1)*ALPHA)))
-            v_repulse = v_mag_repulse*D_unit_vec
+            print("D_norm: {}".format(D_norm))
+
+            v_mag_repulse = V_MAX * (1 / (1 + np.exp((D_norm * (2 / RHO) - 1) * ALPHA)))
+            v_repulse = v_mag_repulse * D_unit_vec
+
+            print("Repulsive vector norm: {}".format(v_mag_repulse))
+            print("-------------------------------")
 
             repulse_vector.append(v_repulse)
 
         max_repulse_vector = self.search_largest_vector(repulse_vector)
-
 
         return max_repulse_vector
 
@@ -131,10 +131,13 @@ class ObstacleAvoidance(CartesianController):
             q_dot_min[i] = max(min_values)
         return (q_dot_min, q_dot_max)
 
-    def end_effector_algorithm(self, xd):
-        xc = xd + self.get_repulsive_distance()
+    def end_effector_algorithm(self, xd_dot):
+        repulsive_vector = np.block([self.get_repulsive_distance(), np.array([0, 0, 0])])
+        repulsive_vector.shape = (6, 1)
+        xc_dot = xd_dot - repulsive_vector
         # xc = xd + self.get_repulsive_distance_velocity()
-        return xc
+
+        return xc_dot
 
     def body_algorithm(self):
         # t = time.time()
@@ -183,7 +186,7 @@ class ObstacleAvoidance(CartesianController):
         return False
 
     def get_obstacle_points(self):
-        self.obstacle_points = np.array([[0.65, 0, 0.3], [0, 0, 0]])
+        self.obstacle_points = np.array([[0.65, 0, 0.3]])
 
     def go_to_point(self, position_desired):
         """
@@ -201,12 +204,10 @@ class ObstacleAvoidance(CartesianController):
             self.get_control_points()
             self.get_obstacle_points()
             xd_dot = self.compute_command_velocity(position_desired)
+            print("xd_dot norm: {}".format(np.linalg.norm(xd_dot)))
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
-            # TODO: Calc |D(P,P)|
-            # TODO: Calc v(P,O)
-            # TODO: Return xc_dot
-            # xc_dot = self.end_effector_algorithm(xd_dot)
-            xc_dot = xd_dot
+            xc_dot = self.end_effector_algorithm(xd_dot)
+            # xc_dot = xd_dot
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
@@ -222,10 +223,21 @@ class ObstacleAvoidance(CartesianController):
 
 
 if __name__ == "__main__":
-    controller = ObstacleAvoidance()
-    controller.get_obstacle_points()
-    controller.get_control_points()
-    print(controller.get_distance_vectors_end_effector())
-    print(controller.get_repulsive_distance())
-    controller.V_i = np.array([ 0, 0 ,0.1])
-    print(controller.get_repulsive_distance_velocity())
+    # controller = ObstacleAvoidance()
+    # controller.get_obstacle_points()
+    # controller.get_control_points()
+    # print(controller.get_distance_vectors_end_effector())
+    # print(controller.get_repulsive_distance())
+    # controller.V_i = np.array([0, 0, 0.1])
+    # print(controller.get_repulsive_distance_velocity())
+
+    cartesian_controller = ObstacleAvoidance()
+    trajectory = np.array([[0.4, 0, 0.3], [0.65, 0, 0.3]])
+    while not rospy.is_shutdown():
+        cartesian_controller.go_to_point(trajectory[0])
+        cartesian_controller.go_to_point(trajectory[1])
+
+    # d = np.arange(0, 0.5, 0.01)
+    # v_mag_repulse = V_MAX * (1 / (1 + np.exp((d * 2 / RHO - 1) * ALPHA)))
+    # plt.plot(d, v_mag_repulse)
+    # plt.show()
