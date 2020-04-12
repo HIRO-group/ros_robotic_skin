@@ -4,9 +4,9 @@ from CartesianController import CartesianController
 import numpy as np
 import rospy
 import tf
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-MAX_RATE = 0.5
+MAX_RATE = 1.0
 NUMBER_OF_CONTROL_POINTS = 8
 ALPHA = 6.0
 C = 5.0
@@ -22,7 +22,8 @@ class ObstacleAvoidance(CartesianController):
         super(ObstacleAvoidance, self).__init__()
         self.position = np.zeros(3)
         self.control_points = []
-        self.Vi = 0
+        self.Vi = np.zeros(3)
+        self.Vi_last = np.zeros(3)
 
     def get_control_points(self):
         # t = time.time()
@@ -90,24 +91,29 @@ class ObstacleAvoidance(CartesianController):
 
     def get_repulsive_distance_velocity(self):
 
-        Vi = self.get_repulsive_distance()
+        self.Vi = self.get_repulsive_distance()
 
-        Vi_dot = Vi-self.Vi
-        self.V_i = Vi
+        Vi_dot = self.Vi - self.Vi_last
+        self.Vi_last = self.Vi
 
-        a = Vi_dot / np.linalg.norm(Vi_dot)
-        r = Vi / np.linalg.norm(Vi)
-        beta = np.dot(a, r)
+        Vi_dot_magnitude = np.linalg.norm(Vi_dot)
+
+        if Vi_dot_magnitude != 0:
+            a = Vi_dot / Vi_dot_magnitude
+        else:
+            return self.Vi
+        r = self.Vi / np.linalg.norm(self.Vi)
+        beta = np.arccos(np.dot(a, r))
 
         if beta > np.pi / 2:
             # The obstacle is moving away from us.
             # Don't use velocity information
-            return Vi
+            return self.Vi
         else:
             n = np.cross(a, r)
             v = np.cross(n, a)
-            new_angle = beta - (np.pi/2 - beta) * np.exp(-(C * (2 / MAX_RATE * np.linalg.norm(Vi_dot)-1)))
-            V_new = np.linalg.norm(Vi) * (np.cos(new_angle) * a + np.sin(new_angle) * v)
+            new_angle = beta - (np.pi/2 - beta) * np.exp(-(C * (2 / MAX_RATE * Vi_dot_magnitude - 1)))
+            V_new = np.linalg.norm(self.Vi) * (np.cos(new_angle) * a + np.sin(new_angle) * v)
 
             return V_new
 
@@ -132,10 +138,10 @@ class ObstacleAvoidance(CartesianController):
         return (q_dot_min, q_dot_max)
 
     def end_effector_algorithm(self, xd_dot):
-        repulsive_vector = np.block([self.get_repulsive_distance(), np.array([0, 0, 0])])
+        # repulsive_vector = np.block([self.get_repulsive_distance(), np.array([0, 0, 0])])
+        repulsive_vector = np.block([self.get_repulsive_distance_velocity(), np.array([0, 0, 0])])
         repulsive_vector.shape = (6, 1)
         xc_dot = xd_dot - repulsive_vector
-        # xc = xd + self.get_repulsive_distance_velocity()
 
         return xc_dot
 
@@ -186,7 +192,8 @@ class ObstacleAvoidance(CartesianController):
         return False
 
     def get_obstacle_points(self):
-        self.obstacle_points = np.array([[0.65, 0, 0.3]])
+
+        self.obstacle_points = [np.array([0.65, 0, 0.3])]
 
     def go_to_point(self, position_desired):
         """
