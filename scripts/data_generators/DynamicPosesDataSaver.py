@@ -89,7 +89,7 @@ class DynamicPoseData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 12), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 13), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -131,19 +131,30 @@ class DynamicPoseData():
                     amax = 0
                     idx = 0
                     arr = []
-                    # get the max acceleration from the beginning of moving each joint
+                    # get the max acceleration from the
+                    # beginning of moving each joint
                     # in pose_name with joint_name affecting imu_name.
+                    prev_time, prev_vel = None, None
+                    max_acc = 0
                     for i, v in enumerate(imu_data):
                         norm_v = np.linalg.norm(v[:3])
                         arr.append(norm_v)
-                        if amax < norm_v and v[3] < 0.2 and v[3] > 0.05:
+                        cur_time, cur_vel = v[3], v[5]
+                        if prev_vel is not None:
+                            if prev_time is not None and cur_time is not None:
+                                acc = abs((cur_vel - prev_vel) / (cur_time - prev_time))
+                        if amax < norm_v and cur_time < 0.15 and cur_time > 0.04 and acc > max_acc:
                             idx = i
                             amax = norm_v
+                            max_acc = acc
+                            print("e")
+                            print("time:", cur_time, "acc:", amax)
+                        prev_time, prev_vel = v[3], v[5]
 
                     best = self.data[pose_name][joint_name][imu_name][idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
-                    if verbose:
+                    if not verbose:
                         # plots the acceleration norms
                         plt.plot(arr)
                         plt.show()
@@ -298,7 +309,7 @@ class DynamicPoseDataSaver():
                 # rospy.loginfo(utils.n2s(
                 #   np.array([accel.x, accel.y, accel.z])))
 
-            # curr_w = self.controller.joint_velocity(self.curr_joint_name)
+            curr_w = self.controller.joint_velocity(self.curr_joint_name)
             # time
             t = self.time if self.time is not None else -1
             self.data_storage.append(
@@ -306,7 +317,7 @@ class DynamicPoseDataSaver():
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu
                 np.array([accel.x, accel.y, accel.z,
-                          t, self.A] + joint_angles))
+                          t, self.A, curr_w] + joint_angles))
 
     def move_like_sine_dynamic(self):
         """
@@ -349,7 +360,7 @@ class DynamicPoseDataSaver():
                     self.time = t
 
                     # Oscillated Velocity pattern
-                    velocity = self.A * np.sin(2 * pi * self.freq * t)
+                    velocity = 1.5 * np.sin(2 * pi * self.freq * t)
 
                     velocities[i] = velocity
                     self.controller.send_velocities(velocities)
