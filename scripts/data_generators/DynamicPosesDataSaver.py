@@ -322,7 +322,7 @@ class DynamicPoseDataSaver():
             # first, move to the position from <robot>_positions.txt
             self.controller.publish_positions(positions, sleep=2)
             print('At Position: ' + pose_name,
-                    map(int, RAD2DEG*np.array(positions)))
+                  map(int, RAD2DEG*np.array(positions)))
 
             # each joint in pose p
 
