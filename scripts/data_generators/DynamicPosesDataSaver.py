@@ -308,7 +308,19 @@ class DynamicPoseDataSaver():
                 pass
                 # rospy.loginfo(utils.n2s(
                 #   np.array([accel.x, accel.y, accel.z])))
+            curr_t = rospy.get_rostime().to_sec()
+            dt = curr_t - self.prev_t
 
+            curr_w = self.controller.joint_velocity(self.curr_joint_name)
+            curr_A = abs(curr_w)
+
+            try:
+                self.curr_acc = (curr_w - self.prev_w) / dt
+            except Exception:
+                pass
+
+            if curr_A > self.max_angular_velocity:
+                self.max_angular_velocity = curr_A
             curr_w = self.controller.joint_velocity(self.curr_joint_name)
             # time
             t = self.time if self.time is not None else -1
@@ -317,7 +329,7 @@ class DynamicPoseDataSaver():
                 self.curr_joint_name,           # for each excited joint
                 data.header.frame_id,           # for each imu
                 np.array([accel.x, accel.y, accel.z,
-                          t, self.A, curr_w] + joint_angles))
+                          t, self.A, curr_w, self.curr_acc] + joint_angles))
 
     def move_like_sine_dynamic(self):
         """
@@ -353,7 +365,6 @@ class DynamicPoseDataSaver():
                 # stopping time
                 self.ready = True
                 now = rospy.get_rostime()
-                r = rospy.Rate(100)
                 while True:
                     # time within motion
                     t = (rospy.get_rostime() - now).to_sec()
@@ -367,7 +378,7 @@ class DynamicPoseDataSaver():
                     if t > OSCILLATION_TIME:
                         break
                         # pass
-                    r.sleep()
+                    self.controller.r.sleep()
                 self.time = None
                 # also stops sending data
                 self.ready = False
