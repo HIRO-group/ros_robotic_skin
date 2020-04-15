@@ -142,8 +142,9 @@ class DynamicPoseData():
 
                     best = self.data[pose_name][joint_name][imu_name][idx]
 
-                    self.data[pose_name][joint_name][imu_name] = best
+                    self.data[pose_name][joint_name][imu_name] = [best]
                     if verbose:
+                        # plots the acceleration norms
                         plt.plot(arr)
                         plt.show()
                     # print(np.linalg.norm(acc))
@@ -329,6 +330,9 @@ class DynamicPoseDataSaver():
                 self.curr_joint_name = joint_name
                 # max_angular velocity
                 self.max_angular_velocity = -np.inf
+                # go back to main position
+                self.controller.publish_positions(positions, sleep=2)
+
                 self.prev_w = self.controller.joint_velocity(self.curr_joint_name)
                 self.prev_t = rospy.get_rostime().to_sec()
 
