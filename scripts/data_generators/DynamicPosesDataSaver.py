@@ -19,7 +19,7 @@ from scripts.controllers.PandaController import PandaController  # noqa: E402
 from scripts.controllers.SawyerController import SawyerController  # noqa: E402
 
 
-RAD2DEG = 180.0/np.pi
+RAD2DEG = 180.0 / np.pi
 OSCILLATION_TIME = 3.0
 
 
@@ -124,44 +124,45 @@ class DynamicPoseData():
         for pose_name in self.pose_names:
             for joint_name in self.joint_names:
                 for imu_name in self.imu_names:
-                    # on each pose, for each joint wiggle, get the 
+                    # on each pose, for each joint wiggle, get the
                     # maximum acceleration for each skin unit
                     imu_data = self.data[pose_name][joint_name][imu_name]
-                    print(imu_name)
-                    print(joint_name)
 
                     amax = 0
                     idx = 0
                     arr = []
-                    for i,v in enumerate(imu_data):
-                        arr.append(np.linalg.norm(v[:3]))
-                        if amax < np.linalg.norm(v[:3]) and v[3] < 0.2 and v[3] > 0.05:
+                    # get the max acceleration from the beginning of moving each joint
+                    # in pose_name with joint_name affecting imu_name.
+                    for i, v in enumerate(imu_data):
+                        norm_v = np.linalg.norm(v[:3])
+                        arr.append(norm_v)
+                        if amax < norm_v and v[3] < 0.2 and v[3] > 0.05:
                             idx = i
-                            print(v[3])
-                            amax = np.linalg.norm(v[:3])
-                    print("Done")
+                            amax = norm_v
+
                     best = self.data[pose_name][joint_name][imu_name][idx]
-                    print(best)
-                    plt.plot(arr)
-                    plt.show()
-                    print(np.linalg.norm(best[:3]))
+
+                    self.data[pose_name][joint_name][imu_name] = best
+                    if verbose:
+                        plt.plot(arr)
+                        plt.show()
                     # print(np.linalg.norm(acc))
                     # print(self.data[pose_name][joint_name][imu_name][3])
                     # print(self.data[pose_name][joint_name][imu_name][4])
                     # print(self.data[pose_name][joint_name][imu_name][5])
 
-                    d = self.data[pose_name][joint_name][imu_name][2:, :]
-                    norms = np.linalg.norm(d[:, :3], axis=1)
-                    norms, outliers_index = hampel_filter_forloop(norms, 10, 1)
-                    idx = np.argmax(norms)
+                    # d = self.data[pose_name][joint_name][imu_name][2:, :]
+                    # norms = np.linalg.norm(d[:, :3], axis=1)
+                    # norms, outliers_index = hampel_filter_forloop(norms, 10, 1)
+                    # idx = np.argmax(norms)
 
-                    # Save maximum angular velocity A of all time
-                    w = d[:, 3]
-                    w, outliers_index = hampel_filter_forloop(w, 10, 1)
-                    max_w_idx = np.argmax(w)
+                    # # Save maximum angular velocity A of all time
+                    # w = d[:, 3]
+                    # w, outliers_index = hampel_filter_forloop(w, 10, 1)
+                    # max_w_idx = np.argmax(w)
 
-                    joint_accel = d[:, 4]
-                    ja, outliers_index = hampel_filter_forloop(joint_accel, 10, 1)
+                    # joint_accel = d[:, 4]
+                    # ja, outliers_index = hampel_filter_forloop(joint_accel, 10, 1)
                     # max_ja_idx = np.argmax(ja)
                     """
                     joints = d[:, 4:]
@@ -195,9 +196,9 @@ class DynamicPoseData():
                             d[max_ja_idx,2], w[max_ja_idx], ja[max_ja_idx]))
                     """
 
-                    data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][idx, :]
-                    data[pose_name][joint_name][imu_name][3] = w[idx]
-                    data[pose_name][joint_name][imu_name][4] = w[max_w_idx]
+                    # data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][idx, :]
+                    # data[pose_name][joint_name][imu_name][3] = w[idx]
+                    # data[pose_name][joint_name][imu_name][4] = w[max_w_idx]
 
                     if verbose:
                         rospy.loginfo(data[pose_name][joint_name][imu_name])
@@ -263,6 +264,7 @@ class DynamicPoseDataSaver():
         self.freq = rospy.get_param('/oscillation_frequency')
         self.A = rospy.get_param('/oscillation_magnitude')
         self.pubs = {}
+        # add publishers that publish norm of imu data.
         for imu_name in self.imu_names:
             self.pubs[imu_name] = rospy.Publisher('/Anorm%s' % (list(imu_name)[-1]), Float32, queue_size=10)
         rospy.loginfo(self.joint_names)
@@ -295,7 +297,8 @@ class DynamicPoseDataSaver():
                 # rospy.loginfo(utils.n2s(
                 #   np.array([accel.x, accel.y, accel.z])))
 
-            curr_w = self.controller.joint_velocity(self.curr_joint_name)
+            # curr_w = self.controller.joint_velocity(self.curr_joint_name)
+            # time
             t = self.time if self.time is not None else -1
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
@@ -304,53 +307,56 @@ class DynamicPoseDataSaver():
                 np.array([accel.x, accel.y, accel.z,
                           t, self.A] + joint_angles))
 
-
     def move_like_sine_dynamic(self):
         """
         This will move the joint of the robot arm like a sine wave
         for all joints for all defined poses.
         """
         self.controller.set_joint_position_speed(speed=1.0)
-        while 1:
-            for pose in self.poses_list:
-                positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-                self.curr_positions = positions
-                self.curr_pose_name = pose_name
-                # first, move to the position from <robot>_positions.txt
-                self.controller.publish_positions(positions, sleep=2)
-                print('At Position: ' + pose_name,
+
+        for pose in self.poses_list:
+            positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
+            self.curr_positions = positions
+            self.curr_pose_name = pose_name
+            # first, move to the position from <robot>_positions.txt
+            self.controller.publish_positions(positions, sleep=2)
+            print('At Position: ' + pose_name,
                     map(int, RAD2DEG*np.array(positions)))
 
-                # each joint in pose p
-                for i, joint_name in enumerate(self.joint_names):
-                    self.curr_joint_name = joint_name
-                    # max_angular velocity
-                    self.max_angular_velocity = -np.inf
-                    self.prev_w = self.controller.joint_velocity(self.curr_joint_name)
-                    self.prev_t = rospy.get_rostime().to_sec()
+            # each joint in pose p
 
-                    # Prepare for publishing a trajectory
-                    velocities = np.zeros(len(self.joint_names))
+            for i, joint_name in enumerate(self.joint_names):
+                self.curr_joint_name = joint_name
+                # max_angular velocity
+                self.max_angular_velocity = -np.inf
+                self.prev_w = self.controller.joint_velocity(self.curr_joint_name)
+                self.prev_t = rospy.get_rostime().to_sec()
 
-                    # stopping time
-                    self.ready = True
-                    now = rospy.get_rostime()
-                    r = rospy.Rate(100)
-                    while True:
-                        t = (rospy.get_rostime() - now).to_sec()
-                        self.time = t
-                        # Oscillated Velocity
-                        velocity = 1.5*np.sin(2 * pi * 1 * t)
+                # Prepare for publishing velocities
+                velocities = np.zeros(len(self.joint_names))
 
-                        velocities[i] = velocity
-                        self.controller.send_velocities(velocities)
-                        if t > OSCILLATION_TIME:
-                            break
-                            # pass
-                        r.sleep()
-                    self.time = None
-                    self.ready = False
-                    rospy.sleep(1)
+                # stopping time
+                self.ready = True
+                now = rospy.get_rostime()
+                r = rospy.Rate(100)
+                while True:
+                    # time within motion
+                    t = (rospy.get_rostime() - now).to_sec()
+                    self.time = t
+
+                    # Oscillated Velocity pattern
+                    velocity = self.A * np.sin(2 * pi * self.freq * t)
+
+                    velocities[i] = velocity
+                    self.controller.send_velocities(velocities)
+                    if t > OSCILLATION_TIME:
+                        break
+                        # pass
+                    r.sleep()
+                self.time = None
+                # also stops sending data
+                self.ready = False
+                rospy.sleep(1)
 
     def save(self, save=True, verbose=False):
         """
