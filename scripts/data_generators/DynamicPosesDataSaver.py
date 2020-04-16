@@ -157,11 +157,11 @@ class DynamicPoseData():
 
                     norms = np.linalg.norm(imu_accs, axis=1)
 
-                    ang_vels = imu_data[:, 5]
+                    # ang_vels = imu_data[:, 5]
                     joint_accs = imu_data[:, 6]
 
                     filtered_norms = exponential_moving_avg_low_pass_filter(norms, 100.)
-                    filtered_vels = exponential_moving_avg_low_pass_filter(ang_vels, 100.)
+                    # filtered_vels = exponential_moving_avg_low_pass_filter(ang_vels, 100.)
 
                     filtered_joint_accs = exponential_moving_avg_low_pass_filter(joint_accs, 100.)
 
@@ -179,21 +179,17 @@ class DynamicPoseData():
                             best_idx = idx
                             imu_acc_max = norm
                             joint_acc_max = acc
-                        prev_time = cur_time
 
                     best = self.data[pose_name][joint_name][imu_name][best_idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
-                    if not verbose:
+                    if verbose:
                         # plots the acceleration norms
                         fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(5, 3))
                         axes[0].plot(imu_original_arr)
                         axes[1].plot(imu_filtered_arr)
                         fig.tight_layout()
                         plt.show()
-
-
-
 
                     # d = self.data[pose_name][joint_name][imu_name][2:, :]
                     # norms = np.linalg.norm(d[:, :3], axis=1)
