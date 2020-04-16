@@ -46,12 +46,36 @@ def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
     indices = []
     # possibly use np.nanmedian
     for i in range((window_size), (n - window_size)):
+        print(input_series[(i - window_size):(i + window_size)])
         x0 = np.median(input_series[(i - window_size):(i + window_size)])
+        print(x0)
         S0 = k * np.median(np.abs(input_series[(i - window_size):(i + window_size)] - x0))
         if (np.abs(input_series[i] - x0) > n_sigmas * S0):
             new_series[i] = x0
             indices.append(i)
     return new_series, indices
+
+
+def moving_avg_low_pass_filter(data, window_size):
+    n = len(data)
+    new_data = data.copy()
+
+    for i in range(0, (n - window_size)):
+        avg = np.mean(data[i: i + window_size])
+        new_data[i] = avg
+    return new_data
+
+
+def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=50.):
+    n = len(data)
+    tau = 1 / (2 * np.pi * cutoff_freq)
+    alpha = tau / (tau + (1 / samp_freq))
+    new_data = data.copy()
+
+    for i in range(1, n):
+        exponential_avg = ((1 - alpha) * new_data[i-1]) + (alpha * data[i])
+        new_data[i] = exponential_avg
+    return new_data
 
 
 class DynamicPoseData():
@@ -89,7 +113,7 @@ class DynamicPoseData():
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
                 for imu_name in imu_names:
-                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 13), float)
+                    self.data[pose_name][joint_name][imu_name] = np.empty((0, 14), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
@@ -127,41 +151,49 @@ class DynamicPoseData():
                     # on each pose, for each joint wiggle, get the
                     # maximum acceleration for each skin unit
                     imu_data = self.data[pose_name][joint_name][imu_name]
+                    # filter imu acceleration, angular velocities,
+                    # joint accelerations
+                    imu_accs = imu_data[:, :3]
 
-                    amax = 0
-                    idx = 0
-                    arr = []
-                    # get the max acceleration from the
-                    # beginning of moving each joint
-                    # in pose_name with joint_name affecting imu_name.
-                    prev_time, prev_vel = None, None
-                    max_acc = 0
-                    for i, v in enumerate(imu_data):
-                        norm_v = np.linalg.norm(v[:3])
-                        arr.append(norm_v)
-                        cur_time, cur_vel = v[3], v[5]
-                        if prev_vel is not None:
-                            if prev_time is not None and cur_time is not None:
-                                acc = abs((cur_vel - prev_vel) / (cur_time - prev_time))
-                        if amax < norm_v and cur_time < 0.15 and cur_time > 0.04 and acc > max_acc:
-                            idx = i
-                            amax = norm_v
-                            max_acc = acc
-                            print("e")
-                            print("time:", cur_time, "acc:", amax)
-                        prev_time, prev_vel = v[3], v[5]
+                    norms = np.linalg.norm(imu_accs, axis=1)
 
-                    best = self.data[pose_name][joint_name][imu_name][idx]
+                    ang_vels = imu_data[:, 5]
+                    joint_accs = imu_data[:, 6]
+
+                    filtered_norms = exponential_moving_avg_low_pass_filter(norms, 100.)
+                    filtered_vels = exponential_moving_avg_low_pass_filter(ang_vels, 100.)
+
+                    filtered_joint_accs = exponential_moving_avg_low_pass_filter(joint_accs, 100.)
+
+                    imu_filtered_arr = []
+                    imu_original_arr = []
+                    imu_acc_max = 0
+                    joint_acc_max = 0
+                    best_idx = 0
+
+                    for idx, (norm, acc) in enumerate(zip(filtered_norms, filtered_joint_accs)):
+                        cur_time = imu_data[idx, 3]
+                        imu_filtered_arr.append(norm)
+                        imu_original_arr.append(norms[idx])
+                        if norm > imu_acc_max and cur_time < 0.15 and cur_time > 0.04 and acc > joint_acc_max:
+                            best_idx = idx
+                            imu_acc_max = norm
+                            joint_acc_max = acc
+                        prev_time = cur_time
+
+                    best = self.data[pose_name][joint_name][imu_name][best_idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
                     if not verbose:
                         # plots the acceleration norms
-                        plt.plot(arr)
+                        fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(5, 3))
+                        axes[0].plot(imu_original_arr)
+                        axes[1].plot(imu_filtered_arr)
+                        fig.tight_layout()
                         plt.show()
-                    # print(np.linalg.norm(acc))
-                    # print(self.data[pose_name][joint_name][imu_name][3])
-                    # print(self.data[pose_name][joint_name][imu_name][4])
-                    # print(self.data[pose_name][joint_name][imu_name][5])
+
+
+
 
                     # d = self.data[pose_name][joint_name][imu_name][2:, :]
                     # norms = np.linalg.norm(d[:, :3], axis=1)
