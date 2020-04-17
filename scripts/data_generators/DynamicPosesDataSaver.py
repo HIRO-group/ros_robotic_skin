@@ -92,9 +92,11 @@ def low_pass_filter(data, samp_freq, cutoff_freq=15.):
         cutoff frequency; that is, data that is > = `cutoff_freq` will
         be attentuated.
     """
+    # need to cut cutoff_freq in half because we apply two filters.
+    half_cutoff_freq = cutoff_freq * 0.5
     n = len(data)
     # smoother data when alpha is lower
-    tau = 1 / (2 * np.pi * cutoff_freq)
+    tau = 1 / (2 * np.pi * half_cutoff_freq)
     dt = 1 / samp_freq
     alpha = dt / (dt + tau)
     new_data = data.copy()
