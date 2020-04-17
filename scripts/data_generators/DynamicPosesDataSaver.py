@@ -66,7 +66,7 @@ def moving_avg_low_pass_filter(data, window_size):
     return new_data
 
 
-def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=5.):
+def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=10.):
     n = len(data)
     # smoother data when alpha is lower
     tau = 1 / (2 * np.pi * cutoff_freq)
@@ -403,7 +403,7 @@ class DynamicPoseDataSaver():
                     self.time = t
 
                     # Oscillated Velocity pattern
-                    velocity = 1.5 * np.sin(2 * pi * self.freq * t)
+                    velocity = self.A * np.sin(2 * pi * self.freq * t)
 
                     velocities[i] = velocity
                     self.controller.send_velocities(velocities)
