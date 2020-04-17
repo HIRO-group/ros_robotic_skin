@@ -79,29 +79,28 @@ cd ..
 
 if [ -d "panda_simulation" ]
 then
-    echo "panda_simulation package exists, skipping"
-
-else
-  
-    git clone https://github.com/HIRO-group/panda_simulation
+    echo "panda_simulation package exists, deleting to make sure our forked version is cloned."
+    rm -rf panda_simulation
 fi
+  
+git clone https://github.com/HIRO-group/panda_simulation
 
 if [ -d "panda_moveit_config" ]
 then
-    echo "panda_moveit_config package exists, skipping"
-
-else
-    git clone https://github.com/erdalpekel/panda_moveit_config
+    echo "panda_moveit_config package exists, deleting to make sure erdal's forked version is cloned."
+    rm -rf panda_moveit_config
 fi
+
+git clone https://github.com/erdalpekel/panda_moveit_config
 
 
 if [ -d "franka_ros" ]
 then
-    echo "franka_ros package exists, skipping"
-
-else
-    git clone --branch simulation https://github.com/HIRO-group/franka_ros
+    echo "franka_ros package exists, deleting to make sure our forked version is cloned."
+    rm -rf franka_ros
 fi
+
+git clone --branch simulation https://github.com/HIRO-group/franka_ros
 
 cd ..
 sudo apt install libboost-filesystem-dev

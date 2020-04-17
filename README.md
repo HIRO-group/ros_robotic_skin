@@ -17,6 +17,7 @@ We have an `install.sh` script that will install the following packages:
 
 ## To run `install.sh`
 Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
+Additionally, you should clone this repository in an **empty** catkin workspace. For example, if you have the `franka_ros` package in the workspace, it will be deleted in favor of our forked version that works with this package.
 
 ### Usage:
 ```sh
