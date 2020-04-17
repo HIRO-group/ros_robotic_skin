@@ -175,8 +175,6 @@ class DynamicPoseData():
                         cur_time = imu_data[idx, 3]
                         imu_filtered_arr.append(norm)
                         imu_original_arr.append(norms[idx])
-                        if idx > 0:
-                            diff = imu_data[idx, 3] - imu_data[idx-1, 3]
 
                         if norm > imu_acc_max and cur_time < 0.16 and cur_time > 0.04 and acc > joint_acc_max:
                             best_idx = idx
@@ -189,8 +187,8 @@ class DynamicPoseData():
                     if not verbose:
                         # plots the acceleration norms
                         plt.plot(imu_original_arr)
-                        plt.plot(imu_filtered_arr) 
-                        # plotting t, c separately 
+                        plt.plot(imu_filtered_arr)
+                        # plotting t, c separately
                         plt.show()
 
                     # d = self.data[pose_name][joint_name][imu_name][2:, :]
