@@ -64,7 +64,7 @@ def moving_avg_low_pass_filter(data, window_size):
     return new_data
 
 
-def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=10.):
+def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=20.):
     n = len(data)
     # smoother data when alpha is lower
     tau = 1 / (2 * np.pi * cutoff_freq)
