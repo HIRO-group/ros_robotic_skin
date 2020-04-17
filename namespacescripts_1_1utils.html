@@ -31,6 +31,12 @@ $(function() {
 Functions</h2></td></tr>
 <tr class="memitem:a98199223ec0ec10705ad70dfe62b6d72"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a98199223ec0ec10705ad70dfe62b6d72">get_poses_list_file</a> (filename)</td></tr>
 <tr class="separator:a98199223ec0ec10705ad70dfe62b6d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6042dd5186660c5a70557488a464dc87"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a6042dd5186660c5a70557488a464dc87">hampel_filter_forloop</a> (input_series, window_size, n_sigmas=3)</td></tr>
+<tr class="separator:a6042dd5186660c5a70557488a464dc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9da73ca5901e0d4210e600280b28d35"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#ac9da73ca5901e0d4210e600280b28d35">low_pass_filter</a> (data, samp_freq, cutoff_freq=15.)</td></tr>
+<tr class="separator:ac9da73ca5901e0d4210e600280b28d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf633ce4605d050b20a5bc1c149b049f"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#acf633ce4605d050b20a5bc1c149b049f">moving_avg_low_pass_filter</a> (data, window_size)</td></tr>
+<tr class="separator:acf633ce4605d050b20a5bc1c149b049f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0f2f1e95df9b4f845877e43303e783d"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#ad0f2f1e95df9b4f845877e43303e783d">n2s</a> (x, precision=2)</td></tr>
 <tr class="separator:ad0f2f1e95df9b4f845877e43303e783d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -66,6 +72,143 @@ returns: `poses_list`: `list`
     that consists of `Pose_{p+1}`, where p is the pose number.
 </pre> 
 <p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00023">23</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+
+</div>
+</div>
+<a id="a6042dd5186660c5a70557488a464dc87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6042dd5186660c5a70557488a464dc87">&#9670;&nbsp;</a></span>hampel_filter_forloop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.utils.hampel_filter_forloop </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>input_series</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>window_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>n_sigmas</em> = <code>3</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Implementation of Hampel Filter for outlier detection.
+
+Arguments
+----------
+`input_series`: `np.array`
+    The input data to use for outlier detection.
+
+`window_size`: `int`
+    The sliding window size to use for the filter on
+    `input_series`.
+
+`n_sigmas`: `int`
+    The number of standard deviations to determine
+    what data points are outliers.
+</pre> 
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00052">52</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+
+</div>
+</div>
+<a id="ac9da73ca5901e0d4210e600280b28d35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9da73ca5901e0d4210e600280b28d35">&#9670;&nbsp;</a></span>low_pass_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.utils.low_pass_filter </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>samp_freq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cutoff_freq</em> = <code>15.</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Implementation of the standard pass filter,
+also known as a exponential moving average filter.
+
+Arguments
+---------
+`data`:
+    data to be filtered.
+`samp_freq`:
+    sampling frequency of the data
+`cutoff_freq`:
+    cutoff frequency; that is, data that is &gt; = `cutoff_freq` will
+    be attentuated.
+</pre> 
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00106">106</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+
+</div>
+</div>
+<a id="acf633ce4605d050b20a5bc1c149b049f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf633ce4605d050b20a5bc1c149b049f">&#9670;&nbsp;</a></span>moving_avg_low_pass_filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.utils.moving_avg_low_pass_filter </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>window_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Implementation of a standard moving average low pass filter.
+
+Arguments
+---------
+`data`: `np.array`
+    data to be filtered.
+
+`window_size`: `int`
+    Window size from which the average is calculated
+    for each point</pre> 
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00083">83</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -113,7 +256,7 @@ Arguments
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Sat Apr 11 2020 21:59:21</small>
+<small>autogenerated on Fri Apr 17 2020 16:36:37</small>
 </div>
 </body>
 </html>
