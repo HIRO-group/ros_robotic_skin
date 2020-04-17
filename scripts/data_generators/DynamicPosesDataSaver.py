@@ -64,7 +64,7 @@ def moving_avg_low_pass_filter(data, window_size):
     return new_data
 
 
-def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=20.):
+def low_pass_filter(data, samp_freq, cutoff_freq=20.):
     n = len(data)
     # smoother data when alpha is lower
     tau = 1 / (2 * np.pi * cutoff_freq)
@@ -160,10 +160,10 @@ class DynamicPoseData():
                     # ang_vels = imu_data[:, 5]
                     joint_accs = imu_data[:, 6]
 
-                    filtered_norms = exponential_moving_avg_low_pass_filter(norms, 100.)
+                    filtered_norms = low_pass_filter(norms, 100.)
                     # filtered_vels = exponential_moving_avg_low_pass_filter(ang_vels, 100.)
 
-                    filtered_joint_accs = exponential_moving_avg_low_pass_filter(joint_accs, 100.)
+                    filtered_joint_accs = low_pass_filter(joint_accs, 100.)
 
                     imu_filtered_arr = []
                     imu_original_arr = []
