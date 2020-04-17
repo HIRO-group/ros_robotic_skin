@@ -66,10 +66,12 @@ def moving_avg_low_pass_filter(data, window_size):
     return new_data
 
 
-def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=50.):
+def exponential_moving_avg_low_pass_filter(data, samp_freq, cutoff_freq=100.):
     n = len(data)
+    # smoother data when alpha is lower
     tau = 1 / (2 * np.pi * cutoff_freq)
-    alpha = tau / (tau + (1 / samp_freq))
+    dt = 1 / samp_freq
+    alpha = dt / (dt + tau)
     new_data = data.copy()
 
     for i in range(1, n):
@@ -183,7 +185,7 @@ class DynamicPoseData():
                     best = self.data[pose_name][joint_name][imu_name][best_idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
-                    if verbose:
+                    if not verbose:
                         # plots the acceleration norms
                         fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(5, 3))
                         axes[0].plot(imu_original_arr)
