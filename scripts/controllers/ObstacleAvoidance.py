@@ -7,7 +7,7 @@ import tf
 # import matplotlib.pyplot as plt
 
 MAX_RATE = 1.0
-NUMBER_OF_CONTROL_POINTS = 8
+NUMBER_OF_CONTROL_POINTS = 1
 ALPHA = 6.0
 C = 5.0
 RHO = 0.4
@@ -23,7 +23,7 @@ class ObstacleAvoidance(CartesianController):
         self.position = np.zeros(3)
         self.control_points = []
         self.Vi = np.zeros(3)
-        self.Vi_last = np.zeros(3)
+        # self.Vi_last = np.zeros(3)
 
     def get_control_points(self):
         # t = time.time()
@@ -75,13 +75,13 @@ class ObstacleAvoidance(CartesianController):
             D_norm = np.linalg.norm(D)
             D_unit_vec = D/D_norm
 
-            print("D_norm: {}".format(D_norm))
+            # print("D_norm: {}".format(D_norm))
 
             v_mag_repulse = V_MAX * (1 / (1 + np.exp((D_norm * (2 / RHO) - 1) * ALPHA)))
             v_repulse = v_mag_repulse * D_unit_vec
 
-            print("Repulsive vector norm: {}".format(v_mag_repulse))
-            print("-------------------------------")
+            # print("Repulsive vector norm: {}".format(v_mag_repulse))
+            # print("-------------------------------")
 
             repulse_vector.append(v_repulse)
 
@@ -92,18 +92,26 @@ class ObstacleAvoidance(CartesianController):
     def get_repulsive_distance_velocity(self):
 
         self.Vi = self.get_repulsive_distance()
+        try:
+            self.Vi_last
+        except AttributeError:
+            self.Vi_last = self.Vi
 
         Vi_dot = self.Vi - self.Vi_last
         self.Vi_last = self.Vi
 
         Vi_dot_magnitude = np.linalg.norm(Vi_dot)
 
+        np.divide(Vi_dot, Vi_dot_magnitude)
+
         if Vi_dot_magnitude != 0:
             a = Vi_dot / Vi_dot_magnitude
         else:
             return self.Vi
+
         r = self.Vi / np.linalg.norm(self.Vi)
         beta = np.arccos(np.dot(a, r))
+        print(beta)
 
         if beta > np.pi / 2:
             # The obstacle is moving away from us.
@@ -114,6 +122,9 @@ class ObstacleAvoidance(CartesianController):
             v = np.cross(n, a)
             new_angle = beta - (np.pi/2 - beta) * np.exp(-(C * (2 / MAX_RATE * Vi_dot_magnitude - 1)))
             V_new = np.linalg.norm(self.Vi) * (np.cos(new_angle) * a + np.sin(new_angle) * v)
+
+            print(new_angle)
+            print('------------------------------------')
 
             return V_new
 
@@ -128,8 +139,8 @@ class ObstacleAvoidance(CartesianController):
         return vectors_list[i]
 
     def select_most_restrictive(self, q_dot_max_list, q_dot_min_list):
-        q_dot_max = Q_DOT_MAX
-        q_dot_min = Q_DOT_MIN
+        q_dot_max = np.array(Q_DOT_MAX)
+        q_dot_min = np.array(Q_DOT_MIN)
         for i in range(7):
             max_values = [vector[i] for vector in q_dot_max_list]
             min_values = [vector[i] for vector in q_dot_min_list]
@@ -138,8 +149,8 @@ class ObstacleAvoidance(CartesianController):
         return (q_dot_min, q_dot_max)
 
     def end_effector_algorithm(self, xd_dot):
-        # repulsive_vector = np.block([self.get_repulsive_distance(), np.array([0, 0, 0])])
-        repulsive_vector = np.block([self.get_repulsive_distance_velocity(), np.array([0, 0, 0])])
+        repulsive_vector = np.block([self.get_repulsive_distance(), np.array([0, 0, 0])])
+        # repulsive_vector = np.block([self.get_repulsive_distance_velocity(), np.array([0, 0, 0])])
         repulsive_vector.shape = (6, 1)
         xc_dot = xd_dot - repulsive_vector
 
@@ -157,15 +168,15 @@ class ObstacleAvoidance(CartesianController):
             distance_norm = np.linalg.norm(smallest_distance)
             unit_distance = smallest_distance / distance_norm
             # Risk function
-            f = 1 / (1 + np.exp(distance_norm * 2 / RHO - 1) * ALPHA)
+            f = 1 / (1 + np.exp((distance_norm * 2 / RHO - 1) * ALPHA))
             # Get partial jacobian i
             Jacobian_message = self.get_jacobian(self.q, 'control_point{}'.format(i))
             J = np.array(Jacobian_message.J.J)
             J.shape = (Jacobian_message.J.rows, Jacobian_message.J.columns)
             # Risk vector projected in joint space
             s = np.dot(np.linalg.pinv(J)[:, :3], unit_distance) * f
-            q_dot_max_i = Q_DOT_MAX
-            q_dot_min_i = Q_DOT_MIN
+            q_dot_max_i = np.array(Q_DOT_MAX)
+            q_dot_min_i = np.array(Q_DOT_MIN)
             for i in range(len(s)):
                 if s[i] >= 0:
                     q_dot_max_i[i] = Q_DOT_MAX[i] * (1 - f)
@@ -174,16 +185,27 @@ class ObstacleAvoidance(CartesianController):
             q_dot_max_list = q_dot_max_list + [q_dot_max_i]
             q_dot_min_list = q_dot_min_list + [q_dot_min_i]
 
+            print("distance: {}".format(distance_norm))
+            print("f: {}".format(f))
+
         (q_dot_min, q_dot_max) = self.select_most_restrictive(q_dot_max_list, q_dot_min_list)
         # print(time.time() - t)
+
+        # print('q_dot_min{}'.format(q_dot_min))
+        # print('q_dot_max{}'.format(q_dot_max))
+        # print('------------------------')
+
         return (q_dot_min, q_dot_max)
 
     def apply_restrictions(self, q_dot_min, q_dot_max):
+        print('Before: {}'.format(np.array(self.q_dot)))
         for i in range(7):
             if self.q_dot[i] > q_dot_max[i]:
                 self.q_dot[i] = q_dot_max[i]
             elif self.q_dot[i] < q_dot_min[i]:
                 self.q_dot[i] = q_dot_min[i]
+        print('After: {}'.format(np.array(self.q_dot)))
+        print("---------------")
 
     def is_array_in_list(self, element, list_of_vectors):
         for vector in list_of_vectors:
@@ -193,7 +215,8 @@ class ObstacleAvoidance(CartesianController):
 
     def get_obstacle_points(self):
 
-        self.obstacle_points = [np.array([0.65, 0, 0.3])]
+        # self.obstacle_points = [np.array([0.65, 0, 0.3])]
+        self.obstacle_points = [np.array([-0.2, 0.00013597, 0.47066])]
 
     def go_to_point(self, position_desired):
         """
@@ -211,17 +234,15 @@ class ObstacleAvoidance(CartesianController):
             self.get_control_points()
             self.get_obstacle_points()
             xd_dot = self.compute_command_velocity(position_desired)
-            print("xd_dot norm: {}".format(np.linalg.norm(xd_dot)))
+            # print("xd_dot norm: {}".format(np.linalg.norm(xd_dot)))
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
-            xc_dot = self.end_effector_algorithm(xd_dot)
-            # xc_dot = xd_dot
+            # xc_dot = self.end_effector_algorithm(xd_dot)
+            xc_dot = xd_dot
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
-            # (q_dot_min, q_dot_max) = self.body_algorithm()
-            # self.apply_restrictions(q_dot_min, q_dot_max)
-            # print("min", q_dot_min)
-            # print("max", q_dot_max)
+            (q_dot_min, q_dot_max) = self.body_algorithm()
+            self.apply_restrictions(q_dot_min, q_dot_max)
             # Publish velocities
             self.panda_controller.send_velocities(self.q_dot)
             self.rate.sleep()
@@ -238,13 +259,13 @@ if __name__ == "__main__":
     # controller.V_i = np.array([0, 0, 0.1])
     # print(controller.get_repulsive_distance_velocity())
 
+    # distance_norm = np.arange(0.0, 0.5, 0.01)
+    # f = 1 / (1 + np.exp((distance_norm * 2 / RHO - 1) * ALPHA))
+    # plt.plot(distance_norm, f)
+    # plt.show()
+
     cartesian_controller = ObstacleAvoidance()
     trajectory = np.array([[0.4, 0, 0.3], [0.65, 0, 0.3]])
     while not rospy.is_shutdown():
         cartesian_controller.go_to_point(trajectory[0])
         cartesian_controller.go_to_point(trajectory[1])
-
-    # d = np.arange(0, 0.5, 0.01)
-    # v_mag_repulse = V_MAX * (1 / (1 + np.exp((d * 2 / RHO - 1) * ALPHA)))
-    # plt.plot(d, v_mag_repulse)
-    # plt.show()
