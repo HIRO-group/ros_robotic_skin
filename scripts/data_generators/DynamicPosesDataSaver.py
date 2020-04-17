@@ -55,6 +55,19 @@ def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
 
 
 def moving_avg_low_pass_filter(data, window_size):
+    """
+    Implementation of a standard moving average low pass filter.
+
+    Arguments
+    ---------
+    `data`: `np.array`
+        data to be filtered.
+
+    `window_size`: `int`
+        Window size from which the average is calculated
+        for each point
+
+    """
     n = len(data)
     new_data = data.copy()
 
@@ -64,7 +77,21 @@ def moving_avg_low_pass_filter(data, window_size):
     return new_data
 
 
-def low_pass_filter(data, samp_freq, cutoff_freq=20.):
+def low_pass_filter(data, samp_freq, cutoff_freq=15.):
+    """
+    Implementation of the standard pass filter,
+    also known as a exponential moving average filter.
+
+    Arguments
+    ---------
+    `data`:
+        data to be filtered.
+    `samp_freq`:
+        sampling frequency of the data
+    `cutoff_freq`:
+        cutoff frequency; that is, data that is > = `cutoff_freq` will
+        be attentuated.
+    """
     n = len(data)
     # smoother data when alpha is lower
     tau = 1 / (2 * np.pi * cutoff_freq)
@@ -73,9 +100,13 @@ def low_pass_filter(data, samp_freq, cutoff_freq=20.):
     new_data = data.copy()
 
     for i in range(1, n):
-        exponential_avg = ((1 - alpha) * new_data[i-1]) + (alpha * data[i])
-        new_data[i] = exponential_avg
-    return new_data
+        new_data[i] = ((1 - alpha) * new_data[i-1]) + (alpha * data[i])
+    reversed_data = new_data[::-1]
+
+    for i in range(1, n):
+        reversed_data[i] = ((1 - alpha) * reversed_data[i-1]) + (alpha * reversed_data[i])
+
+    return reversed_data[::-1]
 
 
 class DynamicPoseData():
@@ -135,13 +166,21 @@ class DynamicPoseData():
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
-    def clean_data(self, verbose=False):
+    def clean_data(self, verbose=False, time_range=(0.04, 0.16)):
         """
         Cleans the data.
 
         Arguments
         ----------
         `verbose`: `bool`
+            Determines if you want to see plots of the original
+            data vs. the filtered data.
+
+        `time_range`: `tuple`
+            The time range from which the max acceleration is
+            to be found. For example, (0.04, 0.16) means that
+            the max acceleration value will be searched in between 0.04
+            and 0.16 seconds.
         """
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
@@ -160,35 +199,48 @@ class DynamicPoseData():
                     # ang_vels = imu_data[:, 5]
                     joint_accs = imu_data[:, 6]
 
+                    # filter acceleration norms
                     filtered_norms = low_pass_filter(norms, 100.)
-                    # filtered_vels = exponential_moving_avg_low_pass_filter(ang_vels, 100.)
+                    # filtered_vels = low_pass_filter(ang_vels, 100.)
 
+                    # filter joint accelerations
                     filtered_joint_accs = low_pass_filter(joint_accs, 100.)
-
+                    # array of imu data - both filtered and raw
                     imu_filtered_arr = []
-                    imu_original_arr = []
+                    imu_raw_arr = []
+
+                    # max imu acceleration
                     imu_acc_max = 0
+                    # max individual joint acceleration
                     joint_acc_max = 0
+                    # idx of the max acceleration.
                     best_idx = 0
 
+                    # go through filtered norms and accelerations
                     for idx, (norm, acc) in enumerate(zip(filtered_norms, filtered_joint_accs)):
                         cur_time = imu_data[idx, 3]
+                        # add filtered and raw data to array
                         imu_filtered_arr.append(norm)
-                        imu_original_arr.append(norms[idx])
+                        imu_raw_arr.append(norms[idx])
+                        """
+                        conditions for update of best idx:
+                            - the filtered norm is greater than the current highest one.
+                            - the time of this data lies within `time_range`
+                            - the filtered joint acceleration is also greater than the current highest one.
 
-                        if norm > imu_acc_max and cur_time < 0.16 and cur_time > 0.04 and acc > joint_acc_max:
+                        """
+                        if norm > imu_acc_max and cur_time < time_range[1] and cur_time > time_range[0] and acc > joint_acc_max:
                             best_idx = idx
                             imu_acc_max = norm
                             joint_acc_max = acc
-
+                    # update data to the max acceleration point
                     best = self.data[pose_name][joint_name][imu_name][best_idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
                     if not verbose:
-                        # plots the acceleration norms
-                        plt.plot(imu_original_arr)
+                        # plots the acceleration norms - filtered and raw
+                        plt.plot(imu_raw_arr)
                         plt.plot(imu_filtered_arr)
-                        # plotting t, c separately
                         plt.show()
 
                     # d = self.data[pose_name][joint_name][imu_name][2:, :]
