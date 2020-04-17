@@ -6,3 +6,6 @@
   gravity_constant: 9.81
   oscillation_magnitude: 1.5
   oscillation_frequency: 1.0
+  cartesian_controller_frequency: 100.0
+  cartesian_controller_p_gain: 0.2
+  cartesian_error_threshold: 0.01
