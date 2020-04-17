@@ -46,9 +46,7 @@ def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
     indices = []
     # possibly use np.nanmedian
     for i in range((window_size), (n - window_size)):
-        print(input_series[(i - window_size):(i + window_size)])
         x0 = np.median(input_series[(i - window_size):(i + window_size)])
-        print(x0)
         S0 = k * np.median(np.abs(input_series[(i - window_size):(i + window_size)] - x0))
         if (np.abs(input_series[i] - x0) > n_sigmas * S0):
             new_series[i] = x0
@@ -179,8 +177,8 @@ class DynamicPoseData():
                         imu_original_arr.append(norms[idx])
                         if idx > 0:
                             diff = imu_data[idx, 3] - imu_data[idx-1, 3]
-                            print(diff)
-                        if norm > imu_acc_max and cur_time < 0.15 and cur_time > 0.04 and acc > joint_acc_max:
+
+                        if norm > imu_acc_max and cur_time < 0.16 and cur_time > 0.04 and acc > joint_acc_max:
                             best_idx = idx
                             imu_acc_max = norm
                             joint_acc_max = acc
