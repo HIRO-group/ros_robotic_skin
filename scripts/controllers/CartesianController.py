@@ -94,7 +94,8 @@ class CartesianController(object):
         Jacobian_message = self.get_jacobian(self.q, 'panda_link8')
         J = np.array(Jacobian_message.J.J)
         J.shape = (Jacobian_message.J.rows, Jacobian_message.J.columns)
-        q_dot = np.dot(np.linalg.pinv(J), v)
+        q_dot = np.dot(np.linalg.pinv(J)[:, :3], v[:3])
+        q_dot.shape = (7, 1)
         return q_dot
 
     def go_to_point(self, position_desired):
