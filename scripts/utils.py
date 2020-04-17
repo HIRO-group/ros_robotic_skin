@@ -48,6 +48,7 @@ def get_poses_list_file(filename):
         poses_list.append([list(pose), [], 'Pose_{}'.format(idx+1)])
     return poses_list
 
+
 def hampel_filter_forloop(input_series, window_size, n_sigmas=3):
     """
     Implementation of Hampel Filter for outlier detection.
@@ -134,4 +135,3 @@ def low_pass_filter(data, samp_freq, cutoff_freq=15.):
         reversed_data[i] = ((1 - alpha) * reversed_data[i-1]) + (alpha * reversed_data[i])
 
     return reversed_data[::-1]
-
