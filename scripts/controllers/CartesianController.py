@@ -8,6 +8,11 @@ import tf
 from ros_robotic_skin.srv import getJacobian
 from sensor_msgs.msg import JointState
 
+Q_MIN = np.array([-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973])
+Q_MAX = np.array([+2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973])
+Q_MIDDLE = (Q_MIN + Q_MAX) / 2
+H = 0
+
 
 class CartesianController(object):
     """
@@ -94,7 +99,21 @@ class CartesianController(object):
         Jacobian_message = self.get_jacobian(self.q, 'panda_link8')
         J = np.array(Jacobian_message.J.J)
         J.shape = (Jacobian_message.J.rows, Jacobian_message.J.columns)
-        q_dot = np.dot(np.linalg.pinv(J)[:, :3], v[:3])
+        J = J[:3, :]
+        Jpinv = np.linalg.pinv(J)
+
+        # This step depends on the function H we decide to use
+        global H
+        H = H + 1/7.0 * sum(((self.q[2:] - Q_MIDDLE) / (Q_MAX - Q_MIDDLE))**2)
+        grad_H = 2/7.0 * ((self.q[2:] - Q_MIDDLE) / (Q_MAX - Q_MIDDLE))
+
+        print(H)
+
+        particular_solution = np.dot(Jpinv, v[:3])
+        homogeneous_solution = -1 * np.dot((np.identity(7) - np.dot(Jpinv, J)), grad_H)
+        homogeneous_solution.shape = (7, 1)
+
+        q_dot = particular_solution + homogeneous_solution
         q_dot.shape = (7, 1)
         return q_dot
 
@@ -183,14 +202,9 @@ class CartesianController(object):
 
 
 if __name__ == "__main__":
-    x0 = 0.6
-    y0 = 0.0
-    z0 = 0.3
-    r = 0.1
-    resolution = 0.2
 
     # Loop that trajectory
     cartesian_controller = CartesianController()
-    trajectory = np.array([[0.4, 0, 0.3], [0.7, 0, 0.3]])
+    trajectory = np.array([[0.4, 0, 0.3], [0.8, 0, 0.3]])
     while not rospy.is_shutdown():
         cartesian_controller.go_to_points_in_trajectory(trajectory)
