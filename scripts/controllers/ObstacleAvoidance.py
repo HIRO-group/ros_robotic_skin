@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from CartesianController import CartesianController
+from CartesianPositionController import CartesianPositionController
 import numpy as np
 import rospy
 import tf
@@ -16,12 +16,13 @@ Q_DOT_MIN = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6
 Q_DOT_MAX = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
 
 
-class ObstacleAvoidance(CartesianController):
+class ObstacleAvoidance(CartesianPositionController):
     def __init__(self):
 
         super(ObstacleAvoidance, self).__init__()
         self.position = np.zeros(3)
         self.control_points = []
+        self.obstacle_points = [np.array([500, 500, 500])]  # Very far away
         self.Vi = np.zeros(3)
         # self.Vi_last = np.zeros(3)
 
@@ -216,7 +217,8 @@ class ObstacleAvoidance(CartesianController):
     def get_obstacle_points(self):
 
         # self.obstacle_points = [np.array([0.65, 0, 0.3])]
-        self.obstacle_points = [np.array([-0.2, 0.00013597, 0.47066])]
+        self.obstacle_points = [np.array([-0.0, 0.00013597, 0.47066])]
+        return 0
 
     def go_to_point(self, position_desired):
         """
@@ -265,7 +267,7 @@ if __name__ == "__main__":
     # plt.show()
 
     cartesian_controller = ObstacleAvoidance()
-    trajectory = np.array([[0.4, 0, 0.3], [0.65, 0, 0.3]])
+    trajectory = np.array([[0.4, 0, 0.3], [0.55, 0, 0.3]])
     while not rospy.is_shutdown():
         cartesian_controller.go_to_point(trajectory[0])
         cartesian_controller.go_to_point(trajectory[1])
