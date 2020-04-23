@@ -1,23 +1,21 @@
-<!-- Base launch file -->
+<!-- This is the main launch file which should be  -->
+<!-- launched when Panda along with all accelerometers needs -->
+<!-- to be seen. Then you can run some python files like joint_movement.py etc -->
+<!-- to see the Panda robot move. -->
 <launch>
+    <param name="robot_description_with_imu" command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand.urdf.xacro"/>
 
-    <!-- Command line arguments -->
+    <!-- GAZEBO arguments -->
     <arg name="paused" default="false"/>
     <arg name="use_sim_time" default="true"/>
     <arg name="gui" default="true"/>
     <arg name="headless" default="false"/>
     <arg name="debug" default="false"/>
     <arg name="load_gripper" default="true"/>
-    <arg name="with_imu" default="false"/>
 
-    <!-- Load URDF in the parameter server -->
-    <param unless="$(arg with_imu)" name="robot_description"
-           command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand_flacco.urdf.xacro"/>
-    <param if="$(arg with_imu)" name="robot_description_with_imu"
-           command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand_flacco.urdf.xacro"/>
-
-    <!-- Launch Gazebo with an empty world -->
+    <!--launch GAZEBO with own world configuration -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <!--arg name="world_name" value="$(find ros_robotic_skin)/worlds/empty.world"/-->
         <arg name="debug" value="$(arg debug)"/>
         <arg name="gui" value="$(arg gui)"/>
         <arg name="paused" value="$(arg paused)"/>
@@ -25,20 +23,15 @@
         <arg name="headless" value="$(arg headless)"/>
     </include>
 
-    <!-- Add Panda to Gazebo -->
-    <node unless="$(arg with_imu)" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
-          args="-param robot_description -urdf -model panda"/>
-    <node if="$(arg with_imu)" name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
-          args="-param robot_description_with_imu -urdf -model panda"/>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description_with_imu -urdf -model panda"/>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find panda_simulation)/config/panda_control.yaml" command="load"/>
 
 
-    <!-- Load the controllers -->
+    <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_trajectory_controller joint_state_controller" />
-    <node name="controller_spawn" pkg="controller_manager" type="spawner" respawn="false" output="screen"
-            args="--stopped panda_joint1_position_controller panda_joint2_position_controller
+    <node name="controller_spawn" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped panda_joint1_position_controller panda_joint2_position_controller
             panda_joint3_position_controller panda_joint4_position_controller panda_joint5_position_controller
             panda_joint6_position_controller panda_joint7_position_controller
             panda_joint1_velocity_controller panda_joint2_velocity_controller
@@ -47,20 +40,68 @@
             panda_joint7_velocity_controller" />
     <node if="$(arg load_gripper)" name="controller_spawner_hand" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_hand_controller" />
 
-    <!-- Convert joint states to TF transforms for rviz, etc -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
-        <remap if="$(arg with_imu)" from="robot_description" to="robot_description_with_imu" />
+
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
+        <remap from="robot_description" to="robot_description_with_imu" />
+        <param name="publish_frequency" value="100" />
     </node>
 
-    <!-- Add Params YAML File-->
+    <include file="$(find panda_moveit_config)/launch/planning_context.launch">
+        <arg name="load_robot_description" value="true"/>
+        <arg name="load_gripper" value="$(arg load_gripper)" />
+    </include>
+    <include file="$(find panda_moveit_config)/launch/move_group.launch">
+        <arg name="load_gripper" value="$(arg load_gripper)" />
+    </include>
+    <group if="$(arg gui)">
+        <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch" />
+    </group>
+
+    <node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
+
+    <!-- launch robot control node for moveit motion planning -->
+    <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/>
+
+    <!--    Add Params YAML File-->
     <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
-    <!-- Rviz -->
-    <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
-        args="-d $(find ros_robotic_skin)/config/rviz.rviz" output="screen"/>
+    <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
+    <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
+    <node name="Pose0EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE0" output="screen">
+        <param name="imu_pose_publisher_name" value="imu0_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data0" />
+    </node>
 
-    <!-- KDL node -->
-    <node name="KDL_server" pkg="ros_robotic_skin" type="jacobian"/>
+    <node name="Pose1EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE1" output="screen">
+        <param name="imu_pose_publisher_name" value="imu1_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data1" />
+    </node>
+
+    <node name="Pose2EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE2" output="screen">
+        <param name="imu_pose_publisher_name" value="imu2_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data2" />
+    </node>
+
+    <node name="Pose3EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE3" output="screen">
+        <param name="imu_pose_publisher_name" value="imu3_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data3" />
+    </node>
+
+    <node name="Pose4EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE4" output="screen">
+        <param name="imu_pose_publisher_name" value="imu4_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data4" />
+    </node>
+
+    <node name="Pose5EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE5" output="screen">
+        <param name="imu_pose_publisher_name" value="imu5_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data5" />
+    </node>
+
+    <node name="Pose6EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE6" output="screen">
+        <param name="imu_pose_publisher_name" value="imu6_pose" />
+        <param name="original_imu_publisher_name" value="/imu_data6" />
+    </node>
 
 </launch>
