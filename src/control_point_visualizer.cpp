@@ -4,29 +4,6 @@
 
 int NUMBER_OF_CONTROL_POINTS = 8;
 
-void publish_control_point(tf::TransformBroadcaster& br,
-                           tf::Transform& transform,
-                           ros::Publisher& marker_pub,
-                           int link_number,
-                           float z,
-                           float sphere_radius )
-{
-    int i;
-    switch (link_number)
-    {
-        case 3: i = 1; break;
-        case 5: i = 2; break;
-        default: break;
-    }
-    std::string name;
-    std::string parent;
-    name = "control_point" + std::to_string(i);
-    parent = "panda_link" + std::to_string(link_number);
-    transform.setOrigin( tf::Vector3(0.0, 0.0, z) );
-    transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), parent, name));
-}
-
 void visualize_sphere(ros::Publisher& marker_pub, visualization_msgs::Marker& marker, int control_point_number)
 {
   // Marker setup
@@ -63,7 +40,7 @@ void visualize_sphere(ros::Publisher& marker_pub, visualization_msgs::Marker& ma
 
 
 int main(int argc, char** argv){
-    ros::init(argc, argv, "control_point_broadcaster");
+    ros::init(argc, argv, "control_point_visualizer");
     ros::NodeHandle node;
 
     tf::TransformBroadcaster br;
@@ -77,8 +54,6 @@ int main(int argc, char** argv){
 
     while (node.ok())
     {
-
-
         for (int i = 0; i < NUMBER_OF_CONTROL_POINTS; i++)
         {
             visualize_sphere(marker_pub, marker, i);

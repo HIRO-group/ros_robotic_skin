@@ -62,10 +62,10 @@
         args="-d $(find ros_robotic_skin)/config/rviz.rviz" output="screen"/>
 
     <!-- KDL node -->
-    <node name="KDL_server" pkg="ros_robotic_skin" type="jacobian"/>
+    <node name="KDL_server" pkg="ros_robotic_skin" type="KDL_server"/>
 
-    <!-- Control points tf broadcaster -->
-    <node pkg="ros_robotic_skin" type="control_points_broadcaster"
-          name="control_points_broadcaster" />
+    <!-- Control points visualizer -->
+    <!-- <node pkg="ros_robotic_skin" type="control_point_visualizer"
+          name="control_point_visualizer" /> -->
 
 </launch>
