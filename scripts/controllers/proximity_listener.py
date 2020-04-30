@@ -2,6 +2,7 @@ import rospy
 import tf
 from sensor_msgs.msg import LaserScan
 import numpy as np
+from scipy.spatial.transform import Rotation
 from visualization_msgs.msg import Marker
 
 memory = []
@@ -52,7 +53,7 @@ def callback(data):
     global trans, rot
     while True:
         try:
-            (trans, rot) = tf_listener.lookupTransform('world', 'proximity_link1', rospy.Time(0))
+            (trans, rot) = tf_listener.lookupTransform('world', 'proximity_link{}'.format(data.header.frame_id[-1]), rospy.Time(0))
             break
         except (tf.LookupException,
                 tf.ConnectivityException,
@@ -68,9 +69,10 @@ def callback(data):
     else:
         # Show point
         translation1 = np.array(trans)
+        r = Rotation.from_quat(rot)
         translation2 = np.array([data.ranges[0], 0, 0])  # Apply rotation in rot to this vector
 
-        position_vector = translation1 + translation2
+        position_vector = translation1 + r.apply(translation2)
 
         msg = make_marker(True, int(data.header.frame_id[-1]),   position_vector)
         pub.publish(msg)

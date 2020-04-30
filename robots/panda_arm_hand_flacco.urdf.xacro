@@ -3,6 +3,7 @@
   <xacro:include filename="$(find ros_robotic_skin)/robots/panda_arm.xacro"/>
   <xacro:include filename="$(find franka_description)/robots/hand.xacro"/>
   <xacro:include filename="$(find ros_robotic_skin)/robots/control_point.xacro"/>
+  <xacro:include filename="$(find ros_robotic_skin)/robots/proximity.xacro"/>
 
   <!-- for simulation -->
   <xacro:include filename="$(find franka_description)/robots/panda.gazebo.xacro"/>
@@ -13,7 +14,7 @@
   <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
 
   <!-- As many control points as needed to cover the robot body -->
-  <xacro:control_point point_id='0' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
+  <!-- <xacro:control_point point_id='0' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/> -->
 
   <!-- <xacro:control_point point_id='0' parent_id='8' rpy='0 0 0' xyz='0 0 0'/>
   <xacro:control_point point_id='1' parent_id='7' rpy='0 0 0' xyz='0 -${0.333/2} 0'/>
@@ -27,6 +28,12 @@
 
   <!-- end effector control point -->
   <xacro:end_effector/>
+
+  <!-- Proximity sensors -->
+  <xacro:proximity proximity_id="0" radius="0.06" theta="${2*pi/4 * 0}" z0="-0.16" connected_to="panda_link3"/>
+  <xacro:proximity proximity_id="1" radius="0.06" theta="${2*pi/4 * 1}" z0="-0.16" connected_to="panda_link3"/>
+  <xacro:proximity proximity_id="2" radius="0.06" theta="${2*pi/4 * 2}" z0="-0.16" connected_to="panda_link3"/>
+  <xacro:proximity proximity_id="3" radius="0.06" theta="${2*pi/4 * 3}" z0="-0.16" connected_to="panda_link3"/>
 
 
   <!-- for simulation -->

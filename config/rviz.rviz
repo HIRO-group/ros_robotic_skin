@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 715
@@ -57,6 +58,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        end_effector:
+          Value: false
         panda_hand:
           Value: false
         panda_leftfinger:
@@ -107,6 +110,8 @@ Visualization Manager:
                       panda_link6:
                         panda_link7:
                           panda_link8:
+                            end_effector:
+                              {}
                             panda_hand:
                               panda_leftfinger:
                                 {}
@@ -132,6 +137,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        end_effector:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         panda_hand:
           Alpha: 1
           Show Axes: false
@@ -226,7 +235,7 @@ Visualization Manager:
       Marker Topic: visualization_marker
       Name: Marker
       Namespaces:
-        basic_shapes: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
