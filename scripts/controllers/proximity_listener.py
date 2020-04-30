@@ -6,10 +6,11 @@ from scipy.spatial.transform import Rotation
 from visualization_msgs.msg import Marker
 
 memory = []
-THRESHOLD = 0.03
+THRESHOLD = 0.05
+idx = 100000
 
 
-def make_marker(is_add, id, xyz, namespace="live_readings"):
+def make_marker(is_add, id, xyz, namespace="live_readings", rgb=(1.0, 0, 0), radius=0.05):
     msg = Marker()
     msg.pose.position.x = xyz[0]
     msg.pose.position.y = xyz[1]
@@ -27,30 +28,31 @@ def make_marker(is_add, id, xyz, namespace="live_readings"):
     else:
         msg.action = Marker.DELETE
     msg.id = id
-    radius = 0.05
     msg.scale.x = radius
     msg.scale.y = radius
     msg.scale.z = radius
-    msg.color.r = 1.0
-    msg.color.g = 0
-    msg.color.b = 0
+    msg.color.r = rgb[0]
+    msg.color.g = rgb[1]
+    msg.color.b = rgb[2]
     msg.color.a = 1.0
     return msg
 
 
 def save_point(vector):
-    global memory
+    global memory, idx
     if memory:
         for point in memory:
             if np.linalg.norm(vector - point) < THRESHOLD:
                 return 0
     memory.append(vector)
+    idx = idx + 1
+    msg = make_marker(True, idx, vector, namespace="memory", rgb=(0, 1.0, 0))
+    pub.publish(msg)
 
     return 0
 
 
 def callback(data):
-    global trans, rot
     while True:
         try:
             (trans, rot) = tf_listener.lookupTransform('world', 'proximity_link{}'.format(data.header.frame_id[-1]), rospy.Time(0))
@@ -74,9 +76,8 @@ def callback(data):
 
         position_vector = translation1 + r.apply(translation2)
 
-        msg = make_marker(True, int(data.header.frame_id[-1]),   position_vector)
+        msg = make_marker(True, int(data.header.frame_id[-1]),   position_vector, radius=0.07)
         pub.publish(msg)
-
         save_point(position_vector)
 
 
@@ -85,7 +86,7 @@ tf_listener = tf.TransformListener()
 for i in range(4):
     rospy.Subscriber("proximity_data{}".format(i), LaserScan, callback)
 
-pub = rospy.Publisher('visualization_marker', Marker, queue_size=1)
+pub = rospy.Publisher('visualization_marker', Marker, queue_size=100)
 rospy.spin()
 
 # TODO Add the transform feature (krishna quaternions)

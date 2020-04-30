@@ -60,5 +60,6 @@
     <!-- Control points visualizer -->
     <!-- <node pkg="ros_robotic_skin" type="control_point_visualizer"
           name="control_point_visualizer" /> -->
+    <!-- <node name="Spheres" pkg="ros_robotic_skin" type="proximity_listener_control_point.py"/> -->
 
 </launch>
