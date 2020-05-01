@@ -42,18 +42,22 @@ def make_marker(is_add, id, xyz, namespace="live_readings", rgb=(1.0, 0, 0), rad
     return msg
 
 
-def save_point(vector):
+def save_point(vector, id=-1):
     global memory, idx
 
     if memory:
         for point in memory:
             if np.linalg.norm(vector - point) < THRESHOLD:
+                #pass
                 return 0
+
     memory.append(vector)
     idx = idx + 1
     msg = make_marker(True, idx, vector, namespace="memory", rgb=(0, 1.0, 0))
+    # visualization
     pub.publish(msg)
 
+    # package points for avoidance controller
     points = []
     for mem in memory:
         point = Point()
@@ -61,9 +65,49 @@ def save_point(vector):
         point.y = mem[1]
         point.z = mem[2]
         points.append(point)
+    # publish object that will
+    publish_live_obstacle(vector, id)
+    #pub2.publish(points)
+    return 0
+
+def publish_live_obstacle(vector, id):
+    points = []
+    id_point = Point()
+    id_point.x = float(id)
+    id_point.y = float(0)
+    id_point.z = float(0)
+    # create the physical point
+    point = Point()
+    point.x = vector[0]
+    point.y = vector[1]
+    point.z = vector[2]
+    
+    # add both to a list
+    points.append(id_point)
+    points.append(point)
+
     pub2.publish(points)
 
-    return 0
+def publish_no_obstacle(id):
+    # create an id for this point
+    points = []
+    id_point = Point()
+    id_point.x = float(id)
+    id_point.y = float(0)
+    id_point.z = float(0)
+
+    # create the physical point
+    point = Point()
+    point.x = float(0)
+    point.y = float(0)
+    point.z = float(0)
+    
+    # add both to a list
+    points.append(id_point)
+    points.append(point)
+
+    pub2.publish(points)
+
 
 
 def callback(data):
@@ -81,6 +125,8 @@ def callback(data):
         position_vector = np.array([0, 0, 0])
         msg = make_marker(False, int(data.header.frame_id[-1]), position_vector)
         pub.publish(msg)
+        publish_no_obstacle(data.header.frame_id[-1])
+
 
     else:
         # Show point
@@ -92,7 +138,7 @@ def callback(data):
 
         msg = make_marker(True, int(data.header.frame_id[-1]),   position_vector, radius=0.07)
         pub.publish(msg)
-        save_point(position_vector)
+        save_point(position_vector, id=data.header.frame_id[-1])
 
 
 rospy.init_node('proximity_listener')

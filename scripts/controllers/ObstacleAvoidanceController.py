@@ -23,11 +23,25 @@ class ObstacleAvoidanceController(CartesianPositionController):
         super(ObstacleAvoidanceController, self).__init__()
         self.control_points = []
         self.obstacle_points = [np.array([0, 0, 0])]  # Very far away
+        #self.obstacle_points = []  # Very far away
+        self.obstacle_id = [-1]
         self.Vi = np.zeros(3)
 
-        rospy.Subscriber("obstacle_points", PointArray, self.callback_obstacle_points)
+        rospy.Subscriber("obstacle_points", PointArray, self.callback_live_points)
+        #rospy.Subscriber("obstacle_points", PointArray, self.callback_memory_points)
 
-    def callback_obstacle_points(self, data):
+    def callback_live_points(self, data):
+        id = data.data[0].x
+        if id in self.obstacle_id:
+            idx = self.obstacle_id.index(id)
+            self.obstacle_id.pop(idx)
+            self.obstacle_points.pop(idx)
+            
+        self.obstacle_id.append(id)
+        self.obstacle_points.append(np.array([data.data[1].x, data.data[1].y, data.data[1].z]))
+        print(len(self.obstacle_points))
+
+    def callback_memory_points(self, data):
         self.obstacle_points = []
         for i in range(len(data.data)):
             self.obstacle_points.append(np.array([data.data[i].x, data.data[i].y, data.data[i].z]))
