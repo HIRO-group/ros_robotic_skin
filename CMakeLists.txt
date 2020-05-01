@@ -61,6 +61,7 @@ find_package(Eigen3 REQUIRED)
 add_message_files(
   FILES
   Jacobian.msg
+  PointArray.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -80,6 +81,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 ################################################

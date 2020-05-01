@@ -1,9 +1,13 @@
+#!/usr/bin/env python
+
 import rospy
 import tf
 from sensor_msgs.msg import LaserScan
 import numpy as np
 from scipy.spatial.transform import Rotation
 from visualization_msgs.msg import Marker
+from ros_robotic_skin.msg import PointArray
+from geometry_msgs.msg import Point
 
 memory = []
 THRESHOLD = 0.05
@@ -40,6 +44,7 @@ def make_marker(is_add, id, xyz, namespace="live_readings", rgb=(1.0, 0, 0), rad
 
 def save_point(vector):
     global memory, idx
+
     if memory:
         for point in memory:
             if np.linalg.norm(vector - point) < THRESHOLD:
@@ -48,6 +53,15 @@ def save_point(vector):
     idx = idx + 1
     msg = make_marker(True, idx, vector, namespace="memory", rgb=(0, 1.0, 0))
     pub.publish(msg)
+
+    points = []
+    for mem in memory:
+        point = Point()
+        point.x = mem[0]
+        point.y = mem[1]
+        point.z = mem[2]
+        points.append(point)
+    pub2.publish(points)
 
     return 0
 
@@ -87,6 +101,7 @@ for i in range(4):
     rospy.Subscriber("proximity_data{}".format(i), LaserScan, callback)
 
 pub = rospy.Publisher('visualization_marker', Marker, queue_size=100)
+pub2 = rospy.Publisher('obstacle_points', PointArray, queue_size=100)
 rospy.spin()
 
 # TODO Add the transform feature (krishna quaternions)

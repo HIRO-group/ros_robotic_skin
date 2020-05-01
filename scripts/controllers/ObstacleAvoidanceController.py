@@ -4,6 +4,7 @@ from CartesianPositionController import CartesianPositionController
 import numpy as np
 import rospy
 import tf
+from ros_robotic_skin.msg import PointArray
 
 NUMBER_OF_CONTROL_POINTS = 1
 
@@ -21,8 +22,16 @@ class ObstacleAvoidanceController(CartesianPositionController):
     def __init__(self):
         super(ObstacleAvoidanceController, self).__init__()
         self.control_points = []
-        self.obstacle_points = [np.array([500, 500, 500])]  # Very far away
+        self.obstacle_points = [np.array([0, 0, 0])]  # Very far away
         self.Vi = np.zeros(3)
+
+        rospy.Subscriber("obstacle_points", PointArray, self.callback_obstacle_points)
+
+    def callback_obstacle_points(self, data):
+        self.obstacle_points = []
+        for i in range(len(data.data)):
+            self.obstacle_points.append(np.array([data.data[i].x, data.data[i].y, data.data[i].z]))
+        print(len(self.obstacle_points))
 
     def get_control_points(self):
         """
@@ -89,6 +98,13 @@ class ObstacleAvoidanceController(CartesianPositionController):
         """
         repulse_vector = []
         distance_vectors = self.get_distance_vectors_end_effector()
+        # D = search_smallest_vector(distance_vectors)
+        # D_norm = np.linalg.norm(D)
+        # D_unit_vec = D/D_norm
+
+        # v_mag_repulse = V_MAX * (1 / (1 + np.exp((D_norm * (2 / RHO) - 1) * ALPHA)))
+        # v_repulse = v_mag_repulse * D_unit_vec
+        # return v_repulse
 
         for D in distance_vectors:
 
@@ -286,14 +302,11 @@ class ObstacleAvoidanceController(CartesianPositionController):
         q_dot_max : [type]
             [description]
         """
-        print('Before: {}'.format(np.array(self.q_dot)))
         for i in range(7):
             if self.q_dot[i] > q_dot_max[i]:
                 self.q_dot[i] = q_dot_max[i]
             elif self.q_dot[i] < q_dot_min[i]:
                 self.q_dot[i] = q_dot_min[i]
-        print('After: {}'.format(np.array(self.q_dot)))
-        print("---------------")
 
     def go_to_point(self, position_desired):
         """
@@ -310,7 +323,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         while np.linalg.norm(self.error) > self.error_threshold:
             # Update lists
             self.get_control_points()
-            self.get_obstacle_points()
+            # self.get_obstacle_points()
 
             # Obtained the desired end effector velocity, in the case there were no obstacles
             xd_dot = self.compute_command_velocity(position_desired)
@@ -323,8 +336,8 @@ class ObstacleAvoidanceController(CartesianPositionController):
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
-            (q_dot_min, q_dot_max) = self.body_algorithm()
-            self.apply_restrictions(q_dot_min, q_dot_max)
+            # (q_dot_min, q_dot_max) = self.body_algorithm()
+            # self.apply_restrictions(q_dot_min, q_dot_max)
             # Publish velocities
             self.panda_controller.send_velocities(self.q_dot)
             self.rate.sleep()
@@ -342,7 +355,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
 if __name__ == "__main__":
 
     obstacle_avoidance_controller = ObstacleAvoidanceController()
-    trajectory = np.array([[0.5, 0, 0.3], [0.8, 0, 0.3]])
+    trajectory = np.array([[0.5, 0, 0.8], [0.8, 0, 0.8]])
     while not rospy.is_shutdown():
         obstacle_avoidance_controller.go_to_point(trajectory[0])
         obstacle_avoidance_controller.go_to_point(trajectory[1])
