@@ -10,8 +10,9 @@ from ros_robotic_skin.msg import PointArray
 from geometry_msgs.msg import Point
 
 memory = []
-THRESHOLD = 0.05
+THRESHOLD = 0.03
 idx = 100000
+SPHERE_RADIUS = (0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27)
 
 
 def make_marker(is_add, id, xyz, namespace="live_readings", rgb=(1.0, 0, 0), radius=0.05):
@@ -42,17 +43,30 @@ def make_marker(is_add, id, xyz, namespace="live_readings", rgb=(1.0, 0, 0), rad
     return msg
 
 
+def is_in_sphere(vector):
+    for i in range(len(SPHERE_RADIUS)):
+        (trans, rot) = tf_listener.lookupTransform('world', 'control_point{}'.format(i), rospy.Time(0))
+        sphere_center = np.array(trans)
+        distance = np.linalg.norm(sphere_center - vector)
+        if distance < SPHERE_RADIUS[i]:
+            return True
+    return False
+
 def save_point(vector, id=-1):
     global memory, idx
 
     if memory:
         for point in memory:
-            if np.linalg.norm(vector - point) < THRESHOLD:
-                #pass
+
+            cond1 = np.linalg.norm(vector - point) < THRESHOLD
+            cond2 = is_in_sphere(vector)
+            if cond1 or cond2:
+                # print("Not saving anything")
                 return 0
 
     memory.append(vector)
     idx = idx + 1
+    # print(idx - 100000)
     msg = make_marker(True, idx, vector, namespace="memory", rgb=(0, 1.0, 0))
     # visualization
     pub.publish(msg)
@@ -149,6 +163,3 @@ for i in range(4):
 pub = rospy.Publisher('visualization_marker', Marker, queue_size=100)
 pub2 = rospy.Publisher('obstacle_points', PointArray, queue_size=100)
 rospy.spin()
-
-# TODO Add the transform feature (krishna quaternions)
-# TODO Memory of objects (have into account if it's  new point and visualize those points, is it in the body spheres)
