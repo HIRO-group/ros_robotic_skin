@@ -9,6 +9,7 @@ from visualization_msgs.msg import Marker
 from ros_robotic_skin.msg import PointArray
 from ros_robotic_skin.msg import IdxPoint
 from geometry_msgs.msg import Point
+import re
 
 
 class ProximityListener(object):
@@ -19,8 +20,8 @@ class ProximityListener(object):
         self.SPHERE_RADIUS = (0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27)
 
         rospy.init_node('proximity_listener')
-        self.pub = rospy.Publisher('visualization_marker', Marker, queue_size=100)
-        self.pub_object = rospy.Publisher('obstacle_points', IdxPoint, queue_size=100)
+        self.pub_visualization = rospy.Publisher('visualization_marker', Marker, queue_size=1)
+        self.pub_object = rospy.Publisher('obstacle_points', IdxPoint, queue_size=1)
 
         self.tf_listener = tf.TransformListener()
 
@@ -131,7 +132,7 @@ class ProximityListener(object):
         # visualization of memory points
         self.memory_idx = self.memory_idx + 1
         msg = self.__make_marker(True, self.memory_idx, vector, namespace="memory", rgb=(0, 1.0, 0))
-        self.pub.publish(msg)
+        self.pub_visualization.publish(msg)
 
 
         self.__publish_live_obstacle(vector, id)
@@ -174,9 +175,9 @@ class ProximityListener(object):
 
         # create the physical point at the bottom of the robot
         point = Point()
-        point.x = float(0)
-        point.y = float(0)
-        point.z = float(0)
+        point.x = float(10)
+        point.y = float(10)
+        point.z = float(10)
         idx_point.point = point
 
         self.pub_object.publish(idx_point)
@@ -192,10 +193,12 @@ class ProximityListener(object):
         data : LaserScan
             data.ranges[0] contains the distance data for the proximity sensor
         """
+        #TODO: test that this is returning the correct numbers
+        point_id = int(re.match('.*?([0-9]+)$', data.header.frame_id).group(1))
         distance_reading = data.ranges[0]
         while True:
             try:
-                (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(data.header.frame_id[-1]), rospy.Time(0))
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
                 break
             except (tf.LookupException,
                     tf.ConnectivityException,
@@ -203,12 +206,11 @@ class ProximityListener(object):
                 continue
 
         if distance_reading == float('inf'):
-            # Delete old point
-            point_id = int(data.header.frame_id[-1])
+            # Delete old point            
             msg = self.__make_marker(False, point_id, np.array([0, 0, 0]))
             # Remove visualization
-            self.pub.publish(msg)
-            self.__publish_no_obstacle(int(data.header.frame_id[-1]))
+            self.pub_visualization.publish(msg)
+            self.__publish_no_obstacle(point_id)
 
 
         else:
@@ -219,14 +221,15 @@ class ProximityListener(object):
             position_vector = translation1 + r.apply(translation2)
 
             # Visualize new point
-            msg = self.__make_marker(True, int(data.header.frame_id[-1]),   position_vector, radius=0.07)
-            self.pub.publish(msg)
+            msg = self.__make_marker(True, point_id, position_vector, radius=0.07)
+            self.pub_visualization.publish(msg)
 
-            # Save point in memory
-            self.__save_point(position_vector, id=int(data.header.frame_id[-1]))
+            # Publish to obs avoidance
+            # self.__save_point(position_vector, id=point_id)
 
 
 if __name__ == "__main__":
-    num_sensors = 4
-    distance_threshold = 0.05
+    
+    num_sensors = 16
+    distance_threshold = 0.3
     proximity_listener = ProximityListener(num_sensors, distance_threshold, use_memory=False)
