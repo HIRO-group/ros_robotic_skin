@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="proximity">
 
-    <xacro:macro name="proximity" params="proximity_id:='0' radius:='0.2' theta:='0.0' z0:='0' type:='fixed' freq:='100' connected_to:=''">
+    <xacro:macro name="proximity" params="proximity_id:='0' radius:=0.2 theta:=0.0 z0:=0 type:='fixed' freq:='100' connected_to:='' x0:=0.0 y0:=0.0">
         <!-- Connect proximity sensor to ${connected_to} -->
         <joint name="proximity${proximity_id}_to_${connected_to}" type="${type}">
             <parent link="${connected_to}"/>
             <child link="proximity_link${proximity_id}"/>
-            <origin xyz="${radius*sin(theta)} ${radius*cos(theta)} ${z0}" rpy=" 0 0 ${pi/2 -theta}" />
+            <origin xyz="${x0+radius*sin(theta)} ${y0+radius*cos(theta)} ${z0}" rpy=" 0 0 ${pi/2 -theta}" />
         </joint>
 
         <!-- Box that represents sensor -->
@@ -40,8 +40,8 @@
                         </horizontal>
                     </scan>
                     <range>
-                        <min>0.05</min>
-                        <max>1.2</max>
+                        <min>0.02</min>
+                        <max>2.0</max>
                         <resolution>0.01</resolution>
                     </range>
                 </ray>
