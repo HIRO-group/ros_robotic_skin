@@ -17,16 +17,16 @@ class ProximityListener(object):
         self.object_distance_threshold = distance_threshold
         self.memory_idx = 100000
         self.SPHERE_RADIUS = (0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27)
-        
+
         rospy.init_node('proximity_listener')
         self.pub = rospy.Publisher('visualization_marker', Marker, queue_size=100)
         self.pub_object = rospy.Publisher('obstacle_points', IdxPoint, queue_size=100)
 
         self.tf_listener = tf.TransformListener()
-        
+
         for i in range(num_sensors):
             rospy.Subscriber("proximity_data{}".format(i), LaserScan, self.__callback)
-        
+
         rospy.spin()
 
 
@@ -36,11 +36,11 @@ class ProximityListener(object):
 
         Parameters
         ----------
-        is_add: bool 
+        is_add: bool
             is point being added or deleted
         id: int
-            unique identifier of object to be added 
-        xyz: list 
+            unique identifier of object to be added
+        xyz: list
             xyz position of new point
         namespace: string
             namespace for object visualization in rvis, used to toggle visualization
@@ -51,7 +51,7 @@ class ProximityListener(object):
 
         Returns
         -------
-        msg: Marker 
+        msg: Marker
             New point to be visualized in Rvis
         """
         msg = Marker()
@@ -83,17 +83,17 @@ class ProximityListener(object):
 
     def __is_in_sphere(self, vector):
         """
-        Determine if an obstacle is inside of the robot arm and therefore not 
+        Determine if an obstacle is inside of the robot arm and therefore not
         really an obstacle
 
         Parameters
         ----------
-        vector: list 
+        vector: list
              xyz position of potential obstacle point
 
         Returns
         -------
-        bool: 
+        bool:
             True if point is a new obstacle
 
         """
@@ -112,8 +112,8 @@ class ProximityListener(object):
 
         Parameters
         ----------
-        id: int 
-            unique identifier of object to be added 
+        id: int
+            unique identifier of object to be added
         vector: list
             xyz position of new obstacle point
         """
@@ -143,8 +143,8 @@ class ProximityListener(object):
 
         Parameters
         ----------
-        id: int 
-            unique identifier of object to be added 
+        id: int
+            unique identifier of object to be added
         vector: list
             xyz position of new obstacle point
         """
@@ -166,8 +166,8 @@ class ProximityListener(object):
 
         Parameters
         ----------
-        id: int 
-            unique identifier of object to be removed 
+        id: int
+            unique identifier of object to be removed
         """
         idx_point = IdxPoint()
         idx_point.idx = id
@@ -177,19 +177,19 @@ class ProximityListener(object):
         point.x = float(0)
         point.y = float(0)
         point.z = float(0)
-        idx_point.point = point        
+        idx_point.point = point
 
         self.pub_object.publish(idx_point)
 
 
     def __callback(self, data):
         """
-        Process proximity sensor data to determine of an object should be 
+        Process proximity sensor data to determine of an object should be
         added to the avoidance controller list
 
         Parameters
         ----------
-        data : LaserScan 
+        data : LaserScan
             data.ranges[0] contains the distance data for the proximity sensor
         """
         distance_reading = data.ranges[0]
@@ -221,7 +221,7 @@ class ProximityListener(object):
             # Visualize new point
             msg = self.__make_marker(True, int(data.header.frame_id[-1]),   position_vector, radius=0.07)
             self.pub.publish(msg)
-            
+
             # Save point in memory
             self.__save_point(position_vector, id=int(data.header.frame_id[-1]))
 
@@ -230,4 +230,3 @@ if __name__ == "__main__":
     num_sensors = 4
     distance_threshold = 0.05
     proximity_listener = ProximityListener(num_sensors, distance_threshold, use_memory=False)
-    

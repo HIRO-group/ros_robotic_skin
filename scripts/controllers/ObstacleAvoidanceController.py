@@ -23,18 +23,20 @@ class ObstacleAvoidanceController(CartesianPositionController):
         super(ObstacleAvoidanceController, self).__init__()
         self.control_points = []
         self.obstacle_points = [np.array([0, 0, 0])]  # Very far away
+        # self.obstacle_points = []  # Very far away
         self.obstacle_id = [-1]
         self.Vi = np.zeros(3)
 
-        rospy.Subscriber("obstacle_points", IdxPoint, self.callback_live_points)
-    
+        rospy.Subscriber("obstacle_points", PointArray, self.callback_live_points)
+        # rospy.Subscriber("obstacle_points", PointArray, self.callback_memory_points)
+
     def callback_live_points(self, data):
         id = data.idx
         if id in self.obstacle_id:
             idx = self.obstacle_id.index(id)
             self.obstacle_id.pop(idx)
             self.obstacle_points.pop(idx)
-            
+
         self.obstacle_id.append(id)
         self.obstacle_points.append(np.array([data.point.x, data.point.y, data.point.z]))
         #print(len(self.obstacle_points))
@@ -361,7 +363,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
 if __name__ == "__main__":
 
     obstacle_avoidance_controller = ObstacleAvoidanceController()
-    trajectory = np.array([[0.5, 0, 0.8], [0.8, 0, 0.8]])
+    trajectory = np.array([[0.5, 0, 0.3], [0.8, 0, 0.3]])
     while not rospy.is_shutdown():
         obstacle_avoidance_controller.go_to_point(trajectory[0])
         obstacle_avoidance_controller.go_to_point(trajectory[1])
