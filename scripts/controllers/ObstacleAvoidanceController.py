@@ -27,7 +27,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         self.obstacle_id = [-1]
         self.Vi = np.zeros(3)
 
-        rospy.Subscriber("obstacle_points", PointArray, self.callback_live_points)
+        rospy.Subscriber("obstacle_points", IdxPoint, self.callback_live_points)
         # rospy.Subscriber("obstacle_points", PointArray, self.callback_memory_points)
 
     def callback_live_points(self, data):

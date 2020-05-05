@@ -26,7 +26,14 @@ class ProximityListener(object):
         self.tf_listener = tf.TransformListener()
 
         for i in range(num_sensors):
-            rospy.Subscriber("proximity_data{}".format(i), LaserScan, self.__callback)
+            if i<16:
+                rospy.Subscriber("proximity_data{}".format(i), LaserScan, self.__callback0)
+            elif i>=16 and i<32:
+                rospy.Subscriber("proximity_data{}".format(i), LaserScan, self.__callback1)
+            elif i>=32 and i<48:
+                rospy.Subscriber("proximity_data{}".format(i), LaserScan, self.__callback2)
+            else:
+                rospy.Subscriber("proximity_data{}".format(i), LaserScan, self.__callback3)
 
         rospy.spin()
 
@@ -159,7 +166,7 @@ class ProximityListener(object):
         point.z = vector[2]
         idx_point.point = point
 
-        self.pub_object.publish(idx_point)
+        #self.pub_object.publish(idx_point)
 
     def __publish_no_obstacle(self, id):
         """
@@ -180,10 +187,10 @@ class ProximityListener(object):
         point.z = float(10)
         idx_point.point = point
 
-        self.pub_object.publish(idx_point)
+        #self.pub_object.publish(idx_point)
 
 
-    def __callback(self, data):
+    def __callback0(self, data):
         """
         Process proximity sensor data to determine of an object should be
         added to the avoidance controller list
@@ -210,7 +217,137 @@ class ProximityListener(object):
             msg = self.__make_marker(False, point_id, np.array([0, 0, 0]))
             # Remove visualization
             self.pub_visualization.publish(msg)
-            self.__publish_no_obstacle(point_id)
+            #self.__publish_no_obstacle(point_id)
+
+
+        else:
+            # Locate point in 3D space
+            translation1 = np.array(trans)
+            r = Rotation.from_quat(rot)
+            translation2 = np.array([data.ranges[0], 0, 0])  # Apply rotation in rot to this vector
+            position_vector = translation1 + r.apply(translation2)
+
+            # Visualize new point
+            msg = self.__make_marker(True, point_id, position_vector, radius=0.07)
+            self.pub_visualization.publish(msg)
+
+            # Publish to obs avoidance
+            # self.__save_point(position_vector, id=point_id)
+    def __callback1(self, data):
+        """
+        Process proximity sensor data to determine of an object should be
+        added to the avoidance controller list
+
+        Parameters
+        ----------
+        data : LaserScan
+            data.ranges[0] contains the distance data for the proximity sensor
+        """
+        #TODO: test that this is returning the correct numbers
+        point_id = int(re.match('.*?([0-9]+)$', data.header.frame_id).group(1))
+        distance_reading = data.ranges[0]
+        while True:
+            try:
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
+                break
+            except (tf.LookupException,
+                    tf.ConnectivityException,
+                    tf.ExtrapolationException):
+                continue
+
+        if distance_reading == float('inf'):
+            # Delete old point            
+            msg = self.__make_marker(False, point_id, np.array([0, 0, 0]))
+            # Remove visualization
+            self.pub_visualization.publish(msg)
+            #self.__publish_no_obstacle(point_id)
+
+
+        else:
+            # Locate point in 3D space
+            translation1 = np.array(trans)
+            r = Rotation.from_quat(rot)
+            translation2 = np.array([data.ranges[0], 0, 0])  # Apply rotation in rot to this vector
+            position_vector = translation1 + r.apply(translation2)
+
+            # Visualize new point
+            msg = self.__make_marker(True, point_id, position_vector, radius=0.07)
+            self.pub_visualization.publish(msg)
+
+            # Publish to obs avoidance
+            # self.__save_point(position_vector, id=point_id)
+    def __callback2(self, data):
+        """
+        Process proximity sensor data to determine of an object should be
+        added to the avoidance controller list
+
+        Parameters
+        ----------
+        data : LaserScan
+            data.ranges[0] contains the distance data for the proximity sensor
+        """
+        #TODO: test that this is returning the correct numbers
+        point_id = int(re.match('.*?([0-9]+)$', data.header.frame_id).group(1))
+        distance_reading = data.ranges[0]
+        while True:
+            try:
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
+                break
+            except (tf.LookupException,
+                    tf.ConnectivityException,
+                    tf.ExtrapolationException):
+                continue
+
+        if distance_reading == float('inf'):
+            # Delete old point            
+            msg = self.__make_marker(False, point_id, np.array([0, 0, 0]))
+            # Remove visualization
+            self.pub_visualization.publish(msg)
+            #self.__publish_no_obstacle(point_id)
+
+
+        else:
+            # Locate point in 3D space
+            translation1 = np.array(trans)
+            r = Rotation.from_quat(rot)
+            translation2 = np.array([data.ranges[0], 0, 0])  # Apply rotation in rot to this vector
+            position_vector = translation1 + r.apply(translation2)
+
+            # Visualize new point
+            msg = self.__make_marker(True, point_id, position_vector, radius=0.07)
+            self.pub_visualization.publish(msg)
+
+            # Publish to obs avoidance
+            # self.__save_point(position_vector, id=point_id)
+    
+    def __callback3(self, data):
+        """
+        Process proximity sensor data to determine of an object should be
+        added to the avoidance controller list
+
+        Parameters
+        ----------
+        data : LaserScan
+            data.ranges[0] contains the distance data for the proximity sensor
+        """
+        #TODO: test that this is returning the correct numbers
+        point_id = int(re.match('.*?([0-9]+)$', data.header.frame_id).group(1))
+        distance_reading = data.ranges[0]
+        while True:
+            try:
+                (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
+                break
+            except (tf.LookupException,
+                    tf.ConnectivityException,
+                    tf.ExtrapolationException):
+                continue
+
+        if distance_reading == float('inf'):
+            # Delete old point            
+            msg = self.__make_marker(False, point_id, np.array([0, 0, 0]))
+            # Remove visualization
+            self.pub_visualization.publish(msg)
+            #self.__publish_no_obstacle(point_id)
 
 
         else:
@@ -228,8 +365,9 @@ class ProximityListener(object):
             # self.__save_point(position_vector, id=point_id)
 
 
+
 if __name__ == "__main__":
     
-    num_sensors = 16
+    num_sensors = 64
     distance_threshold = 0.3
     proximity_listener = ProximityListener(num_sensors, distance_threshold, use_memory=False)
