@@ -4,7 +4,7 @@ import rospy
 import tf
 from sensor_msgs.msg import LaserScan
 import numpy as np
-from scipy.spatial.transform import Rotation
+from pyquaternion import Quaternion
 from visualization_msgs.msg import Marker
 # from ros_robotic_skin.msg import PointArray
 # from ros_robotic_skin.msg import IdxPoint
@@ -22,9 +22,13 @@ class ProximityListener(object):
         # Variables for printing stats
         self.number_of_vectors = 0
         self.time_reading2reading = []
-        self.init_time = time()
-        self.time_specific_sensor = time()
+        self.init_time = None
+        self.time_specific_sensor = None
         self.num_sensors = num_sensors
+        self.end_time = None
+        self.translation1 = np.array([1, 1, 1])
+        self.translation2 = np.array([1, 0, 0])
+        self.r = Quaternion([0, 0, 0, 1])
 
         rospy.init_node('proximity_listener')
         rospy.on_shutdown(self.__shutdown_callback)
@@ -53,6 +57,10 @@ class ProximityListener(object):
         distance_reading = data.ranges[0]
 
         # Stats
+        if not self.init_time:
+            self.init_time = time()
+            self.time_specific_sensor = time()
+
         if point_id == ID_STATS:
             self.time_reading2reading.append(time() - self.time_specific_sensor)
             self.time_specific_sensor = time()
@@ -72,31 +80,39 @@ class ProximityListener(object):
             # Get proximity sensor's pose
             try:
                 (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
+                self.translation1[0] = trans[0]
+                self.translation1[1] = trans[1]
+                self.translation1[2] = trans[2]
+                self.r[0] = rot[0]
+                self.r[1] = rot[1]
+                self.r[2] = rot[2]
+                self.r[3] = rot[3]
+                self.translation2[0] = distance_reading
+
+                position_vector = self.translation1 + self.r.rotate(self.translation2)
+                # position_vector = distance_reading
+                # self.live_points[point_id] = position_vector
+                # Stats
 
             except (tf.LookupException,
                     tf.ConnectivityException,
                     tf.ExtrapolationException):
-                (trans, rot) = ([0.0, 0.0, 0.0], [0, 0, 0, 1])
-            # Locate point in 3D space
-            translation1 = np.array(trans)
-            r = Rotation.from_quat(rot)
-            translation2 = np.array([distance_reading, 0, 0])  # Apply rotation in rot to this vector
-            position_vector = translation1 + r.apply(translation2)
-            # position_vector = distance_reading
-            self.live_points[point_id] = position_vector
-            # Stats
-            if point_id == ID_STATS:
-                self.number_of_vectors = self.number_of_vectors + 1
+                print("Except")
+                pass
+                # (trans, rot) = ([0.0, 0.0, 0.0], [0, 0, 0, 1])
+        if point_id == ID_STATS:
+            self.number_of_vectors = self.number_of_vectors + 1
+        self.end_time = time()
+
 
     def __shutdown_callback(self):
         """
         Print some stats at shutdown
         """
-        end_time = time()
         print("Number of sensors in use: {}".format(self.num_sensors))
         print("Sensor being tracked: {}".format(ID_STATS))
         print("-------------------------------------------------")
-        print("Vectors computed per second by i: {}".format(self.number_of_vectors/(end_time-self.init_time)))
+        print("Vectors computed per second by i: {}".format(self.number_of_vectors/(self.end_time-self.init_time)))
         self.time_reading2reading.pop(0)
         avg = np.average(self.time_reading2reading)
         print("Min time i: {}".format(min(self.time_reading2reading)))
