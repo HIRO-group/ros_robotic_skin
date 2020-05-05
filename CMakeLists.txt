@@ -140,7 +140,6 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(control_point_visualizer src/control_point_visualizer.cpp)
 add_executable(KDL_server src/KDL_server.cpp)
 
 
@@ -155,7 +154,6 @@ add_executable(KDL_server src/KDL_server.cpp)
 add_dependencies(KDL_server ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(control_point_visualizer ${catkin_LIBRARIES})
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
 
 #############

@@ -90,7 +90,6 @@ class ProximityListener(object):
                 self.translation2[0] = distance_reading
 
                 position_vector = self.translation1 + self.r.rotate(self.translation2)
-                # position_vector = distance_reading
                 # self.live_points[point_id] = position_vector
                 # Stats
 
@@ -99,11 +98,10 @@ class ProximityListener(object):
                     tf.ExtrapolationException):
                 print("Except")
                 pass
-                # (trans, rot) = ([0.0, 0.0, 0.0], [0, 0, 0, 1])
+
         if point_id == ID_STATS:
             self.number_of_vectors = self.number_of_vectors + 1
         self.end_time = time()
-
 
     def __shutdown_callback(self):
         """
