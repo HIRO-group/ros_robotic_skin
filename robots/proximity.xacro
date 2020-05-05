@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="proximity">
 
-    <xacro:macro name="proximity" params="proximity_id:='0' radius:=0.2 theta:=0.0 z0:=0 type:='fixed' freq:='100' connected_to:='' x0:=0.0 y0:=0.0">
+    <xacro:macro name="proximity" params="proximity_id:='0' radius:=0.2 theta:=0.0 z0:=0 type:='fixed' connected_to:='' x0:=0.0 y0:=0.0">
+        <xacro:property name="freq" value="100.0"/>
         <!-- Connect proximity sensor to ${connected_to} -->
         <joint name="proximity${proximity_id}_to_${connected_to}" type="${type}">
             <parent link="${connected_to}"/>
