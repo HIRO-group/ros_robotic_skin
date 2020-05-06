@@ -12,6 +12,8 @@ from visualization_msgs.msg import Marker
 import re
 from time import time
 
+i = 0
+
 
 class ProximityListener(object):
     def __init__(self, num_sensors, distance_threshold, use_memory=True):
@@ -26,9 +28,11 @@ class ProximityListener(object):
         self.time_specific_sensor = None
         self.num_sensors = num_sensors
         self.end_time = None
-        self.translation1 = np.array([1, 1, 1])
-        self.translation2 = np.array([1, 0, 0])
-        self.r = Quaternion([0, 0, 0, 1])
+        self.translation1 = [np.array([1, 1, 1]) for i in range(num_sensors)]
+        self.translation2 = [np.array([1, 0, 0]) for i in range(num_sensors)]
+        self.r = [Quaternion([0, 0, 0, 1]) for i in range(num_sensors)]
+        self.msg_trans = [[0, 0, 0] for i in range(num_sensors)]
+        self.msg_rot = [[0, 0, 0, 1] for i in range(num_sensors)]
 
         rospy.init_node('proximity_listener')
         rospy.on_shutdown(self.__shutdown_callback)
@@ -54,7 +58,6 @@ class ProximityListener(object):
         """
 
         point_id = int(re.match('.*?([0-9]+)$', data.header.frame_id).group(1))
-        distance_reading = data.ranges[0]
 
         # Stats
         if not self.init_time:
@@ -64,39 +67,42 @@ class ProximityListener(object):
         if point_id == ID_STATS:
             self.time_reading2reading.append(time() - self.time_specific_sensor)
             self.time_specific_sensor = time()
-            # self.readings_list.append(distance_reading)
 
-        if distance_reading == float('inf'):
+        if data.ranges[0] == float('inf'):
             # Delete old point
             # msg = self.__make_marker(False, point_id, np.array([0, 0, 0]))
             # Remove visualization
             # self.pub_visualization.publish(msg)
             # self.__publish_no_obstacle(point_id)
-            self.live_points[point_id] = np.array([20.0, 20.0, 20.0])
-            if point_id == ID_STATS:
-                self.readings_list.append(-1)
+            # self.live_points[point_id] = np.array([20.0, 20.0, 20.0])
+            pass
 
         else:
             # Get proximity sensor's pose
             try:
-                (trans, rot) = self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
-                self.translation1[0] = trans[0]
-                self.translation1[1] = trans[1]
-                self.translation1[2] = trans[2]
-                self.r[0] = rot[0]
-                self.r[1] = rot[1]
-                self.r[2] = rot[2]
-                self.r[3] = rot[3]
-                self.translation2[0] = distance_reading
+                (self.msg_trans[point_id], self.msg_rot[point_id]) = \
+                    self.tf_listener.lookupTransform('world', 'proximity_link{}'.format(point_id), rospy.Time(0))
+                self.translation1[point_id][0] = self.msg_trans[point_id][0]
+                self.translation1[point_id][1] = self.msg_trans[point_id][1]
+                self.translation1[point_id][2] = self.msg_trans[point_id][2]
+                self.r[point_id][0] = self.msg_rot[point_id][0]
+                self.r[point_id][1] = self.msg_rot[point_id][1]
+                self.r[point_id][2] = self.msg_rot[point_id][2]
+                self.r[point_id][3] = self.msg_rot[point_id][3]
+                self.translation2[point_id][0] = data.ranges[0]
 
-                position_vector = self.translation1 + self.r.rotate(self.translation2)
+                self.translation1[point_id] + self.r[point_id].rotate(self.translation2[point_id])
+                if point_id == ID_STATS:
+                    global i
+                    print(i)
+                    i = i + 1
                 # self.live_points[point_id] = position_vector
                 # Stats
 
             except (tf.LookupException,
                     tf.ConnectivityException,
                     tf.ExtrapolationException):
-                print("Except")
+                # print("Except")
                 pass
 
         if point_id == ID_STATS:
