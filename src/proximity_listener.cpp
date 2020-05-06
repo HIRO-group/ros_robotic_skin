@@ -108,7 +108,7 @@ void ProximityListener::start(int argc, char **argv)
             points[i].x = live_points[i].x();
             points[i].y = live_points[i].y();
             points[i].z = live_points[i].z();
-            msg.point.push_back(points[i]);
+            msg.points.push_back(points[i]);
         }
         pub.publish<ros_robotic_skin::PointArray>(msg);
         rate.sleep();
