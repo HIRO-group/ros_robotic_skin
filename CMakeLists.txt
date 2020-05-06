@@ -141,6 +141,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(KDL_server src/KDL_server.cpp)
+add_executable(proximity_listener src/proximity_listener.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -152,9 +153,12 @@ add_executable(KDL_server src/KDL_server.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(KDL_server ros_robotic_skin_gencpp)
+add_dependencies(proximity_listener ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
+target_link_libraries(proximity_listener ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##
