@@ -73,9 +73,9 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
 
         translation1[sensor_number] = translation1[sensor_number] + (rotation[sensor_number] * translation2[sensor_number]);
         live_points[sensor_number] = translation1[sensor_number];
-        ROS_DEBUG("Number of callbacks: %d", num_callbacks++);
-        ROS_DEBUG("Sensor number: %d", sensor_number);
-        ROS_DEBUG("Point in space: [%f]", translation1[146].z());
+        // ROS_INFO("Number of callbacks: %d", num_callbacks++);
+        // ROS_INFO("Sensor number: %d", sensor_number);
+        // ROS_INFO("Point in space: [%f]", live_points[146].z());
 
 
 
