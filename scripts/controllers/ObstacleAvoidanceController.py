@@ -12,7 +12,7 @@ NUMBER_OF_CONTROL_POINTS = 1
 MAX_RATE = 1.0  # Obstacle velocity estimation equation
 ALPHA = 6.0
 C = 5.0
-RHO = 0.4
+RHO = 2.0
 V_MAX = 0.21
 Q_DOT_MIN = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])
 Q_DOT_MAX = np.array([+2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100])
@@ -24,10 +24,13 @@ class ObstacleAvoidanceController(CartesianPositionController):
         self.control_points = []
         self.obstacle_points = [np.array([500, 500, 500])]  # Very far away
         self.Vi = np.zeros(3)
+        self.sphere_radiuses = (0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27)
         rospy.Subscriber("live_points", PointArray, self.CallbackLivePoints)
 
     def CallbackLivePoints(self, msg):
-        self.obstacle_points = np.array(msg.points)
+        self.obstacle_points = []
+        for i in range(len(msg.points)):
+            self.obstacle_points.append(np.array([msg.points[i].x, msg.points[i].y, msg.points[i].z]))
 
     def get_control_points(self):
         """
@@ -79,7 +82,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         for i in range(number_of_control_points):
             d_vectors_i = []
             for j in range(number_of_obstacle_points):
-                d_vectors_i = d_vectors_i + [self.obstacle_points[j] - self.control_points[i]]
+                d_vectors_i = d_vectors_i + [self.obstacle_points[j] - self.control_points[i] - self.sphere_radiuses[i]]
             D_vectors = D_vectors + [d_vectors_i]
         return D_vectors
 
@@ -315,15 +318,15 @@ class ObstacleAvoidanceController(CartesianPositionController):
         while np.linalg.norm(self.error) > self.error_threshold:
             # Update lists
             self.get_control_points()
-            self.get_obstacle_points()
+            # self.get_obstacle_points()
 
             # Obtained the desired end effector velocity, in the case there were no obstacles
             xd_dot = self.compute_command_velocity(position_desired)
 
             # Modify the velocity with the obstacles information
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
-            xc_dot = self.end_effector_algorithm(xd_dot)
-            # xc_dot = xd_dot
+            # xc_dot = self.end_effector_algorithm(xd_dot)
+            xc_dot = xd_dot
 
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
