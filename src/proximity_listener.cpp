@@ -98,19 +98,23 @@ void ProximityListener::start(int argc, char **argv)
     ROS_INFO("2s sleep done ");
 
     geometry_msgs::Point points[num_sensors];
+    //std::vector<geometry_msgs::Point>points(num_sensors);
     ros_robotic_skin::PointArray msg;
 
     ros::Rate rate(50.0);
     while (ros::ok())
     {
+        msg = ros_robotic_skin::PointArray();
         for (int i = 0; i < num_sensors; i++)
         {
+
             points[i].x = live_points[i].x();
             points[i].y = live_points[i].y();
             points[i].z = live_points[i].z();
             msg.points.push_back(points[i]);
         }
         pub.publish<ros_robotic_skin::PointArray>(msg);
+
         rate.sleep();
     }
 }
