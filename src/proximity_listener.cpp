@@ -117,10 +117,28 @@ void ProximityListener::start()
     }
 }
 
+int sensor_count()
+{
+    ros::master::V_TopicInfo topic_infos;
+    ros::master::getTopics(topic_infos);
+
+    int sensor_count = 0;
+    for (ros::master::V_TopicInfo::iterator it = topic_infos.begin() ; it != topic_infos.end(); it++)
+    {
+        const ros::master::TopicInfo& info = *it;
+        if (info.name.find("proximity_data") != std::string::npos){
+            sensor_count++;
+        }
+    }
+    ROS_INFO(std::to_string(sensor_count).c_str());
+    return sensor_count;
+}
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_listener");
-    ProximityListener proximity_listener(argc, argv, 162, 0.03);
+    ProximityListener proximity_listener(argc, argv, sensor_count(), 0.03);
+    // Publish to parameter server
     proximity_listener.start();
 
     return 0;

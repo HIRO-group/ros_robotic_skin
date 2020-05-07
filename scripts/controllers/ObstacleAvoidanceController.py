@@ -317,8 +317,8 @@ class ObstacleAvoidanceController(CartesianPositionController):
 
             # Modify the velocity with the obstacles information
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
-            # xc_dot = self.end_effector_algorithm(xd_dot)
-            xc_dot = xd_dot
+            xc_dot = self.end_effector_algorithm(xd_dot)
+            # xc_dot = xd_dot
 
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)

@@ -84,8 +84,7 @@ void ProximityVisualizer::stop()
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_visualizer", ros::init_options::NoSigintHandler);
-    ros::master::V_TopicInfo topic_infos;
-    ros::master::getTopics(topic_infos);
+
     ProximityVisualizer proximity_visualizer;
     proximity_visualizer.start();
 }
