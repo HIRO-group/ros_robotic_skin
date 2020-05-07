@@ -9,39 +9,49 @@
 #include <tf/transform_listener.h>
 #include <visualization_msgs/Marker.h>
 #include "ros_robotic_skin/PointArray.h"
+#include <math.h>
+#include <vector>
 
 int num_callbacks = 0;
 class ProximityListener
 {
 private:
     int num_sensors;
+    int num_control_points;
     float distance_threshold;
+    std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27};
     std::unique_ptr<Eigen::Vector3d[]> live_points;
 
     void sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
     std::unique_ptr<ros::Subscriber[]> sub;
     std::unique_ptr<Eigen::Vector3d[]> translation1;
     std::unique_ptr<Eigen::Vector3d[]> translation2;
+    std::unique_ptr<Eigen::Vector3d[]> translation_control_points;
     std::unique_ptr<Eigen::Quaterniond[]> rotation;
     std::unique_ptr<tf::StampedTransform[]> transform;
+    std::unique_ptr<tf::StampedTransform[]> transform_control_points;
     tf::TransformListener listener;
+    bool isInSphere(Eigen::Vector3d);
 public:
     ros::NodeHandle n;
-    ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold);
+    ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold, int num_control_points);
     ~ProximityListener();
     void start();
 };
 
-ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold)
+ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold, int num_control_points)
 {
     distance_threshold = distance_threshold;
     this->live_points = std::make_unique<Eigen::Vector3d[]>(num_sensors);
+    this->num_control_points = num_control_points;
     this->num_sensors = num_sensors;
     this->sub = std::make_unique<ros::Subscriber[]>(num_sensors);
     this->translation1 = std::make_unique<Eigen::Vector3d[]>(num_sensors);
     this->translation2 = std::make_unique<Eigen::Vector3d[]>(num_sensors);
     this->rotation = std::make_unique<Eigen::Quaterniond[]>(num_sensors);
     this->transform = std::make_unique<tf::StampedTransform[]>(num_sensors);
+    this->transform_control_points = std::make_unique<tf::StampedTransform[]>(num_control_points); //////////////////////////////////
+    this->translation_control_points = std::make_unique<Eigen::Vector3d[]>(num_control_points); //////////////////
     for (int i = 0; i < num_sensors; i++)
     {
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
@@ -72,8 +82,7 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
         rotation[sensor_number].y() = transform[sensor_number].getRotation().getY();
         rotation[sensor_number].z() = transform[sensor_number].getRotation().getZ();
 
-        translation1[sensor_number] = translation1[sensor_number] + (rotation[sensor_number] * translation2[sensor_number]);
-        live_points[sensor_number] = translation1[sensor_number];
+        live_points[sensor_number] = translation1[sensor_number] + (rotation[sensor_number] * translation2[sensor_number]);
         // ROS_INFO("Number of callbacks: %d", num_callbacks++);
         // ROS_INFO("Sensor number: %d", sensor_number);
         // ROS_INFO("Point in space: [%f]", live_points[146].z());
@@ -106,11 +115,14 @@ void ProximityListener::start()
     {
         for (int i = 0; i < num_sensors; i++)
         {
-
-            points[i].x = live_points[i].x();
-            points[i].y = live_points[i].y();
-            points[i].z = live_points[i].z();
-            msg.points.push_back(points[i]);
+            if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]))
+            {
+            }else{
+                points[i].x = live_points[i].x();
+                points[i].y = live_points[i].y();
+                points[i].z = live_points[i].z();
+                msg.points.push_back(points[i]);
+            }
         }
         pub.publish<ros_robotic_skin::PointArray>(msg);
         msg.points.clear();
@@ -118,27 +130,41 @@ void ProximityListener::start()
     }
 }
 
-int sensor_count()
+bool ProximityListener::isInSphere(Eigen::Vector3d point_in_space)
+{
+    for (int i = 0; i < num_control_points; i++)
+    {
+        listener.lookupTransform("/world", "/control_point" + std::to_string(i),
+                                 ros::Time(0), transform_control_points[i]);
+        translation_control_points[i] << transform_control_points[i].getOrigin().getX(),
+                                         transform_control_points[i].getOrigin().getY(),
+                                         transform_control_points[i].getOrigin().getZ();
+        if ((point_in_space - translation_control_points[i]).norm() < sphere_radiuses[i])
+            return true;
+    }
+    return false;
+}
+
+int topic_count(std::string topic_substring)
 {
     ros::master::V_TopicInfo topic_infos;
     ros::master::getTopics(topic_infos);
 
-    int sensor_count = 0;
+    int count = 0;
     for (ros::master::V_TopicInfo::iterator it = topic_infos.begin() ; it != topic_infos.end(); it++)
     {
         const ros::master::TopicInfo& info = *it;
-        if (info.name.find("proximity_data") != std::string::npos){
-            sensor_count++;
+        if (info.name.find(topic_substring) != std::string::npos){
+            count++;
         }
     }
-    ROS_INFO(std::to_string(sensor_count).c_str());
-    return sensor_count;
+    return count;
 }
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_listener");
-    ProximityListener proximity_listener(argc, argv, sensor_count(), 0.03);
+    ProximityListener proximity_listener(argc, argv, topic_count("proximity_data"), 0.03, 7);
     proximity_listener.start();
 
     return 0;

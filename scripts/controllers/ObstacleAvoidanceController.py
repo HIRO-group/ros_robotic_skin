@@ -4,6 +4,7 @@ from CartesianPositionController import CartesianPositionController
 import numpy as np
 import rospy
 import tf
+from ros_robotic_skin.msg import PointArray
 
 NUMBER_OF_CONTROL_POINTS = 1
 
@@ -23,6 +24,10 @@ class ObstacleAvoidanceController(CartesianPositionController):
         self.control_points = []
         self.obstacle_points = [np.array([500, 500, 500])]  # Very far away
         self.Vi = np.zeros(3)
+        rospy.Subscriber("live_points", PointArray, self.CallbackLivePoints)
+
+    def CallbackLivePoints(self, msg):
+        self.obstacle_points = np.array(msg.points)
 
     def get_control_points(self):
         """

@@ -51,6 +51,12 @@ ProximityVisualizer::ProximityVisualizer()
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
+
+    marker.header.stamp = ros::Time::now();
+    marker.id = 0;
+    marker.pose.position.x = 0.0;
+    marker.pose.position.y = 0.0;
+    marker.pose.position.z = 0.0;
 }
 
 ProximityVisualizer::~ProximityVisualizer()
@@ -59,8 +65,16 @@ ProximityVisualizer::~ProximityVisualizer()
 
 void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr& msg)
 {
+    // Delete all points from previous callback
+    marker.action = visualization_msgs::Marker::DELETEALL;
+    marker_array.markers.push_back(marker);
+    pub.publish<visualization_msgs::MarkerArray>(marker_array);
+    marker_array.markers.clear();
+
+    // Add new points
+    marker.action = visualization_msgs::Marker::ADD;
     marker.header.stamp = ros::Time::now();
-    for (int i = 0; i < num_sensors; i++)
+    for (int i = 0; i < msg->points.size(); i++)
     {
         // Check that it's not 'nan' or 'inf'
         marker.id = i;
