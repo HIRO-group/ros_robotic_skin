@@ -1,10 +1,9 @@
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
-#include "Eigen/Geometry"
 #include "ros_robotic_skin/PointArray.h"
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
+#include "signal.h"
 
 class ProximityVisualizer
 {
@@ -25,7 +24,7 @@ public:
 ProximityVisualizer::ProximityVisualizer()
 {
     sub = n.subscribe<ros_robotic_skin::PointArray>("live_points", 1, &ProximityVisualizer::Callback, this);
-    pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+    pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
     // Same for all markers
     marker.ns = "Live Points";
     marker.action = visualization_msgs::Marker::ADD;
@@ -61,13 +60,13 @@ void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr&
         marker_array.markers.push_back(marker);
     }
     pub.publish<visualization_msgs::MarkerArray>(marker_array);
+    marker_array.markers.clear();
 }
 
 void ProximityVisualizer::start()
 {
     ros::spin();
 }
-
 
 int main(int argc, char **argv)
 {

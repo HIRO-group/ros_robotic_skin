@@ -93,18 +93,16 @@ void ProximityListener::start()
     ros::Publisher pub = n.advertise<ros_robotic_skin::PointArray>("live_points", 1);
     ros::AsyncSpinner spinner(0);
     spinner.start();
+    ROS_INFO("Loading Proximity Listener...");
     ros::Duration(2.0).sleep();
-
-    ROS_INFO("2s sleep done ");
+    ROS_INFO("Loaded");
 
     geometry_msgs::Point points[num_sensors];
-    //std::vector<geometry_msgs::Point>points(num_sensors);
     ros_robotic_skin::PointArray msg;
 
     ros::Rate rate(50.0);
     while (ros::ok())
     {
-        msg = ros_robotic_skin::PointArray();
         for (int i = 0; i < num_sensors; i++)
         {
 
@@ -114,7 +112,7 @@ void ProximityListener::start()
             msg.points.push_back(points[i]);
         }
         pub.publish<ros_robotic_skin::PointArray>(msg);
-
+        msg.points.clear();
         rate.sleep();
     }
 }

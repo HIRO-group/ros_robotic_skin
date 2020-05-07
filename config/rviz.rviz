@@ -4,10 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /TF1
         - /TF1/Frames1
-        - /RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 747
   - Class: rviz/Selection
@@ -105,18 +102,142 @@ Visualization Manager:
           Value: false
         proximity_link10:
           Value: false
+        proximity_link100:
+          Value: true
+        proximity_link101:
+          Value: true
+        proximity_link102:
+          Value: true
+        proximity_link103:
+          Value: true
+        proximity_link104:
+          Value: true
+        proximity_link105:
+          Value: true
+        proximity_link106:
+          Value: true
+        proximity_link107:
+          Value: true
+        proximity_link108:
+          Value: true
+        proximity_link109:
+          Value: true
         proximity_link11:
           Value: false
+        proximity_link110:
+          Value: true
+        proximity_link111:
+          Value: true
+        proximity_link112:
+          Value: true
+        proximity_link113:
+          Value: true
+        proximity_link114:
+          Value: true
+        proximity_link115:
+          Value: true
+        proximity_link116:
+          Value: true
+        proximity_link117:
+          Value: true
+        proximity_link118:
+          Value: true
+        proximity_link119:
+          Value: true
         proximity_link12:
           Value: false
+        proximity_link120:
+          Value: true
+        proximity_link121:
+          Value: true
+        proximity_link122:
+          Value: true
+        proximity_link123:
+          Value: true
+        proximity_link124:
+          Value: true
+        proximity_link125:
+          Value: true
+        proximity_link126:
+          Value: true
+        proximity_link127:
+          Value: true
+        proximity_link128:
+          Value: true
+        proximity_link129:
+          Value: true
         proximity_link13:
           Value: false
+        proximity_link130:
+          Value: true
+        proximity_link131:
+          Value: true
+        proximity_link132:
+          Value: true
+        proximity_link133:
+          Value: true
+        proximity_link134:
+          Value: true
+        proximity_link135:
+          Value: true
+        proximity_link136:
+          Value: true
+        proximity_link137:
+          Value: true
+        proximity_link138:
+          Value: true
+        proximity_link139:
+          Value: true
         proximity_link14:
           Value: false
+        proximity_link140:
+          Value: true
+        proximity_link141:
+          Value: true
+        proximity_link142:
+          Value: true
+        proximity_link143:
+          Value: true
+        proximity_link144:
+          Value: true
+        proximity_link145:
+          Value: true
+        proximity_link146:
+          Value: true
+        proximity_link147:
+          Value: true
+        proximity_link148:
+          Value: true
+        proximity_link149:
+          Value: true
         proximity_link15:
           Value: false
+        proximity_link150:
+          Value: true
+        proximity_link151:
+          Value: true
+        proximity_link152:
+          Value: true
+        proximity_link153:
+          Value: true
+        proximity_link154:
+          Value: true
+        proximity_link155:
+          Value: true
+        proximity_link156:
+          Value: true
+        proximity_link157:
+          Value: true
+        proximity_link158:
+          Value: true
+        proximity_link159:
+          Value: true
         proximity_link16:
           Value: false
+        proximity_link160:
+          Value: true
+        proximity_link161:
+          Value: true
         proximity_link17:
           Value: false
         proximity_link18:
@@ -133,141 +254,137 @@ Visualization Manager:
           Value: false
         proximity_link23:
           Value: false
-        proximity_link240:
-          Value: false
-        proximity_link241:
-          Value: false
-        proximity_link242:
-          Value: false
-        proximity_link243:
-          Value: false
-        proximity_link244:
-          Value: false
-        proximity_link245:
-          Value: false
-        proximity_link246:
-          Value: false
-        proximity_link247:
-          Value: false
-        proximity_link248:
-          Value: false
-        proximity_link249:
-          Value: false
-        proximity_link250:
-          Value: false
-        proximity_link251:
-          Value: false
-        proximity_link252:
-          Value: false
-        proximity_link253:
-          Value: false
-        proximity_link254:
-          Value: false
-        proximity_link255:
-          Value: false
+        proximity_link24:
+          Value: true
+        proximity_link25:
+          Value: true
+        proximity_link26:
+          Value: true
+        proximity_link27:
+          Value: true
+        proximity_link28:
+          Value: true
+        proximity_link29:
+          Value: true
         proximity_link3:
           Value: false
+        proximity_link30:
+          Value: true
+        proximity_link31:
+          Value: true
+        proximity_link32:
+          Value: true
+        proximity_link33:
+          Value: true
+        proximity_link34:
+          Value: true
+        proximity_link35:
+          Value: true
+        proximity_link36:
+          Value: true
+        proximity_link37:
+          Value: true
+        proximity_link38:
+          Value: true
+        proximity_link39:
+          Value: true
         proximity_link4:
           Value: false
+        proximity_link40:
+          Value: true
+        proximity_link41:
+          Value: true
+        proximity_link42:
+          Value: true
+        proximity_link43:
+          Value: true
+        proximity_link44:
+          Value: true
+        proximity_link45:
+          Value: true
+        proximity_link46:
+          Value: true
+        proximity_link47:
+          Value: true
+        proximity_link48:
+          Value: true
+        proximity_link49:
+          Value: true
         proximity_link5:
           Value: false
+        proximity_link50:
+          Value: true
+        proximity_link51:
+          Value: true
+        proximity_link52:
+          Value: true
+        proximity_link53:
+          Value: true
+        proximity_link54:
+          Value: true
+        proximity_link55:
+          Value: true
+        proximity_link56:
+          Value: true
+        proximity_link57:
+          Value: true
+        proximity_link58:
+          Value: true
+        proximity_link59:
+          Value: true
         proximity_link6:
           Value: false
+        proximity_link60:
+          Value: true
+        proximity_link61:
+          Value: true
+        proximity_link62:
+          Value: true
+        proximity_link63:
+          Value: true
+        proximity_link64:
+          Value: true
+        proximity_link65:
+          Value: true
+        proximity_link66:
+          Value: true
+        proximity_link67:
+          Value: true
+        proximity_link68:
+          Value: true
+        proximity_link69:
+          Value: true
         proximity_link7:
           Value: false
+        proximity_link70:
+          Value: true
+        proximity_link71:
+          Value: true
+        proximity_link72:
+          Value: true
+        proximity_link73:
+          Value: true
+        proximity_link74:
+          Value: true
+        proximity_link75:
+          Value: true
+        proximity_link76:
+          Value: true
+        proximity_link77:
+          Value: true
+        proximity_link78:
+          Value: true
+        proximity_link79:
+          Value: true
         proximity_link8:
           Value: false
         proximity_link80:
           Value: false
-        proximity_link800:
-          Value: false
-        proximity_link800000:
-          Value: false
-        proximity_link800001:
-          Value: false
-        proximity_link800002:
-          Value: false
-        proximity_link800003:
-          Value: false
-        proximity_link800004:
-          Value: false
-        proximity_link800005:
-          Value: false
-        proximity_link800006:
-          Value: false
-        proximity_link800007:
-          Value: false
-        proximity_link800800:
-          Value: false
-        proximity_link800801:
-          Value: false
-        proximity_link800802:
-          Value: false
-        proximity_link800803:
-          Value: false
-        proximity_link800804:
-          Value: false
-        proximity_link800805:
-          Value: false
-        proximity_link800806:
-          Value: false
-        proximity_link800807:
-          Value: false
-        proximity_link801:
-          Value: false
-        proximity_link802:
-          Value: false
-        proximity_link803:
-          Value: false
-        proximity_link804:
-          Value: false
-        proximity_link808:
-          Value: false
-        proximity_link809:
-          Value: false
         proximity_link81:
-          Value: false
-        proximity_link810:
-          Value: false
-        proximity_link811:
-          Value: false
-        proximity_link812:
-          Value: false
-        proximity_link816:
-          Value: false
-        proximity_link817:
-          Value: false
-        proximity_link818:
-          Value: false
-        proximity_link819:
           Value: false
         proximity_link82:
           Value: false
-        proximity_link820:
-          Value: false
-        proximity_link821:
-          Value: false
-        proximity_link822:
-          Value: false
-        proximity_link823:
-          Value: false
-        proximity_link824:
-          Value: false
-        proximity_link825:
-          Value: false
-        proximity_link826:
-          Value: false
-        proximity_link827:
-          Value: false
-        proximity_link828:
-          Value: false
-        proximity_link829:
-          Value: false
         proximity_link83:
-          Value: false
-        proximity_link830:
-          Value: false
-        proximity_link831:
           Value: false
         proximity_link84:
           Value: false
@@ -277,8 +394,32 @@ Visualization Manager:
           Value: false
         proximity_link87:
           Value: false
+        proximity_link88:
+          Value: true
+        proximity_link89:
+          Value: true
         proximity_link9:
           Value: false
+        proximity_link90:
+          Value: true
+        proximity_link91:
+          Value: true
+        proximity_link92:
+          Value: true
+        proximity_link93:
+          Value: true
+        proximity_link94:
+          Value: true
+        proximity_link95:
+          Value: true
+        proximity_link96:
+          Value: true
+        proximity_link97:
+          Value: true
+        proximity_link98:
+          Value: true
+        proximity_link99:
+          Value: true
         world:
           Value: false
       Marker Scale: 0.4000000059604645
@@ -318,185 +459,329 @@ Visualization Manager:
                                 {}
                               panda_rightfinger:
                                 {}
-                              proximity_link816:
+                              proximity_link146:
                                 {}
-                              proximity_link817:
+                              proximity_link147:
                                 {}
-                              proximity_link818:
+                              proximity_link148:
                                 {}
-                              proximity_link819:
+                              proximity_link149:
                                 {}
-                              proximity_link820:
+                              proximity_link150:
                                 {}
-                              proximity_link821:
+                              proximity_link151:
                                 {}
-                              proximity_link822:
+                              proximity_link152:
                                 {}
-                              proximity_link823:
+                              proximity_link153:
                                 {}
-                              proximity_link824:
+                              proximity_link154:
                                 {}
-                              proximity_link825:
+                              proximity_link155:
                                 {}
-                              proximity_link826:
+                              proximity_link156:
                                 {}
-                              proximity_link827:
+                              proximity_link157:
                                 {}
-                              proximity_link828:
+                              proximity_link158:
                                 {}
-                              proximity_link829:
+                              proximity_link159:
                                 {}
-                              proximity_link830:
+                              proximity_link160:
                                 {}
-                              proximity_link831:
+                              proximity_link161:
                                 {}
-                          proximity_link800:
+                          proximity_link128:
                             {}
-                          proximity_link801:
+                          proximity_link129:
                             {}
-                          proximity_link802:
+                          proximity_link130:
                             {}
-                          proximity_link803:
+                          proximity_link131:
                             {}
-                          proximity_link804:
+                          proximity_link132:
                             {}
-                          proximity_link808:
+                          proximity_link133:
                             {}
-                          proximity_link809:
+                          proximity_link134:
                             {}
-                          proximity_link810:
+                          proximity_link135:
                             {}
-                          proximity_link811:
+                          proximity_link136:
                             {}
-                          proximity_link812:
+                          proximity_link137:
                             {}
-                      proximity_link10:
+                          proximity_link138:
+                            {}
+                          proximity_link139:
+                            {}
+                          proximity_link140:
+                            {}
+                          proximity_link141:
+                            {}
+                          proximity_link142:
+                            {}
+                          proximity_link143:
+                            {}
+                          proximity_link144:
+                            {}
+                          proximity_link145:
+                            {}
+                      proximity_link100:
                         {}
-                      proximity_link11:
+                      proximity_link101:
                         {}
-                      proximity_link12:
+                      proximity_link102:
                         {}
-                      proximity_link13:
+                      proximity_link103:
                         {}
-                      proximity_link14:
+                      proximity_link104:
                         {}
-                      proximity_link15:
+                      proximity_link105:
                         {}
-                      proximity_link16:
+                      proximity_link106:
                         {}
-                      proximity_link17:
+                      proximity_link107:
                         {}
-                      proximity_link18:
+                      proximity_link108:
                         {}
-                      proximity_link19:
+                      proximity_link109:
                         {}
-                      proximity_link20:
+                      proximity_link110:
                         {}
-                      proximity_link21:
+                      proximity_link111:
                         {}
-                      proximity_link22:
+                      proximity_link112:
                         {}
-                      proximity_link23:
+                      proximity_link113:
                         {}
-                      proximity_link8:
+                      proximity_link114:
                         {}
-                      proximity_link9:
+                      proximity_link115:
                         {}
-                    proximity_link800000:
+                      proximity_link116:
+                        {}
+                      proximity_link117:
+                        {}
+                      proximity_link118:
+                        {}
+                      proximity_link119:
+                        {}
+                      proximity_link120:
+                        {}
+                      proximity_link121:
+                        {}
+                      proximity_link122:
+                        {}
+                      proximity_link123:
+                        {}
+                      proximity_link124:
+                        {}
+                      proximity_link125:
+                        {}
+                      proximity_link126:
+                        {}
+                      proximity_link127:
+                        {}
+                      proximity_link96:
+                        {}
+                      proximity_link97:
+                        {}
+                      proximity_link98:
+                        {}
+                      proximity_link99:
+                        {}
+                    proximity_link64:
                       {}
-                    proximity_link800001:
+                    proximity_link65:
                       {}
-                    proximity_link800002:
+                    proximity_link66:
                       {}
-                    proximity_link800003:
+                    proximity_link67:
                       {}
-                    proximity_link800004:
+                    proximity_link68:
                       {}
-                    proximity_link800005:
+                    proximity_link69:
                       {}
-                    proximity_link800006:
+                    proximity_link70:
                       {}
-                    proximity_link800007:
+                    proximity_link71:
                       {}
-                    proximity_link800800:
+                    proximity_link72:
                       {}
-                    proximity_link800801:
+                    proximity_link73:
                       {}
-                    proximity_link800802:
+                    proximity_link74:
                       {}
-                    proximity_link800803:
+                    proximity_link75:
                       {}
-                    proximity_link800804:
+                    proximity_link76:
                       {}
-                    proximity_link800805:
+                    proximity_link77:
                       {}
-                    proximity_link800806:
+                    proximity_link78:
                       {}
-                    proximity_link800807:
+                    proximity_link79:
                       {}
-                  proximity_link0:
+                    proximity_link80:
+                      {}
+                    proximity_link81:
+                      {}
+                    proximity_link82:
+                      {}
+                    proximity_link83:
+                      {}
+                    proximity_link84:
+                      {}
+                    proximity_link85:
+                      {}
+                    proximity_link86:
+                      {}
+                    proximity_link87:
+                      {}
+                    proximity_link88:
+                      {}
+                    proximity_link89:
+                      {}
+                    proximity_link90:
+                      {}
+                    proximity_link91:
+                      {}
+                    proximity_link92:
+                      {}
+                    proximity_link93:
+                      {}
+                    proximity_link94:
+                      {}
+                    proximity_link95:
+                      {}
+                  proximity_link32:
                     {}
-                  proximity_link1:
+                  proximity_link33:
                     {}
-                  proximity_link2:
+                  proximity_link34:
                     {}
-                  proximity_link3:
+                  proximity_link35:
                     {}
-                  proximity_link4:
+                  proximity_link36:
                     {}
-                  proximity_link5:
+                  proximity_link37:
                     {}
-                  proximity_link6:
+                  proximity_link38:
                     {}
-                  proximity_link7:
+                  proximity_link39:
                     {}
-                  proximity_link80:
+                  proximity_link40:
                     {}
-                  proximity_link81:
+                  proximity_link41:
                     {}
-                  proximity_link82:
+                  proximity_link42:
                     {}
-                  proximity_link83:
+                  proximity_link43:
                     {}
-                  proximity_link84:
+                  proximity_link44:
                     {}
-                  proximity_link85:
+                  proximity_link45:
                     {}
-                  proximity_link86:
+                  proximity_link46:
                     {}
-                  proximity_link87:
+                  proximity_link47:
                     {}
-              proximity_link240:
+                  proximity_link48:
+                    {}
+                  proximity_link49:
+                    {}
+                  proximity_link50:
+                    {}
+                  proximity_link51:
+                    {}
+                  proximity_link52:
+                    {}
+                  proximity_link53:
+                    {}
+                  proximity_link54:
+                    {}
+                  proximity_link55:
+                    {}
+                  proximity_link56:
+                    {}
+                  proximity_link57:
+                    {}
+                  proximity_link58:
+                    {}
+                  proximity_link59:
+                    {}
+                  proximity_link60:
+                    {}
+                  proximity_link61:
+                    {}
+                  proximity_link62:
+                    {}
+                  proximity_link63:
+                    {}
+              proximity_link0:
                 {}
-              proximity_link241:
+              proximity_link1:
                 {}
-              proximity_link242:
+              proximity_link10:
                 {}
-              proximity_link243:
+              proximity_link11:
                 {}
-              proximity_link244:
+              proximity_link12:
                 {}
-              proximity_link245:
+              proximity_link13:
                 {}
-              proximity_link246:
+              proximity_link14:
                 {}
-              proximity_link247:
+              proximity_link15:
                 {}
-              proximity_link248:
+              proximity_link16:
                 {}
-              proximity_link249:
+              proximity_link17:
                 {}
-              proximity_link250:
+              proximity_link18:
                 {}
-              proximity_link251:
+              proximity_link19:
                 {}
-              proximity_link252:
+              proximity_link2:
                 {}
-              proximity_link253:
+              proximity_link20:
                 {}
-              proximity_link254:
+              proximity_link21:
                 {}
-              proximity_link255:
+              proximity_link22:
+                {}
+              proximity_link23:
+                {}
+              proximity_link24:
+                {}
+              proximity_link25:
+                {}
+              proximity_link26:
+                {}
+              proximity_link27:
+                {}
+              proximity_link28:
+                {}
+              proximity_link29:
+                {}
+              proximity_link3:
+                {}
+              proximity_link30:
+                {}
+              proximity_link31:
+                {}
+              proximity_link4:
+                {}
+              proximity_link5:
+                {}
+              proximity_link6:
+                {}
+              proximity_link7:
+                {}
+              proximity_link8:
+                {}
+              proximity_link9:
                 {}
       Update Interval: 0
       Value: true
@@ -616,7 +901,107 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link100:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link101:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link102:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link103:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link104:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link105:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link106:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link107:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link108:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link109:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link11:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link110:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link111:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link112:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link113:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link114:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link115:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link116:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link117:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link118:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link119:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -626,7 +1011,107 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link120:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link121:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link122:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link123:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link124:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link125:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link126:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link127:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link128:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link129:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link130:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link131:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link132:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link133:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link134:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link135:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link136:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link137:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link138:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link139:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -636,12 +1121,122 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link140:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link141:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link142:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link143:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link144:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link145:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link146:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link147:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link148:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link149:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link15:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link150:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link151:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link152:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link153:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link154:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link155:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link156:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link157:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link158:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link159:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link16:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link160:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link161:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -686,82 +1281,32 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link240:
+        proximity_link24:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link241:
+        proximity_link25:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link242:
+        proximity_link26:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link243:
+        proximity_link27:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link244:
+        proximity_link28:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link245:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link246:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link247:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link248:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link249:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link250:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link251:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link252:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link253:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link254:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link255:
+        proximity_link29:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -771,7 +1316,107 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link30:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link31:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link32:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link33:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link34:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link35:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link36:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link37:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link38:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link39:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link40:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link41:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link42:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link43:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link44:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link45:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link46:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link47:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link48:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link49:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -781,12 +1426,162 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link50:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link51:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link52:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link53:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link54:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link55:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link56:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link57:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link58:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link59:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link6:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link60:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link61:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link62:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link63:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link64:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link65:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link66:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link67:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link68:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link69:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link70:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link71:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link72:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link73:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link74:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link75:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link76:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link77:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link78:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link79:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -801,157 +1596,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link800:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800000:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800001:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800002:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800003:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800004:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800005:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800006:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800007:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800800:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800801:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800802:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800803:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800804:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800805:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800806:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link800807:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link801:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link802:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link803:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link804:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link808:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link809:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         proximity_link81:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link810:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link811:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link812:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link816:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link817:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link818:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link819:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -961,67 +1606,7 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        proximity_link820:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link821:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link822:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link823:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link824:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link825:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link826:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link827:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link828:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link829:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         proximity_link83:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link830:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        proximity_link831:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -1046,7 +1631,67 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link88:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link89:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         proximity_link9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link90:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link91:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link92:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link93:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link94:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link95:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link96:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link97:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link98:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link99:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -1061,14 +1706,14 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: visualization_marker
-      Name: Marker
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: visualization_marker_array
+      Name: MarkerArray
       Namespaces:
-        {}
+        Live Points: true
       Queue Size: 100
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 238; 238; 236
@@ -1097,7 +1742,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.1757171154022217
+      Distance: 4.809816837310791
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -1112,10 +1757,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.48626574873924255
+      Pitch: 0.3062661290168762
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.4162063598632812
+      Yaw: 5.404384613037109
     Saved: ~
 Window Geometry:
   Displays:
