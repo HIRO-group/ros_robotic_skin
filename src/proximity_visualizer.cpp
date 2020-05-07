@@ -4,7 +4,9 @@
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
 #include "signal.h"
+#include <ros/master.h>
 
+void on_shutdown(int sig);
 class ProximityVisualizer
 {
 private:
@@ -19,10 +21,12 @@ public:
     ProximityVisualizer();
     ~ProximityVisualizer();
     void start();
+    void stop();
 };
 
 ProximityVisualizer::ProximityVisualizer()
 {
+    signal(SIGINT, on_shutdown);
     sub = n.subscribe<ros_robotic_skin::PointArray>("live_points", 1, &ProximityVisualizer::Callback, this);
     pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
     // Same for all markers
@@ -68,9 +72,26 @@ void ProximityVisualizer::start()
     ros::spin();
 }
 
+void ProximityVisualizer::stop()
+{
+    ROS_INFO("Shutting down");
+    marker.action = visualization_msgs::Marker::DELETEALL;
+    marker_array.markers.push_back(marker);
+    pub.publish<visualization_msgs::MarkerArray>(marker_array);
+    ros::shutdown();
+}
+
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "proximity_visualizer");
+    ros::init(argc, argv, "proximity_visualizer", ros::init_options::NoSigintHandler);
+    ros::master::V_TopicInfo topic_infos;
+    ros::master::getTopics(topic_infos);
     ProximityVisualizer proximity_visualizer;
     proximity_visualizer.start();
+}
+
+void on_shutdown(int sig)
+{
+    ProximityVisualizer end_visualizer;
+    end_visualizer.stop();
 }
