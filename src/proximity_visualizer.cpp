@@ -10,6 +10,7 @@ void on_shutdown(int sig);
 class ProximityVisualizer
 {
 private:
+    int num_sensors;
     void Callback(const ros_robotic_skin::PointArray::ConstPtr& msg);
     ros::NodeHandle n;
     ros::Subscriber sub;
@@ -27,6 +28,11 @@ public:
 ProximityVisualizer::ProximityVisualizer()
 {
     signal(SIGINT, on_shutdown);
+    if (!n.getParam("/num_sensors", num_sensors))
+    {
+        ROS_ERROR("Can't get number of sensors from the parameter server");
+        ros::shutdown();
+    }
     sub = n.subscribe<ros_robotic_skin::PointArray>("live_points", 1, &ProximityVisualizer::Callback, this);
     pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
     // Same for all markers
@@ -54,7 +60,7 @@ ProximityVisualizer::~ProximityVisualizer()
 void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr& msg)
 {
     marker.header.stamp = ros::Time::now();
-    for (int i = 0; i < 162; i++)
+    for (int i = 0; i < num_sensors; i++)
     {
         // Check that it's not 'nan' or 'inf'
         marker.id = i;
@@ -74,23 +80,23 @@ void ProximityVisualizer::start()
 
 void ProximityVisualizer::stop()
 {
-    ROS_INFO("Shutting down");
+    ROS_INFO("Shutting down...");
     marker.action = visualization_msgs::Marker::DELETEALL;
     marker_array.markers.push_back(marker);
     pub.publish<visualization_msgs::MarkerArray>(marker_array);
+    ROS_INFO("Deleted all points");
     ros::shutdown();
-}
-
-int main(int argc, char **argv)
-{
-    ros::init(argc, argv, "proximity_visualizer", ros::init_options::NoSigintHandler);
-
-    ProximityVisualizer proximity_visualizer;
-    proximity_visualizer.start();
 }
 
 void on_shutdown(int sig)
 {
     ProximityVisualizer end_visualizer;
     end_visualizer.stop();
+}
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, "proximity_visualizer", ros::init_options::NoSigintHandler);
+    ProximityVisualizer proximity_visualizer;
+    proximity_visualizer.start();
 }
