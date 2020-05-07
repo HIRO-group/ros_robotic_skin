@@ -4,7 +4,6 @@ from CartesianPositionController import CartesianPositionController
 import numpy as np
 import rospy
 import tf
-from ros_robotic_skin.msg import IdxPoint
 
 NUMBER_OF_CONTROL_POINTS = 1
 
@@ -22,24 +21,8 @@ class ObstacleAvoidanceController(CartesianPositionController):
     def __init__(self):
         super(ObstacleAvoidanceController, self).__init__()
         self.control_points = []
-        self.obstacle_points = [np.array([0, 0, 0])]  # Very far away
-        # self.obstacle_points = []  # Very far away
-        self.obstacle_id = [-1]
+        self.obstacle_points = [np.array([500, 500, 500])]  # Very far away
         self.Vi = np.zeros(3)
-
-        rospy.Subscriber("obstacle_points", IdxPoint, self.callback_live_points)
-        # rospy.Subscriber("obstacle_points", PointArray, self.callback_memory_points)
-
-    def callback_live_points(self, data):
-        id = data.idx
-        if id in self.obstacle_id:
-            idx = self.obstacle_id.index(id)
-            self.obstacle_id.pop(idx)
-            self.obstacle_points.pop(idx)
-
-        self.obstacle_id.append(id)
-        self.obstacle_points.append(np.array([data.point.x, data.point.y, data.point.z]))
-        #print(len(self.obstacle_points))
 
     def get_control_points(self):
         """
@@ -106,13 +89,6 @@ class ObstacleAvoidanceController(CartesianPositionController):
         """
         repulse_vector = []
         distance_vectors = self.get_distance_vectors_end_effector()
-        # D = search_smallest_vector(distance_vectors)
-        # D_norm = np.linalg.norm(D)
-        # D_unit_vec = D/D_norm
-
-        # v_mag_repulse = V_MAX * (1 / (1 + np.exp((D_norm * (2 / RHO) - 1) * ALPHA)))
-        # v_repulse = v_mag_repulse * D_unit_vec
-        # return v_repulse
 
         for D in distance_vectors:
 
@@ -310,11 +286,14 @@ class ObstacleAvoidanceController(CartesianPositionController):
         q_dot_max : [type]
             [description]
         """
+        # print('Before: {}'.format(np.array(self.q_dot)))
         for i in range(7):
             if self.q_dot[i] > q_dot_max[i]:
                 self.q_dot[i] = q_dot_max[i]
             elif self.q_dot[i] < q_dot_min[i]:
                 self.q_dot[i] = q_dot_min[i]
+        # print('After: {}'.format(np.array(self.q_dot)))
+        # print("---------------")
 
     def go_to_point(self, position_desired):
         """
@@ -331,21 +310,21 @@ class ObstacleAvoidanceController(CartesianPositionController):
         while np.linalg.norm(self.error) > self.error_threshold:
             # Update lists
             self.get_control_points()
-            # self.get_obstacle_points()
+            self.get_obstacle_points()
 
             # Obtained the desired end effector velocity, in the case there were no obstacles
             xd_dot = self.compute_command_velocity(position_desired)
 
             # Modify the velocity with the obstacles information
             # Add flacco algorithm for end effector to get cartesian velocity xc_dot
-            xc_dot = self.end_effector_algorithm(xd_dot)
-            # xc_dot = xd_dot
+            # xc_dot = self.end_effector_algorithm(xd_dot)
+            xc_dot = xd_dot
 
             # Compute the corresponding joint velocities q_dot
             self.q_dot = self.compute_command_q_dot(xc_dot)
             # Compute the joint velocity restrictions and apply them
-            # (q_dot_min, q_dot_max) = self.body_algorithm()
-            # self.apply_restrictions(q_dot_min, q_dot_max)
+            (q_dot_min, q_dot_max) = self.body_algorithm()
+            self.apply_restrictions(q_dot_min, q_dot_max)
             # Publish velocities
             self.panda_controller.send_velocities(self.q_dot)
             self.rate.sleep()
@@ -357,7 +336,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         In the future this will compute obstacle points.
         Right now it's just a list of points to test the algorithm.
         """
-        self.obstacle_points = np.array([[-0.1, 0.00013597, 0.47066]])
+        self.obstacle_points = np.array([[0.8, 0, 0.3]])
 
 
 if __name__ == "__main__":
