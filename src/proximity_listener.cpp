@@ -46,6 +46,7 @@ ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, flo
     {
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
     }
+    n.setParam("num_sensors", num_sensors);
 }
 
 ProximityListener::~ProximityListener()
@@ -138,7 +139,6 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_listener");
     ProximityListener proximity_listener(argc, argv, sensor_count(), 0.03);
-    // Publish to parameter server
     proximity_listener.start();
 
     return 0;
