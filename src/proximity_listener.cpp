@@ -29,7 +29,7 @@ public:
     ros::NodeHandle n;
     ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold);
     ~ProximityListener();
-    void start(int argc, char **argv);
+    void start();
 };
 
 ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold)
@@ -87,7 +87,7 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
     }
 }
 
-void ProximityListener::start(int argc, char **argv)
+void ProximityListener::start()
 {
 
     ros::Publisher pub = n.advertise<ros_robotic_skin::PointArray>("live_points", 1);
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_listener");
     ProximityListener proximity_listener(argc, argv, 162, 0.03);
-    proximity_listener.start(argc, argv);
+    proximity_listener.start();
 
     return 0;
 }
