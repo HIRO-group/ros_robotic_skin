@@ -42,16 +42,13 @@ class EstimatedIMUBoxStateManager():
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
 
         rospy.wait_for_service('/gazebo/set_model_state')
-        print(sdf)
         if sdf:
             rospy.wait_for_service('/gazebo/spawn_sdf_model')
             self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
             model_path = os.path.join(ros_robotic_skin_path, 'robots/imubox/model.sdf')
             self.set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
-            print(model_path)
             with open(model_path, 'r') as f:
                 xml_string = f.read().replace('\n', '')
-                print(xml_string)
         else:
             rospy.wait_for_service('/gazebo/spawn_urdf_model')
             self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
@@ -76,7 +73,6 @@ class EstimatedIMUBoxStateManager():
         Spawns the IMU model with the poses defined earlier in
         `__init__`
         """
-        print("test")
         for model_name, pose in zip(self.model_names, self.init_poses):
             try:
                 self.req.model_name = model_name
