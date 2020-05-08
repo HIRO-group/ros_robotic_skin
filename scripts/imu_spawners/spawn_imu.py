@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import argparse
 import numpy as np
 import rospy
 import rospkg
@@ -192,10 +193,20 @@ if __name__ == '__main__':
     # rospy.init_node("set_estimated_imu_positions")
     n_joint = 7
     n_imu = 7
+    parser = argparse.ArgumentParser(description='IMU Spawner')
+    parser.add_argument('-r', '--robot', type=str, default='panda',
+                        help="Currently only 'panda' and 'sawyer' are supported")
+    parser.add_argument('-p', '--picklepath', type=str, default='OM_data.pkl',
+                        help="Path to pickle file from within the data directory.")
+    parser.add_argument('-f', '--frequency', type=float, default=10.0,
+                        help='Frequency at which the animation occurs.')
+    args = parser.parse_args()
+    robot = args.robot
 
-    robot = sys.argv[1]
     # data from corresponding method
-    filename = sys.argv[2]
+    filename = args.picklepath
+
+    frequency = args.frequency
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     load_path = os.path.join(ros_robotic_skin_path, 'data', filename)
 
@@ -222,12 +233,12 @@ if __name__ == '__main__':
     # print(defined_poses)
     # Set initial poses
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
-    r = rospy.Rate(10)
+    r = rospy.Rate(frequency)
     model_names = ['imu%i' % (i) for i in range(n_imu)]
     poses = np.zeros((7, 7))
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
-    state_manager.spawn()
+    # state_manager.spawn()
     for su_idx, val in enumerate(dh_params_data):
         # each optimization for each skin unit
         for idx, res in enumerate(dh_params_data[su_idx]):
