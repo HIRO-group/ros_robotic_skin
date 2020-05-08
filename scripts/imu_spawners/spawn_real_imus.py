@@ -42,11 +42,10 @@ class RealIMUSpawner():
         """
         self.xacro_strings = []
         for idx, imu in enumerate(self.imu_arr):
-            x, y, z = imu[0], imu[1], imu[2]
-            r, p, y = imu[3], imu[4], imu[5]
             link_no = int(imu[6])
             xacro_string = '  <xacro:imu imu_id="{}" xyz="{} {} {}" rpy="{} {} {}" gravity="true" connected_to="panda_link{}"/>\n'.format(
-                idx, x, y, z, r, p, y, link_no
+                idx, imu[0], imu[1], imu[2],
+                imu[3], imu[4], imu[5], link_no
             )
             self.xacro_strings.append(xacro_string)
 
