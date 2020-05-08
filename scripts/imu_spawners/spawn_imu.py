@@ -3,11 +3,8 @@ import os
 import numpy as np
 import rospy
 import rospkg
-import time
 import pickle
 import tf
-import robotic_skin
-from robotic_skin.calibration.utils import TransMat
 from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState, GetLinkState
 from gazebo_msgs.msg import ModelState, LinkState
 from geometry_msgs.msg import Pose, Quaternion, Point
@@ -86,7 +83,7 @@ class EstimatedIMUBoxStateManager():
                 init_pose.orientation.w = pose.orientation[3]
                 self.req.initial_pose = init_pose
                 rospy.wait_for_service('/gazebo/spawn_sdf_model')
-                res = self.spawn_model(self.req)
+                self.spawn_model(self.req)
             except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
 
@@ -132,7 +129,7 @@ class EstimatedIMUBoxStateManager():
                 state_msg.pose = init_pose
                 state_msg.reference_frame = "world"
                 rospy.wait_for_service('/gazebo/set_model_state')
-                res = self.set_model_state(state_msg)
+                self.set_model_state(state_msg)
             except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
         else:
@@ -142,7 +139,7 @@ class EstimatedIMUBoxStateManager():
                 link_msg.pose = init_pose
                 link_msg.reference_frame = "world"
                 rospy.wait_for_service('/gazebo/set_link_state')
-                res = self.set_link_state(state_msg)
+                self.set_link_state(state_msg)
             except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s" % e)
 
