@@ -238,7 +238,7 @@ if __name__ == '__main__':
     poses = np.zeros((7, 7))
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
-    # state_manager.spawn()
+    state_manager.spawn()
     for su_idx, val in enumerate(dh_params_data):
         # each optimization for each skin unit
         for idx, res in enumerate(dh_params_data[su_idx]):
