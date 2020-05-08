@@ -50,7 +50,7 @@ class CartesianPositionController(object):
         trans : numpy.ndarray
             3x1 vector containing current end effector position vector
         """
-        while True:
+        while not rospy.is_shutdown():
             try:
                 (trans, rot) = self.tf_listener.lookupTransform('world', 'end_effector', rospy.Time(0))
                 return np.array(trans)

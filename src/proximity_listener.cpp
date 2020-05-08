@@ -19,7 +19,9 @@ private:
     int num_sensors;
     int num_control_points;
     float distance_threshold;
-    std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27};
+    float floor_threshold{0.04};
+    bool removeFloor{true};
+    std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
     std::unique_ptr<Eigen::Vector3d[]> live_points;
 
     void sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
@@ -50,8 +52,8 @@ ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, flo
     this->translation2 = std::make_unique<Eigen::Vector3d[]>(num_sensors);
     this->rotation = std::make_unique<Eigen::Quaterniond[]>(num_sensors);
     this->transform = std::make_unique<tf::StampedTransform[]>(num_sensors);
-    this->transform_control_points = std::make_unique<tf::StampedTransform[]>(num_control_points); //////////////////////////////////
-    this->translation_control_points = std::make_unique<Eigen::Vector3d[]>(num_control_points); //////////////////
+    this->transform_control_points = std::make_unique<tf::StampedTransform[]>(num_control_points);
+    this->translation_control_points = std::make_unique<Eigen::Vector3d[]>(num_control_points);
     for (int i = 0; i < num_sensors; i++)
     {
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
@@ -83,12 +85,6 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
         rotation[sensor_number].z() = transform[sensor_number].getRotation().getZ();
 
         live_points[sensor_number] = translation1[sensor_number] + (rotation[sensor_number] * translation2[sensor_number]);
-        // ROS_INFO("Number of callbacks: %d", num_callbacks++);
-        // ROS_INFO("Sensor number: %d", sensor_number);
-        // ROS_INFO("Point in space: [%f]", live_points[146].z());
-
-
-
     }
     catch (tf::TransformException ex)
     {
@@ -107,7 +103,7 @@ void ProximityListener::start()
     ros::Duration(2.0).sleep();
     ROS_INFO("Loaded");
 
-    geometry_msgs::Point points[num_sensors];
+    geometry_msgs::Point point;
     ros_robotic_skin::PointArray msg;
 
     ros::Rate rate(50.0);
@@ -115,13 +111,14 @@ void ProximityListener::start()
     {
         for (int i = 0; i < num_sensors; i++)
         {
-            if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]))
+            if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor) );
+            else
             {
-            }else{
-                points[i].x = live_points[i].x();
-                points[i].y = live_points[i].y();
-                points[i].z = live_points[i].z();
-                msg.points.push_back(points[i]);
+                point.x = live_points[i].x();
+                point.y = live_points[i].y();
+                point.z = live_points[i].z();
+                msg.points.push_back(point);
+                // std::cout << live_points[i].z() << std::endl ;
             }
         }
         pub.publish<ros_robotic_skin::PointArray>(msg);
@@ -164,7 +161,7 @@ int topic_count(std::string topic_substring)
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_listener");
-    ProximityListener proximity_listener(argc, argv, topic_count("proximity_data"), 0.03, 7);
+    ProximityListener proximity_listener(argc, argv, topic_count("proximity_data"), 0.03, 8);
     proximity_listener.start();
 
     return 0;

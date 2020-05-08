@@ -23,6 +23,7 @@
   <xacro:control_point point_id='4' parent_id='4'/>
   <xacro:control_point point_id='5' parent_id='3' x0y0='0 0' z0='-0.1'/>
   <xacro:control_point point_id='6' parent_id='3' x0y0='0 0' z0='-0.3'/>
+  <xacro:control_point point_id='7' parent_id='0' x0y0='-0.05 0' z0='0.1'/>
 
 
   <!-- end effector control point -->

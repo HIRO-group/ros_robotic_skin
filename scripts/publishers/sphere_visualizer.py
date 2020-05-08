@@ -33,7 +33,7 @@ def make_marker(is_add, id, xyz, namespace="speheres", rgb=(1.0, 0, 0), radius=0
     return msg
 
 
-RADIUS = (0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27)
+RADIUS = (0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3)
 
 rospy.init_node('spheres_visualizer')
 tf_listener = tf.TransformListener()
@@ -41,7 +41,7 @@ pub = rospy.Publisher('visualization_marker', Marker, queue_size=100)
 
 while not rospy.is_shutdown():
     for i in range(len(RADIUS)):
-        while True:
+        while not rospy.is_shutdown():
             try:
                 (trans, rot) = tf_listener.lookupTransform('world', 'control_point{}'.format(i), rospy.Time(0))
                 break

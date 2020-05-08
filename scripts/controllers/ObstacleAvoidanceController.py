@@ -6,7 +6,7 @@ import rospy
 import tf
 from ros_robotic_skin.msg import PointArray
 
-NUMBER_OF_CONTROL_POINTS = 1
+NUMBER_OF_CONTROL_POINTS = 7
 
 # Parameters of the flacco paper
 MAX_RATE = 1.0  # Obstacle velocity estimation equation
@@ -39,7 +39,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         Updates the location of the control points in self.control_points.
         """
         self.control_points = []
-        while True:
+        while not rospy.is_shutdown():
             try:
                 (trans, rot) = self.tf_listener.lookupTransform('world', 'end_effector', rospy.Time(0))
                 self.position = np.array(trans)
@@ -87,10 +87,14 @@ class ObstacleAvoidanceController(CartesianPositionController):
         max_repulse_vector: np.ndarray
             Repulsive vector that the algorithm computes having into account obstacle data
         """
-        D = self.search_smallest_vector(self.get_distance_vectors_end_effector())
-        magnitude = V_MAX * (1 / (1 + np.exp(((np.linalg.norm(D)) * (2 / RHO) - 1) * ALPHA)))
-        unitary_vector = D/np.linalg.norm(D)
-        return magnitude * unitary_vector
+        Ds = self.get_distance_vectors_end_effector()
+        if Ds:
+            D = self.search_smallest_vector()
+            magnitude = V_MAX * (1 / (1 + np.exp(((np.linalg.norm(D)) * (2 / RHO) - 1) * ALPHA)))
+            unitary_vector = D/np.linalg.norm(D)
+            return magnitude * unitary_vector
+        else:
+            return np.zeros(3)
 
     def search_smallest_vector(self, vectors_list):
         """
@@ -192,7 +196,10 @@ class ObstacleAvoidanceController(CartesianPositionController):
         q_dot_min_list = []
 
         for (i, distances_control_point_i) in enumerate(self.get_distance_vectors_body()):
-            smallest_distance = self.search_smallest_vector(distances_control_point_i)
+            if distances_control_point_i:
+                smallest_distance = self.search_smallest_vector(distances_control_point_i)
+            else:
+                return (np.array(Q_DOT_MIN), np.array(Q_DOT_MAX))
             distance_norm = np.linalg.norm(smallest_distance) - self.sphere_radiuses[i]
             unitary_vector = smallest_distance / distance_norm
             f = 1 / (1 + np.exp((distance_norm * 2 / RHO - 1) * ALPHA))
@@ -254,7 +261,13 @@ class ObstacleAvoidanceController(CartesianPositionController):
 if __name__ == "__main__":
 
     obstacle_avoidance_controller = ObstacleAvoidanceController()
-    trajectory = np.array([[0.5, 0, 0.3], [0.8, 0, 0.3]])
+    x0 = 0.6
+    y0 = 0.0
+    z0 = 0.3
+    r = 0.2
+    resolution = 0.4
+    trajectory = obstacle_avoidance_controller.get_trajectory_points_in_circle_yz_plane(r, x0, y0, z0, resolution)
     while not rospy.is_shutdown():
-        obstacle_avoidance_controller.go_to_point(trajectory[0])
-        obstacle_avoidance_controller.go_to_point(trajectory[1])
+        for point in trajectory:
+            if not rospy.is_shutdown():
+                obstacle_avoidance_controller.go_to_point(point)
