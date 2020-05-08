@@ -58,7 +58,23 @@ source <path to your workspace>/devel/setup.bash
 ```
 
 ## Running Panda in simulation
+You can add as many IMUs as you want in `config/imu_poses.txt`.
+The format per line is as follows:
+
 ```sh
+x,y,z,roll,pitch,yaw, num_link_connected_to
+```
+
+Run
+
+```sh
+python scripts/imu_spawners/spawn_real_imus.py
+```
+
+to update the xacro file with the IMU changes. Now, to run the simulation:
+
+```sh
+
 roslaunch ros_robotic_skin simulation.launch
 ```
 

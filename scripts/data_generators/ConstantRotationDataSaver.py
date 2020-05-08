@@ -191,13 +191,15 @@ class ConstantRotationDataSaver():
         self.poses_list = poses_list
 
         # constant
-        # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
-                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
-                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
+        all_topics = rospy.get_published_topics()
+        total_imu_topics = len([topic for topic in all_topics if 'imu' in topic[0]])
+        self.imu_names = []
+        self.imu_topics = []
+        for i in range(total_imu_topics):
+            self.imu_names.append('imu_link{}'.format(i))
+            self.imu_topics.append('imu_data{}'.format(i))
 
         self.collecting_data = False
         self.curr_pose_name = self.pose_names[0]
