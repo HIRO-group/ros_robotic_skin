@@ -108,9 +108,11 @@ class DynamicPoseData():
                     imu_accs = imu_data[:, :3]
 
                     norms = np.linalg.norm(imu_accs, axis=1)
-
                     # ang_vels = imu_data[:, 5]
                     joint_accs = imu_data[:, 6]
+                    if False:
+                        norms = utils.hampel_filter_forloop(norms, 10)
+                        joint_accs = utils.hampel_filter_forloop(joint_accs, 10)
 
                     # filter acceleration norms
                     filtered_norms = utils.low_pass_filter(norms, 100.)
@@ -253,11 +255,14 @@ class DynamicPoseDataSaver():
         # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
-                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
-                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
+        all_topics = rospy.get_published_topics()
+        total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
+        self.imu_names = []
+        self.imu_topics = []
+        for i in range(total_imu_topics):
+            self.imu_names.append('imu_link{}'.format(i))
+            self.imu_topics.append('imu_data{}'.format(i))
         self.ready = False
         self.curr_positions = [0, 0, 0, 0, 0, 0, 0]
         self.curr_pose_name = self.pose_names[0]

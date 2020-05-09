@@ -191,8 +191,6 @@ def load_estimated_poses(filename):
 
 if __name__ == '__main__':
     # rospy.init_node("set_estimated_imu_positions")
-    n_joint = 7
-    n_imu = 7
     parser = argparse.ArgumentParser(description='IMU Spawner')
     parser.add_argument('-r', '--robot', type=str, default='panda',
                         help="Currently only 'panda' and 'sawyer' are supported")
@@ -234,18 +232,38 @@ if __name__ == '__main__':
     # Set initial poses
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
     r = rospy.Rate(frequency)
+    n_imu = len(dh_params_data)
     model_names = ['imu%i' % (i) for i in range(n_imu)]
-    poses = np.zeros((7, 7))
+    poses = np.zeros((n_imu, 7))
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
-    # state_manager.spawn()
+    state_manager.spawn()
+    optimization_lengths = []
     for su_idx, val in enumerate(dh_params_data):
-        # each optimization for each skin unit
-        for idx, res in enumerate(dh_params_data[su_idx]):
-            print(idx, model_names[su_idx])
-            pose = Pose(position=res[:3], orientation=res[3:])
+        optimization_lengths.append(len(dh_params_data[su_idx]))
+
+    optimization_lengths = np.array(optimization_lengths)
+    indices = [0] * 6
+    su_idx = 0
+    done_amt = 0
+    while True:
+        if indices[su_idx] == optimization_lengths[su_idx]:
+            # skip su.
+            pass
+        else:
+            pose = dh_params_data[su_idx][indices[su_idx]]
+            pose = Pose(position=pose[:3], orientation=pose[3:])
             state_manager.set_pose(model_names[su_idx], pose)
-            r.sleep()
+
+            indices[su_idx] += 1
+            if indices[su_idx] == optimization_lengths[su_idx]:
+                done_amt += 1
+                if done_amt == n_imu:
+                    break
+        su_idx += 1
+        su_idx %= n_imu
+        print('Optimization steps for imus:', indices)
+        r.sleep()
 
     # error = np.linalg.norm(defined_poses - poses)
     # print(error)

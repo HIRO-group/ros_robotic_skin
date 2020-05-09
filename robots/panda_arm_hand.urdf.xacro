@@ -11,14 +11,14 @@
 
   <xacro:panda_arm />
   <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
+  <xacro:imu imu_id="0" xyz="0.05 0.0 -0.15" rpy="0.0 1.57 0.0" gravity="true" connected_to="panda_link1"/>
+  <xacro:imu imu_id="1" xyz="0.06 0.0 0.06" rpy="0.0 1.57 0.0" gravity="true" connected_to="panda_link2"/>
+  <xacro:imu imu_id="2" xyz="0.0 -0.05 -0.08" rpy="1.57 0.0 0.0" gravity="true" connected_to="panda_link3"/>
+  <xacro:imu imu_id="3" xyz="-0.06 0.0 0.08" rpy="0.0 -1.57 0.0" gravity="true" connected_to="panda_link4"/>
+  <xacro:imu imu_id="4" xyz="0.0 0.1 -0.1" rpy="-1.57 0.0 0.0" gravity="true" connected_to="panda_link5"/>
+  <xacro:imu imu_id="5" xyz="-0.05 0.0 0.03" rpy="0.0 -1.57 0.0" gravity="true" connected_to="panda_link6"/>
+  <xacro:imu imu_id="6" xyz="0.05 0.0 0.0" rpy="0.0 1.57 0.0" gravity="true" connected_to="panda_link7"/>
 
-  <xacro:imu imu_id="0" xyz="0.05 0 -0.15" rpy="0 1.57 0" gravity="true" connected_to="panda_link1"/>
-  <xacro:imu imu_id="1" xyz="0.06 0 0.06" rpy="0 1.57 0" gravity="true" connected_to="panda_link2"/>
-  <xacro:imu imu_id="2" xyz="0 -0.05 -0.08" rpy="1.57 0 0" gravity="true" connected_to="panda_link3"/>
-  <xacro:imu imu_id="3" xyz="-0.06 0 0.08" rpy="0 -1.57 0" gravity="true" connected_to="panda_link4"/>
-  <xacro:imu imu_id="4" xyz="0 0.1 -0.1" rpy="-1.57 0 0" gravity="true" connected_to="panda_link5"/>
-  <xacro:imu imu_id="5" xyz="-0.05 0 0.03" rpy="0 -1.57 0" gravity="true" connected_to="panda_link6"/>
-  <xacro:imu imu_id="6" xyz="0.05 0 0" rpy="0 1.57 0" gravity="true" connected_to="panda_link7"/>
   <!--
   <xacro:imu imu_id="0" xyz="0.06 0 0.1" rpy="0 1.57 0" gravity="true" connected_to="panda_link0"/>
   <xacro:imu imu_id="1" xyz="0.05 0 -0.15" rpy="0 1.57 0" gravity="true" connected_to="panda_link1"/>
