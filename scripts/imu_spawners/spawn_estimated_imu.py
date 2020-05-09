@@ -192,7 +192,6 @@ def load_estimated_poses(filename):
 if __name__ == '__main__':
     # rospy.init_node("set_estimated_imu_positions")
     n_joint = 7
-    n_imu = 6
     parser = argparse.ArgumentParser(description='IMU Spawner')
     parser.add_argument('-r', '--robot', type=str, default='panda',
                         help="Currently only 'panda' and 'sawyer' are supported")
@@ -234,6 +233,8 @@ if __name__ == '__main__':
     # Set initial poses
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
     r = rospy.Rate(frequency)
+    n_imu = len(dh_params_data)
+
     model_names = ['imu%i' % (i) for i in range(n_imu)]
     poses = np.zeros((7, 7))
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
