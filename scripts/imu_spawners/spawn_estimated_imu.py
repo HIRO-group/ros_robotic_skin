@@ -234,9 +234,8 @@ if __name__ == '__main__':
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
     r = rospy.Rate(frequency)
     n_imu = len(dh_params_data)
-
     model_names = ['imu%i' % (i) for i in range(n_imu)]
-    poses = np.zeros((7, 7))
+    poses = np.zeros((n_imu, 7))
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
     state_manager.spawn()
