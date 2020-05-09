@@ -191,7 +191,6 @@ def load_estimated_poses(filename):
 
 if __name__ == '__main__':
     # rospy.init_node("set_estimated_imu_positions")
-    n_joint = 7
     parser = argparse.ArgumentParser(description='IMU Spawner')
     parser.add_argument('-r', '--robot', type=str, default='panda',
                         help="Currently only 'panda' and 'sawyer' are supported")
