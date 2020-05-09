@@ -194,7 +194,7 @@ class ConstantRotationDataSaver():
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
         all_topics = rospy.get_published_topics()
-        total_imu_topics = len([topic for topic in all_topics if 'imu' in topic[0]])
+        total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
         self.imu_names = []
         self.imu_topics = []
         for i in range(total_imu_topics):
