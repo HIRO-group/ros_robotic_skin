@@ -6,8 +6,10 @@ class.
 
 import rospy
 import numpy as np
+from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from enum import Enum
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
 class ControllerType(Enum):
@@ -20,14 +22,16 @@ class RobotArm(object):
     """
     Generic robot arm implementation in ROS
     """
-    def __init__(self, joint_states_topic='/joint_states',
+    def __init__(self, num_joints=7, joint_states_topic='/joint_states',
                  ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2']):
         rospy.init_node('robot_arm')
         self.ignore_joints_arr = ignore_joints_arr
+        self.num_joints = num_joints
         self.data_exists = False
         self.joint_data = None
         self.names = None
         self.positions = None
+        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_vel_pos_publishers([], [])
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
@@ -67,11 +71,30 @@ class RobotArm(object):
     def set_joint_position_speed(self, speed=1.0):
         rospy.logerr('Set Joint Position Speed Not Implemented for Robot Arm')
 
-    def move_to_joint_positions(self, positions, timeout=15.0):
+    def move_to_joint_positions(self, positions, sleep=5.0, timeout=15.0):
         """
         moves robot to specific joint positions.
         """
-        pass
+        if len(positions) != self.num_joints:
+            raise ValueError("Wrong number of joints provided.")
+        for index, pos in enumerate(positions):
+            self.pos_pubs[index].publish(Float64(pos))
+        rospy.sleep(sleep)
+
+    def set_joint_velocities(self, velocities):
+        """
+        affects the set joint velocities
+        """
+        if len(velocities) != self.num_joints:
+            raise ValueError("Wrong number of joints provided.")
+
+        for index, vel in enumerate(velocities):
+            self.vel_pubs[index].publish(Float64(vel))
+
+    def set_joint_trajectory(self, position, velocities, accelerations):
+        """
+        sends a joint trajectory command.
+        """
 
     def joint_state_callback(self, data):
         self.joint_data = data
@@ -86,6 +109,29 @@ class RobotArm(object):
 
             # construct mapping on joint names to indices
         self.data_exists = True
+
+    def get_publishers(self, vel_controller_names,
+                               pos_controller_names, is_sim=True):
+        """
+        gets velocity and position publishers. Lengths may
+        be different.
+        """
+        joint_velocity_pubs = []
+        joint_position_pubs = []
+        topic_string = '/panda_joint_trajectory_controller/command' if is_sim else '/joint_trajectory_controller/command'
+        traj_pub = rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
+        for name in vel_controller_names:
+            pub = rospy.Publisher('/{}/command'.format(name), Float64,
+                                  queue_size=10)
+            joint_velocity_pubs.append(pub)
+
+        for name in pos_controller_names:
+            pub = rospy.Publisher('/{}/command'.format(name), Float64,
+                                  queue_size=10)
+            joint_position_pubs.append(pub)
+
+        return joint_position_pubs, joint_velocity_pubs, traj_pub
+
 
 class RobotController(object):
     def __init__(self, is_sim=True):
