@@ -5,6 +5,7 @@ class.
 """
 
 import rospy
+import numpy as np
 from sensor_msgs.msg import JointState
 from enum import Enum
 
@@ -23,15 +24,28 @@ class RobotArm(object):
                  ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2']):
         rospy.init_node('robot_arm')
         self.ignore_joints_arr = ignore_joints_arr
-        self.all_joints = None
+        self.joint_data = None
+        self.names = None
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
-        if self.all_joints is not None:
-            return [name for name in self.all_joints if name not in self.ignore_joints_arr]
+        if self.joint_data is not None:
+            return self.names
+
+    def joint_angles(self):
+        """
+        gets the joint angles of the robot arm
+        """
+        pass
 
     def joint_state_callback(self, data):
-        self.all_joints = data.name
+        self.joint_data = data
+        if self.names is None:
+            names_arr = np.array(self.joint_data.name)
+            arr = np.isin(names_arr, self.ignore_joints_arr)
+            indices = np.squeeze(np.argwhere(arr == False))
+            self.valid_indices = indices
+            self.names = names_arr[self.valid_indices]
 
 
 
@@ -120,4 +134,6 @@ if __name__ == '__main__':
     arm = RobotArm()
     print(arm.joint_names())
     while(not rospy.is_shutdown()):
+        # print("hoo")
+        pass
         print(arm.joint_names())
