@@ -27,6 +27,7 @@ class RobotArm(object):
         self.data_exists = False
         self.joint_data = None
         self.names = None
+        self.positions = None
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
@@ -40,15 +41,50 @@ class RobotArm(object):
         if self.data_exists:
             return np.array(self.joint_data.position)[self.valid_indices]
 
+    def joint_velocities(self):
+        """
+        gets the joint velocities of the robot arm
+        """
+        if self.data_exists:
+            return np.array(self.joint_data.velocity)[self.valid_indices]
+
+    def joint_angle(self, joint_name):
+        """
+        gets the joint angle based on the provided joint name.
+        """
+        if self.data_exists:
+            angles = self.joint_angles()
+            return angles[self.mapping[joint_name]]
+
+    def joint_velocity(self, joint_name):
+        """
+        gets the joint velocity based on the provided joint name.
+        """
+        if self.data_exists:
+            velocities = self.joint_velocities()
+            return velocities[self.mapping[joint_name]]
+
+    def set_joint_position_speed(self, speed=1.0):
+        rospy.logerr('Set Joint Position Speed Not Implemented for Robot Arm')
+
+    def move_to_joint_positions(self, positions, timeout=15.0):
+        """
+        moves robot to specific joint positions.
+        """
+        pass
+
     def joint_state_callback(self, data):
         self.joint_data = data
-
         if self.names is None:
             names_arr = np.array(self.joint_data.name)
             arr = np.isin(names_arr, self.ignore_joints_arr)
             indices = np.squeeze(np.argwhere(arr == False))
             self.valid_indices = indices
             self.names = names_arr[self.valid_indices]
+            self.mapping = {v: i for i, v in enumerate(self.names)}
+            self.positions = {name: 0.0 for name in self.names}
+
+            # construct mapping on joint names to indices
         self.data_exists = True
 
 class RobotController(object):
@@ -137,4 +173,12 @@ if __name__ == '__main__':
     while(not rospy.is_shutdown()):
         # print("hoo")
         pass
-        print(arm.joint_angles())
+        # print(arm.joint_velocity("panda_joint1"))
+
+
+"""
+if self.data_exists:
+            for idx, val in self.names:
+                self.positions[val] = positions[idx]
+
+"""
