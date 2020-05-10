@@ -24,30 +24,32 @@ class RobotArm(object):
                  ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2']):
         rospy.init_node('robot_arm')
         self.ignore_joints_arr = ignore_joints_arr
+        self.data_exists = False
         self.joint_data = None
         self.names = None
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
-        if self.joint_data is not None:
+        if self.data_exists:
             return self.names
 
     def joint_angles(self):
         """
         gets the joint angles of the robot arm
         """
-        pass
+        if self.data_exists:
+            return np.array(self.joint_data.position)[self.valid_indices]
 
     def joint_state_callback(self, data):
         self.joint_data = data
+
         if self.names is None:
             names_arr = np.array(self.joint_data.name)
             arr = np.isin(names_arr, self.ignore_joints_arr)
             indices = np.squeeze(np.argwhere(arr == False))
             self.valid_indices = indices
             self.names = names_arr[self.valid_indices]
-
-
+        self.data_exists = True
 
 class RobotController(object):
     def __init__(self, is_sim=True):
@@ -132,8 +134,7 @@ class RobotController(object):
 
 if __name__ == '__main__':
     arm = RobotArm()
-    print(arm.joint_names())
     while(not rospy.is_shutdown()):
         # print("hoo")
         pass
-        print(arm.joint_names())
+        print(arm.joint_angles())
