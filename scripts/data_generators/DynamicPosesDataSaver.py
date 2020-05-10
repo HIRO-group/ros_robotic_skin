@@ -79,7 +79,8 @@ class DynamicPoseData():
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
-    def clean_data(self, verbose=False, time_range=(0.04, 0.16)):
+    def clean_data(self, verbose=False, time_range=(0.04, 0.16),
+                   eliminate_outliers=True):
         """
         Cleans the data.
 
@@ -110,9 +111,11 @@ class DynamicPoseData():
                     norms = np.linalg.norm(imu_accs, axis=1)
                     # ang_vels = imu_data[:, 5]
                     joint_accs = imu_data[:, 6]
-                    if False:
-                        norms = utils.hampel_filter_forloop(norms, 10)
-                        joint_accs = utils.hampel_filter_forloop(joint_accs, 10)
+                    if eliminate_outliers:
+                        # use hampel filter for outlier detection
+                        # it actually doesn't affect the end result much.
+                        norms = utils.hampel_filter_forloop(norms, 10)[0]
+                        joint_accs = utils.hampel_filter_forloop(joint_accs, 10)[0]
 
                     # filter acceleration norms
                     filtered_norms = utils.low_pass_filter(norms, 100.)
@@ -152,7 +155,7 @@ class DynamicPoseData():
                     best = self.data[pose_name][joint_name][imu_name][best_idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
-                    if not verbose:
+                    if verbose:
                         # plots the acceleration norms - filtered and raw
                         plt.plot(imu_raw_arr)
                         plt.plot(imu_filtered_arr)
