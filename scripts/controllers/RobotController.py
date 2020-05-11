@@ -33,6 +33,7 @@ class RobotArm(object):
         controller_names[1] - velocity controllers
         controllers_names[2] - ONE trajectory controller.
         """
+        self.num_joints = num_joints
         if controller_names is None:
             controller_names = []
             default_pos_names = ['panda_joint%s_position_controller' % (i) for i in range(1, num_joints+1)]
@@ -223,31 +224,53 @@ class RobotController(object):
         rospy.sleep(1)
 
     def publish_positions(self, positions, sleep):
-        pass
+        self.arm.move_to_joint_positions(positions, sleep)
 
     def send_velocities(self, velocities):
-        pass
+        """
+        sends a velocity command. no sleep, none of that.
+        """
+        self.arm.set_joint_velocities(velocities)
 
-    def publish_velocities(self, velocities):
-        pass
-
-    def publish_accelerations(self, accelerations, sleep):
-        pass
+    def publish_velocities(self, velocities, sleep):
+        self.arm.set_joint_velocities(velocities)
+        rospy.sleep(sleep)
+        self.arm.set_joint_velocities(np.zeros(self.arm.num_joints))
 
     def publish_trajectory(self, positions, velocities, accelerations, sleep):
-        pass
-
-    def _publish_all_values(self, sleep):
-        pass
+        """
+        publishes a robot trajectory.
+        """
+        traj = np.zeros((len(positions), 3, self.arm.num_joints))
+        for idx, (pos, vel, acc) in enumerate(zip(positions, velocities, accelerations)):
+            traj[idx] = np.vstack((pos, vel, acc))
+        self.arm.set_joint_trajectory(traj)
+        rospy.sleep(sleep)
 
     def set_positions_list(self, poses, sleep):
-        pass
+        for each_pose in poses:
+            positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
+            self.pose_name = pose_name
+            self.publish_positions(positions, sleep)
 
-    def set_velocities_list(self, velocities, sleep):
-        pass
+    def set_velocities_list(self, poses, sleep):
+        """
+        sets velocities in a list
+        """
+        for each_pose in poses:
+            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
+            self.pose_name = pose_name
+            self.publish_velocities(velocities, sleep)
 
-    def set_trajectory_list(self, trajectories, sleep):
-        pass
+    def set_trajectory_list(self, poses, sleep):
+        """
+        sets trajectories from values provided in list.
+        """
+        for each_pose in poses:
+            positions, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
+            accelerations = np.zeros(7)
+            self.pose_name = pose_name
+            self.publish_trajectory(positions, velocities, accelerations, sleep)
 
 
 if __name__ == '__main__':
