@@ -22,15 +22,32 @@ class RobotArm(object):
     """
     Generic robot arm implementation in ROS
     """
-    def __init__(self, num_joints, joint_states_topic='/joint_states',
-                 ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2']):
+    def __init__(self, num_joints,
+                 is_sim=True, joint_states_topic='/joint_states',
+                 ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2'],
+                 controller_names=None):
+        """
+        controller_names should have -
+        controller_names[0] - position controllers
+        controller_names[1] - velocity controllers
+        controllers_names[2] - ONE trajectory controller.
+        """
+        if controller_names is None:
+            controller_names = []
+            default_pos_names = ['panda_joint%s_position_controller' % (i) for i in range(1, num_joints+1)]
+            default_vel_names = ['panda_joint%s_velocity_controller' % (i) for i in range(1, num_joints+1)]
+            default_traj_name = ['/panda_joint_trajectory_controller/command' if is_sim else '/joint_trajectory_controller/command']
+            controller_names.append(default_pos_names)
+            controller_names.append(default_vel_names)
+            controller_names.append(default_traj_name)
+
         rospy.init_node('robot_arm')
         self.ignore_joints_arr = ignore_joints_arr
         self.data_exists = False
         self.joint_data = None
         self.names = None
         self.positions = None
-        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_vel_pos_publishers([], [])
+        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(controller_names)
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
@@ -134,16 +151,18 @@ class RobotArm(object):
             # construct mapping on joint names to indices
         self.data_exists = True
 
-    def get_publishers(self, vel_controller_names,
-                               pos_controller_names, is_sim=True):
+    def get_publishers(self, controller_names):
         """
         gets velocity and position publishers. Lengths may
         be different.
         """
         joint_velocity_pubs = []
         joint_position_pubs = []
-        topic_string = '/panda_joint_trajectory_controller/command' if is_sim else '/joint_trajectory_controller/command'
-        traj_pub = rospy.Publisher(topic_string, JointTrajectory, queue_size=1)
+        pos_controller_names = controller_names[0]
+        vel_controller_names = controller_names[1]
+        traj_controller_name = controller_names[2][0]
+        traj_pub = rospy.Publisher(traj_controller_name, JointTrajectory, queue_size=1)
+
         for name in vel_controller_names:
             pub = rospy.Publisher('/{}/command'.format(name), Float64,
                                   queue_size=10)
@@ -164,7 +183,7 @@ class RobotController(object):
         """
         self.is_sim = is_sim
         rospy.init_node('robot_controller', anonymous=True)
-
+        self.arm = RobotArm(num_joints=7)
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_name = ''
