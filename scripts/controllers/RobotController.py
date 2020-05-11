@@ -22,11 +22,10 @@ class RobotArm(object):
     """
     Generic robot arm implementation in ROS
     """
-    def __init__(self, num_joints=7, joint_states_topic='/joint_states',
+    def __init__(self, num_joints, joint_states_topic='/joint_states',
                  ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2']):
         rospy.init_node('robot_arm')
         self.ignore_joints_arr = ignore_joints_arr
-        self.num_joints = num_joints
         self.data_exists = False
         self.joint_data = None
         self.names = None
@@ -35,6 +34,9 @@ class RobotArm(object):
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
+        """
+        get the joint names of the robot
+        """
         if self.data_exists:
             return self.names
 
@@ -91,10 +93,32 @@ class RobotArm(object):
         for index, vel in enumerate(velocities):
             self.vel_pubs[index].publish(Float64(vel))
 
-    def set_joint_trajectory(self, position, velocities, accelerations):
+    def set_joint_trajectory(self, trajectories):
         """
         sends a joint trajectory command.
         """
+        # 3d tensor of shape (3, n_joint, n_point)
+        points_tensor = np.array(trajectories)
+        assert points_tensor.shape[1] == 3, "3 row should be provided for pos, vel and acc."
+        assert len(points_tensor.shape) == 3, "Trajectories should be of 3-d shape!"
+        assert points_tensor.shape[2] == self.num_joints, "Trajectory should " \
+                                                          "account for num joints."
+
+        num_points = points_tensor.shape[0]
+        time_from_start = 1.0
+        msg = JointTrajectory()
+        msg.points = []
+        for i in range(num_points):
+            point = JointTrajectoryPoint()
+            point.positions = list(points_tensor[i, 0])
+            point.velocities = list(points_tensor[i, 1])
+            point.accelerations = list(points_tensor[i, 2])
+            point.time_from_start = time_from_start
+            msg.points.append(point)
+        msg.header.stamp = rospy.Time.now()
+        msg.header.frame_id = '/base_link'
+        msg.joint_names = list(self.names)
+        self.traj_pub.publish(msg)
 
     def joint_state_callback(self, data):
         self.joint_data = data

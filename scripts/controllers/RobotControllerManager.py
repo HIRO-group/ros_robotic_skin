@@ -10,21 +10,29 @@ class ControllerType(Enum):
     TRAJECTORY = 3
 
 
-class PandaControllerManager():
-    def __init__(self):
+class RobotControllerManager():
+    def __init__(self, position_controller_names=None,
+                 velocity_controller_names=None,
+                 trajectory_controller_names=None):
         """
-        Creates the PandaControllerManager object and
+        Creates the RobotControllerManager object and
         determines the correct mode to be in - position,
         velocity, or trajectory.
+        When the controller names are not provided, they default to the franka
+        panda (which is the standard robot used in the repo - and pretty good, too)
         """
         self.switch_controller_service_name = "/controller_manager/switch_controller"
         self.list_controller_service_name = "/controller_manager/list_controllers"
-        velocity_controller_names = ["panda_joint{}_velocity_controller".format(i) for i in range(1, 8)]
-        position_controller_names = ["panda_joint{}_position_controller".format(i) for i in range(1, 8)]
+        if position_controller_names is None:
+            position_controller_names = ["panda_joint{}_position_controller".format(i) for i in range(1, 8)]
+        if velocity_controller_names is None:
+            velocity_controller_names = ["panda_joint{}_velocity_controller".format(i) for i in range(1, 8)]
+        if trajectory_controller_names is None:
+            trajectory_controller_names = ["panda_joint_trajectory_controller"]
         self.controller_names = {
             ControllerType.POSITION: position_controller_names,
             ControllerType.VELOCITY: velocity_controller_names,
-            ControllerType.TRAJECTORY: ["panda_joint_trajectory_controller"]
+            ControllerType.TRAJECTORY: trajectory_controller_names
         }
         try:
             rospy.wait_for_service(self.list_controller_service_name)
@@ -37,7 +45,7 @@ class PandaControllerManager():
                         self.mode = ControllerType.POSITION
                     elif controller.name in velocity_controller_names:
                         self.mode = ControllerType.VELOCITY
-                    elif controller.name == "panda_joint_trajectory_controller":
+                    elif controller.name in trajectory_controller_names:
                         self.mode = ControllerType.TRAJECTORY
         except rospy.ServiceException as e:
             rospy.logerr("Controller Manager service exception:", e)
