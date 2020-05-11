@@ -1,22 +1,12 @@
 #!/usr/bin/env python
 """
-This code serves as the generic RobotController
-class.
+Code.
 """
-
 import rospy
 import numpy as np
 from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
-from enum import Enum
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-from RobotControllerManager import RobotControllerManager
-
-
-class ControllerType(Enum):
-    POSITION = 1
-    VELOCITY = 2
-    TRAJECTORY = 3
 
 
 class RobotArm(object):
@@ -177,117 +167,9 @@ class RobotArm(object):
         return joint_position_pubs, joint_velocity_pubs, traj_pub
 
 
-class RobotController(object):
-    def __init__(self, num_joints, is_sim=True,
-                 controller_names=None):
-        """
-        robot controller for n joints.
-        """
-        rospy.init_node('robot_controller', anonymous=True)
-        self.is_sim = is_sim
-        self.arm = RobotArm(num_joints=num_joints)
-        self.controller_manager = RobotControllerManager(controller_names)
-        self.sleep_time_static = rospy.get_param('/static_sleep_time')
-        self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
-        self.pose_name = ''
-
-    @property
-    def joint_names(self):
-        return self.arm.joint_names()
-
-    @property
-    def joint_velocities(self):
-        return self.arm.joint_velocities()
-
-    @property
-    def joint_angles(self):
-        return self.arm.joint_angles()
-
-    def joint_angle(self, joint_name):
-        return self.arm.joint_angle(joint_name)
-
-    def joint_velocity(self, joint_name):
-        return self.arm.joint_velocity(joint_name)
-
-    def set_joint_position_speed(self, speed=1.0):
-        return self.arm.set_joint_position_speed(speed)
-
-    def send_once(self):
-        """
-        sends a trajectory message once.
-        """
-        traj = np.zeros((1, 3, 7))
-        self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
-        self.arm.set_joint_trajectory(traj)
-        rospy.sleep(1)
-        self.arm.set_joint_trajectory(traj)
-        rospy.sleep(1)
-
-    def publish_positions(self, positions, sleep):
-        self.arm.move_to_joint_positions(positions, sleep)
-
-    def send_velocities(self, velocities):
-        """
-        sends a velocity command. no sleep, none of that.
-        """
-        self.arm.set_joint_velocities(velocities)
-
-    def publish_velocities(self, velocities, sleep):
-        self.arm.set_joint_velocities(velocities)
-        rospy.sleep(sleep)
-        self.arm.set_joint_velocities(np.zeros(self.arm.num_joints))
-
-    def publish_trajectory(self, positions, velocities, accelerations, sleep):
-        """
-        publishes a robot trajectory.
-        """
-        traj = np.zeros((len(positions), 3, self.arm.num_joints))
-        for idx, (pos, vel, acc) in enumerate(zip(positions, velocities, accelerations)):
-            traj[idx] = np.vstack((pos, vel, acc))
-        self.arm.set_joint_trajectory(traj)
-        rospy.sleep(sleep)
-
-    def set_positions_list(self, poses, sleep):
-        for each_pose in poses:
-            positions, _, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
-            self.pose_name = pose_name
-            self.publish_positions(positions, sleep)
-
-    def set_velocities_list(self, poses, sleep):
-        """
-        sets velocities in a list
-        """
-        for each_pose in poses:
-            _, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]  # noqa: F841
-            self.pose_name = pose_name
-            self.publish_velocities(velocities, sleep)
-
-    def set_trajectory_list(self, poses, sleep):
-        """
-        sets trajectories from values provided in list.
-        """
-        for each_pose in poses:
-            positions, velocities, pose_name = each_pose[0], each_pose[1], each_pose[2]
-            accelerations = np.zeros(7)
-            self.pose_name = pose_name
-            self.publish_trajectory(positions, velocities, accelerations, sleep)
-
-
-class PandaController(RobotController):
-    def __init__(self, num_joints, is_sim=True):
-        super(PandaController, self).__init__(num_joints, is_sim=is_sim)
-
-
 if __name__ == '__main__':
-    arm = RobotArm()
-    while(not rospy.is_shutdown()):
-        # print("hoo")
-        print(arm.joint_velocity("panda_joint1"))
-
-
-"""
-if self.data_exists:
-            for idx, val in self.names:
-                self.positions[val] = positions[idx]
-
-"""
+    arm = RobotArm(num_joints=7)
+    rospy.init_node('robot_arm')
+    # rospy.spin()
+    while not rospy.is_shutdown():
+        print(arm.joint_names())
