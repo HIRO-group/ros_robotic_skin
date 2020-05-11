@@ -10,6 +10,7 @@ from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from enum import Enum
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from RobotControllerManager import RobotControllerManager
 
 
 class ControllerType(Enum):
@@ -41,7 +42,6 @@ class RobotArm(object):
             controller_names.append(default_vel_names)
             controller_names.append(default_traj_name)
 
-        rospy.init_node('robot_arm')
         self.ignore_joints_arr = ignore_joints_arr
         self.data_exists = False
         self.joint_data = None
@@ -177,57 +177,50 @@ class RobotArm(object):
 
 
 class RobotController(object):
-    def __init__(self, is_sim=True):
+    def __init__(self, is_sim=True,
+                 controller_names=None):
         """
         robot controller for n joints.
         """
-        self.is_sim = is_sim
         rospy.init_node('robot_controller', anonymous=True)
+        self.is_sim = is_sim
         self.arm = RobotArm(num_joints=7)
+        self.controller_manager = RobotControllerManager(controller_names)
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
         self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_name = ''
 
     @property
     def joint_names(self):
-        pass
+        return self.arm.joint_names()
 
     @property
     def joint_velocities(self):
-        pass
+        return self.arm.joint_velocities()
 
-    def joint_state_callback(self, joint_states):
-        """
-        Joint state callback for the Panda.
-
-        Arguments
-        ---------
-        `joint_states`: `JointState`
-            The joint state message received from the Subscriber.
-
-        """
-        pass
+    @property
+    def joint_angles(self):
+        return self.arm.joint_angles()
 
     def joint_angle(self, joint_name):
-        pass
+        return self.arm.joint_angle(joint_name)
 
     def joint_velocity(self, joint_name):
-        pass
+        return self.arm.joint_velocity(joint_name)
 
     def set_joint_position_speed(self, speed=1.0):
-        pass
-
-    def get_trajectory_publisher(self, is_sim):
-        pass
-
-    def get_velocity_publishers(self):
-        pass
-
-    def get_position_publishers(self):
-        pass
+        return self.arm.set_joint_position_speed(speed)
 
     def send_once(self):
-        pass
+        """
+        sends a trajectory message once.
+        """
+
+        self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
+        self.trajectory_pub.publish(self.msg)
+        rospy.sleep(1)
+        self.trajectory_pub.publish(self.msg)
+        rospy.sleep(1)
 
     def publish_positions(self, positions, sleep):
         pass
