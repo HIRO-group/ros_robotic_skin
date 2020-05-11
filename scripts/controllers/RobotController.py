@@ -215,11 +215,11 @@ class RobotController(object):
         """
         sends a trajectory message once.
         """
-
+        traj = np.zeros((1, 3, 7))
         self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
-        self.trajectory_pub.publish(self.msg)
+        self.arm.set_joint_trajectory(traj)
         rospy.sleep(1)
-        self.trajectory_pub.publish(self.msg)
+        self.arm.set_joint_trajectory(traj)
         rospy.sleep(1)
 
     def publish_positions(self, positions, sleep):
