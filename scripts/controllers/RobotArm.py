@@ -44,9 +44,8 @@ class RobotArm(object):
 
         self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(controller_names)
         # need a sleep, so message is sent from publisher, interestingly.
-        rospy.sleep(2)
-
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
+        rospy.sleep(2)
 
     def joint_names(self):
         """
@@ -126,7 +125,8 @@ class RobotArm(object):
                                                           "account for num joints."
 
         num_points = points_tensor.shape[0]
-        time_from_start = 1.0
+        print(points_tensor)
+        time_from_start = rospy.Duration(1.0)
         msg = JointTrajectory()
         msg.points = []
         for i in range(num_points):
@@ -139,6 +139,8 @@ class RobotArm(object):
         msg.header.stamp = rospy.Time.now()
         msg.header.frame_id = '/base_link'
         msg.joint_names = list(self.names)
+        print(msg)
+
         self.traj_pub.publish(msg)
 
     def joint_state_callback(self, data):
@@ -182,11 +184,3 @@ class RobotArm(object):
             joint_position_pubs.append(pub)
 
         return joint_position_pubs, joint_velocity_pubs, traj_pub
-
-
-if __name__ == '__main__':
-    arm = RobotArm(num_joints=7)
-    # rospy.spin()
-    while not rospy.is_shutdown():
-        arm.move_to_joint_positions([1,0,0,0,0,0,1])
-        break
