@@ -46,7 +46,6 @@ class RobotControllerManager():
             ControllerType.TRAJECTORY: trajectory_controller_names
 
         }
-        print(self.controller_names)
         try:
             rospy.wait_for_service(self.list_controller_service_name)
             list_controllers = rospy.ServiceProxy(self.list_controller_service_name, ListControllers)
@@ -64,7 +63,6 @@ class RobotControllerManager():
 
         except rospy.ServiceException as e:
             rospy.logerr("Controller Manager service exception:", e)
-        print(self.mode)
 
     def switch_mode(self, desired_mode):
         """

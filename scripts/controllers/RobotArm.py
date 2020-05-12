@@ -31,7 +31,6 @@ class RobotArm(object):
         `controllers_names[2]` - ONE trajectory controller.
         """
 
-        rospy.init_node('robot_arm', anonymous=True)
 
         self.num_joints = num_joints
         if controller_names is None:

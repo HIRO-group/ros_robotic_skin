@@ -81,7 +81,7 @@ class RobotController(object):
         self.arm.set_joint_trajectory(traj)
         rospy.sleep(1)
 
-    def publish_positions(self, joint_positions, sleep):
+    def publish_positions(self, joint_positions, sleep=2.0):
         """
         moves robot to specificed `joint_positions`.
         """
@@ -159,8 +159,8 @@ class SawyerController(RobotController):
     def __init__(self, num_joints=7, is_sim=True, limb_name="right"):
         self.limb_name = limb_name
         super(SawyerController, self).__init__(num_joints, is_sim)
-        self.positions = {name: 0.0 for name in self.joint_names()}
-        self.velocities = {name: 0.0 for name in self.joint_names()}
+        self.positions = {name: 0.0 for name in self.joint_names}
+        self.velocities = {name: 0.0 for name in self.joint_names}
 
     def get_arm(self, num_joints, is_sim=True):
         arm = intera_interface.Limb(self.limb_name)
@@ -184,14 +184,14 @@ class SawyerController(RobotController):
         rospy.sleep(1)
 
     def update_position_vec(self, positions):
-        for joint_name, position in zip(self.joint_names(), positions):
+        for joint_name, position in zip(self.joint_names, positions):
             self.positions[joint_name] = float(position)
 
     def update_velocity_vec(self, velocities):
-        for joint_name, velocity in zip(self.joint_names(), velocities):
+        for joint_name, velocity in zip(self.joint_names, velocities):
             self.velocities[joint_name] = float(velocity)
 
-    def publish_positions(self, joint_positions, sleep):
+    def publish_positions(self, joint_positions, sleep=2.0):
         """
         moves robot to specified `joint_positions`.
         """
@@ -205,7 +205,7 @@ class SawyerController(RobotController):
         self.update_velocity_vec(joint_velocities)
         self.arm.set_joint_velocities(self.velocities)
 
-    def publish_velocities(self, joint_velocities, sleep):
+    def publish_velocities(self, joint_velocities, sleep=2.0):
         """
         unlike `send_velocities`, this function will
         command joints to move at specified velocities for `sleep`
@@ -226,9 +226,11 @@ class SawyerController(RobotController):
         and accelerations, which are more intuitive than a 3-d tensor.
         """
         # shape is amount of poses, 3 rows for pos,vel,acc, with num_joints
-        self.arm.set_joint_trajectory(self.joint_names(), positions, velocities, accelerations)
+        self.arm.set_joint_trajectory(self.joint_names, positions, velocities, accelerations)
         rospy.sleep(sleep)
 
 
 if __name__ == '__main__':
-    pass
+    controller = SawyerController()
+
+    # controller.publish_velocities([1,1,1,1,1,1,1])
