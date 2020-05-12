@@ -7,10 +7,6 @@ class.
 import rospy
 import numpy as np
 import intera_interface
-# from std_msgs.msg import Float64
-# from sensor_msgs.msg import JointState
-# from enum import Enum
-# from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotArm import RobotArm
 
 
@@ -235,15 +231,4 @@ class SawyerController(RobotController):
 
 
 if __name__ == '__main__':
-    arm = RobotArm()
-    while(not rospy.is_shutdown()):
-        # print("hoo")
-        print(arm.joint_velocity("panda_joint1"))
-
-
-"""
-if self.data_exists:
-            for idx, val in self.names:
-                self.positions[val] = positions[idx]
-
-"""
+    pass
