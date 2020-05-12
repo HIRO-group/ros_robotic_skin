@@ -7,6 +7,7 @@ import numpy as np
 from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from RobotControllerManager import RobotControllerManager, ControllerType
 
 
 class RobotArm(object):
@@ -28,11 +29,12 @@ class RobotArm(object):
             controller_names = []
             default_pos_names = ['panda_joint%s_position_controller' % (i) for i in range(1, num_joints+1)]
             default_vel_names = ['panda_joint%s_velocity_controller' % (i) for i in range(1, num_joints+1)]
-            default_traj_name = ['/panda_joint_trajectory_controller/command' if is_sim else '/joint_trajectory_controller/command']
+            default_traj_name = ['panda_joint_trajectory_controller' if is_sim else 'joint_trajectory_controller']
             controller_names.append(default_pos_names)
             controller_names.append(default_vel_names)
             controller_names.append(default_traj_name)
 
+        self.controller_manager = RobotControllerManager(controller_names)
         self.ignore_joints_arr = ignore_joints_arr
         self.data_exists = False
         self.joint_data = None
@@ -81,13 +83,15 @@ class RobotArm(object):
     def set_joint_position_speed(self, speed=1.0):
         rospy.logerr('Set Joint Position Speed Not Implemented for Robot Arm')
 
-    def move_to_joint_positions(self, positions, sleep=5.0, timeout=15.0):
+    def move_to_joint_positions(self, positions, sleep=1.0, timeout=15.0):
         """
         moves robot to specific joint positions.
         """
+        self.controller_manager.switch_mode(ControllerType.POSITION)
         if len(positions) != self.num_joints:
             raise ValueError("Wrong number of joints provided.")
         for index, pos in enumerate(positions):
+            print(self.pos_pubs[index].name)
             self.pos_pubs[index].publish(Float64(pos))
         rospy.sleep(sleep)
 
@@ -95,6 +99,8 @@ class RobotArm(object):
         """
         affects the set joint velocities
         """
+        self.controller_manager.switch_mode(ControllerType.VELOCITY)
+
         if len(velocities) != self.num_joints:
             raise ValueError("Wrong number of joints provided.")
 
@@ -105,6 +111,8 @@ class RobotArm(object):
         """
         sends a joint trajectory command.
         """
+        self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
+
         # 3d tensor of shape (3, n_joint, n_point)
         points_tensor = np.array(trajectories)
         assert points_tensor.shape[1] == 3, "3 row should be provided for pos, vel and acc."
@@ -152,24 +160,29 @@ class RobotArm(object):
         pos_controller_names = controller_names[0]
         vel_controller_names = controller_names[1]
         traj_controller_name = controller_names[2][0]
-        traj_pub = rospy.Publisher(traj_controller_name, JointTrajectory, queue_size=1)
+        traj_name = '/{}/command'.format(traj_controller_name)
+        traj_pub = rospy.Publisher(traj_name, JointTrajectory, queue_size=1)
 
         for name in vel_controller_names:
+            print('/{}/command'.format(name))
             pub = rospy.Publisher('/{}/command'.format(name), Float64,
                                   queue_size=10)
             joint_velocity_pubs.append(pub)
 
         for name in pos_controller_names:
+            print('/{}/command'.format(name))
             pub = rospy.Publisher('/{}/command'.format(name), Float64,
                                   queue_size=10)
+            print(pub.name)
             joint_position_pubs.append(pub)
 
         return joint_position_pubs, joint_velocity_pubs, traj_pub
 
 
 if __name__ == '__main__':
-    arm = RobotArm(num_joints=7)
     rospy.init_node('robot_arm')
+    arm = RobotArm(num_joints=7)
     # rospy.spin()
     while not rospy.is_shutdown():
-        print(arm.joint_names())
+        arm.move_to_joint_positions(np.zeros(7))
+        break

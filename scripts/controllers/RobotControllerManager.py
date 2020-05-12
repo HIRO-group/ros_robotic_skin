@@ -26,7 +26,7 @@ class RobotControllerManager():
         `controller_names[1]` - velocity controller names - `List[str]`
 
         `controller_names[2]` - trajectory controller name* - `List[str]`
-    
+
         """
         self.switch_controller_service_name = "/controller_manager/switch_controller"
         self.list_controller_service_name = "/controller_manager/list_controllers"
@@ -63,6 +63,7 @@ class RobotControllerManager():
 
         except rospy.ServiceException as e:
             rospy.logerr("Controller Manager service exception:", e)
+        print(self.mode)
 
     def switch_mode(self, desired_mode):
         """
@@ -71,7 +72,6 @@ class RobotControllerManager():
         Desired mode should be a ControllerType enum
         """
         # check if mode is running
-
         if desired_mode == self.mode:
             pass
         else:
