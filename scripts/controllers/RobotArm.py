@@ -24,6 +24,7 @@ class RobotArm(object):
         controller_names[1] - velocity controllers
         controllers_names[2] - ONE trajectory controller.
         """
+        rospy.init_node('robot_arm', anonymous=True)
         self.num_joints = num_joints
         if controller_names is None:
             controller_names = []
@@ -180,7 +181,6 @@ class RobotArm(object):
 
 
 if __name__ == '__main__':
-    rospy.init_node('robot_arm')
     arm = RobotArm(num_joints=7)
     # rospy.spin()
     while not rospy.is_shutdown():
