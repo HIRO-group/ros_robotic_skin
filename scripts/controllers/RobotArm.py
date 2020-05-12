@@ -31,7 +31,6 @@ class RobotArm(object):
         `controllers_names[2]` - ONE trajectory controller.
         """
 
-
         self.num_joints = num_joints
         if controller_names is None:
             controller_names = []
@@ -134,7 +133,7 @@ class RobotArm(object):
             assert points_tensor.shape[1] == 3, "3 row should be provided for pos, vel and acc."
             assert len(points_tensor.shape) == 3, "Trajectories should be of 3-d shape!"
             assert points_tensor.shape[2] == self.num_joints, "Trajectory should " \
-                                                            "account for num joints."
+                                                              "account for num joints."
 
             num_points = points_tensor.shape[0]
             time_from_start = time_per_step
@@ -164,7 +163,7 @@ class RobotArm(object):
         if self.names is None:
             names_arr = np.array(self.joint_data.name)
             arr = np.isin(names_arr, self.ignore_joints_arr)
-            indices = np.squeeze(np.argwhere(arr == False))
+            indices = np.squeeze(np.argwhere(arr == False))  # noqa: E712
             self.valid_indices = indices
             self.names = names_arr[self.valid_indices]
             self.mapping = {v: i for i, v in enumerate(self.names)}
