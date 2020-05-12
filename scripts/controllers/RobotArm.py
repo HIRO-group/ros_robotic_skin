@@ -41,7 +41,11 @@ class RobotArm(object):
         self.joint_data = None
         self.names = None
         self.positions = None
+
         self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(controller_names)
+        # need a sleep, so message is sent from publisher, interestingly.
+        rospy.sleep(2)
+
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
 
     def joint_names(self):
@@ -184,5 +188,5 @@ if __name__ == '__main__':
     arm = RobotArm(num_joints=7)
     # rospy.spin()
     while not rospy.is_shutdown():
-        arm.move_to_joint_positions(np.zeros(7))
+        arm.move_to_joint_positions([1,0,0,0,0,0,1])
         break
