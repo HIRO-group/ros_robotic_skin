@@ -103,12 +103,13 @@ class RobotArm(object):
         """
         moves robot to specific joint positions.
         """
-        self.controller_manager.switch_mode(ControllerType.POSITION)
-        if len(positions) != self.num_joints:
-            raise ValueError("Wrong number of joints provided.")
-        for index, pos in enumerate(positions):
-            self.pos_pubs[index].publish(Float64(pos))
-        rospy.sleep(sleep)
+        if not rospy.is_shutdown():
+            self.controller_manager.switch_mode(ControllerType.POSITION)
+            if len(positions) != self.num_joints:
+                raise ValueError("Wrong number of joints provided.")
+            for index, pos in enumerate(positions):
+                self.pos_pubs[index].publish(Float64(pos))
+            rospy.sleep(sleep)
 
     def set_joint_velocities(self, velocities):
         """
@@ -126,34 +127,35 @@ class RobotArm(object):
         """
         sends a joint trajectory command.
         """
-        self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
+        if not rospy.is_shutdown():
+            self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
-        # 3d tensor of shape (3, n_joint, n_point)
-        points_tensor = np.array(trajectories)
-        assert points_tensor.shape[1] == 3, "3 row should be provided for pos, vel and acc."
-        assert len(points_tensor.shape) == 3, "Trajectories should be of 3-d shape!"
-        assert points_tensor.shape[2] == self.num_joints, "Trajectory should " \
-                                                          "account for num joints."
+            # 3d tensor of shape (3, n_joint, n_point)
+            points_tensor = np.array(trajectories)
+            assert points_tensor.shape[1] == 3, "3 row should be provided for pos, vel and acc."
+            assert len(points_tensor.shape) == 3, "Trajectories should be of 3-d shape!"
+            assert points_tensor.shape[2] == self.num_joints, "Trajectory should " \
+                                                            "account for num joints."
 
-        num_points = points_tensor.shape[0]
-        time_from_start = time_per_step
-        time_from_start_duration = rospy.Duration(time_from_start)
-        msg = JointTrajectory()
-        msg.points = []
-        for i in range(num_points):
-            point = JointTrajectoryPoint()
-            point.positions = list(points_tensor[i, 0])
-            point.velocities = list(points_tensor[i, 1])
-            point.accelerations = list(points_tensor[i, 2])
-            point.time_from_start = time_from_start_duration
-            time_from_start += time_per_step
+            num_points = points_tensor.shape[0]
+            time_from_start = time_per_step
             time_from_start_duration = rospy.Duration(time_from_start)
-            msg.points.append(point)
-        msg.header.stamp = rospy.Time.now()
-        msg.header.frame_id = '/base_link'
-        msg.joint_names = list(self.names)
+            msg = JointTrajectory()
+            msg.points = []
+            for i in range(num_points):
+                point = JointTrajectoryPoint()
+                point.positions = list(points_tensor[i, 0])
+                point.velocities = list(points_tensor[i, 1])
+                point.accelerations = list(points_tensor[i, 2])
+                point.time_from_start = time_from_start_duration
+                time_from_start += time_per_step
+                time_from_start_duration = rospy.Duration(time_from_start)
+                msg.points.append(point)
+            msg.header.stamp = rospy.Time.now()
+            msg.header.frame_id = '/base_link'
+            msg.joint_names = list(self.names)
 
-        self.traj_pub.publish(msg)
+            self.traj_pub.publish(msg)
 
     def joint_state_callback(self, data):
         """
