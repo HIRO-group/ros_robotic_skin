@@ -12,39 +12,51 @@ from RobotControllerManager import RobotControllerManager, ControllerType
 
 class RobotArm(object):
     """
-    Generic robot arm implementation in ROS
+    Generic robot arm implementation in ROS. Works for n joints.
     """
+
     def __init__(self, num_joints,
                  is_sim=True, joint_states_topic='/joint_states',
                  ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2'],
                  controller_names=None):
         """
-        controller_names should have -
-        controller_names[0] - position controllers
-        controller_names[1] - velocity controllers
-        controllers_names[2] - ONE trajectory controller.
+        intializiation of the robot arm class.
+
+        `controller_names` should have:
+
+        `controller_names[0]` - position controllers
+
+        `controller_names[1]` - velocity controllers
+
+        `controllers_names[2]` - ONE trajectory controller.
         """
+
         rospy.init_node('robot_arm', anonymous=True)
+
         self.num_joints = num_joints
         if controller_names is None:
             controller_names = []
-            default_pos_names = ['panda_joint%s_position_controller' % (i) for i in range(1, num_joints+1)]
-            default_vel_names = ['panda_joint%s_velocity_controller' % (i) for i in range(1, num_joints+1)]
+            default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, num_joints+1)]
+            default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, num_joints+1)]
             default_traj_name = ['panda_joint_trajectory_controller' if is_sim else 'joint_trajectory_controller']
             controller_names.append(default_pos_names)
             controller_names.append(default_vel_names)
             controller_names.append(default_traj_name)
 
+        # create the controller manager for switching controllers.
         self.controller_manager = RobotControllerManager(controller_names)
+
         self.ignore_joints_arr = ignore_joints_arr
         self.data_exists = False
         self.joint_data = None
         self.names = None
         self.positions = None
 
+        # get list of position and velocity publishers ... and trajectory publisher.
         self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(controller_names)
-        # need a sleep, so message is sent from publisher, interestingly.
+
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
+        # need a sleep, so message is sent from publisher, interestingly.
         rospy.sleep(2)
 
     def joint_names(self):
@@ -95,7 +107,6 @@ class RobotArm(object):
         if len(positions) != self.num_joints:
             raise ValueError("Wrong number of joints provided.")
         for index, pos in enumerate(positions):
-            print(self.pos_pubs[index].name)
             self.pos_pubs[index].publish(Float64(pos))
         rospy.sleep(sleep)
 
@@ -111,7 +122,7 @@ class RobotArm(object):
         for index, vel in enumerate(velocities):
             self.vel_pubs[index].publish(Float64(vel))
 
-    def set_joint_trajectory(self, trajectories):
+    def set_joint_trajectory(self, trajectories, time_per_step=1.0):
         """
         sends a joint trajectory command.
         """
@@ -125,8 +136,8 @@ class RobotArm(object):
                                                           "account for num joints."
 
         num_points = points_tensor.shape[0]
-        print(points_tensor)
-        time_from_start = rospy.Duration(1.0)
+        time_from_start = time_per_step
+        time_from_start_duration = rospy.Duration(time_from_start)
         msg = JointTrajectory()
         msg.points = []
         for i in range(num_points):
@@ -134,16 +145,20 @@ class RobotArm(object):
             point.positions = list(points_tensor[i, 0])
             point.velocities = list(points_tensor[i, 1])
             point.accelerations = list(points_tensor[i, 2])
-            point.time_from_start = time_from_start
+            point.time_from_start = time_from_start_duration
+            time_from_start += time_per_step
+            time_from_start_duration = rospy.Duration(time_from_start)
             msg.points.append(point)
         msg.header.stamp = rospy.Time.now()
         msg.header.frame_id = '/base_link'
         msg.joint_names = list(self.names)
-        print(msg)
 
         self.traj_pub.publish(msg)
 
     def joint_state_callback(self, data):
+        """
+        callback that takes care of the joint state data.
+        """
         self.joint_data = data
         if self.names is None:
             names_arr = np.array(self.joint_data.name)
@@ -159,28 +174,25 @@ class RobotArm(object):
 
     def get_publishers(self, controller_names):
         """
-        gets velocity and position publishers. Lengths may
+        gets position, velocity, and trajectory publisher(s). Lengths may
         be different.
         """
-        joint_velocity_pubs = []
         joint_position_pubs = []
+        joint_velocity_pubs = []
         pos_controller_names = controller_names[0]
         vel_controller_names = controller_names[1]
         traj_controller_name = controller_names[2][0]
         traj_name = '/{}/command'.format(traj_controller_name)
         traj_pub = rospy.Publisher(traj_name, JointTrajectory, queue_size=1)
 
+        for name in pos_controller_names:
+            pub = rospy.Publisher('/{}/command'.format(name), Float64,
+                                  queue_size=10)
+            joint_position_pubs.append(pub)
+
         for name in vel_controller_names:
-            print('/{}/command'.format(name))
             pub = rospy.Publisher('/{}/command'.format(name), Float64,
                                   queue_size=10)
             joint_velocity_pubs.append(pub)
-
-        for name in pos_controller_names:
-            print('/{}/command'.format(name))
-            pub = rospy.Publisher('/{}/command'.format(name), Float64,
-                                  queue_size=10)
-            print(pub.name)
-            joint_position_pubs.append(pub)
 
         return joint_position_pubs, joint_velocity_pubs, traj_pub
