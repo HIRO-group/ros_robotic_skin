@@ -168,6 +168,7 @@ class SawyerController(RobotController):
         self._init_state = self._rs.state().enabled
         self._rs.enable()
         self.num_joints = num_joints
+        rospy.sleep(2)
         return arm
 
     def send_once(self):
@@ -179,9 +180,6 @@ class SawyerController(RobotController):
         accelerations = [0] * self.num_joints
 
         self.arm.set_joint_trajectory(self.joint_names(), positions, velocities, accelerations)
-        rospy.sleep(1)
-        self.arm.set_joint_trajectory(self.joint_names(), positions, velocities, accelerations)
-        rospy.sleep(1)
 
     def update_position_vec(self, positions):
         for joint_name, position in zip(self.joint_names, positions):
@@ -220,7 +218,7 @@ class SawyerController(RobotController):
         self.update_velocity_vec(np.zeros(self.num_joints))
         self.arm.set_joint_velocities(self.velocities)
 
-    def publish_trajectory(self, positions, velocities, accelerations, sleep):
+    def publish_trajectory(self, positions, velocities, accelerations, sleep=2.0):
         """
         publishes a robot trajectory. Takes care of positions, velocities,
         and accelerations, which are more intuitive than a 3-d tensor.
@@ -232,5 +230,7 @@ class SawyerController(RobotController):
 
 if __name__ == '__main__':
     controller = SawyerController()
+    controller.publish_trajectory([1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [0,0,0,0,0,0,0])
 
+    # rospy.sleep(10)
     # controller.publish_velocities([1,1,1,1,1,1,1])
