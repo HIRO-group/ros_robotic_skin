@@ -236,4 +236,3 @@ if __name__ == '__main__':
     controller = PandaController()
 
     controller.publish_positions([1, 1, 1, 1, 1, 1, 1])
-

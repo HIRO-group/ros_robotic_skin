@@ -14,13 +14,12 @@ from controllers.RobotController import PandaController  # noqa: E402
 
 
 class MainTestCase(unittest.TestCase):
-    def tester(self):
+    def test(self):
         rc = PandaController(7)
-        rc.publish_positions([1, 1, 1, 1, 1, 1, 1])
-        rc.publish_positions([0, 0, 0, 0, 0, 0, 0])
-
+        names = rc.joint_names
+        # rc.publish_positions([0, 0, 0, 0, 0, 0, 0])
         # self.assertAlmostEqual(rc)
-        self.assertTrue(rc.is_sim)
+        self.assertEqual(len(names), 7)
 
 
 if __name__ == '__main__':
