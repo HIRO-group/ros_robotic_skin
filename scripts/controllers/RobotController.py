@@ -229,7 +229,11 @@ class SawyerController(RobotController):
 
 
 if __name__ == '__main__':
+    """
+    this is a simple example of creating a panda controller
+    and publishing positions to all of the joints.
+    """
     controller = PandaController()
 
-    # rospy.sleep(10)
-    controller.publish_positions([1,1,1,1,1,1,1])
+    controller.publish_positions([1, 1, 1, 1, 1, 1, 1])
+
