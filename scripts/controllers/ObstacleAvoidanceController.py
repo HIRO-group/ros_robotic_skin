@@ -89,7 +89,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         """
         Ds = self.get_distance_vectors_end_effector()
         if Ds:
-            D = self.search_smallest_vector()
+            D = self.search_smallest_vector(Ds)
             magnitude = V_MAX * (1 / (1 + np.exp(((np.linalg.norm(D)) * (2 / RHO) - 1) * ALPHA)))
             unitary_vector = D/np.linalg.norm(D)
             return magnitude * unitary_vector
@@ -175,7 +175,7 @@ class ObstacleAvoidanceController(CartesianPositionController):
         xc_dot : np.ndarray
             6x1 modified end effector velocity vector (Modified with obstacle information)
         """
-        repulsive_vector = np.block([self.get_repulsive_distance(), np.array([0, 0, 0])])
+        repulsive_vector = np.block([self.get_repulsive_vector(), np.array([0, 0, 0])])
         repulsive_vector.shape = (6, 1)
 
         return xd_dot - repulsive_vector

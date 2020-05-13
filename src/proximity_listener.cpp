@@ -16,9 +16,9 @@ int num_callbacks = 0;
 class ProximityListener
 {
 private:
-    int num_sensors;
-    int num_control_points;
-    float distance_threshold;
+    int num_sensors{0};
+    int num_control_points{0};
+    float distance_threshold{0.0};
     float floor_threshold{0.04};
     bool removeFloor{true};
     std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
@@ -36,14 +36,17 @@ private:
     bool isInSphere(Eigen::Vector3d);
 public:
     ros::NodeHandle n;
-    ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold, int num_control_points);
+    ProximityListener(int argc, char **argv, int num_sensors, int num_control_points, float distance_threshold, bool removeFloor, float floor_threshold);
     ~ProximityListener();
     void start();
 };
 
-ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, float distance_threshold, int num_control_points)
+ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int num_control_points,
+                                     float distance_threshold=0.0, bool removeFloor=true, float floor_threshold=0.04)
 {
     distance_threshold = distance_threshold;
+    removeFloor = removeFloor;
+    floor_threshold = floor_threshold;
     this->live_points = std::make_unique<Eigen::Vector3d[]>(num_sensors);
     this->num_control_points = num_control_points;
     this->num_sensors = num_sensors;
@@ -161,7 +164,7 @@ int topic_count(std::string topic_substring)
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "proximity_listener");
-    ProximityListener proximity_listener(argc, argv, topic_count("proximity_data"), 0.03, 8);
+    ProximityListener proximity_listener(argc, argv, topic_count("proximity_data"), 8);
     proximity_listener.start();
 
     return 0;
