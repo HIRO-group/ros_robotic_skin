@@ -229,7 +229,7 @@ class SawyerController(RobotController):
 
 
 if __name__ == '__main__':
-    controller = SawyerController()
+    controller = PandaController()
 
     # rospy.sleep(10)
-    # controller.publish_velocities([1,1,1,1,1,1,1])
+    controller.publish_positions([1,1,1,1,1,1,1])
