@@ -1,12 +1,11 @@
 <launch>
+    <!-- type specifices which test script to run -->
     <arg name="headless" default="true"/>
     <arg name="gui" default="false"/>
     
     <include file="$(find ros_robotic_skin)/launch/simulation.launch" >
         <arg name="headless" default="$(arg headless)"/>
         <arg name="gui" default="$(arg gui)"/>
-
     </include>
-    <!-- type specifices which test script to run -->
     <test test-name='test' pkg='ros_robotic_skin' type='test_main.py'/>
 </launch>
