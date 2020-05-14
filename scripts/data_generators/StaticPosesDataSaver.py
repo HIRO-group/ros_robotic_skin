@@ -169,13 +169,8 @@ class StaticPoseDataSaver():
 
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        all_topics = rospy.get_published_topics()
-        total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
-        self.imu_names = []
-        self.imu_topics = []
-        for i in range(total_imu_topics):
-            self.imu_names.append('imu_link{}'.format(i))
-            self.imu_topics.append('imu_data{}'.format(i))
+        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+
         """
         to-do get the joints the imus are connected to.
         """

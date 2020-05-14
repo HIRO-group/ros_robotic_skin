@@ -6,9 +6,27 @@ import numpy as np
 import os
 import xacro
 import rospkg
+import rospy
 
 
-def get_joint_name_from_imu(filename, directory='robots'):
+def get_imu_names_and_topics():
+    all_topics = sorted(rospy.get_published_topics())
+    total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
+
+    imu_names = []
+    imu_topics = []
+
+    connected_links = get_joint_names_from_imus('panda_arm_hand.urdf.xacro')
+    assert len(total_imu_topics) == len(connected_links), "Error in amount of imu topics."
+
+    for i in range(total_imu_topics):
+        imu_string = 'imu_link{}_{}'.format(i, connected_links[i])
+        imu_names.append(imu_string)
+        imu_topics.append('imu_data{}'.format(i))
+    return imu_names, imu_topics
+
+
+def get_joint_names_from_imus(filename, directory='robots'):
     """
     in order for later optimization,
     the joint the imu is connected to
@@ -21,11 +39,24 @@ def get_joint_name_from_imu(filename, directory='robots'):
     `directory`: `str`: the directory relative to the package path
     from which the xacro file is parsed.
 
+    ## Returns
+    -----------
+    The list of links the imus are in (in order by imu id)
+
     """
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     full_xacro_path = os.path.join(ros_robotic_skin_path, directory, filename)
-    document = xacro.parse(full_xacro_path)
-    return document
+    document = xacro.parse(None, full_xacro_path)
+    imu_elements = document.getElementsByTagName('xacro:imu')
+    # make sure to get ids of imus in order.
+    links = []
+    sorted_imu_elements = sorted(imu_elements, key=lambda x: x.getAttribute('imu_id'))
+    for imu_element in sorted_imu_elements:
+        # get the link the imu is connected to.
+        link_string = str(imu_element.getAttribute('connected_to'))
+        links.append(link_string)
+
+    return links
 
 
 def n2s(x, precision=2):
