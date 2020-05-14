@@ -13,6 +13,7 @@ from std_msgs.msg import Float32
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
+# add to sys.path to make sure we can import utils and controllers
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
 from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
@@ -241,8 +242,9 @@ class ConstantRotationDataSaver():
                 self.curr_joint_name = joint_name
                 print(joint_name)
 
-                # Prepare for publishing a trajectory
+                # Prepare for publishing velocities
                 velocities = np.zeros(len(self.joint_names))
+                # only one joint - at a time - should move with constant velocity.
                 velocities[i] = CONSTANT_VELOCITY
 
                 # stopping time
@@ -256,6 +258,7 @@ class ConstantRotationDataSaver():
 
                     for imu_name in self.imu_names:
                         try:
+                            # get pose of imu
                             (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
                             self.Q[imu_name].x = rot[0]
                             self.Q[imu_name].y = rot[1]
@@ -281,7 +284,7 @@ class ConstantRotationDataSaver():
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
-
+    # determine controller to use.
     if robot == 'panda':
         controller = PandaController()
         filename = 'panda_positions.txt'
@@ -298,5 +301,7 @@ if __name__ == "__main__":
     filepath = '_'.join(['data/constant_data', robot])
 
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
+    # perform data collection
     cr.rotate_at_constant_vel()
+    # save data
     cr.save(verbose=True, filter=True)

@@ -169,11 +169,9 @@ class StaticPoseDataSaver():
 
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
+        # get imu names (with connected link info) and topic names.
         self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
 
-        """
-        to-do get the joints the imus are connected to.
-        """
         self.curr_pose_name = self.pose_names[0]
         self.ready = False
 
@@ -186,7 +184,7 @@ class StaticPoseDataSaver():
 
     def callback(self, data):
         """
-        A callback function for IMU topics
+        A callback function for IMU topics.
 
         Arguments
         ----------

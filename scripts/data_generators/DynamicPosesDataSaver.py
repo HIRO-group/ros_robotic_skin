@@ -255,10 +255,10 @@ class DynamicPoseDataSaver():
         self.poses_list = poses_list
         self.time = None
         # constant
-        # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
 
+        # get imu names and topics through rostopic and xacro.
         self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
 
         """
