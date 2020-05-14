@@ -63,7 +63,7 @@ class StaticPoseData():
     so the np.ndarray's dimension is (No. of collected data
     x  xyz accelerations)
     """
-    def __init__(self, pose_names, imu_names, filepath):
+    def __init__(self, pose_names, imu_mappings, filepath):
         """
         Initialize StaticPoseData class.
 
@@ -71,20 +71,24 @@ class StaticPoseData():
         ----------
         pose_names: list[str]
             Names of poses
-        imu_names: list[str]
-            Names of imus
+        imu_mappings: Dict[str: str]
+            Names of imus, with the corresponding link they are connected to.
         filepath: str
             Path to save the collected data
         """
         self.pose_names = pose_names
-        self.imu_names = imu_names
+        self.full_imu_names = []
+        for key in self.imu_mappings:
+            self.full_imu_names.append(self.imu_mappings[key])
+
+        # self.imu_names = imu_names
         self.filepath = filepath
         self.data = OrderedDict()
 
         # Create nested dictionary to store data
         for pose_name in pose_names:
             self.data[pose_name] = OrderedDict()
-            for imu_name in imu_names:
+            for imu_name in self.full_imu_names:
                 self.data[pose_name][imu_name] = np.empty((0, 10), float)
 
     def append(self, pose_name, imu_name, data):
@@ -102,8 +106,10 @@ class StaticPoseData():
             Numpy array of size (1,3).
             Includes an accelerometer measurement.
         """
-        self.data[pose_name][imu_name] = \
-            np.append(self.data[pose_name][imu_name], np.array([data]), axis=0)
+        imu_val = self.imu_mappings[imu_name]
+
+        self.data[pose_name][imu_val] = \
+            np.append(self.data[pose_name][imu_val], np.array([data]), axis=0)
 
     def clean_data(self, verbose=False):
         """
@@ -116,7 +122,7 @@ class StaticPoseData():
         # Create nested dictionary to store data
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
-            for imu_name in self.imu_names:
+            for imu_name in self.full_imu_names:
                 d = reject_outliers(self.data[pose_name][imu_name][:, :3])
                 m = np.mean(d, axis=0)
                 # s = np.std(d, axis=0)
@@ -170,13 +176,14 @@ class StaticPoseDataSaver():
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
         # get imu names (with connected link info) and topic names.
-        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+        self.imu_names, self.imu_topics, self.imu_mappings = \
+            utils.get_imu_names_and_topics()
 
         self.curr_pose_name = self.pose_names[0]
         self.ready = False
 
         # data storage
-        self.data_storage = StaticPoseData(self.pose_names, self.imu_names, filepath)
+        self.data_storage = StaticPoseData(self.pose_names, self.imu_mappings, filepath)
 
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:

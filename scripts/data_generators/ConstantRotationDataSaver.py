@@ -32,7 +32,7 @@ class ConstantRotationData():
     The data is defined as below.
     data = [acceleration, joint angles, joint velocities].
     """
-    def __init__(self, pose_names, joint_names, imu_names, filepath):
+    def __init__(self, pose_names, joint_names, imu_mappings, filepath):
         """
         Initialize StaticPoseData class.
 
@@ -42,14 +42,18 @@ class ConstantRotationData():
             Names of poses
         joint_names: list[str]
             Names of joints
-        imu_names: list[str]
-            Names of imus
+        imu_mappings: Dict[str: str]
+            Names of imus, with the corresponding link they are connected to.
         filepath: str
             Path to save the collected data
         """
         self.pose_names = pose_names
         self.joint_names = joint_names
-        self.imu_names = imu_names
+        self.imu_mappings = imu_mappings
+        self.full_imu_names = []
+        for key in self.imu_mappings:
+            self.full_imu_names.append(self.imu_mappings[key])
+        # self.imu_names = imu_names
         self.filepath = filepath
         self.data = OrderedDict()
 
@@ -58,13 +62,13 @@ class ConstantRotationData():
             self.data[pose_name] = OrderedDict()
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
-                for imu_name in imu_names:
+                for imu_name in self.full_imu_names:
                     self.data[pose_name][joint_name][imu_name] = np.empty((0, 15), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
         Append data to a dictionary whose keys are
-        [pose_name][joint_name][imu_name]
+        [pose_name][joint_name][self.imu_mappings[imu_name]]
 
         Arguments
         ----------
@@ -78,8 +82,9 @@ class ConstantRotationData():
             Numpy array of size (1,4).
             Includes an accelerometer measurement and a joint angle.
         """
-        self.data[pose_name][joint_name][imu_name] = \
-            np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
+        imu_val = self.imu_mappings[imu_name]
+        self.data[pose_name][joint_name][imu_val] = \
+            np.append(self.data[pose_name][joint_name][imu_val], np.array([data]), axis=0)
 
     def clean_data(self, verbose=False):
         """
@@ -93,7 +98,7 @@ class ConstantRotationData():
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for joint_name in self.joint_names:
-                for imu_name in self.imu_names:
+                for imu_name in self.full_imu_names:
                     norm = np.linalg.norm(self.data[pose_name][joint_name][imu_name][:, :3], axis=1)
                     norm, in_std = utils.reject_outliers(norm)
                     data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][in_std, :]
@@ -171,7 +176,8 @@ class ConstantRotationDataSaver():
         # constant
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+        self.imu_names, self.imu_topics, self.imu_mappings = \
+            utils.get_imu_names_and_topics()
         """
         to-do get the joints the imus are connected to.
         """
@@ -183,7 +189,7 @@ class ConstantRotationDataSaver():
             self.pubs[imu_name] = rospy.Publisher('/Anorm%s' % (list(imu_name)[-1]), Float32, queue_size=10)
 
         # data storage
-        self.data_storage = ConstantRotationData(self.pose_names, self.joint_names, self.imu_names, filepath)
+        self.data_storage = ConstantRotationData(self.pose_names, self.joint_names, self.imu_mappings, filepath)
         rospy.sleep(1)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
