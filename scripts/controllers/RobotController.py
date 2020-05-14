@@ -93,7 +93,7 @@ class RobotController(object):
         """
         self.arm.set_joint_velocities(joint_velocities)
 
-    def publish_velocities(self, joint_velocities, sleep):
+    def publish_velocities(self, joint_velocities, sleep=2.0):
         """
         unlike `send_velocities`, this function will
         command joints to move at specified velocities for `sleep`

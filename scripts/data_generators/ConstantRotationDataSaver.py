@@ -15,35 +15,12 @@ from geometry_msgs.msg import Quaternion
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
 CONSTANT_VELOCITY = 1.0
 JOINT_ROT_TIME = 0.5
-
-
-def reject_outliers(data, m=1):
-    """
-    Rejects outliers in a dataset.
-
-    Arguments
-    ----------
-    `data`: `np.array`
-        The data.
-
-    `m`: `int`
-        The amount of standard deviations from
-        the mean which is considered an outlier.
-
-    Returns
-    ----------
-    returns: None
-    """
-    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
-    indices = np.where(is_in_std)
-    return data[indices], indices
 
 
 class ConstantRotationData():
@@ -117,7 +94,7 @@ class ConstantRotationData():
             for joint_name in self.joint_names:
                 for imu_name in self.imu_names:
                     norm = np.linalg.norm(self.data[pose_name][joint_name][imu_name][:, :3], axis=1)
-                    norm, in_std = reject_outliers(norm)
+                    norm, in_std = utils.reject_outliers(norm)
                     data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][in_std, :]
 
         return data
@@ -200,7 +177,9 @@ class ConstantRotationDataSaver():
         for i in range(total_imu_topics):
             self.imu_names.append('imu_link{}'.format(i))
             self.imu_topics.append('imu_data{}'.format(i))
-
+        """
+        to-do get the joints the imus are connected to.
+        """
         self.collecting_data = False
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]

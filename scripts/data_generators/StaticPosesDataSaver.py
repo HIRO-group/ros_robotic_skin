@@ -12,8 +12,7 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
 RAD2DEG = 180.0/np.pi
@@ -177,6 +176,9 @@ class StaticPoseDataSaver():
         for i in range(total_imu_topics):
             self.imu_names.append('imu_link{}'.format(i))
             self.imu_topics.append('imu_data{}'.format(i))
+        """
+        to-do get the joints the imus are connected to.
+        """
         self.curr_pose_name = self.pose_names[0]
         self.ready = False
 

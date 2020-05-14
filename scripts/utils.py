@@ -1,7 +1,31 @@
+"""
+utils xacro file
+"""
+
 import numpy as np
 import os
-
+import xacro
 import rospkg
+
+
+def get_joint_name_from_imu(filename, directory='robots'):
+    """
+    in order for later optimization,
+    the joint the imu is connected to
+    needs to be known.
+
+    ## Arguments
+    -----------
+    `filename`: `str`: the filename of the xacro file
+
+    `directory`: `str`: the directory relative to the package path
+    from which the xacro file is parsed.
+
+    """
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+    full_xacro_path = os.path.join(ros_robotic_skin_path, directory, filename)
+    document = xacro.parse(full_xacro_path)
+    return document
 
 
 def n2s(x, precision=2):
@@ -135,3 +159,25 @@ def low_pass_filter(data, samp_freq, cutoff_freq=15.):
         reversed_data[i] = ((1 - alpha) * reversed_data[i-1]) + (alpha * reversed_data[i])
 
     return reversed_data[::-1]
+
+
+def reject_outliers(data, m=1):
+    """
+    Rejects outliers in a dataset.
+
+    Arguments
+    ----------
+    `data`: `np.array`
+        The data.
+
+    `m`: `int`
+        The amount of standard deviations from
+        the mean which is considered an outlier.
+
+    Returns
+    ----------
+    returns: None
+    """
+    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
+    indices = np.where(is_in_std)
+    return data[indices], indices
