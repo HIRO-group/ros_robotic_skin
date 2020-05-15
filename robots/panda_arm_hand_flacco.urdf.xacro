@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
+  <xacro:include filename="$(find ros_robotic_skin)/robots/panda_arm.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/hand.xacro"/>
+  <xacro:include filename="$(find ros_robotic_skin)/robots/control_point.xacro"/>
+
+  <!-- for simulation -->
+  <xacro:include filename="$(find franka_description)/robots/panda.gazebo.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/panda.transmission.xacro"/>
+  <!-- end for simulation -->
+
+  <xacro:panda_arm />
+  <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
+
+  <!-- As many control points as needed to cover the robot body -->
+  <xacro:control_point point_id='0  ' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
+
+  <!-- <xacro:control_point point_id='0' parent_id='8' rpy='0 0 0' xyz='0 0 0'/>
+  <xacro:control_point point_id='1' parent_id='7' rpy='0 0 0' xyz='0 -${0.333/2} 0'/>
+  <xacro:control_point point_id='2' parent_id='5' rpy='0 0 0' xyz='0 0 0'/>
+  <xacro:control_point point_id='3' parent_id='5' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
+  <xacro:control_point point_id='4' parent_id='4' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
+  <xacro:control_point point_id='5' parent_id='3' rpy='0 0 0' xyz='0 0 0'/>
+  <xacro:control_point point_id='6' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
+  <xacro:control_point point_id='7' parent_id='2' rpy='0 0 0' xyz='0 0 0'/> -->
+
+
+  <!-- end effector control point -->
+  <xacro:end_effector/>
+
+
+  <!-- for simulation -->
+  <xacro:arg name="robot_name" default="panda"/>
+  <xacro:panda_gazebo robot_name="$(arg robot_name)" />
+  <xacro:panda_transmission robot_name="$(arg robot_name)" load_hand="true" />
+  <!-- end for simulation -->
+</robot>
