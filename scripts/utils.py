@@ -7,6 +7,7 @@ import os
 import xacro
 import rospkg
 import rospy
+import pickle
 
 
 def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
@@ -48,10 +49,13 @@ def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
     for i in range(total_imu_topics):
         # separate information of connected link and imu_link.
         imu_string = 'imu_link{}'.format(i)
-        imu_mappings[imu_string] = '{}_{}'.format(imu_string, connected_links[i])
+        imu_mappings[imu_string] = connected_links[i]
         imu_names.append(imu_string)
         imu_topics.append('imu_data{}'.format(i))
-    return imu_names, imu_topics, imu_mappings
+    # save pickle file of imu mappings that we can use later.
+    with open('imu_mappings.pickle', 'wb') as handle:
+        pickle.dump(imu_mappings, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return imu_names, imu_topics
 
 
 def get_joint_names_from_imus(filename, directory='robots'):
