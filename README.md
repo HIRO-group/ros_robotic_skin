@@ -17,6 +17,7 @@ We have an `install.sh` script that will install the following packages:
 
 ## To run `install.sh`
 Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
+Additionally, you should clone this repository in an **empty** catkin workspace. For example, if you have the `franka_ros` package in the workspace, it will be deleted in favor of our forked version that works with this package.
 
 ### Usage:
 ```sh
@@ -57,7 +58,23 @@ source <path to your workspace>/devel/setup.bash
 ```
 
 ## Running Panda in simulation
+You can add as many IMUs as you want in `config/imu_poses.txt`.
+The format per line is as follows:
+
 ```sh
+x,y,z,roll,pitch,yaw, num_link_connected_to
+```
+
+Run
+
+```sh
+python scripts/imu_spawners/spawn_real_imus.py
+```
+
+to update the xacro file with the IMU changes. Now, to run the simulation:
+
+```sh
+
 roslaunch ros_robotic_skin simulation.launch
 ```
 
