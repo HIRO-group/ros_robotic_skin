@@ -27,11 +27,12 @@ class CartesianPositionController(object):
     def __init__(self):
         self.panda_controller = PandaController()
         self.tf_listener = tf.TransformListener()
-        self.rate = rospy.Rate(rospy.get_param('/cartesian_controller_frequency'))
+        self.rate = rospy.Rate(100.0)
         self.q = np.zeros(9)
         self.q_dot = np.zeros(7)
-        self.p_gain = rospy.get_param('/cartesian_controller_p_gain')
-        self.error_threshold = rospy.get_param('/cartesian_error_threshold')
+        self.p_gain = 2.5
+        self.error_threshold = 0.01
+        self.secondary_task_gain = 5
 
         rospy.on_shutdown(self.return_home)
 
@@ -76,7 +77,7 @@ class CartesianPositionController(object):
         """
         self.error = position_desired - self.position
 
-        v_trans = self.p_gain * self.error / np.linalg.norm(self.error)
+        v_trans = self.p_gain * self.error
         v_rot = np.array([0, 0, 0])
         v = np.block([v_trans, v_rot])
         v.shape = (6, 1)
@@ -114,7 +115,7 @@ class CartesianPositionController(object):
 
         # Compute the general solution for q_dot
         particular_solution = np.dot(Jpinv, v[:3])
-        homogeneous_solution = -1 * np.dot((np.identity(7) - np.dot(Jpinv, J)), gradient_H)  # -1 is a parameter that needs to be tuned.
+        homogeneous_solution = -self.secondary_task_gain * np.dot((np.identity(7) - np.dot(Jpinv, J)), gradient_H)
         homogeneous_solution.shape = (7, 1)
         q_dot = particular_solution + homogeneous_solution
         q_dot.shape = (7, 1)
@@ -200,16 +201,16 @@ class CartesianPositionController(object):
 
     def return_home(self):
         self.stop()
-        self.panda_controller.publish_positions(Q_MIDDLE, 2)
+        self.panda_controller.publish_positions(Q_MIDDLE, 0.4)
 
 
 if __name__ == "__main__":
 
     x0 = 0.6
     y0 = 0.0
-    z0 = 0.3
-    r = 0.2
-    resolution = 0.1
+    z0 = 0.5
+    r = 0.45
+    resolution = np.pi / 2
 
     # Loop that trajectory
     cartesian_controller = CartesianPositionController()
