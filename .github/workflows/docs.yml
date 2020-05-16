@@ -34,7 +34,7 @@ jobs:
         source /opt/ros/melodic/setup.bash
         rosdoc_lite .
         mkdir build
-        cp doc/html/* build/
+        cp -r doc/html/* build/
         
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@releases/v3
