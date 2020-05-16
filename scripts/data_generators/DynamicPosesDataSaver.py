@@ -15,8 +15,8 @@ from std_msgs.msg import Float32
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
+
 
 RAD2DEG = 180.0 / np.pi
 OSCILLATION_TIME = 3.0
@@ -48,6 +48,7 @@ class DynamicPoseData():
         self.pose_names = pose_names
         self.joint_names = joint_names
         self.imu_names = imu_names
+
         self.filepath = filepath
         self.data = OrderedDict()
 
@@ -56,7 +57,7 @@ class DynamicPoseData():
             self.data[pose_name] = OrderedDict()
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
-                for imu_name in imu_names:
+                for imu_name in self.imu_names:
                     self.data[pose_name][joint_name][imu_name] = np.empty((0, 14), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
@@ -76,6 +77,7 @@ class DynamicPoseData():
             Numpy array of size (1,4).
             Includes an accelerometer measurement and a joint angle.
         """
+
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
@@ -255,17 +257,15 @@ class DynamicPoseDataSaver():
         self.poses_list = poses_list
         self.time = None
         # constant
-        # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
 
-        all_topics = rospy.get_published_topics()
-        total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
-        self.imu_names = []
-        self.imu_topics = []
-        for i in range(total_imu_topics):
-            self.imu_names.append('imu_link{}'.format(i))
-            self.imu_topics.append('imu_data{}'.format(i))
+        # get imu names and topics through rostopic and xacro.
+        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+
+        """
+        to-do get the joints the imus are connected to.
+        """
         self.ready = False
         self.curr_positions = [0, 0, 0, 0, 0, 0, 0]
         self.curr_pose_name = self.pose_names[0]
