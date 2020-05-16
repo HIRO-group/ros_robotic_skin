@@ -8,7 +8,7 @@ from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
-
+from ..exceptions import InvalidNumJointException
 
 class RobotArm(object):
     """
@@ -63,6 +63,8 @@ class RobotArm(object):
         """
         if self.data_exists:
             return self.names
+        else:
+            return []
 
     def joint_angles(self):
         """
@@ -70,6 +72,8 @@ class RobotArm(object):
         """
         if self.data_exists:
             return np.array(self.joint_data.position)[self.valid_indices]
+        else:
+            return []
 
     def joint_velocities(self):
         """
@@ -77,22 +81,32 @@ class RobotArm(object):
         """
         if self.data_exists:
             return np.array(self.joint_data.velocity)[self.valid_indices]
+        else:
+            return []
 
     def joint_angle(self, joint_name):
         """
         gets the joint angle based on the provided joint name.
+
+        returns nan if data does not exist (from the callback)
         """
         if self.data_exists:
             angles = self.joint_angles()
             return angles[self.mapping[joint_name]]
+        else:
+            return np.nan
 
     def joint_velocity(self, joint_name):
         """
         gets the joint velocity based on the provided joint name.
+
+        returns nan if data does not exist (from the callback)
         """
         if self.data_exists:
             velocities = self.joint_velocities()
             return velocities[self.mapping[joint_name]]
+        else:
+            return np.nan
 
     def set_joint_position_speed(self, speed=1.0):
         rospy.logerr('Set Joint Position Speed Not Implemented for Robot Arm')
@@ -101,10 +115,11 @@ class RobotArm(object):
         """
         moves robot to specific joint positions.
         """
+        if len(positions) != self.num_joints:
+            raise InvalidNumJointException("Wrong number of joints for pos control.")
         if not rospy.is_shutdown():
             self.controller_manager.switch_mode(ControllerType.POSITION)
-            if len(positions) != self.num_joints:
-                raise ValueError("Wrong number of joints provided.")
+
             for index, pos in enumerate(positions):
                 self.pos_pubs[index].publish(Float64(pos))
             rospy.sleep(sleep)
