@@ -8,7 +8,7 @@ from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
-from ..exceptions import InvalidNumJointException
+from ..exceptions import InvalidNumJointException, InvalidTrajectoryCommandException
 
 
 class RobotArm(object):
@@ -21,7 +21,7 @@ class RobotArm(object):
                  ignore_joints_arr=['panda_finger_joint1', 'panda_finger_joint2'],
                  controller_names=None):
         """
-        intializiation of the robot arm class.
+        intialization of the robot arm class.
 
         `controller_names` should have:
 
@@ -118,9 +118,9 @@ class RobotArm(object):
         """
         if len(positions) != self.num_joints:
             raise InvalidNumJointException("Wrong number of joints for pos control.")
+
         if not rospy.is_shutdown():
             self.controller_manager.switch_mode(ControllerType.POSITION)
-
             for index, pos in enumerate(positions):
                 self.pos_pubs[index].publish(Float64(pos))
             rospy.sleep(sleep)
@@ -129,27 +129,32 @@ class RobotArm(object):
         """
         affects the set joint velocities
         """
-        self.controller_manager.switch_mode(ControllerType.VELOCITY)
 
         if len(velocities) != self.num_joints:
-            raise ValueError("Wrong number of joints provided.")
+            raise InvalidNumJointException("Wrong number of joints for vek control.")
 
-        for index, vel in enumerate(velocities):
-            self.vel_pubs[index].publish(Float64(vel))
+        if not rospy.is_shutdown():
+            self.controller_manager.switch_mode(ControllerType.VELOCITY)
+            for index, vel in enumerate(velocities):
+                self.vel_pubs[index].publish(Float64(vel))
 
     def set_joint_trajectory(self, trajectories, time_per_step=1.0):
         """
         sends a joint trajectory command.
         """
-        if not rospy.is_shutdown():
-            self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
+        # 3d tensor of shape (3, n_joint, n_point)
+        points_tensor = np.array(trajectories)
 
-            # 3d tensor of shape (3, n_joint, n_point)
-            points_tensor = np.array(trajectories)
-            assert points_tensor.shape[1] == 3, "3 row should be provided for pos, vel and acc."
-            assert len(points_tensor.shape) == 3, "Trajectories should be of 3-d shape!"
-            assert points_tensor.shape[2] == self.num_joints, "Trajectory should " \
-                                                              "account for num joints."
+        if len(points_tensor.shape) != 3:
+            raise InvalidTrajectoryCommandException("Trajectory should be of 3-d shape!")
+        if points_tensor.shape[1] != 3:
+            raise InvalidTrajectoryCommandException("3 rows should be provided for pos, vel and acc.")
+        if points_tensor.shape[2] != self.num_joints:
+            raise InvalidTrajectoryCommandException("Trajectory should account for num of joints.")
+
+        if not rospy.is_shutdown():
+
+            self.controller_manager.switch_mode(ControllerType.TRAJECTORY)
 
             num_points = points_tensor.shape[0]
             time_from_start = time_per_step
