@@ -10,6 +10,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
 from ..exceptions import InvalidNumJointException
 
+
 class RobotArm(object):
     """
     Generic robot arm implementation in ROS. Works for n joints.
