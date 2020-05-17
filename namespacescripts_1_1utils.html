@@ -29,6 +29,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a6bf35b065e00858dd236d9eb8e1f68d4"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a6bf35b065e00858dd236d9eb8e1f68d4">get_imu_names_and_topics</a> (xacro_name='panda_arm_hand.urdf.xacro', directory='robots')</td></tr>
+<tr class="separator:a6bf35b065e00858dd236d9eb8e1f68d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7b6111008cb1b69e9199a4459ab0d71"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#ae7b6111008cb1b69e9199a4459ab0d71">get_joint_names_from_imus</a> (filename, directory='robots')</td></tr>
+<tr class="separator:ae7b6111008cb1b69e9199a4459ab0d71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98199223ec0ec10705ad70dfe62b6d72"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a98199223ec0ec10705ad70dfe62b6d72">get_poses_list_file</a> (filename)</td></tr>
 <tr class="separator:a98199223ec0ec10705ad70dfe62b6d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6042dd5186660c5a70557488a464dc87"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a6042dd5186660c5a70557488a464dc87">hampel_filter_forloop</a> (input_series, window_size, n_sigmas=3)</td></tr>
@@ -39,8 +43,104 @@ Functions</h2></td></tr>
 <tr class="separator:acf633ce4605d050b20a5bc1c149b049f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0f2f1e95df9b4f845877e43303e783d"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#ad0f2f1e95df9b4f845877e43303e783d">n2s</a> (x, precision=2)</td></tr>
 <tr class="separator:ad0f2f1e95df9b4f845877e43303e783d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd7bd07af1b40d9562ed3beb81fd133"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a9dd7bd07af1b40d9562ed3beb81fd133">reject_outliers</a> (data, m=1)</td></tr>
+<tr class="separator:a9dd7bd07af1b40d9562ed3beb81fd133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><pre class="fragment">utils xacro file
+</pre> </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a6bf35b065e00858dd236d9eb8e1f68d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bf35b065e00858dd236d9eb8e1f68d4">&#9670;&nbsp;</a></span>get_imu_names_and_topics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.utils.get_imu_names_and_topics </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>xacro_name</em> = <code>'panda_arm_hand.urdf.xacro'</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>directory</em> = <code>'robots'</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">parses the xacro file containing the imus, and
+returns a list of the imu names (each name has the link it's on
+also included in the string), as well as a list of the imu topics.
+
+Arguments
+---------
+`xacro_name`: the name of the xacro file.
+
+`directory`: the directory, relative to the package path,
+from which the xacro file is parsed.
+
+Returns
+-------
+`imu_names`: The list of imu names, an example is `imu_link_0_panda_link1`,
+which indicates that the imu 0 is on link 1 of the model.
+
+`imu_topics`: The topics for each imu (in sorted order). For example,
+`rostopic echo /imu_data0` which echo the contents of the published IMU
+messages in ROS
+</pre> 
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00014">14</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+
+</div>
+</div>
+<a id="ae7b6111008cb1b69e9199a4459ab0d71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7b6111008cb1b69e9199a4459ab0d71">&#9670;&nbsp;</a></span>get_joint_names_from_imus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.utils.get_joint_names_from_imus </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>directory</em> = <code>'robots'</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">in order for later optimization,
+the joint the imu is connected to
+needs to be known.
+
+Arguments
+-----------
+`filename`: `str`: the filename of the xacro file
+
+`directory`: `str`: the directory relative to the package path
+from which the xacro file is parsed.
+
+Returns
+-----------
+The list of links the imus are in (in order by imu id)</pre> 
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00061">61</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+
+</div>
+</div>
 <a id="a98199223ec0ec10705ad70dfe62b6d72"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a98199223ec0ec10705ad70dfe62b6d72">&#9670;&nbsp;</a></span>get_poses_list_file()</h2>
 
@@ -71,7 +171,7 @@ returns: `poses_list`: `list`
     `j` joint positions, an empty lits, and a string
     that consists of `Pose_{p+1}`, where p is the pose number.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00023">23</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00115">115</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -121,7 +221,7 @@ Arguments
     The number of standard deviations to determine
     what data points are outliers.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00052">52</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00144">144</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -169,7 +269,7 @@ Arguments
     cutoff frequency; that is, data that is &gt; = `cutoff_freq` will
     be attentuated.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00106">106</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00198">198</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -208,7 +308,7 @@ Arguments
 `window_size`: `int`
     Window size from which the average is calculated
     for each point</pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00083">83</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00175">175</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -246,7 +346,51 @@ Arguments
 
 `precision`: `int`
     The precision desired on each entry in the array.</pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00007">7</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00099">99</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+
+</div>
+</div>
+<a id="a9dd7bd07af1b40d9562ed3beb81fd133"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd7bd07af1b40d9562ed3beb81fd133">&#9670;&nbsp;</a></span>reject_outliers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.utils.reject_outliers </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>m</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">Rejects outliers in a dataset.
+
+Arguments
+----------
+`data`: `np.array`
+    The data.
+
+`m`: `int`
+    The amount of standard deviations from
+    the mean which is considered an outlier.
+
+Returns
+----------
+returns: None
+</pre> 
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00232">232</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -256,7 +400,7 @@ Arguments
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Sat May 16 2020 02:07:36</small>
+<small>autogenerated on Sun May 17 2020 06:40:55</small>
 </div>
 </body>
 </html>
