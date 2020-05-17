@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from PandaController import PandaController
+from RobotController import PandaController
 import numpy as np
 import rospy
 import tf
