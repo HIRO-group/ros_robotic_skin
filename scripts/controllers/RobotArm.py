@@ -131,7 +131,7 @@ class RobotArm(object):
         """
 
         if len(velocities) != self.num_joints:
-            raise InvalidNumJointException("Wrong number of joints for vek control.")
+            raise InvalidNumJointException("Wrong number of joints for vel control.")
 
         if not rospy.is_shutdown():
             self.controller_manager.switch_mode(ControllerType.VELOCITY)
