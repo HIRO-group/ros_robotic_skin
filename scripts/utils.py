@@ -36,7 +36,7 @@ def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
     # get all topics, sorted
     all_topics = sorted(rospy.get_published_topics())
     # get imu topics
-    total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
+    num_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
 
     imu_names = []
     imu_topics = []
@@ -44,9 +44,10 @@ def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
     imu_mappings = {}
     # get connected links for imus, in order by id.
     connected_links = get_joint_names_from_imus(xacro_name, directory)
-    assert len(total_imu_topics) == len(connected_links), "Error in amount of imu topics."
+    if num_imu_topics != len(connected_links):
+        raise ValueError("Error in amount of imu topics.")
 
-    for i in range(total_imu_topics):
+    for i in range(num_imu_topics):
         # separate information of connected link and imu_link.
         imu_string = 'imu_link{}'.format(i)
         imu_mappings[imu_string] = connected_links[i]
