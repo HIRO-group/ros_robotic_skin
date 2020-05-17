@@ -12,8 +12,7 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
 RAD2DEG = 180.0/np.pi
@@ -78,6 +77,7 @@ class StaticPoseData():
             Path to save the collected data
         """
         self.pose_names = pose_names
+
         self.imu_names = imu_names
         self.filepath = filepath
         self.data = OrderedDict()
@@ -85,7 +85,7 @@ class StaticPoseData():
         # Create nested dictionary to store data
         for pose_name in pose_names:
             self.data[pose_name] = OrderedDict()
-            for imu_name in imu_names:
+            for imu_name in self.imu_names:
                 self.data[pose_name][imu_name] = np.empty((0, 10), float)
 
     def append(self, pose_name, imu_name, data):
@@ -103,6 +103,7 @@ class StaticPoseData():
             Numpy array of size (1,3).
             Includes an accelerometer measurement.
         """
+
         self.data[pose_name][imu_name] = \
             np.append(self.data[pose_name][imu_name], np.array([data]), axis=0)
 
@@ -170,13 +171,9 @@ class StaticPoseDataSaver():
 
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        all_topics = rospy.get_published_topics()
-        total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
-        self.imu_names = []
-        self.imu_topics = []
-        for i in range(total_imu_topics):
-            self.imu_names.append('imu_link{}'.format(i))
-            self.imu_topics.append('imu_data{}'.format(i))
+        # get imu names (with connected link info) and topic names.
+        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+
         self.curr_pose_name = self.pose_names[0]
         self.ready = False
 
@@ -189,7 +186,7 @@ class StaticPoseDataSaver():
 
     def callback(self, data):
         """
-        A callback function for IMU topics
+        A callback function for IMU topics.
 
         Arguments
         ----------

@@ -25,8 +25,15 @@ class RealIMUSpawner():
         has a certain pose. xyz rpy in xacro file.
         link connected to in the robot.
     """
-    def __init__(self, robot_standard_link="panda_link"):
+    def __init__(self, robot="panda"):
+        """
+        initializes the real imu spawner.
+        """
         self.pkg_path = rospkg.RosPack().get_path('ros_robotic_skin')
+        if robot == "panda":
+            self.robot_standard_link = "panda_link"
+        else:
+            self.robot_standard_link = "right_l"
         real_imu_pose_path = os.path.join(self.pkg_path, 'config/imu_poses.txt')
         if not os.path.exists(real_imu_pose_path):
             raise EnvironmentError('imu_poses.txt file not found in config!')
@@ -43,9 +50,10 @@ class RealIMUSpawner():
         self.xacro_strings = []
         for idx, imu in enumerate(self.imu_arr):
             link_no = int(imu[6])
-            xacro_string = '  <xacro:imu imu_id="{}" xyz="{} {} {}" rpy="{} {} {}" gravity="true" connected_to="panda_link{}"/>\n'.format(
+            xacro_string = '  <xacro:imu imu_id="{}" xyz="{} {} {}" rpy="{} {} {}" gravity="true" connected_to="{}{}"/>\n'.format(
                 idx, imu[0], imu[1], imu[2],
-                imu[3], imu[4], imu[5], link_no
+                imu[3], imu[4], imu[5], self.robot_standard_link,
+                link_no
             )
             self.xacro_strings.append(xacro_string)
 

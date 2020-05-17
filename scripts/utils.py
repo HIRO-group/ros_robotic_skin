@@ -1,7 +1,99 @@
+"""
+utils xacro file
+"""
+
 import numpy as np
 import os
-
+import xacro
 import rospkg
+import rospy
+import pickle
+
+
+def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
+                             directory='robots'):
+    """
+    parses the xacro file containing the imus, and
+    returns a list of the imu names (each name has the link it's on
+    also included in the string), as well as a list of the imu topics.
+
+    Arguments
+    ---------
+    `xacro_name`: the name of the xacro file.
+
+    `directory`: the directory, relative to the package path,
+    from which the xacro file is parsed.
+
+    Returns
+    -------
+    `imu_names`: The list of imu names, an example is `imu_link_0_panda_link1`,
+    which indicates that the imu 0 is on link 1 of the model.
+
+    `imu_topics`: The topics for each imu (in sorted order). For example,
+    `rostopic echo /imu_data0` which echo the contents of the published IMU
+    messages in ROS
+    """
+    # get all topics, sorted
+    all_topics = sorted(rospy.get_published_topics())
+    # get imu topics
+    total_imu_topics = len([topic for topic in all_topics if 'imu_data' in topic[0]])
+
+    imu_names = []
+    imu_topics = []
+    # imu mappings from imu to imu name and link it's connected to.
+    imu_mappings = {}
+    # get connected links for imus, in order by id.
+    connected_links = get_joint_names_from_imus(xacro_name, directory)
+    assert len(total_imu_topics) == len(connected_links), "Error in amount of imu topics."
+
+    for i in range(total_imu_topics):
+        # separate information of connected link and imu_link.
+        imu_string = 'imu_link{}'.format(i)
+        imu_mappings[imu_string] = connected_links[i]
+        imu_names.append(imu_string)
+        imu_topics.append('imu_data{}'.format(i))
+    # save pickle file of imu mappings that we can use later.
+    with open('imu_mappings.pickle', 'wb') as handle:
+        pickle.dump(imu_mappings, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return imu_names, imu_topics
+
+
+def get_joint_names_from_imus(filename, directory='robots'):
+    """
+    in order for later optimization,
+    the joint the imu is connected to
+    needs to be known.
+
+    Arguments
+    -----------
+    `filename`: `str`: the filename of the xacro file
+
+    `directory`: `str`: the directory relative to the package path
+    from which the xacro file is parsed.
+
+    Returns
+    -----------
+    The list of links the imus are in (in order by imu id)
+
+    """
+    # get full path for xacro file.
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+    full_xacro_path = os.path.join(ros_robotic_skin_path, directory, filename)
+
+    # parse xacro file, which returns xml document.
+    document = xacro.parse(None, full_xacro_path)
+    imu_elements = document.getElementsByTagName('xacro:imu')
+    # make sure to get ids of imus in order.
+    links = []
+    sorted_imu_elements = sorted(imu_elements, key=lambda x: x.getAttribute('imu_id'))
+
+    # get imu information.
+    for imu_element in sorted_imu_elements:
+        # get the link the imu is connected to.
+        link_string = str(imu_element.getAttribute('connected_to'))
+        links.append(link_string)
+
+    return links
 
 
 def n2s(x, precision=2):
@@ -135,3 +227,25 @@ def low_pass_filter(data, samp_freq, cutoff_freq=15.):
         reversed_data[i] = ((1 - alpha) * reversed_data[i-1]) + (alpha * reversed_data[i])
 
     return reversed_data[::-1]
+
+
+def reject_outliers(data, m=1):
+    """
+    Rejects outliers in a dataset.
+
+    Arguments
+    ----------
+    `data`: `np.array`
+        The data.
+
+    `m`: `int`
+        The amount of standard deviations from
+        the mean which is considered an outlier.
+
+    Returns
+    ----------
+    returns: None
+    """
+    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
+    indices = np.where(is_in_std)
+    return data[indices], indices
