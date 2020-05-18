@@ -58,7 +58,23 @@ source <path to your workspace>/devel/setup.bash
 ```
 
 ## Running Panda in simulation
+You can add as many IMUs as you want in `config/imu_poses.txt`.
+The format per line is as follows:
+
 ```sh
+x,y,z,roll,pitch,yaw, num_link_connected_to
+```
+
+Run
+
+```sh
+python scripts/imu_spawners/spawn_real_imus.py
+```
+
+to update the xacro file with the IMU changes. Now, to run the simulation:
+
+```sh
+
 roslaunch ros_robotic_skin simulation.launch
 ```
 
@@ -96,10 +112,11 @@ flake8 . --max-complexity=10 --max-line-length=140
 within this repository (after cloning and changing directories to `ros_robotic_skin`).
 
 #### `ROS Test`
+Make sure that you have sourced the catkin workspace containing this package.
 ```sh
-cd ~/catkin_ws
-catkin run_tests
+rostest ros_robotic_skin test.test
 ```
+This will run our simulation without the GUI and perform the tests.
 
 Guides to add tests are descibed in [our Wiki page](https://github.com/HIRO-group/ros_robotic_skin/wiki/How-to-add-test)
 

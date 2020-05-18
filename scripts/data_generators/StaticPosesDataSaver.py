@@ -12,8 +12,7 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
 RAD2DEG = 180.0/np.pi
@@ -78,6 +77,7 @@ class StaticPoseData():
             Path to save the collected data
         """
         self.pose_names = pose_names
+
         self.imu_names = imu_names
         self.filepath = filepath
         self.data = OrderedDict()
@@ -85,8 +85,8 @@ class StaticPoseData():
         # Create nested dictionary to store data
         for pose_name in pose_names:
             self.data[pose_name] = OrderedDict()
-            for imu_name in imu_names:
-                self.data[pose_name][imu_name] = np.empty((0, 10), float)
+            for imu_name in self.imu_names:
+                self.data[pose_name][imu_name] = np.empty((0, 14), float)
 
     def append(self, pose_name, imu_name, data):
         """
@@ -118,10 +118,10 @@ class StaticPoseData():
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
-                d = reject_outliers(self.data[pose_name][imu_name][:, :3])
+                d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
                 m = np.mean(d, axis=0)
                 # s = np.std(d, axis=0)
-                joints = reject_outliers(self.data[pose_name][imu_name][:, 3:])
+                joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 j = np.mean(joints, axis=0)
                 data[pose_name][imu_name] = np.r_[m, j]
 
@@ -170,10 +170,9 @@ class StaticPoseDataSaver():
 
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
-                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
-                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
+        # get imu names (with connected link info) and topic names.
+        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+
         self.curr_pose_name = self.pose_names[0]
         self.ready = False
 
@@ -186,7 +185,7 @@ class StaticPoseDataSaver():
 
     def callback(self, data):
         """
-        A callback function for IMU topics
+        A callback function for IMU topics.
 
         Arguments
         ----------
@@ -196,12 +195,17 @@ class StaticPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
+            qx = data.orientation.x
+            qy = data.orientation.y
+            qz = data.orientation.z
+            qw = data.orientation.w
             joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 data.header.frame_id,           # for each imu
-                np.array([accel.x, accel.y, accel.z] + joint_angles))
+                np.array([qx, qy, qz, qw,
+                          accel.x, accel.y, accel.z] + joint_angles))
 
     def set_poses(self, time=3.0):
         """
@@ -233,8 +237,8 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    robot = sys.argv[1]
-
+    # robot = sys.argv[1]
+    robot = 'panda'
     if robot == 'panda':
         controller = PandaController()
         filename = 'panda_positions.txt'

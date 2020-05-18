@@ -15,8 +15,7 @@ from std_msgs.msg import Float32
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 RAD2DEG = 180.0 / np.pi
 OSCILLATION_TIME = 3.0
@@ -48,6 +47,7 @@ class DynamicPoseData():
         self.pose_names = pose_names
         self.joint_names = joint_names
         self.imu_names = imu_names
+
         self.filepath = filepath
         self.data = OrderedDict()
 
@@ -56,7 +56,7 @@ class DynamicPoseData():
             self.data[pose_name] = OrderedDict()
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
-                for imu_name in imu_names:
+                for imu_name in self.imu_names:
                     self.data[pose_name][joint_name][imu_name] = np.empty((0, 14), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
@@ -76,10 +76,13 @@ class DynamicPoseData():
             Numpy array of size (1,4).
             Includes an accelerometer measurement and a joint angle.
         """
+
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
-    def clean_data(self, verbose=False, time_range=(0.04, 0.16)):
+
+    def clean_data(self, verbose=False, time_range=(0.04, 0.16),
+                   eliminate_outliers=True):
         """
         Cleans the data.
 
@@ -108,9 +111,13 @@ class DynamicPoseData():
                     imu_accs = imu_data[:, :3]
 
                     norms = np.linalg.norm(imu_accs, axis=1)
-
                     # ang_vels = imu_data[:, 5]
                     joint_accs = imu_data[:, 6]
+                    if eliminate_outliers:
+                        # use hampel filter for outlier detection
+                        # it actually doesn't affect the end result much.
+                        norms = utils.hampel_filter_forloop(norms, 10)[0]
+                        joint_accs = utils.hampel_filter_forloop(joint_accs, 10)[0]
 
                     # filter acceleration norms
                     filtered_norms = utils.low_pass_filter(norms, 100.)
@@ -150,7 +157,7 @@ class DynamicPoseData():
                     best = self.data[pose_name][joint_name][imu_name][best_idx]
 
                     self.data[pose_name][joint_name][imu_name] = [best]
-                    if not verbose:
+                    if verbose:
                         # plots the acceleration norms - filtered and raw
                         plt.plot(imu_raw_arr)
                         plt.plot(imu_filtered_arr)
@@ -250,14 +257,15 @@ class DynamicPoseDataSaver():
         self.poses_list = poses_list
         self.time = None
         # constant
-        # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
-                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
-                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
 
+        # get imu names and topics through rostopic and xacro.
+        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+
+        """
+        to-do get the joints the imus are connected to.
+        """
         self.ready = False
         self.curr_positions = [0, 0, 0, 0, 0, 0, 0]
         self.curr_pose_name = self.pose_names[0]

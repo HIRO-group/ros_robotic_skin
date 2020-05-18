@@ -13,37 +13,15 @@ from std_msgs.msg import Float32
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
+# add to sys.path to make sure we can import utils and controllers
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
 CONSTANT_VELOCITY = 1.0
 JOINT_ROT_TIME = 0.5
-
-
-def reject_outliers(data, m=1):
-    """
-    Rejects outliers in a dataset.
-
-    Arguments
-    ----------
-    `data`: `np.array`
-        The data.
-
-    `m`: `int`
-        The amount of standard deviations from
-        the mean which is considered an outlier.
-
-    Returns
-    ----------
-    returns: None
-    """
-    is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
-    indices = np.where(is_in_std)
-    return data[indices], indices
 
 
 class ConstantRotationData():
@@ -66,12 +44,13 @@ class ConstantRotationData():
             Names of joints
         imu_names: list[str]
             Names of imus
-        filepath: str
+s        filepath: str
             Path to save the collected data
         """
         self.pose_names = pose_names
         self.joint_names = joint_names
         self.imu_names = imu_names
+
         self.filepath = filepath
         self.data = OrderedDict()
 
@@ -80,13 +59,13 @@ class ConstantRotationData():
             self.data[pose_name] = OrderedDict()
             for joint_name in joint_names:
                 self.data[pose_name][joint_name] = OrderedDict()
-                for imu_name in imu_names:
+                for imu_name in self.imu_names:
                     self.data[pose_name][joint_name][imu_name] = np.empty((0, 15), float)
 
     def append(self, pose_name, joint_name, imu_name, data):
         """
         Append data to a dictionary whose keys are
-        [pose_name][joint_name][imu_name]
+        [pose_name][joint_name][self.imu_mappings[imu_name]]
 
         Arguments
         ----------
@@ -117,7 +96,7 @@ class ConstantRotationData():
             for joint_name in self.joint_names:
                 for imu_name in self.imu_names:
                     norm = np.linalg.norm(self.data[pose_name][joint_name][imu_name][:, :3], axis=1)
-                    norm, in_std = reject_outliers(norm)
+                    norm, in_std = utils.reject_outliers(norm)
                     data[pose_name][joint_name][imu_name] = self.data[pose_name][joint_name][imu_name][in_std, :]
 
         return data
@@ -191,14 +170,12 @@ class ConstantRotationDataSaver():
         self.poses_list = poses_list
 
         # constant
-        # TODO: get imu names automatically
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = self.controller.joint_names
-        self.imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
-                          'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-        self.imu_topics = ['imu_data0', 'imu_data1', 'imu_data2',
-                           'imu_data3', 'imu_data4', 'imu_data5', 'imu_data6']
-
+        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+        """
+        to-do get the joints the imus are connected to.
+        """
         self.collecting_data = False
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
@@ -266,8 +243,9 @@ class ConstantRotationDataSaver():
                 self.curr_joint_name = joint_name
                 print(joint_name)
 
-                # Prepare for publishing a trajectory
+                # Prepare for publishing velocities
                 velocities = np.zeros(len(self.joint_names))
+                # only one joint - at a time - should move with constant velocity.
                 velocities[i] = CONSTANT_VELOCITY
 
                 # stopping time
@@ -281,6 +259,7 @@ class ConstantRotationDataSaver():
 
                     for imu_name in self.imu_names:
                         try:
+                            # get pose of imu
                             (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
                             self.Q[imu_name].x = rot[0]
                             self.Q[imu_name].y = rot[1]
@@ -306,7 +285,7 @@ class ConstantRotationDataSaver():
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
-
+    # determine controller to use.
     if robot == 'panda':
         controller = PandaController()
         filename = 'panda_positions.txt'
@@ -323,5 +302,7 @@ if __name__ == "__main__":
     filepath = '_'.join(['data/constant_data', robot])
 
     cr = ConstantRotationDataSaver(controller, poses_list, filepath)
+    # perform data collection
     cr.rotate_at_constant_vel()
+    # save data
     cr.save(verbose=True, filter=True)
