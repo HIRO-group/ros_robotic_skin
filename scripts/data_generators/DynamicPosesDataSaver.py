@@ -80,7 +80,6 @@ class DynamicPoseData():
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
 
-
     def clean_data(self, verbose=False, time_range=(0.04, 0.16),
                    eliminate_outliers=True):
         """
