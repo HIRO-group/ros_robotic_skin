@@ -3,6 +3,7 @@
   <xacro:include filename="$(find ros_robotic_skin)/robots/panda_arm.xacro"/>
   <xacro:include filename="$(find franka_description)/robots/hand.xacro"/>
   <xacro:include filename="$(find ros_robotic_skin)/robots/control_point.xacro"/>
+  <xacro:include filename="$(find ros_robotic_skin)/robots/proximity.xacro"/>
 
   <!-- for simulation -->
   <xacro:include filename="$(find franka_description)/robots/panda.gazebo.xacro"/>
@@ -13,21 +14,243 @@
   <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
 
   <!-- As many control points as needed to cover the robot body -->
-  <xacro:control_point point_id='0  ' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
+  <!-- <xacro:control_point point_id='0' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/> -->
 
-  <!-- <xacro:control_point point_id='0' parent_id='8' rpy='0 0 0' xyz='0 0 0'/>
-  <xacro:control_point point_id='1' parent_id='7' rpy='0 0 0' xyz='0 -${0.333/2} 0'/>
-  <xacro:control_point point_id='2' parent_id='5' rpy='0 0 0' xyz='0 0 0'/>
-  <xacro:control_point point_id='3' parent_id='5' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
-  <xacro:control_point point_id='4' parent_id='4' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
-  <xacro:control_point point_id='5' parent_id='3' rpy='0 0 0' xyz='0 0 0'/>
-  <xacro:control_point point_id='6' parent_id='3' rpy='0 0 0' xyz='0 0 -${0.333/2}'/>
-  <xacro:control_point point_id='7' parent_id='2' rpy='0 0 0' xyz='0 0 0'/> -->
+  <xacro:control_point point_id='0' parent_id='8' z0='0.01'/>
+  <xacro:control_point point_id='1' parent_id='7' x0y0='-0.05 -0.03' z0='-0.03'/>
+  <xacro:control_point point_id='2' parent_id='5' x0y0='0 0.07' z0='-0.09'/>
+  <xacro:control_point point_id='3' parent_id='5' x0y0='0 0' z0='-0.25'/>
+  <xacro:control_point point_id='4' parent_id='4'/>
+  <xacro:control_point point_id='5' parent_id='3' x0y0='0 0' z0='-0.1'/>
+  <xacro:control_point point_id='6' parent_id='3' x0y0='0 0' z0='-0.3'/>
+  <xacro:control_point point_id='7' parent_id='0' x0y0='-0.05 0' z0='0.1'/>
 
 
   <!-- end effector control point -->
   <xacro:end_effector/>
 
+  <!-- Proximity sensors -->
+  <xacro:property name="sensors_per_ring" value="16"/>
+  <!-- panda_link1 -->
+  <xacro:property name="ring_id" value="0"/>
+  <xacro:property name="radius" value="0.06"/>
+  <xacro:property name="z0" value="-0.185"/>
+  <xacro:property name="connected_to" value="panda_link1"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <xacro:property name="ring_id" value="1"/>
+  <xacro:property name="z0" value="-0.14"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <!-- panda_link3 -->
+  <xacro:property name="ring_id" value="2"/>
+  <xacro:property name="radius" value="0.06"/>
+  <xacro:property name="z0" value="-0.13"/>
+  <xacro:property name="connected_to" value="panda_link3"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <xacro:property name="ring_id" value="3"/>
+  <xacro:property name="z0" value="-0.20"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <!-- panda_link4 -->
+  <xacro:property name="ring_id" value="4"/>
+  <xacro:property name="radius" value="0.05"/>
+  <xacro:property name="z0" value="0.07"/>
+  <xacro:property name="connected_to" value="panda_link4"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <xacro:property name="ring_id" value="5"/>
+  <xacro:property name="radius" value="0.055"/>
+  <xacro:property name="z0" value="-0.085"/>
+  <xacro:property name="connected_to" value="panda_link4"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+
+  <!-- panda_link5 -->
+  <xacro:property name="ring_id" value="6"/>
+  <xacro:property name="radius" value="0.06"/>
+  <xacro:property name="z0" value="-0.24"/>
+  <xacro:property name="connected_to" value="panda_link5"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <xacro:property name="ring_id" value="7"/>
+  <xacro:property name="z0" value="-0.30"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+9}" radius="${radius}" theta="${2*pi/sensors_per_ring* 9}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+10}" radius="${radius}" theta="${2*pi/sensors_per_ring * 10}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+11}" radius="${radius}" theta="${2*pi/sensors_per_ring * 11}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+12}" radius="${radius}" theta="${2*pi/sensors_per_ring * 12}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+13}" radius="${radius}" theta="${2*pi/sensors_per_ring * 13}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+14}" radius="${radius}" theta="${2*pi/sensors_per_ring * 14}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+15}" radius="${radius}" theta="${2*pi/sensors_per_ring * 15}" z0="${z0}" connected_to="${connected_to}"/>
+
+  <!-- panda_link7 -->
+  <xacro:property name="ring_id" value="8"/>
+  <xacro:property name="radius" value="0.0425"/>
+  <xacro:property name="z0" value="0"/>
+  <xacro:property name="connected_to" value="panda_link7"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:property name="missing" value="7"/>
+
+  <xacro:property name="ring_id" value="9"/>
+  <xacro:property name="radius" value="0.0425"/>
+  <xacro:property name="z0" value="-0.05"/>
+  <xacro:property name="connected_to" value="panda_link7"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+0}" radius="${radius}" theta="${2*pi/sensors_per_ring* 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+1}" radius="${radius}" theta="${2*pi/sensors_per_ring* 1}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+2}" radius="${radius}" theta="${2*pi/sensors_per_ring* 2}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+3}" radius="${radius}" theta="${2*pi/sensors_per_ring* 3}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+4}" radius="${radius}" theta="${2*pi/sensors_per_ring* 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+5}" radius="${radius}" theta="${2*pi/sensors_per_ring* 5}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+6}" radius="${radius}" theta="${2*pi/sensors_per_ring* 6}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+7}" radius="${radius}" theta="${2*pi/sensors_per_ring* 7}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8}" radius="${radius}" theta="${2*pi/sensors_per_ring* 8}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:property name="missing" value="14"/>
+
+  <!-- panda_hand -->
+  <xacro:property name="ring_id" value="10"/>
+  <xacro:property name="radius" value="0.10"/>
+  <xacro:property name="z0" value="0.03"/>
+  <xacro:property name="connected_to" value="panda_hand"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+0}" radius="${radius}" theta="${2*pi/8 * 0}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8}" radius="${radius}" theta="${2*pi/8 * 4}" z0="${z0}" connected_to="${connected_to}"/>
+  <xacro:property name="radius" value="0.025"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+1}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="-0.09" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+2}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="-0.06" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+3}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="-0.03" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+4}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="0" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+5}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="0.03" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+6}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="0.06" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+7}" radius="${radius}" theta="${2*pi/8 * 2}" z0="${z0}" y0="0.09" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+1}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="-0.09" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+2}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="-0.06" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+3}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="-0.03" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+4}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="0" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+5}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="0.03" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+6}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="0.06" connected_to="${connected_to}"/>
+  <xacro:proximity proximity_id="${sensors_per_ring*ring_id-missing+8+7}" radius="${radius}" theta="${2*pi/8 * 6}" z0="${z0}" y0="0.09" connected_to="${connected_to}"/>
 
   <!-- for simulation -->
   <xacro:arg name="robot_name" default="panda"/>
