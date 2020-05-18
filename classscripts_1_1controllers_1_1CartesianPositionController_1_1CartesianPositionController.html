@@ -49,7 +49,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adf23cf1b6ad60d268430c53ca9f63e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cad7003e890e3995b7dd688e76162d2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#a0cad7003e890e3995b7dd688e76162d2">get_current_end_effector_position</a> (self)</td></tr>
 <tr class="separator:a0cad7003e890e3995b7dd688e76162d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9217c5210b03880b7b1b951c9560e0e6"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#a9217c5210b03880b7b1b951c9560e0e6">get_trajectory_points_in_circle_yz_plane</a> (self, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#a83b6d39e258618a2e98ce52ff8b3361f">r</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#af4bdc5e0119d7bb851db5078b5f674b5">x0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#a3e200711d171393717c62ec8314430f0">y0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#aca9c9a9e3db9becb8ae06887544bb21a">z0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#a0daabb66de8162a86ec973627e3306aa">resolution</a>)</td></tr>
+<tr class="memitem:a9217c5210b03880b7b1b951c9560e0e6"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#a9217c5210b03880b7b1b951c9560e0e6">get_trajectory_points_in_circle_yz_plane</a> (self, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#a83b6d39e258618a2e98ce52ff8b3361f">r</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#af4bdc5e0119d7bb851db5078b5f674b5">x0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#a3e200711d171393717c62ec8314430f0">y0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#aca9c9a9e3db9becb8ae06887544bb21a">z0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1CartesianPositionController.html#a5c463965b0331b4aef49f085f9689a26">resolution</a>)</td></tr>
 <tr class="separator:a9217c5210b03880b7b1b951c9560e0e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd1a49cb2d21fda4bdd7a5f4d9864044"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#abd1a49cb2d21fda4bdd7a5f4d9864044">go_to_point</a> (self, position_desired)</td></tr>
 <tr class="separator:abd1a49cb2d21fda4bdd7a5f4d9864044"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -80,6 +80,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:add70777613a231dfef0a5c5e78bf165e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab54148a9cef17a3ddc0c04b0b5f3301e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#ab54148a9cef17a3ddc0c04b0b5f3301e">rate</a></td></tr>
 <tr class="separator:ab54148a9cef17a3ddc0c04b0b5f3301e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f7148ffde9b91ef1c1f8d8ac9d9d001"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#a5f7148ffde9b91ef1c1f8d8ac9d9d001">secondary_task_gain</a></td></tr>
+<tr class="separator:a5f7148ffde9b91ef1c1f8d8ac9d9d001"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76976aa0079bbdbebfe664db240b2718"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html#a76976aa0079bbdbebfe664db240b2718">tf_listener</a></td></tr>
 <tr class="separator:a76976aa0079bbdbebfe664db240b2718"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -176,7 +178,7 @@ Returns
 q_dot : numpy.ndarray
     7x1 joint velocity vector
 </pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00085">85</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00086">86</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -216,7 +218,7 @@ Returns
 -------
 v: numpy.ndarray
     6x1 velocity vector in cartesian coordinates</pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00062">62</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00063">63</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -242,7 +244,7 @@ Returns
 trans : numpy.ndarray
     3x1 vector containing current end effector position vector
 </pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00044">44</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00045">45</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -315,7 +317,7 @@ Returns
 trajectory: list
     [description]
 </pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00160">160</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00161">161</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -352,7 +354,7 @@ position_desired : numpy.ndarray
     3x1 end effector desired position vector
     Only position, not orientation
 </pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00124">124</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00125">125</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -389,7 +391,7 @@ trajectory : list
     List containing as many 3x1 np.ndarray position vectors as desired.
     Position vectors do not specify rotation
 </pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00145">145</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00146">146</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -409,7 +411,7 @@ trajectory : list
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00201">201</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00202">202</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -430,7 +432,7 @@ trajectory : list
 </div><div class="memdoc">
 <pre class="fragment">Stop all joints
 </pre> 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00193">193</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00194">194</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -447,7 +449,7 @@ trajectory : list
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00077">77</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00078">78</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -479,7 +481,7 @@ trajectory : list
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00041">41</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00042">42</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -527,7 +529,7 @@ trajectory : list
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00038">38</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00039">39</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
 
 </div>
 </div>
@@ -579,6 +581,22 @@ trajectory : list
 
 </div>
 </div>
+<a id="a5f7148ffde9b91ef1c1f8d8ac9d9d001"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f7148ffde9b91ef1c1f8d8ac9d9d001">&#9670;&nbsp;</a></span>secondary_task_gain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scripts.controllers.CartesianPositionController.CartesianPositionController.secondary_task_gain</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CartesianPositionController_8py_source.html#l00035">35</a> of file <a class="el" href="CartesianPositionController_8py_source.html">CartesianPositionController.py</a>.</p>
+
+</div>
+</div>
 <a id="a76976aa0079bbdbebfe664db240b2718"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a76976aa0079bbdbebfe664db240b2718">&#9670;&nbsp;</a></span>tf_listener</h2>
 
@@ -604,7 +622,7 @@ trajectory : list
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Sun May 17 2020 18:47:42</small>
+<small>autogenerated on Mon May 18 2020 23:56:46</small>
 </div>
 </body>
 </html>

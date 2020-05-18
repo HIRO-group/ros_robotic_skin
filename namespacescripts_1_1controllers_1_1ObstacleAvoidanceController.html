@@ -41,7 +41,7 @@ Variables</h2></td></tr>
 <tr class="separator:ae238099ef1ab4c930a07f94866131eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d6b232c98a3fe05d3a34fde6e792b2a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a9d6b232c98a3fe05d3a34fde6e792b2a">MAX_RATE</a> = 1.0</td></tr>
 <tr class="separator:a9d6b232c98a3fe05d3a34fde6e792b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd3a4715b16faa0ba74adf950ee9c045"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#abd3a4715b16faa0ba74adf950ee9c045">NUMBER_OF_CONTROL_POINTS</a> = 1</td></tr>
+<tr class="memitem:abd3a4715b16faa0ba74adf950ee9c045"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#abd3a4715b16faa0ba74adf950ee9c045">NUMBER_OF_CONTROL_POINTS</a> = 7</td></tr>
 <tr class="separator:abd3a4715b16faa0ba74adf950ee9c045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12a4f52f94fcdf743e910f8177c67cab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a12a4f52f94fcdf743e910f8177c67cab">obstacle_avoidance_controller</a> = <a class="el" href="classscripts_1_1controllers_1_1ObstacleAvoidanceController_1_1ObstacleAvoidanceController.html">ObstacleAvoidanceController</a>()</td></tr>
 <tr class="separator:a12a4f52f94fcdf743e910f8177c67cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -49,12 +49,22 @@ Variables</h2></td></tr>
 <tr class="separator:ad66955f8b5dc1abb96ac5bc984ddc5ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0b6e2ade641c7e37d5d58009945204a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#ac0b6e2ade641c7e37d5d58009945204a">Q_DOT_MIN</a> = np.array([-2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100])</td></tr>
 <tr class="separator:ac0b6e2ade641c7e37d5d58009945204a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab31ac20bd936d75bf5702bf003512c84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#ab31ac20bd936d75bf5702bf003512c84">r</a> = 0.2</td></tr>
+<tr class="separator:ab31ac20bd936d75bf5702bf003512c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee391d5a2fbbf2e6bcf5bb75ad40984"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a6ee391d5a2fbbf2e6bcf5bb75ad40984">resolution</a> = 0.4</td></tr>
+<tr class="separator:a6ee391d5a2fbbf2e6bcf5bb75ad40984"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7762571f890a03ac2f6bde1065c0761a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a7762571f890a03ac2f6bde1065c0761a">RHO</a> = 0.4</td></tr>
 <tr class="separator:a7762571f890a03ac2f6bde1065c0761a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a1dfd11e49d710189fb43a766c5a1fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a4a1dfd11e49d710189fb43a766c5a1fd">trajectory</a> = np.array([[0.5, 0, 0.3], [0.8, 0, 0.3]])</td></tr>
+<tr class="memitem:a4a1dfd11e49d710189fb43a766c5a1fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a4a1dfd11e49d710189fb43a766c5a1fd">trajectory</a> = obstacle_avoidance_controller.get_trajectory_points_in_circle_yz_plane(<a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#ab31ac20bd936d75bf5702bf003512c84">r</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a7c0574b25262436e63c846b1d81b7cf4">x0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a73f0222bc06073326b0b964b6821f177">y0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a00cfdcb2628a8d1a3fefa886b1db3b02">z0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a6ee391d5a2fbbf2e6bcf5bb75ad40984">resolution</a>)</td></tr>
 <tr class="separator:a4a1dfd11e49d710189fb43a766c5a1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a419a0a1e539694e7ca2f1d79fa95b242"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a419a0a1e539694e7ca2f1d79fa95b242">V_MAX</a> = 0.21</td></tr>
 <tr class="separator:a419a0a1e539694e7ca2f1d79fa95b242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c0574b25262436e63c846b1d81b7cf4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a7c0574b25262436e63c846b1d81b7cf4">x0</a> = 0.6</td></tr>
+<tr class="separator:a7c0574b25262436e63c846b1d81b7cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f0222bc06073326b0b964b6821f177"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a73f0222bc06073326b0b964b6821f177">y0</a> = 0.0</td></tr>
+<tr class="separator:a73f0222bc06073326b0b964b6821f177"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00cfdcb2628a8d1a3fefa886b1db3b02"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a00cfdcb2628a8d1a3fefa886b1db3b02">z0</a> = 0.3</td></tr>
+<tr class="separator:a00cfdcb2628a8d1a3fefa886b1db3b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="afd59fc1c101ef734c707d5f26077b46e"></a>
@@ -69,7 +79,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00012">12</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00013">13</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -85,7 +95,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00013">13</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00014">14</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -101,7 +111,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00011">11</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00012">12</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -112,12 +122,12 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int scripts.controllers.ObstacleAvoidanceController.NUMBER_OF_CONTROL_POINTS = 1</td>
+          <td class="memname">int scripts.controllers.ObstacleAvoidanceController.NUMBER_OF_CONTROL_POINTS = 7</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00008">8</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00009">9</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -133,7 +143,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00344">344</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00263">263</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -149,7 +159,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00017">17</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00018">18</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -165,7 +175,39 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00016">16</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00017">17</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+
+</div>
+</div>
+<a id="ab31ac20bd936d75bf5702bf003512c84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab31ac20bd936d75bf5702bf003512c84">&#9670;&nbsp;</a></span>r</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scripts.controllers.ObstacleAvoidanceController.r = 0.2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00267">267</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+
+</div>
+</div>
+<a id="a6ee391d5a2fbbf2e6bcf5bb75ad40984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ee391d5a2fbbf2e6bcf5bb75ad40984">&#9670;&nbsp;</a></span>resolution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scripts.controllers.ObstacleAvoidanceController.resolution = 0.4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00268">268</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -181,7 +223,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00014">14</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00015">15</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -192,12 +234,12 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">scripts.controllers.ObstacleAvoidanceController.trajectory = np.array([[0.5, 0, 0.3], [0.8, 0, 0.3]])</td>
+          <td class="memname">scripts.controllers.ObstacleAvoidanceController.trajectory = obstacle_avoidance_controller.get_trajectory_points_in_circle_yz_plane(<a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#ab31ac20bd936d75bf5702bf003512c84">r</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a7c0574b25262436e63c846b1d81b7cf4">x0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a73f0222bc06073326b0b964b6821f177">y0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a00cfdcb2628a8d1a3fefa886b1db3b02">z0</a>, <a class="el" href="namespacescripts_1_1controllers_1_1ObstacleAvoidanceController.html#a6ee391d5a2fbbf2e6bcf5bb75ad40984">resolution</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00345">345</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00269">269</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -213,7 +255,55 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00015">15</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00016">16</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+
+</div>
+</div>
+<a id="a7c0574b25262436e63c846b1d81b7cf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c0574b25262436e63c846b1d81b7cf4">&#9670;&nbsp;</a></span>x0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scripts.controllers.ObstacleAvoidanceController.x0 = 0.6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00264">264</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+
+</div>
+</div>
+<a id="a73f0222bc06073326b0b964b6821f177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73f0222bc06073326b0b964b6821f177">&#9670;&nbsp;</a></span>y0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scripts.controllers.ObstacleAvoidanceController.y0 = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00265">265</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
+
+</div>
+</div>
+<a id="a00cfdcb2628a8d1a3fefa886b1db3b02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00cfdcb2628a8d1a3fefa886b1db3b02">&#9670;&nbsp;</a></span>z0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scripts.controllers.ObstacleAvoidanceController.z0 = 0.3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ObstacleAvoidanceController_8py_source.html#l00266">266</a> of file <a class="el" href="ObstacleAvoidanceController_8py_source.html">ObstacleAvoidanceController.py</a>.</p>
 
 </div>
 </div>
@@ -223,7 +313,7 @@ Variables</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Sun May 17 2020 18:47:42</small>
+<small>autogenerated on Mon May 18 2020 23:56:46</small>
 </div>
 </body>
 </html>

@@ -1,10 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classscripts_1_1controllers_1_1CartesianPositionController_1_1CartesianPositionController.html" title="scripts.controllers.Cartesian\lPositionController.CartesianPosition\lController" alt="" coords="111,5,343,61"/>
-<area shape="rect" id="node4" href="$classscripts_1_1controllers_1_1PandaController_1_1PandaController.html" title="scripts.controllers.Panda\lController.PandaController" alt="" coords="139,86,314,127"/>
-<area shape="rect" id="node5" href="$classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html" title="scripts.controllers.Robot\lArm.RobotArm" alt="" coords="145,151,309,193"/>
-<area shape="rect" id="node6" href="$classscripts_1_1controllers_1_1RobotController_1_1RobotController.html" title="scripts.controllers.Robot\lController.RobotController" alt="" coords="140,217,313,258"/>
-<area shape="rect" id="node9" href="$classscripts_1_1controllers_1_1SawyerController_1_1SawyerController.html" title="scripts.controllers.Sawyer\lController.SawyerController" alt="" coords="135,282,318,323"/>
-<area shape="rect" id="node3" href="$classscripts_1_1controllers_1_1ObstacleAvoidanceController_1_1ObstacleAvoidanceController.html" title="scripts.controllers.Obstacle\lAvoidanceController.ObstacleAvoidance\lController" alt="" coords="391,5,647,61"/>
-<area shape="rect" id="node7" href="$classscripts_1_1controllers_1_1RobotController_1_1PandaController.html" title="scripts.controllers.Robot\lController.PandaController" alt="" coords="431,183,606,225"/>
-<area shape="rect" id="node8" href="$classscripts_1_1controllers_1_1RobotController_1_1SawyerController.html" title="scripts.controllers.Robot\lController.SawyerController" alt="" coords="427,249,610,290"/>
+<area shape="rect" id="node1" href="$classProximityVisualizer.html" title="ProximityVisualizer" alt="" coords="5,5,140,32"/>
 </map>
