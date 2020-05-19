@@ -142,7 +142,7 @@ add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
 add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
-add_executable(QPAvoidance src/QPAvoidance.cpp)
+add_executable(QPAvoidance src/QPAvoidance.cpp src/KDLSolver.cpp)
 
 
 
@@ -165,7 +165,7 @@ target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
 target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
-target_link_libraries(QPAvoidance CGAL::CGAL CGAL::CGAL_Core)
+target_link_libraries(QPAvoidance CGAL::CGAL CGAL::CGAL_Core ${catkin_LIBRARIES})
 
 #############
 ## Install ##

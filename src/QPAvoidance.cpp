@@ -1,11 +1,10 @@
 // example: construct a quadratic program from data
 // the QP below is the first quadratic program example in the user manual
 #include <iostream>
+#include <math.h>
 #include <cassert>
-
 #include <CGAL/QP_models.h>
 #include <CGAL/QP_functions.h>
-
 // choose exact integral type
 #ifdef CGAL_USE_GMP
 #include <CGAL/Gmpz.h>
@@ -14,12 +13,13 @@ typedef CGAL::Gmpz ET;
 #include <CGAL/MP_Float.h>
 typedef CGAL::MP_Float ET;
 #endif
-
 #include "Eigen/Dense"
+#include "KDLSolver.h"
 
 class QPAvoidance
 {
 private:
+    KDLSolver kdlSolver;
     CGAL::Quadratic_program<int> qp;
     CGAL::Quadratic_program_solution<ET> solution;
     void EigenSetA(Eigen::MatrixXd A);
@@ -84,25 +84,45 @@ void QPAvoidance::EigenSetC(Eigen::VectorXd c)
         qp.set_c(i, c(i));
 }
 
+double QPAvoidance::computeDampingFactor(Eigen::VectorXd c)
+{
+
+}
+
 void QPAvoidance::run()
 {
-    // now set the non-default entries:
-    const int X = 0;
-    const int Y = 1;
+    Eigen::VectorXd q; q = Eigen::VectorXd::Constant (7,0.1);
+    Eigen::Vector3d xDot; xDot << 1, 0, 0;
+    Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0,0,3,7);
+    Eigen::MatrixXd JtJ = J.transpose() * J;
+    double dampingFactor, dampingFactor0{0.1}, omega, omega0{0.001};
+    omega = std::sqrt(JtJ.determinant());
+    if (omega >= omega0)
+    {
+        dampingFactor = 0;
+    }
+    else
+    {
+        dampingFactor = dampingFactor0 * std::pow((1 - omega/omega0),2);
+    }
 
-    Eigen::Matrix2d A; A << 1, 1,
-                            -1, 2;
-    Eigen::Vector2d b; b << 7, 4;
-    Eigen::Vector2d u; u << Eigen::Infinity, 4;
-    Eigen::Matrix2d D; D << 2, 0,
-                            0, 8;
-    Eigen::Vector2d c; c << 0, -32;
 
-    EigenSetA(A);
-    EigenSetB(b);
-    EigenSetU(u);
+
+
+    Eigen::MatrixXd D; D = JtJ - dampingFactor * Eigen::MatrixXd::Identity(7,7);
+    Eigen::Vector3d u; u = xDot.transpose() * J;
+    std::cout << u << std::endl;
+    // Eigen::Vector2d b; b << 7, 4;
+    // Eigen::Vector2d u; u << Eigen::Infinity, 4;
+    // Eigen::Matrix2d D; D << 2, 0,
+    //                         0, 8;
+    // Eigen::Vector2d c; c << 0, -32;
+
+    // EigenSetA(A);
+    // EigenSetB(b);
+    // EigenSetU(u);
     EigenSetD(D);
-    EigenSetC(c);
+    // EigenSetC(c);
 
     // solve the program, using ET as the exact type
     solution = CGAL::solve_quadratic_program(qp, ET());
@@ -121,8 +141,10 @@ void QPAvoidance::run()
 
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    // Temporary: This will not be a node
+    ros::init(argc, argv, "avoidance");
     QPAvoidance qpAvoidance;
     qpAvoidance.run();
     return 0;
