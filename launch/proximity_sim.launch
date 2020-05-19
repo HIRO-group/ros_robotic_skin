@@ -12,6 +12,7 @@
     <node name="proximity_visualizer" pkg="ros_robotic_skin" type="proximity_visualizer" output="screen" />
 
     <!-- Sends user's choice of a controller to choose_controller.py node to start correct controller -->
+        <!-- 0 is no controller, 1 is obstacle avoidance controller, 2 is Cartesian position controller -->
     <param name="controller" value="$(arg controller)" />
 
     <!-- Runs choose_controller node which runs correct controller -->
