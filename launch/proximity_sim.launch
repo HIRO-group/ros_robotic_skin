@@ -1,0 +1,17 @@
+<!-- Launch file that starts the simulation with proximity sensors -->
+
+<launch>
+
+    <!-- Launches flacco.launch file -->
+    <include file="$(find ros_robotic_skin)/launch/flacco.launch" >
+        <arg name="gui" value="true"/>
+    </include>
+ 
+    <!-- Runs proximity listener and visualizer nodes -->
+    <node name="proximity_listener" pkg="ros_robotic_skin" type="proximity_listener" output="screen" />
+    <node name="proximity_visualizer" pkg="ros_robotic_skin" type="proximity_visualizer" output="screen" />
+
+    <!-- Runs the hardcoded obstacle avoidance controller -->
+    <node name="obstacle_avoidance_controller" pkg="ros_robotic_skin" type="ObstacleAvoidanceController.py" output="screen" />
+
+</launch>
