@@ -1,43 +1,10 @@
-// example: construct a quadratic program from data
-// the QP below is the first quadratic program example in the user manual
-#include <iostream>
-#include <math.h>
-#include <cassert>
-#include <CGAL/QP_models.h>
-#include <CGAL/QP_functions.h>
-// choose exact integral type
-#ifdef CGAL_USE_GMP
-#include <CGAL/Gmpz.h>
-typedef CGAL::Gmpz ET;
-#else
-#include <CGAL/MP_Float.h>
-typedef CGAL::MP_Float ET;
-#endif
-#include "Eigen/Dense"
-#include "KDLSolver.h"
-
-class QPAvoidance
-{
-private:
-    KDLSolver kdlSolver;
-    CGAL::Quadratic_program<int> qp;
-    CGAL::Quadratic_program_solution<ET> solution;
-    void EigenSetA(Eigen::MatrixXd A);
-    void EigenSetB(Eigen::VectorXd v);
-    void EigenSetU(Eigen::VectorXd u);
-    void EigenSetD(Eigen::MatrixXd D);
-    void EigenSetC(Eigen::VectorXd c);
-
-public:
-    QPAvoidance(/* args */);
-    ~QPAvoidance();
-    void run();
-};
+#include "QPAvoidance.h"
 
 QPAvoidance::QPAvoidance(/* args */)
 {
-    // Non negative solutions by default
-    qp = CGAL::Quadratic_program<int>(CGAL::SMALLER, true, 0, false, 0);
+    jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
+    jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;
+    qp = CGAL::Quadratic_program<double>(CGAL::SMALLER, false, 0, false, 0);
 }
 
 QPAvoidance::~QPAvoidance()
@@ -62,12 +29,6 @@ void QPAvoidance::EigenSetB(Eigen::VectorXd v)
     }
 }
 
-void QPAvoidance::EigenSetU(Eigen::VectorXd u)
-{
-    for(int i=0; i<u.size(); i++)
-        if (u(i) != Eigen::Infinity){qp.set_u(i, true, u(i));}
-}
-
 void QPAvoidance::EigenSetD(Eigen::MatrixXd D)
 {
     D.transposeInPlace();
@@ -84,68 +45,72 @@ void QPAvoidance::EigenSetC(Eigen::VectorXd c)
         qp.set_c(i, c(i));
 }
 
-double QPAvoidance::computeDampingFactor(Eigen::VectorXd c)
+void QPAvoidance::EigenSetL(Eigen::VectorXd l)
 {
-
+    for(int i=0; i<l.size(); i++)
+        qp.set_l(i, true, l(i));
 }
 
-void QPAvoidance::run()
+void QPAvoidance::EigenSetU(Eigen::VectorXd u)
 {
-    Eigen::VectorXd q; q = Eigen::VectorXd::Constant (7,0.1);
-    Eigen::Vector3d xDot; xDot << 1, 0, 0;
-    Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0,0,3,7);
-    Eigen::MatrixXd JtJ = J.transpose() * J;
-    double dampingFactor, dampingFactor0{0.1}, omega, omega0{0.001};
-    omega = std::sqrt(JtJ.determinant());
+    for(int i=0; i<u.size(); i++)
+        qp.set_u(i, true, u(i));
+}
+
+
+
+double QPAvoidance::computeDampingFactor(double omega)
+{
+    double dampingFactor0{0.1}, omega0{0.001};
     if (omega >= omega0)
     {
-        dampingFactor = 0;
+        return 0.0;
     }
     else
     {
-        dampingFactor = dampingFactor0 * std::pow((1 - omega/omega0),2);
+        return dampingFactor0 * std::pow((1 - omega/omega0),2);
     }
-
-
-
-
-    Eigen::MatrixXd D; D = JtJ - dampingFactor * Eigen::MatrixXd::Identity(7,7);
-    Eigen::Vector3d u; u = xDot.transpose() * J;
-    std::cout << u << std::endl;
-    // Eigen::Vector2d b; b << 7, 4;
-    // Eigen::Vector2d u; u << Eigen::Infinity, 4;
-    // Eigen::Matrix2d D; D << 2, 0,
-    //                         0, 8;
-    // Eigen::Vector2d c; c << 0, -32;
-
-    // EigenSetA(A);
-    // EigenSetB(b);
-    // EigenSetU(u);
-    EigenSetD(D);
-    // EigenSetC(c);
-
-    // solve the program, using ET as the exact type
-    solution = CGAL::solve_quadratic_program(qp, ET());
-    assert (solution.solves_quadratic_program(qp));
-    std::cout << solution;
-    std::cout << solution.number_of_iterations() << std::endl;
-    std::cout << solution.is_infeasible() << std::endl;
-    for (CGAL::Quadratic_program_solution<ET>::Variable_value_iterator it = solution.variable_values_begin(); it < solution.variable_values_end(); ++it)
-    {
-
-        std::cout << CGAL::to_double(*it) << std::endl;
-    }
-
-
-
-
 }
 
-int main(int argc, char **argv)
+Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Vector3d xDot)
 {
-    // Temporary: This will not be a node
-    ros::init(argc, argv, "avoidance");
-    QPAvoidance qpAvoidance;
-    qpAvoidance.run();
-    return 0;
+    ROS_INFO("Called");
+    Eigen::VectorXd qDot(7);
+
+    Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0,0,3,7);
+
+
+    Eigen::MatrixXd D; D = J*J.transpose() - computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
+    Eigen::VectorXd c; c = - xDot.transpose() * J;
+    // Eigen::MatrixXd A = Eigen::MatrixXd::Identity(7, 7);
+    // Eigen::VectorXd b = Eigen::VectorXd::Constant(7, 10000.0);
+
+    EigenSetD(D);
+    EigenSetC(c);
+    EigenSetL(jointVelocityLimitsMin);
+    EigenSetU(jointVelocityLimitsMax);
+    // EigenSetA(A);
+    // EigenSetB(b);
+
+    solution = CGAL::solve_quadratic_program(qp, ET());
+    assert (solution.solves_quadratic_program(qp));
+
+    int i = 0;
+    for (CGAL::Quadratic_program_solution<ET>::Variable_value_iterator it = solution.variable_values_begin(); it < solution.variable_values_end(); ++it)
+    {
+        qDot(i++) = CGAL::to_double(*it);
+    }
+
+    // std::cout << solution;
+    // std::cout << qDot << std::endl;
+    // std::cout << "mu:\n" << computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) << std::endl;
+    // std::cout << "A:\n" << A << std::endl;
+    // std::cout << "b:\n" << b << std::endl;
+    // std::cout << "u:\n" << u << std::endl;
+    // std::cout << "D:\n" << D << std::endl;
+    // std::cout << "c:\n" << c << std::endl;
+    // std::cout << solution.number_of_iterations() << std::endl;
+    // std::cout << solution.is_infeasible() << std::endl;
+
+    return qDot;
 }

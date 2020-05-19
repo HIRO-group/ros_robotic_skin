@@ -10,10 +10,11 @@ JointVelocityController::JointVelocityController()
         velocity_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_velocity_controller");
         position_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_position_controller");
     }
+    position_controller_names.push_back("panda_joint_trajectory_controller");
     ros::ServiceClient switch_controller = n.serviceClient<controller_manager_msgs::SwitchController>("/controller_manager/switch_controller");
     controller_manager_msgs::SwitchController srv;
     srv.request.start_controllers = velocity_controller_names;
-    srv.request.stop_controllers = std::vector<std::string> {"panda_joint_trajectory_controller"};
+    srv.request.stop_controllers = position_controller_names;
     srv.request.strictness = 1;
     srv.request.start_asap = true;
     srv.request.timeout = 10.0;

@@ -141,8 +141,7 @@ include_directories(
 add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
-add_executable(QPAvoidance src/QPAvoidance.cpp src/KDLSolver.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp)
 
 
 
@@ -158,14 +157,12 @@ add_dependencies(KDL_server ros_robotic_skin_gencpp)
 add_dependencies(proximity_listener ros_robotic_skin_gencpp)
 add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
 add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
-add_dependencies(QPAvoidance ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
-target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
-target_link_libraries(QPAvoidance CGAL::CGAL CGAL::CGAL_Core ${catkin_LIBRARIES})
+target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core ${catkin_LIBRARIES})
 
 #############
 ## Install ##
