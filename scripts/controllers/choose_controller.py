@@ -11,10 +11,10 @@ from ObstacleAvoidanceController import ObstacleAvoidanceController
 controller_val = rospy.get_param("controller")
 
 # Conditionals to test which controller to launch
-if controller_val == 0: # No controller selected
+if controller_val == 0:  # No controller selected
     pass
 
-elif controller_val == 1: # Obstacle avoidance controller selected
+elif controller_val == 1:  # Obstacle avoidance controller selected
     obstacle_avoidance_controller = ObstacleAvoidanceController()
     x0 = 0.6
     y0 = 0.0
@@ -27,7 +27,7 @@ elif controller_val == 1: # Obstacle avoidance controller selected
             if not rospy.is_shutdown():
                 obstacle_avoidance_controller.go_to_point(point)
 
-elif controller_val == 2: # Cartesian position controller selected
+elif controller_val == 2:  # Cartesian position controller selected
     x0 = 0.6
     y0 = 0.0
     z0 = 0.5
@@ -40,5 +40,5 @@ elif controller_val == 2: # Cartesian position controller selected
     while not rospy.is_shutdown():
         cartesian_controller.go_to_points_in_trajectory(trajectory)
 
-else: # Some other option selected; carries to effect
+else:  # Some other option selected; carries to effect
     pass
