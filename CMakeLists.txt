@@ -21,7 +21,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(CGAL REQUIRED COMPONENTS Core)
-find_package(Eigen3 REQUIRED)
 
 
 ## System dependencies are found with CMake's conventions
@@ -124,7 +123,6 @@ catkin_package(CATKIN_DEPENDS xacro message_runtime)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -162,9 +160,9 @@ add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
-target_link_libraries(proximity_listener ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
-target_link_libraries(proximity_visualizer ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
-target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core)
+target_link_libraries(proximity_listener ${catkin_LIBRARIES})
+target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
+target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core)
 
 #############
 ## Install ##
