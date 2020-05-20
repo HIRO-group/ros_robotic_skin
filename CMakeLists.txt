@@ -18,8 +18,11 @@ find_package(catkin REQUIRED COMPONENTS
   franka_gripper
   imu_filter_madgwick
   message_generation
-  Eigen3
 )
+
+find_package(CGAL REQUIRED COMPONENTS Core)
+find_package(Eigen3 REQUIRED)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -121,6 +124,7 @@ catkin_package(CATKIN_DEPENDS xacro message_runtime)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -139,7 +143,8 @@ include_directories(
 add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp)
+
 
 
 ## Rename C++ executable without prefix
@@ -157,9 +162,9 @@ add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
-target_link_libraries(proximity_listener ${catkin_LIBRARIES})
-target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
-target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
+target_link_libraries(proximity_listener ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
+target_link_libraries(proximity_visualizer ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
+target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core)
 
 #############
 ## Install ##
