@@ -19,8 +19,9 @@ private:
     void EigenSetB(Eigen::VectorXd v);
     void EigenSetL(Eigen::VectorXd l);
     void EigenSetU(Eigen::VectorXd u);
-    void EigenSetD(Eigen::MatrixXd D);
-    void EigenSetC(Eigen::VectorXd c);
+    void EigenSetH(Eigen::MatrixXd D);
+    void EigenSetf(Eigen::VectorXd c);
+    double dampingFactor0{0.1}, omega0{0.001};
 
     double computeDampingFactor(double omega);
 

@@ -4,7 +4,7 @@ QPAvoidance::QPAvoidance(/* args */)
 {
     jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
     jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;
-    qp = CGAL::Quadratic_program<double>(CGAL::SMALLER, false, 0, false, 0);
+    qp = CGAL::Quadratic_program<double>(CGAL::SMALLER, true, 0, true, 0);
 }
 
 QPAvoidance::~QPAvoidance()
@@ -29,20 +29,20 @@ void QPAvoidance::EigenSetB(Eigen::VectorXd v)
     }
 }
 
-void QPAvoidance::EigenSetD(Eigen::MatrixXd D)
+void QPAvoidance::EigenSetH(Eigen::MatrixXd H)
 {
-    D.transposeInPlace();
-    for(int i=0; i < D.rows(); i++)
+    H.transposeInPlace();
+    for(int i=0; i < H.rows(); i++)
     {
-        for(int j=0; j<D.cols(); j++)
-            qp.set_d(i, j,  D(i,j));
+        for(int j=0; j<H.cols(); j++)
+            qp.set_d(i, j,  H(i,j));
     }
 }
 
-void QPAvoidance::EigenSetC(Eigen::VectorXd c)
+void QPAvoidance::EigenSetf(Eigen::VectorXd f)
 {
-    for(int i=0; i<c.size(); i++)
-        qp.set_c(i, c(i));
+    for(int i=0; i<f.size(); i++)
+        qp.set_c(i, f(i));
 }
 
 void QPAvoidance::EigenSetL(Eigen::VectorXd l)
@@ -61,7 +61,6 @@ void QPAvoidance::EigenSetU(Eigen::VectorXd u)
 
 double QPAvoidance::computeDampingFactor(double omega)
 {
-    double dampingFactor0{0.1}, omega0{0.001};
     if (omega >= omega0)
     {
         return 0.0;
@@ -74,19 +73,17 @@ double QPAvoidance::computeDampingFactor(double omega)
 
 Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Vector3d xDot)
 {
-    ROS_INFO("Called");
     Eigen::VectorXd qDot(7);
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0,0,3,7);
 
-
-    Eigen::MatrixXd D; D = J*J.transpose() - computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
-    Eigen::VectorXd c; c = - xDot.transpose() * J;
+    Eigen::MatrixXd H; H = J*J.transpose() - computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
+    Eigen::VectorXd f; f = - xDot.transpose() * J;
     // Eigen::MatrixXd A = Eigen::MatrixXd::Identity(7, 7);
     // Eigen::VectorXd b = Eigen::VectorXd::Constant(7, 10000.0);
 
-    EigenSetD(D);
-    EigenSetC(c);
+    EigenSetH(H);
+    EigenSetf(f);
     EigenSetL(jointVelocityLimitsMin);
     EigenSetU(jointVelocityLimitsMax);
     // EigenSetA(A);
@@ -111,6 +108,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     // std::cout << "c:\n" << c << std::endl;
     // std::cout << solution.number_of_iterations() << std::endl;
     // std::cout << solution.is_infeasible() << std::endl;
+    // std::cout << "q:\n" << q << std::endl;
 
     return qDot;
 }
