@@ -4,10 +4,11 @@
 #include <CGAL/QP_models.h>
 #include <CGAL/QP_functions.h>
 #include <CGAL/Gmpzf.h>
+#include <CGAL/MP_Float.h>
 #include "Eigen/Dense"
 #include "KDLSolver.h"
 
-typedef CGAL::Gmpzf ET;
+typedef CGAL::MP_Float ET;
 
 class QPAvoidance
 {

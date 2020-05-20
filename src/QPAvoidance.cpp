@@ -1,4 +1,5 @@
 #include "QPAvoidance.h"
+#define CGAL_QP_NO_ASSERTIONS
 
 QPAvoidance::QPAvoidance(/* args */)
 {
@@ -98,8 +99,8 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         qDot(i++) = CGAL::to_double(*it);
     }
 
-    // std::cout << solution;
-    // std::cout << qDot << std::endl;
+    std::cout << solution;
+    std::cout << qDot << std::endl;
     // std::cout << "mu:\n" << computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) << std::endl;
     // std::cout << "A:\n" << A << std::endl;
     // std::cout << "b:\n" << b << std::endl;
