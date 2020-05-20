@@ -4,11 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
         - /TF1/Frames1
-        - /TF1/Tree1/world1
-        - /Marker1
-        - /RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 747
   - Class: rviz/Selection
@@ -56,75 +52,19 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        control_point0:
-          Value: false
-        end_effector:
-          Value: true
-        panda_hand:
-          Value: false
-        panda_leftfinger:
-          Value: false
-        panda_link0:
-          Value: false
-        panda_link1:
-          Value: false
-        panda_link2:
-          Value: false
-        panda_link3:
-          Value: false
-        panda_link4:
-          Value: false
-        panda_link5:
-          Value: false
-        panda_link6:
-          Value: false
-        panda_link7:
-          Value: false
-        panda_link8:
-          Value: false
-        panda_rightfinger:
-          Value: false
-        world:
-          Value: false
       Marker Scale: 0.4000000059604645
       Name: TF
       Show Arrows: false
       Show Axes: true
       Show Names: false
       Tree:
-        world:
-          panda_link0:
-            panda_link1:
-              panda_link2:
-                panda_link3:
-                  control_point0:
-                    {}
-                  panda_link4:
-                    panda_link5:
-                      panda_link6:
-                        panda_link7:
-                          panda_link8:
-                            end_effector:
-                              {}
-                            panda_hand:
-                              panda_leftfinger:
-                                {}
-                              panda_rightfinger:
-                                {}
-      Update Interval: 0
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /visualization_markers
-      Name: Marker
-      Namespaces:
         {}
-      Queue Size: 100
-      Value: true
+      Update Interval: 0
+      Value: false
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -139,6 +79,34 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        control_point1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        control_point2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        control_point3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        control_point4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        control_point5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        control_point6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        control_point7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         end_effector:
           Alpha: 1
           Show Axes: false
@@ -202,6 +170,816 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        proximity_link0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link10:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link100:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link101:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link102:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link103:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link104:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link105:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link106:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link107:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link108:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link109:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link11:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link110:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link111:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link112:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link113:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link114:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link115:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link116:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link117:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link118:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link119:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link12:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link120:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link121:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link122:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link123:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link124:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link125:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link126:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link127:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link128:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link129:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link130:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link131:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link132:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link133:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link134:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link135:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link136:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link137:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link138:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link139:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link14:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link140:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link141:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link142:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link143:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link144:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link145:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link146:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link147:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link148:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link149:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link15:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link150:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link151:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link152:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link153:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link154:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link155:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link156:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link157:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link158:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link159:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link16:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link160:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link161:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link17:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link18:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link19:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link20:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link21:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link22:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link23:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link24:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link25:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link26:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link27:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link28:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link29:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link30:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link31:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link32:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link33:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link34:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link35:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link36:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link37:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link38:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link39:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link40:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link41:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link42:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link43:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link44:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link45:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link46:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link47:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link48:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link49:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link50:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link51:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link52:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link53:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link54:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link55:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link56:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link57:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link58:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link59:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link60:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link61:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link62:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link63:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link64:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link65:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link66:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link67:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link68:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link69:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link70:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link71:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link72:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link73:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link74:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link75:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link76:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link77:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link78:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link79:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link80:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link81:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link82:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link83:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link84:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link85:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link86:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link87:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link88:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link89:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link90:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link91:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link92:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link93:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link94:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link95:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link96:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link97:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link98:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        proximity_link99:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         world:
           Alpha: 1
           Show Axes: false
@@ -212,6 +990,22 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: visualization_marker_array
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: false
+      Marker Topic: visualization_marker
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 238; 238; 236
@@ -240,25 +1034,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.324496030807495
+      Distance: 1.965654730796814
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.06943321228027344
-        Y: 0.00918867439031601
-        Z: 0.024890989065170288
+        X: 0.014134742319583893
+        Y: 0.2495730221271515
+        Z: 0.12526249885559082
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3162650763988495
+      Pitch: 0.29126623272895813
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.09254774451255798
+      Yaw: 2.0111963748931885
     Saved: ~
 Window Geometry:
   Displays:
