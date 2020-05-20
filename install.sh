@@ -19,7 +19,7 @@ fi
 while [[ $# -gt 0 ]]
 do
 key="$1"
-case $key in 
+case $key in
     --git-option)
     if [[ "$2" == "ssh" || "$2" == "https" ]]
     then
@@ -30,7 +30,7 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    
+
     --franka-build)
     if [[ "$2" == "source" || "$2" == "apt" ]]
     then
@@ -82,7 +82,7 @@ then
     echo "panda_simulation package exists, deleting to make sure our forked version is cloned."
     rm -rf panda_simulation
 fi
-  
+
 git clone https://github.com/HIRO-group/panda_simulation
 
 if [ -d "panda_moveit_config" ]
@@ -109,9 +109,9 @@ sudo apt install ros-melodic-imu-filter-madgwick ros-melodic-ros-control ros-mel
 cd src
 git clone git@github.com:HIRO-group/Custom_IMU_Madgwick_Filter.git
 # if franka build is desired from source
+sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
 if [[ $FRANKA_BUILD = "source" ]]
 then
-  sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
   git clone --recursive https://github.com/frankaemika/libfranka
   cd libfranka
   mkdir build
@@ -134,7 +134,7 @@ then
 
 else
     wstool init
-  
+
 fi
 
 wstool merge https://gist.githubusercontent.com/jarvisschultz/f65d36e3f99d94a6c3d9900fa01ee72e/raw/sawyer_packages.rosinstall
