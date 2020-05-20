@@ -109,7 +109,7 @@ sudo apt install ros-melodic-imu-filter-madgwick ros-melodic-ros-control ros-mel
 cd src
 git clone git@github.com:HIRO-group/Custom_IMU_Madgwick_Filter.git
 # if franka build is desired from source
-sudo apt install build-essential cmake git libpoco-dev libeigen3-dev libcgal-dev
+sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
 if [[ $FRANKA_BUILD = "source" ]]
 then
   git clone --recursive https://github.com/frankaemika/libfranka
