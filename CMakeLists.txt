@@ -140,6 +140,7 @@ add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
 add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
+# add_executable(FlaccoAvoidance src/FlaccoAvoidance.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -154,12 +155,14 @@ add_dependencies(KDL_server ros_robotic_skin_gencpp)
 add_dependencies(proximity_listener ros_robotic_skin_gencpp)
 add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
 add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
+# add_dependencies(FlaccoAvoidance ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
 target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
+# target_link_libraries(FlaccoAvoidance ${catkin_LIBRARIES})
 
 #############
 ## Install ##
