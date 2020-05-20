@@ -54,7 +54,10 @@ def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
         imu_names.append(imu_string)
         imu_topics.append('imu_data{}'.format(i))
     # save pickle file of imu mappings that we can use later.
-    with open('imu_mappings.pickle', 'wb') as handle:
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+
+    data_path = os.path.join(ros_robotic_skin_path, 'data', 'imu_mappings.pickle')
+    with open(data_path, 'wb') as handle:
         pickle.dump(imu_mappings, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return imu_names, imu_topics
 
