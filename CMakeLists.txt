@@ -143,7 +143,7 @@ include_directories(
 add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
 
 
 
