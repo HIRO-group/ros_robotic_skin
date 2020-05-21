@@ -77,9 +77,12 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     Eigen::VectorXd qDot(7);
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0,0,3,7);
+    Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
+    Eigen::MatrixXd qGroundTruth = Jpinv * xDot ;
 
-    Eigen::MatrixXd H; H = J*J.transpose() - computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
-    Eigen::VectorXd f; f = - xDot.transpose() * J;
+    // Eigen::MatrixXd H; H = J*J.transpose() - computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
+    Eigen::MatrixXd H = J*J.transpose();
+    Eigen::VectorXd f = - xDot.transpose() * J;
     // Eigen::MatrixXd A = Eigen::MatrixXd::Identity(7, 7);
     // Eigen::VectorXd b = Eigen::VectorXd::Constant(7, 10000.0);
 
@@ -100,7 +103,8 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     }
 
     std::cout << solution;
-    std::cout << qDot << std::endl;
+    std::cout << "Ground truth:\n"  << qGroundTruth << std::endl;
+    std::cout << "Quadratic programming output:\n"  << qDot << std::endl;
     // std::cout << "mu:\n" << computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) << std::endl;
     // std::cout << "A:\n" << A << std::endl;
     // std::cout << "b:\n" << b << std::endl;
