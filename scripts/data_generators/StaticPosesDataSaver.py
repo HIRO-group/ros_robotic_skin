@@ -118,13 +118,14 @@ class StaticPoseData():
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
+                qs = reject_outliers(self.data[pose_name][imu_name][:, :4])
+                q = np.mean(qs, axis=0)
                 d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
                 m = np.mean(d, axis=0)
                 # s = np.std(d, axis=0)
                 joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 j = np.mean(joints, axis=0)
-                data[pose_name][imu_name] = np.r_[m, j]
-
+                data[pose_name][imu_name] = np.r_[q, m, j]
                 if verbose:
                     rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)' % (pose_name, imu_name, m[0], m[1], m[2]))
 
