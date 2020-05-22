@@ -38,8 +38,10 @@ void JointVelocityController::sendVelocities(const Eigen::VectorXd vel)
 {
     if (vel.size() == 7)
     {
-        for (int i = 0; i < 7; i++)
-            publishers[i].publish(vel[i]);
+        for (int i = 0; i < 7; i++){
+            msg.data = vel[i];
+            publishers[i].publish(msg);
+        }
     }
     else
     {
