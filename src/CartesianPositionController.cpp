@@ -119,8 +119,8 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 break;
             case QP:
                 qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity);
-                ros::shutdown();
-                // jointVelocityController.sendVelocities(qDot);
+                // ros::shutdown();
+                jointVelocityController.sendVelocities(qDot);
                 break;
             default:
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));

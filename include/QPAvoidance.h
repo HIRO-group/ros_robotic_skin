@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <cassert>
+#include<bits/stdc++.h>
 #include <CGAL/QP_models.h>
 #include <CGAL/QP_functions.h>
 #include <CGAL/Gmpzf.h>
@@ -8,7 +9,8 @@
 #include "Eigen/Dense"
 #include "KDLSolver.h"
 
-typedef CGAL::MP_Float ET;
+
+typedef CGAL::Gmpzf ET;
 
 class QPAvoidance
 {
