@@ -116,6 +116,7 @@ class StaticPoseData():
         `verbose`: `bool`
         """
         # Create nested dictionary to store data
+        # retrigger
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
