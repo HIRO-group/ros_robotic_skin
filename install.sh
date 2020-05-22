@@ -112,14 +112,8 @@ git clone git@github.com:HIRO-group/Custom_IMU_Madgwick_Filter.git
 # install dependencies
 sudo apt install build-essential cmake git libpoco-dev libeigen3-dev libcgal-dev
 
-# if franka build is desired from source
-sudo apt install build-essential cmake git libpoco-dev libeigen3-dev
 if [[ $FRANKA_BUILD = "source" ]]
 then
-<<<<<<< HEAD
-
-=======
->>>>>>> BuildIssues
   git clone --recursive https://github.com/frankaemika/libfranka
   cd libfranka
   mkdir build
