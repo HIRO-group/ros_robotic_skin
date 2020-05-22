@@ -9,6 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.ACCESS_TOKEN }}
     - name: Install flake8
       run: sudo apt-get install flake8 && sudo apt-get install python-rostest && sudo apt-get install -y python-rospy
     - name: Run flake8 on the entire repository
