@@ -18,11 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
   franka_gripper
   imu_filter_madgwick
   message_generation
+  Eigen3
 )
-
-find_package(catkin REQUIRED)
-
-find_package(Eigen3 REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -61,6 +58,7 @@ find_package(Eigen3 REQUIRED)
 add_message_files(
   FILES
   Jacobian.msg
+  PointArray.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -80,6 +78,7 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 ################################################
@@ -120,9 +119,8 @@ catkin_package(CATKIN_DEPENDS xacro message_runtime)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -138,8 +136,10 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(control_point_visualizer src/control_point_visualizer.cpp)
 add_executable(KDL_server src/KDL_server.cpp)
+add_executable(proximity_listener src/proximity_listener.cpp)
+add_executable(proximity_visualizer src/proximity_visualizer.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -151,10 +151,15 @@ add_executable(KDL_server src/KDL_server.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(KDL_server ros_robotic_skin_gencpp)
+add_dependencies(proximity_listener ros_robotic_skin_gencpp)
+add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
+add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(control_point_visualizer ${catkin_LIBRARIES})
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
+target_link_libraries(proximity_listener ${catkin_LIBRARIES})
+target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
+target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
 
 #############
 ## Install ##

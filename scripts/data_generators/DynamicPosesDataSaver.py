@@ -15,8 +15,7 @@ from std_msgs.msg import Float32
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
-
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 RAD2DEG = 180.0 / np.pi
 OSCILLATION_TIME = 3.0

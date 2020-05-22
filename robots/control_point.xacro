@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="control_point">
-    <xacro:macro name="control_point" params=" point_id:='0' parent_id:='8' rpy:='0 0 0' xyz:='0 0 0' ">
+  <xacro:macro name="control_point" params=" point_id:='0' parent_id:='8' rpy:='0 0 0' x0y0:='0 0' z0:='0' ">
     <link name="control_point${point_id}"></link>
     <joint name="control_point${point_id}_to_panda_link${parent_id}" type="fixed">
       <parent link="panda_link${parent_id}"/>
       <child link="control_point${point_id}"/>
-      <origin rpy="${rpy}" xyz="${xyz}"/>
+      <origin rpy="${rpy}" xyz="${x0y0} ${z0}"/>
     </joint>
   </xacro:macro>
 

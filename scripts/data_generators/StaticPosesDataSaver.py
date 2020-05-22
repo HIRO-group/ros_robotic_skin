@@ -12,7 +12,7 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scipts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
 RAD2DEG = 180.0/np.pi
@@ -86,7 +86,7 @@ class StaticPoseData():
         for pose_name in pose_names:
             self.data[pose_name] = OrderedDict()
             for imu_name in self.imu_names:
-                self.data[pose_name][imu_name] = np.empty((0, 10), float)
+                self.data[pose_name][imu_name] = np.empty((0, 14), float)
 
     def append(self, pose_name, imu_name, data):
         """
@@ -103,7 +103,6 @@ class StaticPoseData():
             Numpy array of size (1,3).
             Includes an accelerometer measurement.
         """
-
         self.data[pose_name][imu_name] = \
             np.append(self.data[pose_name][imu_name], np.array([data]), axis=0)
 
@@ -120,13 +119,14 @@ class StaticPoseData():
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
-                d = reject_outliers(self.data[pose_name][imu_name][:, :3])
+                qs = reject_outliers(self.data[pose_name][imu_name][:, :4])
+                q = np.mean(qs, axis=0)
+                d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
                 m = np.mean(d, axis=0)
                 # s = np.std(d, axis=0)
-                joints = reject_outliers(self.data[pose_name][imu_name][:, 3:])
+                joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 j = np.mean(joints, axis=0)
-                data[pose_name][imu_name] = np.r_[m, j]
-
+                data[pose_name][imu_name] = np.r_[q, m, j]
                 if verbose:
                     rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)' % (pose_name, imu_name, m[0], m[1], m[2]))
 
@@ -197,12 +197,17 @@ class StaticPoseDataSaver():
         """
         if self.ready:
             accel = data.linear_acceleration
+            qx = data.orientation.x
+            qy = data.orientation.y
+            qz = data.orientation.z
+            qw = data.orientation.w
             joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
 
             self.data_storage.append(
                 self.curr_pose_name,            # for each defined initial pose
                 data.header.frame_id,           # for each imu
-                np.array([accel.x, accel.y, accel.z] + joint_angles))
+                np.array([qx, qy, qz, qw,
+                          accel.x, accel.y, accel.z] + joint_angles))
 
     def set_poses(self, time=3.0):
         """
@@ -234,8 +239,8 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    robot = sys.argv[1]
-
+    # robot = sys.argv[1]
+    robot = 'panda'
     if robot == 'panda':
         controller = PandaController()
         filename = 'panda_positions.txt'
