@@ -163,7 +163,7 @@ add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
-target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core ${catkin_LIBRARIES})
+target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core)
 
 #############
 ## Install ##
