@@ -3,7 +3,7 @@
   <xacro:include filename="$(find ros_robotic_skin)/robots/panda_arm.xacro"/>
   <xacro:include filename="$(find franka_description)/robots/hand.xacro"/>
   <xacro:include filename="$(find ros_robotic_skin)/robots/imu.xacro"/>
-
+  <!-- comment to open up pr-->
   <!-- for simulation -->
   <xacro:include filename="$(find franka_description)/robots/panda.gazebo.xacro"/>
   <xacro:include filename="$(find franka_description)/robots/panda.transmission.xacro"/>
