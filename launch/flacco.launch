@@ -55,7 +55,7 @@
         args="-d $(find ros_robotic_skin)/config/rviz.rviz" output="screen"/>
 
     <!-- KDL node -->
-    <node name="KDL_server" pkg="ros_robotic_skin" type="KDL_server"/>
+    <!-- <node name="KDL_server" pkg="ros_robotic_skin" type="KDL_server"/> -->
 
     <!-- Control points visualizer -->
     <!-- <node pkg="ros_robotic_skin" type="control_point_visualizer"

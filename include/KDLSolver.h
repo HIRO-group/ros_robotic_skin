@@ -8,7 +8,6 @@
 #include "kdl_parser/kdl_parser.hpp"
 #include "kdl/jacobian.hpp"
 #include <kdl/chainjnttojacsolver.hpp>
-#include "ros_robotic_skin/getJacobian.h"
 
 class KDLSolver
 {

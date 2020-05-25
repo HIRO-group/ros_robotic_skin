@@ -22,7 +22,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(CGAL REQUIRED COMPONENTS Core)
 
-
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -59,7 +58,7 @@ find_package(CGAL REQUIRED COMPONENTS Core)
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  Jacobian.msg
+  Matrix.msg
   PointArray.msg
 )
 
@@ -67,6 +66,7 @@ add_message_files(
 add_service_files(
   FILES
   getJacobian.srv
+  QP.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -138,10 +138,9 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
 
 
 
@@ -154,16 +153,14 @@ add_executable(CartesianPositionController src/CartesianPositionController.cpp s
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(KDL_server ros_robotic_skin_gencpp)
 add_dependencies(proximity_listener ros_robotic_skin_gencpp)
 add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
 add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
-target_link_libraries(CartesianPositionController ${catkin_LIBRARIES} CGAL::CGAL CGAL::CGAL_Core)
+target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
 
 #############
 ## Install ##
