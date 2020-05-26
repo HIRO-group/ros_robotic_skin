@@ -80,7 +80,8 @@ class RobotControllerManager():
                     switch_controller = rospy.ServiceProxy(self.switch_controller_service_name, SwitchController)
                     # switch the controllers
                     resp = switch_controller(self.controller_names[desired_mode],
-                                      self.controller_names[self.mode], 1, True, 10)
+                                             self.controller_names[self.mode], 1, True, 10)
+                    # Break from while loop is response is Okay meaning the switching was successful
                     if resp.ok:
                         break
 
