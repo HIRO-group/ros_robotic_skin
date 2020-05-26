@@ -8,6 +8,10 @@ import xacro
 import rospkg
 import rospy
 import pickle
+from geometry_msgs.msg import Vector3
+
+RAD2DEG = 180.0 / np.pi
+DEG2RAD = np.pi / 180.0
 
 
 def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
@@ -253,3 +257,8 @@ def reject_outliers(data, m=1):
     is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
     indices = np.where(is_in_std)
     return data[indices], indices
+
+
+def Vector3_to_np(vector):
+    return np.array([vector.x, vector.y, vector.z])
+

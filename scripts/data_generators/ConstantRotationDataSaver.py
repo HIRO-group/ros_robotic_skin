@@ -44,7 +44,7 @@ class ConstantRotationData():
             Names of joints
         imu_names: list[str]
             Names of imus
-s        filepath: str
+        filepath: str
             Path to save the collected data
         """
         self.pose_names = pose_names
