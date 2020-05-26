@@ -75,11 +75,14 @@ class RobotControllerManager():
             pass
         else:
             try:
-                rospy.wait_for_service(self.switch_controller_service_name)
-                switch_controller = rospy.ServiceProxy(self.switch_controller_service_name, SwitchController)
-                # switch the controllers
-                switch_controller(self.controller_names[desired_mode],
-                                  self.controller_names[self.mode], 1, True, 10)
+                while 1:
+                    rospy.wait_for_service(self.switch_controller_service_name)
+                    switch_controller = rospy.ServiceProxy(self.switch_controller_service_name, SwitchController)
+                    # switch the controllers
+                    resp = switch_controller(self.controller_names[desired_mode],
+                                      self.controller_names[self.mode], 1, True, 10)
+                    if resp.ok:
+                        break
 
                 self.mode = desired_mode
             except rospy.ServiceException as e:
