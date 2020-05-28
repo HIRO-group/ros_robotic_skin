@@ -2,13 +2,17 @@
 """
 Code.
 """
+import sys
 import rospy
+import rospkg
 import numpy as np
 from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
-from ..exceptions import InvalidNumJointException, InvalidTrajectoryCommandException
+
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts.exceptions import InvalidNumJointException, InvalidTrajectoryCommandException
 
 
 class RobotArm(object):

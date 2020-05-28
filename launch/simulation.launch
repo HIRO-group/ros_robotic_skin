@@ -68,7 +68,7 @@
 
     <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
     <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
-    <node name="Pose0EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE0" output="screen">
+    <!-- <node name="Pose0EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE0" output="screen">
         <param name="imu_pose_publisher_name" value="imu0_pose" />
         <param name="original_imu_publisher_name" value="/imu_data0" />
     </node>
@@ -101,6 +101,6 @@
     <node name="Pose6EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE6" output="screen">
         <param name="imu_pose_publisher_name" value="imu6_pose" />
         <param name="original_imu_publisher_name" value="/imu_data6" />
-    </node>
+    </node> -->
 
 </launch>
