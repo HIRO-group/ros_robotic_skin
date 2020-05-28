@@ -11,12 +11,11 @@ import matplotlib.pyplot as plt
 import rospy
 import rospkg
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Float32
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
+from scripts.exceptions import VariableNotInitializedException  # noqa:E402
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
-from scripts.exceptions import VariableNotInitializedException
 
 SIM_DT = 1.0 / rospy.get_param('/dynamic_frequency')
 OSCILLATION_TIME = rospy.get_param('/oscillation_time')
@@ -294,7 +293,7 @@ class DynamicPoseDataSaver():
         # first, move to the position from <robot>_positions.txt
         self.controller.publish_positions(positions, sleep=2)
         print('At Position: ' + pose_name,
-                map(int, utils.RAD2DEG * np.array(positions)))
+              map(int, utils.RAD2DEG * np.array(positions)))
 
     def prepare_recording(self, joint_name):
         # Set current joint

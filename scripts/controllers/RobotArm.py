@@ -12,7 +12,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.exceptions import InvalidNumJointException, InvalidTrajectoryCommandException
+from scripts.exceptions import InvalidNumJointException, InvalidTrajectoryCommandException  # noqa:E402
 
 
 class RobotArm(object):

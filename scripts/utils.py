@@ -8,7 +8,6 @@ import xacro
 import rospkg
 import rospy
 import pickle
-from geometry_msgs.msg import Vector3
 
 RAD2DEG = 180.0 / np.pi
 DEG2RAD = np.pi / 180.0
@@ -261,4 +260,3 @@ def reject_outliers(data, m=1):
 
 def Vector3_to_np(vector):
     return np.array([vector.x, vector.y, vector.z])
-
