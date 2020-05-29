@@ -1,0 +1,30 @@
+<!-- Launch file that starts the simulation with proximity sensors -->
+
+<launch>
+
+    <!-- Launches flacco.launch file with gui argument-->
+    <include file="$(find ros_robotic_skin)/launch/flacco.launch" >
+        <arg name="gui" default="true" />
+    </include>
+ 
+    <!-- Runs proximity listener and visualizer nodes -->
+    <node name="proximity_listener" pkg="ros_robotic_skin" type="proximity_listener" output="screen" />
+    <node name="proximity_visualizer" pkg="ros_robotic_skin" type="proximity_visualizer" output="screen" />
+
+    <!-- Sends user's choice of a controller to choose_controller.py node to start correct controller -->
+        <!-- 0 is no controller (default value of the controller <arg> tag), 1 is obstacle avoidance controller, 2 is Cartesian position controller -->
+    <arg name="controller" default="0" />
+    
+    <group>
+        <!-- obstacle avoidance controller -->
+        <node name="obstacle_avoidance_controller" pkg="ros_robotic_skin" type="ObstacleAvoidanceController.py" output="screen"
+            if="$(eval arg('controller') == 1)" />
+        <!-- Cartesian position controller -->
+        <node name="cartesian_position_controller" pkg="ros_robotic_skin" type="CartesianPositionController.py" outpup="screen"
+            if="$(eval arg('controller') == 2)" />
+    </group>
+
+    <!-- Runs the hardcoded obstacle avoidance controller (test case) --> 
+    <!-- <node name="obstacle_avoidance_controller" pkg="ros_robotic_skin" type="ObstacleAvoidanceController.py" output="screen" /> -->
+
+</launch>
