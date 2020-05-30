@@ -230,19 +230,20 @@ class DynamicPoseDataSaver():
         self.poses_list = poses_list
         # constant
         self.pose_names = [pose[2] for pose in poses_list]
+        self.joint_names = map(str, self.controller.joint_names)
 
         # get imu names and topics through rostopic and xacro.
         self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
 
         self.curr_pose_name = self.pose_names[0]
-        self.curr_joint_name = self.controller.joint_names[0]
+        self.curr_joint_name = self.joint_names[0]
         self.prev_angular_velocity = 0.0
 
         self.watch_dt = StopWatch()
         self.watch_motion = StopWatch()
 
         # data storage
-        self.data_storage = DynamicPoseData(self.pose_names, self.controller.joint_names, self.imu_names, filepath)
+        self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
@@ -311,14 +312,14 @@ class DynamicPoseDataSaver():
         self.controller.set_joint_position_speed(speed=1.0)
 
         for pose in self.poses_list:
-            for i, joint_name in enumerate(self.controller.joint_names):
+            for i, joint_name in enumerate(self.joint_names):
                 # Go to current setting position
                 self.goto_current_pose(pose)
 
                 # Initialize Variables
                 self.prepare_recording(joint_name)
                 # Prepare for publishing velocities
-                velocities = np.zeros(len(self.controller.joint_names))
+                velocities = np.zeros(len(self.joint_names))
 
                 # Start motion and recording
                 self.watch_motion.start()
