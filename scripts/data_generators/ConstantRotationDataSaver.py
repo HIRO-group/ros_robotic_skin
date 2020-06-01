@@ -9,7 +9,6 @@ import pickle
 import tf
 import rospy
 import rospkg
-from std_msgs.msg import Float32
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Quaternion
 
@@ -171,7 +170,7 @@ class ConstantRotationDataSaver():
 
         # constant
         self.pose_names = [pose[2] for pose in poses_list]
-        self.joint_names = self.controller.joint_names
+        self.joint_names = map(str, self.controller.joint_names)
         self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
         """
         to-do get the joints the imus are connected to.
@@ -179,16 +178,15 @@ class ConstantRotationDataSaver():
         self.collecting_data = False
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
-        self.pubs = {}
-        for imu_name in self.imu_names:
-            self.pubs[imu_name] = rospy.Publisher('/Anorm%s' % (list(imu_name)[-1]), Float32, queue_size=10)
+
+        self.watch_motion = StopWatch()
 
         # data storage
         self.data_storage = ConstantRotationData(self.pose_names, self.joint_names, self.imu_names, filepath)
-        rospy.sleep(1)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
+
         self.tf_listener = tf.TransformListener()
         self.Q = {imu_name: Quaternion() for imu_name in self.imu_names}
 
@@ -202,30 +200,34 @@ class ConstantRotationDataSaver():
             IMU data. Please refer to the official documentation.
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
-        accel = data.linear_acceleration
-        msg = Float32()
-        msg.data = np.linalg.norm(np.array([accel.x, accel.y, accel.z]))
-        self.pubs[data.header.frame_id].publish(msg)
-        if self.collecting_data:
+        if self.watch_motion.is_started():
             # acceleration of skin unit, followed by its acceleration
-            accel = data.linear_acceleration
-            q = self.Q[data.header.frame_id]
+            acceleration = utils.Vector3_to_np(data.linear_acceleration)
+            quaternion = utils.Quaternion_to_np(self.Q[data.header.frame_id])
+
             # get the orientation of the imu
-            J = np.array([self.controller.joint_angle(name) for name in self.joint_names])
+            joint_angles = self.controller.joint_angles
             joint_velocity = self.controller.joint_velocity(self.curr_joint_name)
-            # if self.curr_joint_name == 'right_j0'
-            # and data.header.frame_id == 'imu_link0':
-            # rospy.loginfo(utils.n2s(np.array([accel.x, accel.y, accel.z])))
+
             self.data_storage.append(
-                self.curr_pose_name,            # for each defined initial pose
-                self.curr_joint_name,           # for each excited joint
-                data.header.frame_id,           # for each imu
-                np.array([
-                    q.x, q.y, q.z, q.w,
-                    accel.x, accel.y, accel.z,
-                    J[0], J[1], J[2], J[3], J[4], J[5], J[6],
-                    joint_velocity])
+                pose_name=self.curr_pose_name,      # for each defined initial pose
+                joint_name=self.curr_joint_name,    # for each excited joint
+                imu_name=data.header.frame_id,      # for each imu
+                data=np.r_[
+                    quaternion,
+                    acceleration,
+                    joint_angles,
+                    joint_velocity
+                ]
             )
+
+    def goto_current_pose(self, pose):
+        positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
+        self.curr_pose_name = pose_name
+        # first, move to the position from <robot>_positions.txt
+        self.controller.publish_positions(positions, sleep=2)
+        print('At Position: ' + pose_name,
+              map(int, utils.RAD2DEG * np.array(positions)))
 
     def rotate_at_constant_vel(self):
         """
@@ -233,12 +235,9 @@ class ConstantRotationDataSaver():
         for all joints for all defined poses.
         """
         for pose in self.poses_list:
+            # Go to current setting position
+            self.goto_current_pose(pose)
 
-            positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-            self.curr_pose_name = pose_name
-            self.controller.publish_positions(positions, 5)
-            print('At Position: ' + pose_name,
-                  map(int, RAD2DEG*np.array(positions)))
             for i, joint_name in enumerate(self.joint_names):
                 self.curr_joint_name = joint_name
                 print(joint_name)
@@ -248,19 +247,22 @@ class ConstantRotationDataSaver():
                 # only one joint - at a time - should move with constant velocity.
                 velocities[i] = CONSTANT_VELOCITY
 
-                # stopping time
-                self.collecting_data = True
-                now = rospy.get_rostime()
+                # Start motion and recording
+                self.watch_motion.start()
                 while True:
-                    dt = (rospy.get_rostime() - now).to_sec()
+                    # time within motion
+                    t = self.watch_motion.get_elapsed_time()
+
+                    # Rotate a single joint
                     self.controller.publish_velocities(velocities, JOINT_ROT_TIME)
-                    if dt > DATA_COLLECTION_TIME:
+
+                    if t > DATA_COLLECTION_TIME:
                         break
 
                     for imu_name in self.imu_names:
                         try:
                             # get pose of imu
-                            (trans, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
+                            (_, rot) = self.tf_listener.lookupTransform('/world', imu_name, rospy.Time(0))
                             self.Q[imu_name].x = rot[0]
                             self.Q[imu_name].y = rot[1]
                             self.Q[imu_name].z = rot[2]
@@ -270,7 +272,7 @@ class ConstantRotationDataSaver():
                                 tf.ExtrapolationException):
                             continue
 
-                self.collecting_data = False
+                self.watch_motion.stop()
                 rospy.sleep(1)
 
     def save(self, verbose=False, filter=False):

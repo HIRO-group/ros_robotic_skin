@@ -260,3 +260,7 @@ def reject_outliers(data, m=1):
 
 def Vector3_to_np(vector):
     return np.array([vector.x, vector.y, vector.z])
+
+
+def Quaternion_to_np(q):
+    return np.array([q.x, q.y, q.z, q.w])

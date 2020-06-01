@@ -195,18 +195,19 @@ class StaticPoseDataSaver():
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
         if self.ready:
-            accel = data.linear_acceleration
-            qx = data.orientation.x
-            qy = data.orientation.y
-            qz = data.orientation.z
-            qw = data.orientation.w
-            joint_angles = [self.controller.joint_angle(name) for name in self.joint_names]
+            acceleration = utils.Vector3_to_np(data.linear_acceleration)
+            quaternion = utils.Quaternion_to_np(data.orientation)
+            joint_angles = self.controller.joint_angles
 
             self.data_storage.append(
-                self.curr_pose_name,            # for each defined initial pose
-                data.header.frame_id,           # for each imu
-                np.array([qx, qy, qz, qw,
-                          accel.x, accel.y, accel.z] + joint_angles))
+                pose_name=self.curr_pose_name,     # for each defined initial pose
+                imu_name=data.header.frame_id,      # for each imu
+                data=np.r_[
+                    quaternion,
+                    acceleration,
+                    joint_angles
+                ]
+            )
 
     def set_poses(self, time=3.0):
         """
