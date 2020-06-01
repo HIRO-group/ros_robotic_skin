@@ -14,36 +14,13 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.exceptions import VariableNotInitializedException  # noqa:E402
+from scripts.data_generators.stopwatch import StopWatch  # noqa: E402
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 SIM_DT = 1.0 / rospy.get_param('/dynamic_frequency')
 OSCILLATION_TIME = rospy.get_param('/oscillation_time')
 FREQ = rospy.get_param('/oscillation_frequency')
 AMPLITUDE = rospy.get_param('/oscillation_magnitude')
-
-
-class StopWatch():
-    def __init__(self):
-        self.start_time = None
-
-    def start(self):
-        self.start_time = rospy.get_rostime().to_sec()
-
-    def get_elapsed_time(self):
-        if not self.is_started():
-            raise VariableNotInitializedException("Varible 'start_time' is not initialized")
-
-        return rospy.get_rostime().to_sec() - self.start_time
-
-    def restart(self):
-        self.start_time = rospy.get_rostime().to_sec()
-
-    def stop(self):
-        self.start_time = None
-
-    def is_started(self):
-        return self.start_time
 
 
 class DynamicPoseData():
