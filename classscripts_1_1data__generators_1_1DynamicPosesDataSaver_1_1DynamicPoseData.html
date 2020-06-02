@@ -35,7 +35,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a740d3b85136c47743306f30f51fd8b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac30e1a1f7bef0fbb32f105ddff7eca50"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#ac30e1a1f7bef0fbb32f105ddff7eca50">append</a> (self, pose_name, joint_name, imu_name, <a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#ad6e6eeba92665a4b78b364c1676a83bc">data</a>)</td></tr>
 <tr class="separator:ac30e1a1f7bef0fbb32f105ddff7eca50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c87af6bef499db99aebc40ec8526c85"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#a9c87af6bef499db99aebc40ec8526c85">clean_data</a> (self, <a class="el" href="namespacescripts_1_1data__generators_1_1DynamicPosesDataSaver.html#a9c18c08c3a498536063c94b09b26c4de">verbose</a>=False, time_range=(0.04, 0.16), eliminate_outliers=<a class="el" href="namespacescripts_1_1data__generators_1_1DynamicPosesDataSaver.html#a8fd40ccc288455e4409ff808a630b094">True</a>)</td></tr>
+<tr class="memitem:a9c87af6bef499db99aebc40ec8526c85"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#a9c87af6bef499db99aebc40ec8526c85">clean_data</a> (self, <a class="el" href="namespacescripts_1_1data__generators_1_1DynamicPosesDataSaver.html#a9c18c08c3a498536063c94b09b26c4de">verbose</a>=<a class="el" href="namespacescripts_1_1data__generators_1_1DynamicPosesDataSaver.html#ad7fd73c3920d4a6c37b0492dd9a3f35f">False</a>, time_range=(0.04, 0.16), eliminate_outliers=<a class="el" href="namespacescripts_1_1data__generators_1_1DynamicPosesDataSaver.html#a8fd40ccc288455e4409ff808a630b094">True</a>)</td></tr>
 <tr class="separator:a9c87af6bef499db99aebc40ec8526c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c1bdda36a5753832b684796ee6f9929"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#a3c1bdda36a5753832b684796ee6f9929">save</a> (self, <a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#ad6e6eeba92665a4b78b364c1676a83bc">data</a>)</td></tr>
 <tr class="separator:a3c1bdda36a5753832b684796ee6f9929"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -44,6 +44,8 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ad6e6eeba92665a4b78b364c1676a83bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#ad6e6eeba92665a4b78b364c1676a83bc">data</a></td></tr>
 <tr class="separator:ad6e6eeba92665a4b78b364c1676a83bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af99d63a7fef01ba026b2b85d3f8bad7b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#af99d63a7fef01ba026b2b85d3f8bad7b">data_shape</a></td></tr>
+<tr class="separator:af99d63a7fef01ba026b2b85d3f8bad7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a837c23058a8858acce701d6ebbd30989"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#a837c23058a8858acce701d6ebbd30989">filepath</a></td></tr>
 <tr class="separator:a837c23058a8858acce701d6ebbd30989"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96484419a87cddd0ef650de9a49dbc94"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1data__generators_1_1DynamicPosesDataSaver_1_1DynamicPoseData.html#a96484419a87cddd0ef650de9a49dbc94">imu_names</a></td></tr>
@@ -60,7 +62,7 @@ self.data[pose_name][joint_name][imu_name] = np.ndarray
 The data is defined as below.
 data = [max acceleration, theta at the point].
 </pre> 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00024">24</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00026">26</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a740d3b85136c47743306f30f51fd8b25"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a740d3b85136c47743306f30f51fd8b25">&#9670;&nbsp;</a></span>__init__()</h2>
@@ -118,7 +120,7 @@ imu_names: list[str]
 filepath: str
     Path to save the collected data
 </pre> 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00032">32</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00034">34</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -181,7 +183,7 @@ data: np.array
     Numpy array of size (1,4).
     Includes an accelerometer measurement and a joint angle.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00062">62</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00065">65</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -201,7 +203,7 @@ data: np.array
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>verbose</em> = <code>False</code>, </td>
+          <td class="paramname"><em>verbose</em> = <code><a class="el" href="namespacescripts_1_1data__generators_1_1DynamicPosesDataSaver.html#ad7fd73c3920d4a6c37b0492dd9a3f35f">False</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -236,7 +238,7 @@ Arguments
     the max acceleration value will be searched in between 0.04
     and 0.16 seconds.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00084">84</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00089">89</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -272,7 +274,7 @@ Arguments
 `data`: `OrderedDict`
     The data to be saved
 </pre> 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00221">221</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00172">172</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -289,7 +291,23 @@ Arguments
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00052">52</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00054">54</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+
+</div>
+</div>
+<a id="af99d63a7fef01ba026b2b85d3f8bad7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af99d63a7fef01ba026b2b85d3f8bad7b">&#9670;&nbsp;</a></span>data_shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scripts.data_generators.DynamicPosesDataSaver.DynamicPoseData.data_shape</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00055">55</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -305,7 +323,7 @@ Arguments
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00051">51</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00053">53</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -321,7 +339,7 @@ Arguments
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00049">49</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00051">51</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -337,7 +355,7 @@ Arguments
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00048">48</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00050">50</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -353,7 +371,7 @@ Arguments
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00047">47</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicPosesDataSaver_8py_source.html#l00049">49</a> of file <a class="el" href="DynamicPosesDataSaver_8py_source.html">DynamicPosesDataSaver.py</a>.</p>
 
 </div>
 </div>
@@ -366,7 +384,7 @@ Arguments
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Fri May 29 2020 16:00:40</small>
+<small>autogenerated on Tue Jun 2 2020 03:19:45</small>
 </div>
 </body>
 </html>
