@@ -19,7 +19,6 @@ class RobotController(object):
         """
         robot controller for n joints.
         """
-        rospy.init_node('robot_controller', anonymous=True)
         self.is_sim = is_sim
         self.arm = self.get_arm(num_joints, is_sim)
         self.sleep_time_static = rospy.get_param('/static_sleep_time')
@@ -233,6 +232,7 @@ if __name__ == '__main__':
     this is a simple example of creating a panda controller
     and publishing positions to all of the joints.
     """
+    rospy.init_node('robot_controller', anonymous=True)
     controller = PandaController()
 
     controller.publish_positions([1, 1, 1, 1, 1, 1, 1])
