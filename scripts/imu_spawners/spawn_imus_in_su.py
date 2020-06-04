@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import numpy as np
+#import numpy as np
 import rospkg
 import os
 """
@@ -36,13 +36,16 @@ class AddIMUToSU():
             self.robot_standard_link = "right_l"
 
         # n is just the number of imus on a skin unit
-        self.n = 2
+        self.n = n
 
     def construct_imu_string(self):
         """
         example: <xacro:imu imu_id="5" xyz="-0.05 0 0.03" rpy="0 -1.57 0" gravity="true" connected_to="panda_link6"/>
         """
-        rpy_per_link = [(0.0, 1.57, 0.0), (0.0, 1.57, 0.0), (1.57, 0.0, 0.0), (0.0, -1.57, 0.0), (-1.57, 0.0, 0.0), (0.0, -1.57, 0.0), (0.0, 1.57, 0.0)]
+        rpy_per_link = np.array([[0.0, 1.57, 0.0], 
+                                [0.0, 1.57, 0.0], [1.57, 0.0, 0.0], 
+                                [0.0, -1.57, 0.0], [-1.57, 0.0, 0.0], 
+                                [0.0, -1.57, 0.0], [0.0, 1.57, 0.0]])
         self.xacro_strings = []
         imu_id = 0
         x = 0
@@ -85,6 +88,6 @@ class AddIMUToSU():
 
 
 if __name__ == '__main__':
-    ris = RealIMUSpawner()
+    ris = AddIMUToSU()
     ris.construct_imu_string()
     ris.write()
