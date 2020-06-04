@@ -34,7 +34,7 @@ class AddIMUToSU():
             self.robot_standard_link = "panda_link"
         else:
             self.robot_standard_link = "right_l"
-        
+
         # n is just the number of imus on a skin unit
         self.n = 2
 
@@ -42,15 +42,18 @@ class AddIMUToSU():
         """
         example: <xacro:imu imu_id="5" xyz="-0.05 0 0.03" rpy="0 -1.57 0" gravity="true" connected_to="panda_link6"/>
         """
-        rpy_per_link = [(0.0, 1.57, 0.0), (0.0, 1.57, 0.0), (1.57, 0.0, 0.0), (0.0, -1.57, 0.0), (-1.57, 0.0, 0.0), (0.0, -1,57, 0.0), (0.0, 1.57, 0.0)]
+        rpy_per_link = [(0.0, 1.57, 0.0), (0.0, 1.57, 0.0), (1.57, 0.0, 0.0), (0.0, -1.57, 0.0), (-1.57, 0.0, 0.0), (0.0, -1.57, 0.0), (0.0, 1.57, 0.0)]
         self.xacro_strings = []
         imu_id = 0
+        x = 0
+        y = 0
+        z = 0
         for link, rpy in enumerate(rpy_per_link):
             # This is to start at panda_link1 not link0
             link = link + 1
             for i in self.n:
                 xacro_string = '  <xacro:imu imu_id="{}" xyz="{} {} {}" rpy="{} {} {}" gravity="true" connected_to="{}{}"/>\n'.format(
-                    imu_id, x?, y?, z?,
+                    imu_id, x, y, z,
                     rpy[0], rpy[1], rpy[2], self.robot_standard_link,
                     link
                 )
