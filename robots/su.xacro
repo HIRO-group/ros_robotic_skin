@@ -1,27 +1,42 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="imu">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="su">
+  <!-- <xacro:include filename="$(find ros_robotic_skin)/robots/imu.xacro"/> -->
 
-    <xacro:macro name="imu" params="imu_id:='0' xyz:='0 0 0' rpy:='0 0 0' gravity:='false' type:='fixed' freq:='100' connected_to:=''">
-        <!-- Connect IMU to the world if not specified -->
+
+    <xacro:macro name="su" params="su_id:='0' xyz:='0 0 0' rpy:='0 0 0' gravity:='false' type:='fixed' freq:='100' connected_to:=''">
+        <!-- Connect SU to the world if not specified -->
         <xacro:if value="${connected_to == ''}">
-            <joint name="imu${imu_id}_to_world" type="${type}">
+            <joint name="su${su_id}_to_world" type="${type}">
                 <!-- XYZ, RPY from parent Visual Origin (Center o Gravity) -->
                 <!-- in this case it's 0 0 0-->
                 <parent link="world" />
-                <child link="imu_link${imu_id}" />
+                <child link="su_link${su_id}" />
                 <origin rpy="${rpy}" xyz="${xyz}"/>
             </joint>
         </xacro:if>
 
-        <!-- Connect IMU to ${connected_to} if specified -->
+        <!-- Connect SU to ${connected_to} if specified -->
         <xacro:if value="${connected_to != ''}">
-            <joint name="imu${imu_id}_to_${connected_to}" type="${type}">
+            <joint name="su${su_id}_to_${connected_to}" type="${type}">
                 <parent link="${connected_to}"/>
-                <child link="imu_link${imu_id}"/>
+                <child link="su_link${su_id}"/>
                 <origin rpy="${rpy}" xyz="${xyz}"/>
             </joint>
         </xacro:if>
 
+        <!-- Connecting 2 IMUs to the SU -->
+        <!-- <xacro:if value="${rpy[0] != '0'}">
+            <xacro:imu imu_id="{su_id + 0}" xyz="{xyz}" rpy="{rpy}" gravity="true" connected_to="panda_link{su_id + 1}"/>
+            <xacro:imu imu_id="{su_id + 1}" xyz="{xyz[0] + 0.02} {xyz[1]} {xyz[2]}" rpy="{rpy}" gravity="true" connected_to="panda_link{su_id + 1}"/>
+        </xacro:if>
+        <xacro:if value="${rpy[1] != '0'}">
+            <xacro:imu imu_id="{su_id + 0}" xyz="{xyz}" rpy="{rpy}" gravity="true" connected_to="panda_link{su_id + 1}"/>
+            <xacro:imu imu_id="{su_id + 1}" xyz="{xyz[0]} {xyz[1] + 0.02} {xyz[2]}" rpy="{rpy}" gravity="true" connected_to="panda_link{su_id + 1}"/>
+        </xacro:if>
+        <xacro:if value="${rpy[2] != '0'}">
+            <xacro:imu imu_id="{su_id + 0}" xyz="{xyz}" rpy="{rpy}" gravity="true" connected_to="panda_link{su_id + 1}"/>
+            <xacro:imu imu_id="{su_id + 1}" xyz="{xyz[0]} {xyz[1]} {xyz[2] + 0.02}" rpy="{rpy}" gravity="true" connected_to="panda_link{su_id + 1}"/>
+        </xacro:if> -->
         <!-- XYZ, RPY from the joint-->
         <!-- in this case it's imu_to_world${imu_id}-->
         <!-- To set the CoG to the joint, do not add any displacement -->
@@ -29,7 +44,7 @@
         <xacro:property name="boxxy" value="0.05"/>
         <xacro:property name="boxz" value="0.03"/>
         <xacro:property name="displacement" value="${boxz}"/>
-        <link name="imu_link${imu_id}">
+        <link name="su_link${su_id}">
             <inertial>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <mass value="0.01"/>
@@ -43,12 +58,12 @@
             </visual>
         </link>
 
-        <gazebo reference="imu_link${imu_id}">
+        <!-- <gazebo reference="su_link${su_id}">
             <material>Gazebo/YellowGlow</material>
             <gravity>${gravity}</gravity>
             <mu1>20</mu1>
             <mu2>20</mu2>
-            <sensor name="imu_sensor${imu_id}" type="imu">
+            <sensor name="su_sensor${su_id}" type="su">
                 <always_on>true</always_on>
                 <update_rate>${freq}</update_rate>
                 <visualize>true</visualize>
@@ -64,12 +79,12 @@
                 </plugin>
                 <pose>0 0 0 0 0 0</pose>
             </sensor>
-        </gazebo>
+        </gazebo> -->
 
         <!-- ////////////////////////////////////////// -->
         <!--                    AXIS                    -->
         <!-- ////////////////////////////////////////// -->
-        <joint name="imu${imu_id}_to_xaxis" type="fixed">
+        <!-- <joint name="imu${imu_id}_to_xaxis" type="fixed">
             <parent link="imu_link${imu_id}"/>
             <child link="imu_link${imu_id}_xaxis"/>
             <origin rpy="0 1.57 0" xyz="0 0 0"/>
@@ -132,6 +147,6 @@
         </gazebo>
         <gazebo reference="imu_link${imu_id}_zaxis">
             <material>Gazebo/Blue</material>
-        </gazebo>
+        </gazebo> -->
     </xacro:macro>
 </robot>
