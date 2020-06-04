@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#import numpy as np
+import numpy as np
 import rospkg
 import os
 """
@@ -42,9 +42,9 @@ class AddIMUToSU():
         """
         example: <xacro:imu imu_id="5" xyz="-0.05 0 0.03" rpy="0 -1.57 0" gravity="true" connected_to="panda_link6"/>
         """
-        rpy_per_link = np.array([[0.0, 1.57, 0.0], 
-                                [0.0, 1.57, 0.0], [1.57, 0.0, 0.0], 
-                                [0.0, -1.57, 0.0], [-1.57, 0.0, 0.0], 
+        rpy_per_link = np.array([[0.0, 1.57, 0.0],
+                                [0.0, 1.57, 0.0], [1.57, 0.0, 0.0],
+                                [0.0, -1.57, 0.0], [-1.57, 0.0, 0.0],
                                 [0.0, -1.57, 0.0], [0.0, 1.57, 0.0]])
         self.xacro_strings = []
         imu_id = 0
