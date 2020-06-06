@@ -1,4 +1,5 @@
 from robotic_skin.sensor.lsm6ds3_accel import LSM6DS3_acclerometer
+from robotic_skin.sensor.lsm6ds3_gyro import LSM6DS3_gyroscope
 from sensor_msgs.msg import Imu
 import rospy
 import rospkg
@@ -13,15 +14,20 @@ if __name__ == "__main__":
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     config_file = ros_robotic_skin_path + "/config/" + args.config_file
     accel = LSM6DS3_acclerometer(config_file)
+    gyro = LSM6DS3_gyroscope(config_file)
     rospy.init_node('talker_%s' % str(accel.config_dict['imu_number']), anonymous=True)
     pub = rospy.Publisher('/imu_data%s' % str(accel.config_dict['imu_number']), Imu, queue_size=10)
     r = rospy.Rate(100)
     imu_msg = Imu()
     while not rospy.is_shutdown():
-        data0_list = accel.read()
+        accel_list = accel.read()
+        gyro_list = gyro.read()
         imu_msg.header.stamp = rospy.Time.now()
-        imu_msg.linear_acceleration.x = data0_list[0]
-        imu_msg.linear_acceleration.y = data0_list[1]
-        imu_msg.linear_acceleration.z = data0_list[2]
+        imu_msg.linear_acceleration.x = accel_list[0]
+        imu_msg.linear_acceleration.y = accel_list[1]
+        imu_msg.linear_acceleration.z = accel_list[2]
+        imu_msg.orientation.x = gyro_list[0]
+        imu_msg.orientation.y = gyro_list[1]
+        imu_msg.orientation.z = gyro_list[2]
         pub.publish(imu_msg)
         r.sleep()
