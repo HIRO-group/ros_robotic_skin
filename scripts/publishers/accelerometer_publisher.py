@@ -26,8 +26,8 @@ if __name__ == "__main__":
         imu_msg.linear_acceleration.x = accel_list[0]
         imu_msg.linear_acceleration.y = accel_list[1]
         imu_msg.linear_acceleration.z = accel_list[2]
-        imu_msg.orientation.x = gyro_list[0]
-        imu_msg.orientation.y = gyro_list[1]
-        imu_msg.orientation.z = gyro_list[2]
+        imu_msg.angular_velocity.x = gyro_list[0]
+        imu_msg.angular_velocity.y = gyro_list[1]
+        imu_msg.angular_velocity.z = gyro_list[2]
         pub.publish(imu_msg)
         r.sleep()
