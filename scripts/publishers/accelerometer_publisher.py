@@ -30,4 +30,6 @@ if __name__ == "__main__":
         imu_msg.angular_velocity.y = gyro_list[1]
         imu_msg.angular_velocity.z = gyro_list[2]
         pub.publish(imu_msg)
+        # For some reason the rospy sleep doesn't work here
+        # IDK why, so it's better to use python sleep
         sleep(0.1)
