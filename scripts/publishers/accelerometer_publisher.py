@@ -1,4 +1,4 @@
-from robotic_skin.sensor.lsm6ds3_accel import LSM6DS3_acclerometer
+from robotic_skin.sensor.lsm6ds3 import LSM6DS3_IMU
 from time import sleep
 from sensor_msgs.msg import Imu
 import rospy
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     config_file = ros_robotic_skin_path + "/config/" + args.config_file
-    accel_gyro = LSM6DS3_acclerometer(config_file)
+    accel_gyro = LSM6DS3_IMU(config_file)
     rospy.init_node('talker_%s' % str(accel_gyro.config_dict['imu_number']), anonymous=True)
     pub = rospy.Publisher('/imu_data%s' % str(accel_gyro.config_dict['imu_number']), Imu, queue_size=10)
     imu_msg = Imu()
