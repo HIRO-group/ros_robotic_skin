@@ -37,8 +37,8 @@ public:
     JointVelocityController jointVelocityController;
     Eigen::VectorXd secondaryTaskFunctionGradient(Eigen::VectorXd q);
     void setMode(AvoidanceMode avoidanceModeName);
-
     void moveToPosition(Eigen::Vector3d position_vector);
+    double gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, Eigen::VectorXd q, int i);
 };
 
 CartesianPositionController::CartesianPositionController()
@@ -116,7 +116,10 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 ros::shutdown();
                 break;
             case QP:
-                std::cout << kdlSolver.forwardKinematics(std::string ("end_effector"), q);
+                for (int i = 0; i < 7; i++)
+                {
+                    std::cout << gradientOfDistanceNorm(Eigen::Vector3d(1.0, 1.0, 1.0), q, i) << std::endl;
+                }
                 ros::shutdown();
                 break;
             default:
@@ -132,6 +135,21 @@ void on_shutdown(int sig)
     CartesianPositionController endController;
     endController.jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
     ros::shutdown();
+}
+
+double CartesianPositionController::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, Eigen::VectorXd q, int i)
+{
+    Eigen::VectorXd qplus(7), qminus(7);
+    double h{0.001};
+    qplus = q;
+    qminus = q;
+    qplus[i] = qplus[i] + h;
+    qminus[i] = qminus[i] - h;
+    double result;
+    result = ((obstaclePositionVector - kdlSolver.forwardKinematics(std::string ("end_effector"), qplus)).norm() -
+             (obstaclePositionVector - kdlSolver.forwardKinematics(std::string ("end_effector"), qminus)).norm()) / (2*h);
+    return result;
+
 }
 
 int main(int argc, char **argv)
