@@ -5,6 +5,25 @@ KDLSolver::KDLSolver()
     n.param("robot_description", robot_desc_string, std::string());
     if (!kdl_parser::treeFromString(robot_desc_string, kdlTree))
         ROS_ERROR("Failed to construct kdl tree");
+
+
+    int controlPointCount{0};
+    for (KDL::SegmentMap::const_iterator seg = kdlTree.getSegments().begin(); seg != kdlTree.getSegments().end(); seg++)
+    {
+        if (seg->first.find("control_point") != std::string::npos)
+        {
+            controlPointCount++;
+        }
+    }
+
+    this->kdlChains = std::make_unique<KDL::Chain[]>(controlPointCount + 1);
+
+    kdlTree.getChain("panda_link0", "end_effector", kdlChains[0]);
+    for (int i = 0; i < controlPointCount; i++)
+    {
+        kdlTree.getChain("panda_link0", "end_effector", kdlChains[i+1]);
+    }
+
 }
 
 KDLSolver::~KDLSolver()
@@ -13,10 +32,20 @@ KDLSolver::~KDLSolver()
 
 Eigen::MatrixXd KDLSolver::computeJacobian(std::string controlPointName, Eigen::VectorXd q)
 {
-    kdlTree.getChain("panda_link0", controlPointName, kdlChain);
-    int number_joints = kdlChain.getNrOfJoints();
+    // Read the element in the KDL chain array that needs to be indexed
+    int index{0};
+    if (controlPointName == "end_effector")
+    {
+        index = 0;
+    }
+    else
+    {
+        index = std::stoi(controlPointName.substr(controlPointName.find_first_of("0123456789"), controlPointName.length() - 1));
+    }
 
-    KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain);
+    int number_joints = kdlChains[index].getNrOfJoints();
+
+    KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChains[index]);
     KDL::Jacobian J; J.resize(number_joints);
     KDL::JntArray KDLJointArray(7); KDLJointArray.data = q;
     JSolver.JntToJac(KDLJointArray, J);
@@ -25,8 +54,18 @@ Eigen::MatrixXd KDLSolver::computeJacobian(std::string controlPointName, Eigen::
 
 Eigen::Vector3d KDLSolver::forwardKinematics(std::string controlPointName, Eigen::VectorXd q)
 {
-    kdlTree.getChain("panda_link0", controlPointName, kdlChain);
-    KDL::ChainFkSolverPos_recursive FKSolver = KDL::ChainFkSolverPos_recursive(kdlChain);
+    int index{0};
+    if (controlPointName == "end_effector")
+    {
+        index = 0;
+    }
+    else
+    {
+        index = std::stoi(controlPointName.substr(controlPointName.find_first_of("0123456789"), controlPointName.length() - 1));
+        ++index;
+    }
+
+    KDL::ChainFkSolverPos_recursive FKSolver = KDL::ChainFkSolverPos_recursive(kdlChains[index]);
     KDL::Frame controlPointFrame;
     KDL::JntArray KDLJointArray(7); KDLJointArray.data = q;
     FKSolver.JntToCart(KDLJointArray, controlPointFrame);

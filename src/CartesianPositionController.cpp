@@ -38,7 +38,7 @@ public:
     Eigen::VectorXd secondaryTaskFunctionGradient(Eigen::VectorXd q);
     void setMode(AvoidanceMode avoidanceModeName);
     void moveToPosition(Eigen::Vector3d position_vector);
-    double gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, Eigen::VectorXd q, int i);
+    double gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q, int i);
 };
 
 CartesianPositionController::CartesianPositionController()
@@ -116,9 +116,9 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 ros::shutdown();
                 break;
             case QP:
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 1; i++)
                 {
-                    std::cout << gradientOfDistanceNorm(Eigen::Vector3d(1.0, 1.0, 1.0), q, i) << std::endl;
+                    std::cout << gradientOfDistanceNorm(Eigen::Vector3d(1.0, 1.0, 1.0), "end_effector", q , i) << std::endl;
                 }
                 ros::shutdown();
                 break;
@@ -137,7 +137,7 @@ void on_shutdown(int sig)
     ros::shutdown();
 }
 
-double CartesianPositionController::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, Eigen::VectorXd q, int i)
+double CartesianPositionController::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q, int i)
 {
     Eigen::VectorXd qplus(7), qminus(7);
     double h{0.001};
@@ -146,8 +146,8 @@ double CartesianPositionController::gradientOfDistanceNorm(Eigen::Vector3d obsta
     qplus[i] = qplus[i] + h;
     qminus[i] = qminus[i] - h;
     double result;
-    result = ((obstaclePositionVector - kdlSolver.forwardKinematics(std::string ("end_effector"), qplus)).norm() -
-             (obstaclePositionVector - kdlSolver.forwardKinematics(std::string ("end_effector"), qminus)).norm()) / (2*h);
+    result = ((obstaclePositionVector - kdlSolver.forwardKinematics(controlPointName, qplus)).norm() -
+             (obstaclePositionVector - kdlSolver.forwardKinematics(controlPointName, qminus)).norm()) / (2*h);
     return result;
 
 }

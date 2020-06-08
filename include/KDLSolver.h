@@ -16,7 +16,7 @@ private:
     ros::NodeHandle n;
     std::string robot_desc_string;
     KDL::Tree kdlTree;
-    KDL::Chain kdlChain;
+    std::unique_ptr<KDL::Chain[]> kdlChains;
 
 public:
     KDLSolver();
