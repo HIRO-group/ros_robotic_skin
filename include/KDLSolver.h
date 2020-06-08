@@ -22,7 +22,7 @@ public:
     KDLSolver();
     ~KDLSolver();
     Eigen::MatrixXd computeJacobian(std::string controlPointName, Eigen::VectorXd q);
-    Eigen::MatrixXd forwardKinematics(std::string controlPointName, Eigen::VectorXd q);
+    Eigen::Vector3d forwardKinematics(std::string controlPointName, Eigen::VectorXd q);
 };
 
 #endif // KDL_SOLVER_H

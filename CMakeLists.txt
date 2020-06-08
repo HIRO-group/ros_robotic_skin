@@ -20,8 +20,6 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-find_package(CGAL REQUIRED COMPONENTS Core)
-
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 

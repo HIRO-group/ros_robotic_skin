@@ -8,7 +8,6 @@
 #include "tf/transform_listener.h"
 #include "KDLSolver.h"
 #include "Eigen/Dense"
-#include "QPAvoidance.h"
 
 
 enum AvoidanceMode {noAvoidance, Flacco, QP};
@@ -27,7 +26,6 @@ private:
     Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
     Eigen::MatrixXd J, Jpinv;
     KDLSolver kdlSolver;
-    QPAvoidance qpAvoidance;
 
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
     void readEndEffectorPosition();
@@ -118,9 +116,8 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 ros::shutdown();
                 break;
             case QP:
-                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity);
-                // ros::shutdown();
-                jointVelocityController.sendVelocities(qDot);
+                std::cout << kdlSolver.forwardKinematics(std::string ("end_effector"), q);
+                ros::shutdown();
                 break;
             default:
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
@@ -150,8 +147,6 @@ int main(int argc, char **argv)
     {
         controller.setMode(noAvoidance);
     }
-
-
 
     while (ros::ok())
     {
