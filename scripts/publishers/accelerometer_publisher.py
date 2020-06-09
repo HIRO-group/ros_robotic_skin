@@ -14,8 +14,9 @@ if __name__ == "__main__":
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     config_file = ros_robotic_skin_path + "/config/" + args.config_file
     accel_gyro = LSM6DS3_IMU(config_file)
-    rospy.init_node('talker_%s' % str(accel_gyro.config_dict['imu_number']), anonymous=True)
-    pub = rospy.Publisher('/imu_data%s' % str(accel_gyro.config_dict['imu_number']), Imu, queue_size=10)
+    rospy.init_node('talker_{imu_number}'.format(imu_number=str(accel_gyro.config_dict['imu_number'])), anonymous=True)
+    pub = rospy.Publisher('/imu_data{imu_number}'.format(imu_number=str(accel_gyro.config_dict['imu_number'])), Imu,
+                          queue_size=10)
     imu_msg = Imu()
     while not rospy.is_shutdown():
         accel_gyro_list = accel_gyro.read()
