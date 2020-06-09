@@ -133,11 +133,13 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 break;
             case QP:
             {
-                Eigen::MatrixXd C(2,7);
-                C.row(0) = gradientOfDistanceNorm(Eigen::Vector3d(1.0, 1.0, 1.0), "end_effector", q);
-                C.row(1) = gradientOfDistanceNorm(Eigen::Vector3d(0.0, 1.0, 1.0), "end_effector", q);
+                Eigen::MatrixXd C(obstaclePositionVectors.size(), 7);
+                for (int i = 0; i < obstaclePositionVectors.size(); i++)
+                {
+                    C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], "end_effector", q);
+                }
                 std::cout << C << std::endl;
-                ros::shutdown();
+                std::cout << "------------------" << std::endl;
                 break;
             }
             default:
