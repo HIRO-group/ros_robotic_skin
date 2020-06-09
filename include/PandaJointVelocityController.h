@@ -9,6 +9,7 @@
 #include <franka_hw/franka_state_interface.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/robot_hw.h>
+#include <pluginlib/class_list_macros.h>
 #include <ros/node_handle.h>
 #include <ros/time.h>
 #include <std_msgs/Float64.h>
@@ -49,3 +50,6 @@ class PandaJointVelocityController : public controller_interface::MultiInterface
 };
 
 }  // namespace hiro_panda
+
+PLUGINLIB_EXPORT_CLASS(hiro_panda::PandaJointVelocityController,
+                       controller_interface::ControllerBase)

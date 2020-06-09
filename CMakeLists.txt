@@ -19,6 +19,10 @@ find_package(catkin REQUIRED COMPONENTS
   imu_filter_madgwick
   message_generation
   franka_hw
+  realtime_tools
+  pluginlib
+  hardware_interface
+  controller_interface
 )
 
 find_package(Franka 0.5.0 REQUIRED)
@@ -116,10 +120,16 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES PandaJointVelocityController
+  LIBRARIES ros_robotic_skin
   CATKIN_DEPENDS
-    xacro
+    controller_interface
+    franka_hw
+    hardware_interface
+    pluginlib
+    realtime_tools
     message_runtime
+    roscpp
+    xacro
   DEPENDS Franka
 )
 
@@ -136,7 +146,9 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(PandaJointVelocityController src/PandaJointVelocityController.cpp)
+add_library(ros_robotic_skin
+  src/PandaJointVelocityController.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -164,13 +176,21 @@ add_dependencies(KDL_server ros_robotic_skin_gencpp)
 add_dependencies(proximity_listener ros_robotic_skin_gencpp)
 add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
 add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
+add_dependencies(ros_robotic_skin
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+  ${PROJECT_NAME}_gencpp
+)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
 target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
-target_link_libraries(PandaJointVelocityController PUBLIC ${Franka_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(ros_robotic_skin PUBLIC
+  ${Franka_LIBRARIES}
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -205,10 +225,22 @@ target_link_libraries(PandaJointVelocityController PUBLIC ${Franka_LIBRARIES} ${
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 # )
-install(TARGETS PandaJointVelocityController
+install(TARGETS ros_robotic_skin
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(DIRECTORY config
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(FILES ros_robotic_skin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ## Mark cpp header files for installation

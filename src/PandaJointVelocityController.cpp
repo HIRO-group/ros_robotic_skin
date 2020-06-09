@@ -157,3 +157,6 @@ bool PandaJointVelocityController::enforceJointPositionLimit(double &position)
 }
 
 }
+
+PLUGINLIB_EXPORT_CLASS(hiro_panda::PandaJointVelocityController,
+                       controller_interface::ControllerBase)
