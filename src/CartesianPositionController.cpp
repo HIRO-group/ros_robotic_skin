@@ -5,6 +5,7 @@
 #include "ros/ros.h"
 #include "JointVelocityController.h"
 #include "sensor_msgs/JointState.h"
+#include "ros_robotic_skin/PointArray.h"
 #include "tf/transform_listener.h"
 #include "KDLSolver.h"
 #include "Eigen/Dense"
@@ -20,14 +21,17 @@ private:
     ros::NodeHandle n;
     ros::Rate rate{100.0};
     ros::Subscriber subscriberJointStates;
+    ros::Subscriber subscriberObstaclePoints;
     tf::TransformListener transform_listener;
     tf::StampedTransform transform;
     Eigen::VectorXd q, qDot{7}, jointLimitsMin{7}, jointLimitsMax{7}, jointMiddleValues{7}, jointRanges{7};
     Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
+    std::vector<Eigen::Vector3d> obstaclePositionVectors;
     Eigen::MatrixXd J, Jpinv;
     KDLSolver kdlSolver;
 
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
+    void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
     void readEndEffectorPosition();
     Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
 
@@ -49,6 +53,7 @@ CartesianPositionController::CartesianPositionController()
     jointRanges = jointLimitsMax - jointLimitsMin;
     q.resize(7);
     subscriberJointStates = n.subscribe<sensor_msgs::JointState>("/joint_states", 1, &CartesianPositionController::JointStateCallback, this);
+    subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1, &CartesianPositionController::ObstaclePointsCallback, this);
     readEndEffectorPosition();
 }
 
@@ -79,6 +84,17 @@ void CartesianPositionController::readEndEffectorPosition()
 void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
     q << msg->position[2], msg->position[3], msg->position[4], msg->position[5], msg->position[6], msg->position[7], msg->position[8];
+}
+
+void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg)
+{
+    obstaclePositionVectors.clear();
+    for (std::vector<geometry_msgs::Point, std::allocator<geometry_msgs::Point>>::const_iterator it = msg->points.begin();
+         it != msg->points.end(); it++)
+    {
+        obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
+    }
+    std::cout << obstaclePositionVectors.size() << std::endl;
 }
 
 Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q)
