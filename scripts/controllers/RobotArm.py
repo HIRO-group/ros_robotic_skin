@@ -124,6 +124,7 @@ class RobotArm(object):
             raise InvalidNumJointException("Wrong number of joints for pos control.")
 
         if not rospy.is_shutdown():
+            # handle differently for real robot.
             self.controller_manager.switch_mode(ControllerType.POSITION)
             for index, pos in enumerate(positions):
                 self.pos_pubs[index].publish(Float64(pos))
@@ -200,7 +201,7 @@ class RobotArm(object):
     def get_publishers(self, controller_names):
         """
         gets position, velocity, and trajectory publisher(s). Lengths may
-        be different.
+        be different. Publishers will be different.
         """
         joint_position_pubs = []
         joint_velocity_pubs = []

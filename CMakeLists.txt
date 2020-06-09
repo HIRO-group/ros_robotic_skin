@@ -18,8 +18,10 @@ find_package(catkin REQUIRED COMPONENTS
   franka_gripper
   imu_filter_madgwick
   message_generation
+  franka_hw
 )
 
+find_package(Franka 0.5.0 REQUIRED)
 # find_package(CGAL REQUIRED COMPONENTS Core)
 
 
@@ -112,7 +114,14 @@ generate_messages(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(CATKIN_DEPENDS xacro message_runtime)
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES PandaJointVelocityController
+  CATKIN_DEPENDS
+    xacro
+    message_runtime
+  DEPENDS Franka
+)
 
 ###########
 ## Build ##
@@ -123,12 +132,11 @@ catkin_package(CATKIN_DEPENDS xacro message_runtime)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${Franka_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ros_robotic_skin.cpp
-# )
+add_library(PandaJointVelocityController src/PandaJointVelocityController.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -142,7 +150,6 @@ add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
 add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
-
 
 
 ## Rename C++ executable without prefix
@@ -163,6 +170,7 @@ target_link_libraries(KDL_server ${catkin_LIBRARIES})
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
 target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
+target_link_libraries(PandaJointVelocityController PUBLIC ${Franka_LIBRARIES} ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -197,6 +205,11 @@ target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 # )
+install(TARGETS PandaJointVelocityController
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
