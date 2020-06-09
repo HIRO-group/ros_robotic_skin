@@ -94,7 +94,6 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
     {
         obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
     }
-    std::cout << obstaclePositionVectors.size() << std::endl;
 }
 
 Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q)
@@ -133,12 +132,20 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 break;
             case QP:
             {
+                Eigen::MatrixXd A = Eigen::MatrixXd::Zero(obstaclePositionVectors.size() + 1, 7);
+                Eigen::VectorXd w = Eigen::VectorXd::Ones(obstaclePositionVectors.size());
+                Eigen::VectorXd b(obstaclePositionVectors.size() + 1);
                 Eigen::MatrixXd C(obstaclePositionVectors.size(), 7);
+
                 for (int i = 0; i < obstaclePositionVectors.size(); i++)
                 {
+                    A.row(i) = obstaclePositionVectors[i].normalized().transpose() * kdlSolver.computeJacobian("end_effector", q).block(0,0,3,7);
+                    b[i] = obstaclePositionVectors[i].norm();
                     C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], "end_effector", q);
                 }
-                std::cout << C << std::endl;
+                A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
+                b[obstaclePositionVectors.size()] = 0;
+                std::cout << A << std::endl;
                 std::cout << "------------------" << std::endl;
                 break;
             }
