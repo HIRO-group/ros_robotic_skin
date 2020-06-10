@@ -14,6 +14,7 @@ private:
     Eigen::VectorXd jointVelocityLimitsMax{7};
     //void computeAandbMatrices(Eigen::MatrixXd& A, Eigen::MatrixXd& b);
     Eigen::VectorXd gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q);
+    double computebvalue(double distanceNorm);
 
 
 public:
