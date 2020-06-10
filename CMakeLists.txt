@@ -138,7 +138,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp)
 
 
 

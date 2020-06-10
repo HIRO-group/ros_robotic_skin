@@ -1,38 +1,26 @@
 #include <iostream>
 #include <math.h>
-#include <cassert>
-#include<bits/stdc++.h>
-#include <CGAL/QP_models.h>
-#include <CGAL/QP_functions.h>
-#include <CGAL/Gmpzf.h>
-#include <CGAL/MP_Float.h>
 #include "Eigen/Dense"
 #include "KDLSolver.h"
-
-
-typedef CGAL::Gmpzf ET;
 
 class QPAvoidance
 {
 private:
     KDLSolver kdlSolver;
-    CGAL::Quadratic_program<double> qp;
-    CGAL::Quadratic_program_solution<ET> solution;
-    void EigenSetA(Eigen::MatrixXd A);
-    void EigenSetB(Eigen::VectorXd v);
-    void EigenSetL(Eigen::VectorXd l);
-    void EigenSetU(Eigen::VectorXd u);
-    void EigenSetH(Eigen::MatrixXd D);
-    void EigenSetf(Eigen::VectorXd c);
     double dampingFactor0{0.1}, omega0{0.001};
-
     double computeDampingFactor(double omega);
 
     Eigen::VectorXd jointVelocityLimitsMin{7};
     Eigen::VectorXd jointVelocityLimitsMax{7};
+    //void computeAandbMatrices(Eigen::MatrixXd& A, Eigen::MatrixXd& b);
+    Eigen::VectorXd gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q);
+
 
 public:
-    QPAvoidance(/* args */);
+    QPAvoidance();
     ~QPAvoidance();
-    Eigen::VectorXd computeJointVelocities(Eigen::VectorXd q, Eigen::Vector3d xDot);
+    Eigen::VectorXd computeJointVelocities(Eigen::VectorXd q, Eigen::Vector3d xDot,
+                                           std::vector<Eigen::Vector3d> obstaclePositionVectors,
+                                           int numberControlPoints,
+                                           std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors);
 };
