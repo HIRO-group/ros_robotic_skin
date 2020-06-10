@@ -17,12 +17,14 @@ private:
     std::string robot_desc_string;
     KDL::Tree kdlTree;
     std::unique_ptr<KDL::Chain[]> kdlChains;
+    int controlPointCount{0};
 
 public:
     KDLSolver();
     ~KDLSolver();
     Eigen::MatrixXd computeJacobian(std::string controlPointName, Eigen::VectorXd q);
     Eigen::Vector3d forwardKinematics(std::string controlPointName, Eigen::VectorXd q);
+    int getNumberControlPoints();
 };
 
 #endif // KDL_SOLVER_H

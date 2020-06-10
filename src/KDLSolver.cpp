@@ -7,7 +7,6 @@ KDLSolver::KDLSolver()
         ROS_ERROR("Failed to construct kdl tree");
 
 
-    int controlPointCount{0};
     for (KDL::SegmentMap::const_iterator seg = kdlTree.getSegments().begin(); seg != kdlTree.getSegments().end(); seg++)
     {
         if (seg->first.find("control_point") != std::string::npos)
@@ -17,13 +16,11 @@ KDLSolver::KDLSolver()
     }
 
     this->kdlChains = std::make_unique<KDL::Chain[]>(controlPointCount + 1);
-
     kdlTree.getChain("panda_link0", "end_effector", kdlChains[0]);
     for (int i = 0; i < controlPointCount; i++)
     {
-        kdlTree.getChain("panda_link0", "end_effector", kdlChains[i+1]);
+        kdlTree.getChain("panda_link0", std::string("control_point") + std::to_string(i), kdlChains[i+1]);
     }
-
 }
 
 KDLSolver::~KDLSolver()
@@ -61,15 +58,19 @@ Eigen::Vector3d KDLSolver::forwardKinematics(std::string controlPointName, Eigen
     }
     else
     {
-        index = std::stoi(controlPointName.substr(controlPointName.find_first_of("0123456789"), controlPointName.length() - 1));
-        ++index;
+        index = std::stoi(controlPointName.substr(controlPointName.find_first_of("0123456789"), controlPointName.length() - 1)) + 1;
     }
 
     KDL::ChainFkSolverPos_recursive FKSolver = KDL::ChainFkSolverPos_recursive(kdlChains[index]);
     KDL::Frame controlPointFrame;
-    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q;
+    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChains[index].getNrOfJoints());
     FKSolver.JntToCart(KDLJointArray, controlPointFrame);
     Eigen::Vector3d controlPointPositionVector;
     controlPointPositionVector << controlPointFrame.p(0), controlPointFrame.p(1), controlPointFrame.p(2);
     return controlPointPositionVector;
+}
+
+int KDLSolver::getNumberControlPoints()
+{
+    return controlPointCount;
 }
