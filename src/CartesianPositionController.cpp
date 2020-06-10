@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <signal.h>
 #include <math.h>
 #include "ros/ros.h"
@@ -17,6 +18,7 @@ class CartesianPositionController
 {
 private:
     AvoidanceMode avoidanceMode{noAvoidance};
+    int numberControlPoints;
     double position_error_threshold{0.01}, pGain {2.5}, secondaryTaskGain{5.0};
     ros::NodeHandle n;
     ros::Rate rate{100.0};
@@ -27,12 +29,14 @@ private:
     Eigen::VectorXd q, qDot{7}, jointLimitsMin{7}, jointLimitsMax{7}, jointMiddleValues{7}, jointRanges{7};
     Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
     std::vector<Eigen::Vector3d> obstaclePositionVectors;
+    std::unique_ptr<Eigen::Vector3d[]> controlPointPositionVectors;
     Eigen::MatrixXd J, Jpinv;
     KDLSolver kdlSolver;
 
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
     void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
     void readEndEffectorPosition();
+    void readControlPointPositions();
     Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
 
 public:
@@ -47,6 +51,8 @@ public:
 
 CartesianPositionController::CartesianPositionController()
 {
+    numberControlPoints = kdlSolver.getNumberControlPoints();
+    this->controlPointPositionVectors = std::make_unique<Eigen::Vector3d[]>(numberControlPoints);
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
@@ -55,6 +61,7 @@ CartesianPositionController::CartesianPositionController()
     subscriberJointStates = n.subscribe<sensor_msgs::JointState>("/joint_states", 1, &CartesianPositionController::JointStateCallback, this);
     subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1, &CartesianPositionController::ObstaclePointsCallback, this);
     readEndEffectorPosition();
+    readControlPointPositions();
 }
 
 CartesianPositionController::~CartesianPositionController()
@@ -79,6 +86,12 @@ void CartesianPositionController::readEndEffectorPosition()
             ros::Duration(0.3).sleep();
         }
     }
+}
+
+void CartesianPositionController::readControlPointPositions()
+{
+    for (int i = 0; i < numberControlPoints; i++)
+        controlPointPositionVectors[i] = kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(i), q);
 }
 
 void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
@@ -121,6 +134,7 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
     while (positionErrorVector.norm() > position_error_threshold && ros::ok())
     {
         readEndEffectorPosition();
+        readControlPointPositions();
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
         desiredEEVelocity = pGain * positionErrorVector;
         ros::spinOnce();
@@ -132,21 +146,38 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 break;
             case QP:
             {
+                //////
+                // obstaclePositionVectors.resize(1);
+                // obstaclePositionVectors[0] = (Eigen::Vector3d::Constant(0.35));
+                ///////
                 Eigen::MatrixXd A = Eigen::MatrixXd::Zero(obstaclePositionVectors.size() + 1, 7);
                 Eigen::VectorXd w = Eigen::VectorXd::Ones(obstaclePositionVectors.size());
                 Eigen::VectorXd b(obstaclePositionVectors.size() + 1);
-                Eigen::MatrixXd C(obstaclePositionVectors.size(), 7);
-
+                Eigen::MatrixXd C(obstaclePositionVectors.size(), 7), Jpc;
+                Eigen::Vector3d d;
+                std::vector<double> distancesToControlPoints; distancesToControlPoints.resize(numberControlPoints);
+                int assignedIndex{0};
                 for (int i = 0; i < obstaclePositionVectors.size(); i++)
                 {
-                    A.row(i) = obstaclePositionVectors[i].normalized().transpose() * kdlSolver.computeJacobian("end_effector", q).block(0,0,3,7);
-                    b[i] = obstaclePositionVectors[i].norm();
+                    for (int j = 0; j < numberControlPoints; j++)
+                        distancesToControlPoints[j] = (obstaclePositionVectors[i] - controlPointPositionVectors[j]).norm();
+                    assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
+                    d = obstaclePositionVectors[i] - kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(assignedIndex), q);
+                    Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
+                    A.row(i) = d.normalized().transpose() * Jpc.block(0, 0, 3, Jpc.cols());
+                    b[i] = d.norm();
                     C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], "end_effector", q);
+
+                    ///////
+                    // std::cout << assignedIndex << std::endl;
+                    // std::cout << Jpc.rows() << "," << Jpc.cols() << std::endl;
+                    // std::cout << d.normalized().transpose() * Jpc.block(0, 0, 3, Jpc.cols()) << std::endl;
+                    ////////
                 }
                 A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
+
                 b[obstaclePositionVectors.size()] = 0;
-                std::cout << A << std::endl;
-                std::cout << "------------------" << std::endl;
+                // std::cout << A << std::endl;
                 break;
             }
             default:
