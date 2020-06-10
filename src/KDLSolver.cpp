@@ -44,7 +44,7 @@ Eigen::MatrixXd KDLSolver::computeJacobian(std::string controlPointName, Eigen::
 
     KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChains[index]);
     KDL::Jacobian J; J.resize(number_joints);
-    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q;
+    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChains[index].getNrOfJoints());
     JSolver.JntToJac(KDLJointArray, J);
     return J.data;
 }

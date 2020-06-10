@@ -147,13 +147,13 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
             case QP:
             {
                 //////
-                // obstaclePositionVectors.resize(1);
-                // obstaclePositionVectors[0] = (Eigen::Vector3d::Constant(0.35));
+                obstaclePositionVectors.resize(1);
+                obstaclePositionVectors[0] = (Eigen::Vector3d::Constant(0.35));
                 ///////
                 Eigen::MatrixXd A = Eigen::MatrixXd::Zero(obstaclePositionVectors.size() + 1, 7);
                 Eigen::VectorXd w = Eigen::VectorXd::Ones(obstaclePositionVectors.size());
                 Eigen::VectorXd b(obstaclePositionVectors.size() + 1);
-                Eigen::MatrixXd C(obstaclePositionVectors.size(), 7), Jpc;
+                Eigen::MatrixXd C(obstaclePositionVectors.size(), 7), Jpc, JpcNormalized = Eigen::MatrixXd::Zero(3, 7);
                 Eigen::Vector3d d;
                 std::vector<double> distancesToControlPoints; distancesToControlPoints.resize(numberControlPoints);
                 int assignedIndex{0};
@@ -161,23 +161,27 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 {
                     for (int j = 0; j < numberControlPoints; j++)
                         distancesToControlPoints[j] = (obstaclePositionVectors[i] - controlPointPositionVectors[j]).norm();
-                    assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
+                    // assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
+                    assignedIndex = 3;
                     d = obstaclePositionVectors[i] - kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(assignedIndex), q);
                     Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
-                    A.row(i) = d.normalized().transpose() * Jpc.block(0, 0, 3, Jpc.cols());
+                    JpcNormalized.block(0, 0, 3, Jpc.cols()) = Jpc.block(0, 0, 3, Jpc.cols());
+                    A.row(i) = d.normalized().transpose() * JpcNormalized;
                     b[i] = d.norm();
-                    C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], "end_effector", q);
+                    C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], std::string("control_point") + std::to_string(assignedIndex), q);
 
                     ///////
                     // std::cout << assignedIndex << std::endl;
                     // std::cout << Jpc.rows() << "," << Jpc.cols() << std::endl;
-                    // std::cout << d.normalized().transpose() * Jpc.block(0, 0, 3, Jpc.cols()) << std::endl;
                     ////////
                 }
                 A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
-
                 b[obstaclePositionVectors.size()] = 0;
-                // std::cout << A << std::endl;
+
+                //////
+                std::cout << A << std::endl;
+                std::cout << "------" << std::endl;
+                /////
                 break;
             }
             default:
