@@ -14,30 +14,35 @@
 
 namespace hiro_panda
 {
+
 bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hardware, ros::NodeHandle &nh)
 {
   velocity_joint_interface_ = robot_hardware->get<hardware_interface::VelocityJointInterface>();
   position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
 
-  if (velocity_joint_interface_ == nullptr) {
+  if (velocity_joint_interface_ == nullptr) 
+  {
     ROS_ERROR(
         "PandaJointVelocityController: Error getting velocity joint interface from hardware!");
     return false;
   }
-  if (position_joint_interface_ == nullptr) {
+  if (position_joint_interface_ == nullptr) 
+  {
     ROS_ERROR(
         "PandaJointVelocityController: Error getting position joint interface from hardware!");
     return false;
   }
 
   // Get joint name from parameter server
-  if (!nh.getParam("joint", joint_name)){
+  if (!nh.getParam("joint", joint_name))
+  {
     ROS_ERROR("No joint given (namespace: %s)", nh.getNamespace().c_str());
     return false;
   }
 
   // Get joint margin from parameter server
-  if (!nh.getParam("margin", joint_margin)){
+  if (!nh.getParam("margin", joint_margin))
+  {
     ROS_INFO("Joint Margin of 0.1 [rad/s] will be used");
     joint_margin = 0.1;
   }
@@ -52,6 +57,7 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hardw
         "PandaJointVelocityController: Exception getting velocity joint handles: " << ex.what());
     return false;
   }
+
   try {
     position_joint_handle_ = position_joint_interface_->getHandle(joint_name);
   } catch (const hardware_interface::HardwareInterfaceException& ex) {
@@ -122,11 +128,11 @@ void PandaJointVelocityController::enforceJointVelocityLimit(double &command)
   // Check that this joint has applicable limits
   if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
   {
-    if( command > joint_urdf_->limits->velocity ) // above upper limnit
+    if (command > joint_urdf_->limits->velocity) // above upper limnit
     {
       command = joint_urdf_->limits->velocity;
     }
-    else if( command < -joint_urdf_->limits->velocity ) // below lower limit
+    else if (command < -joint_urdf_->limits->velocity) // below lower limit
     {
       command = -joint_urdf_->limits->velocity;
     }
@@ -139,13 +145,13 @@ bool PandaJointVelocityController::enforceJointPositionLimit(double &position)
   // Check that this joint has applicable limits
   if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
   {
-    if( position > joint_urdf_->limits->upper - joint_margin ) // above upper limnit
+    if (position > joint_urdf_->limits->upper - joint_margin) // above upper limnit
     {
       velocity_joint_handle_.setCommand(0.0);
       ROS_DEBUG_STREAM(joint_name + " reached the joint position upper limit of " + std::to_string(joint_urdf_->limits->upper));
       return true;
     }
-    else if( position < joint_urdf_->limits->lower + joint_margin ) // below lower limit
+    else if (position < joint_urdf_->limits->lower + joint_margin) // below lower limit
     {
       velocity_joint_handle_.setCommand(0.0);
       ROS_DEBUG_STREAM(joint_name + " reached the joint position lower limit of " + std::to_string(joint_urdf_->limits->lower));
