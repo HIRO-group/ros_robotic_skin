@@ -6,3 +6,4 @@
   gravity_constant: 9.81
   oscillation_magnitude: 1.5
   oscillation_frequency: 1.0
+  oscillation_time: 3.0

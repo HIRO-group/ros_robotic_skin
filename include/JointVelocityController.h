@@ -13,11 +13,13 @@ class JointVelocityController
     private:
         ros::NodeHandle n;
         std::vector<ros::Publisher> publishers;
+        std_msgs::Float64 msg;
 
     public:
         JointVelocityController();
         ~JointVelocityController();
         void sendVelocities(const Eigen::VectorXd vel);
+
 };
 
 #endif // JOINT_VELOCITY_CONTROLLER_H

@@ -3,5 +3,3 @@
 .git/
 .vscode/
 data/
-scripts/PoseEstimation/cmake-build-debug
-

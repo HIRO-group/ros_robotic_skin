@@ -18,8 +18,10 @@ find_package(catkin REQUIRED COMPONENTS
   franka_gripper
   imu_filter_madgwick
   message_generation
-  Eigen3
 )
+
+# find_package(CGAL REQUIRED COMPONENTS Core)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -140,6 +142,7 @@ add_executable(KDL_server src/KDL_server.cpp)
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
 add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
+
 
 
 ## Rename C++ executable without prefix
