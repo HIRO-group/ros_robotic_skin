@@ -4,6 +4,8 @@ QPAvoidance::QPAvoidance(/* args */)
 {
     jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
     jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;
+    jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
+    jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
 }
 
 QPAvoidance::~QPAvoidance()
@@ -30,6 +32,28 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
                                                     std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors)
 {
     Eigen::VectorXd qDot(7);
+
+    // Equation #3
+    Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
+    for (int i = 0; i < jointLimitsMax.size(); i++)
+    {
+        if (q(i) <= jointLimitsMin(i))
+        {
+            bl(i) = 0;
+            bu(i) = jointVelocityLimitsMax(i);
+        }
+        else if (q(i) >= jointLimitsMax(i))
+        {
+            bl(i) = jointVelocityLimitsMin(i);
+            bu(i) = 0;
+        }
+        else
+        {
+            bl(i) = jointVelocityLimitsMin(i);
+            bu(i) = jointVelocityLimitsMax(i);
+        }
+    }
+
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q).block(0,0,3,7);
     Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
@@ -89,26 +113,31 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         // std::cout << Jpc.rows() << "," << Jpc.cols() << std::endl;
         ////////
     }
+
+    // Calculate the weights to complet equation #7
     for (int i = 0; i < obstaclePositionVectors.size(); i++)
     {
         w[i] = distanceNorms[i] / distanceNormsSum;
     }
-    // Last row in A
+    // Last row in A, equation #7
     A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
     b[obstaclePositionVectors.size()] = 0;
 
     //////
-    std::cout << b << std::endl;
-    std::cout << "------" << std::endl;
+    // std::cout << b << std::endl;
+    // std::cout << "------" << std::endl;
     /////
+
+    // Send to Matlab H, f, A, b, bl, bu;
 
     return qDot;
 }
 
 Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q)
 {
+    // The value of the derivative is dependent on h, generally the smaller the better the aproximation.
     Eigen::VectorXd qplus(7), qminus(7), result(7);
-    double h{0.001}; // The value of the derivative is dependent on the size of h
+    double h{0.001};
     for (int i = 0; i < 7; i++)
     {
         qplus = q;
@@ -123,6 +152,7 @@ Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePosi
 
 double QPAvoidance::computebvalue(double distanceNorm)
 {
+    // equation #13
     double dr{0.17}, d0l{0.22}, d0u{0.25}, da{0.3}, xdota{0.2}, xdotr{-0.2};
     if (distanceNorm < dr)
     {

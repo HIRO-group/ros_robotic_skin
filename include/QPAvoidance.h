@@ -10,8 +10,8 @@ private:
     double dampingFactor0{0.1}, omega0{0.001};
     double computeDampingFactor(double omega);
 
-    Eigen::VectorXd jointVelocityLimitsMin{7};
-    Eigen::VectorXd jointVelocityLimitsMax{7};
+    Eigen::VectorXd jointVelocityLimitsMin{7}, jointVelocityLimitsMax{7}, jointLimitsMin{7}, jointLimitsMax{7};
+
     //void computeAandbMatrices(Eigen::MatrixXd& A, Eigen::MatrixXd& b);
     Eigen::VectorXd gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q);
     double computebvalue(double distanceNorm);
