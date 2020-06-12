@@ -21,30 +21,30 @@ namespace hiro_panda {
 class PandaJointVelocityController : public controller_interface::MultiInterfaceController<
                                            hardware_interface::VelocityJointInterface,
                                            franka_hw::FrankaStateInterface> {
- public:
-  bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
-  void starting(const ros::Time&) override;
-  void update(const ros::Time&, const ros::Duration& period) override;
-  void stopping(const ros::Time&) override;
+  public:
+    bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
+    void starting(const ros::Time&) override;
+    void update(const ros::Time&, const ros::Duration& period) override;
+    void stopping(const ros::Time&) override;
 
- private:
-  hardware_interface::VelocityJointInterface* velocity_joint_interface_;
-  hardware_interface::JointHandle velocity_joint_handle_;
-  hardware_interface::PositionJointInterface* position_joint_interface_;
-  hardware_interface::JointHandle position_joint_handle_;
-  urdf::JointConstSharedPtr joint_urdf_;
-  ros::Subscriber sub_command_;
+  private:
+    hardware_interface::VelocityJointInterface* velocity_joint_interface_;
+    hardware_interface::JointHandle velocity_joint_handle_;
+    hardware_interface::PositionJointInterface* position_joint_interface_;
+    hardware_interface::JointHandle position_joint_handle_;
+    urdf::JointConstSharedPtr joint_urdf_;
+    ros::Subscriber sub_command_;
 
-  void commandCb(const std_msgs::Float64ConstPtr& msg);
-  void enforceJointVelocityLimit(double &command);
-  bool enforceJointPositionLimit(double &position);
+    void commandCb(const std_msgs::Float64ConstPtr& msg);
+    void enforceJointVelocityLimit(double &command);
+    bool enforceJointPositionLimit(double &position);
 
-  double command;
-  double position;
-  std::string joint_name;
-  // If joint reaches its limit, it should halt.
-  // margin will be subtracted/added to the limit
-  double joint_margin;
+    double command;
+    double position;
+    std::string joint_name;
+    // If joint reaches its limit, it should halt.
+    // margin will be subtracted/added to the limit
+    double joint_margin;
 };
 
 }  // namespace hiro_panda

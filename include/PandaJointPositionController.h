@@ -21,30 +21,31 @@ namespace hiro_panda {
 
 class PandaJointPositionController : public controller_interface::MultiInterfaceController<
                                            hardware_interface::PositionJointInterface> {
- public:
-  bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
-  void starting(const ros::Time&) override;
-  void update(const ros::Time&, const ros::Duration& period) override;
-  void stopping(const ros::Time&) override;
+  public:
+    bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
+    void starting(const ros::Time&) override;
+    void update(const ros::Time&, const ros::Duration& period) override;
+    void stopping(const ros::Time&) override;
 
- private:
-  hardware_interface::PositionJointInterface* position_joint_interface_;
-  hardware_interface::JointHandle position_joint_handle_;
-  hardware_interface::VelocityJointInterface* velocity_joint_interface_;
-  hardware_interface::JointHandle velocity_joint_handle_;
-  urdf::JointConstSharedPtr joint_urdf_;
-  ros::Subscriber sub_command_;
-  ros::Duration elapsed_time_;
+  private:
+    hardware_interface::PositionJointInterface* position_joint_interface_;
+    hardware_interface::JointHandle position_joint_handle_;
+    hardware_interface::VelocityJointInterface* velocity_joint_interface_;
+    hardware_interface::JointHandle velocity_joint_handle_;
+    urdf::JointConstSharedPtr joint_urdf_;
+    ros::Subscriber sub_command_;
+    ros::Duration elapsed_time_;
 
-  void commandCb(const std_msgs::Float64ConstPtr& msg);
-  void enforceJointVelocityLimit(double &command);
-  bool enforceJointPositionLimit(double &position);
+    void commandCb(const std_msgs::Float64ConstPtr& msg);
+    void enforceJointVelocityLimit(double &command);
+    bool enforceJointPositionLimit(double &position);
 
-  double position;
-  double initial_pose_;
-  std::string joint_name;
-  double joint_margin;
-  bool enforced;
+    double curr_position;
+    double desired_position;
+    double initial_pose_;
+    double joint_margin;
+    bool enforced;
+    std::string joint_name;
 };
 
 }  //  PANDA_JOINT_POSITION_CONTROLLER_H
