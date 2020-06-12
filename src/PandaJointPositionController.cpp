@@ -9,15 +9,15 @@
 
 #include "PandaJointPositionController.h"
 
-namespace hiro_panda 
+namespace hiro_panda
 {
 
-bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardware, ros::NodeHandle &nh) 
+bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardware, ros::NodeHandle &nh)
 {
   velocity_joint_interface_ = robot_hardware->get<hardware_interface::VelocityJointInterface>();
   position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
-  
-  if (position_joint_interface_ == nullptr) 
+
+  if (position_joint_interface_ == nullptr)
   {
     ROS_ERROR(
         "JointPositionExampleController: Error getting position joint interface from hardware!");
@@ -31,7 +31,7 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
   }
 
   // Get joint name from parameter server
-  if (!nh.getParam("joint_names", joint_name)) 
+  if (!nh.getParam("joint_names", joint_name))
   {
     ROS_ERROR("No joint given (namespace: %s)", nh.getNamespace().c_str());
     return false;
@@ -45,7 +45,7 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
   }
 
   std::string topic = joint_name + "_position_controller";
-  sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 1000, &PandaJointPositionController::commandCb, this);
+  sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointPositionController::commandCb, this);
 
   try{
       position_joint_handle_ = position_joint_interface_->getHandle(joint_name);
@@ -89,7 +89,7 @@ void PandaJointPositionController::starting(const ros::Time &time)
 
 void PandaJointPositionController::update(const ros::Time&, const ros::Duration& period) {
 
-  double delta_angle = 0.001;
+  const double delta_angle = 0.001;
   position_joint_handle_.setCommand(initial_pose_ - delta_angle);
   if (enforced)
   {
@@ -106,7 +106,7 @@ void PandaJointPositionController::update(const ros::Time&, const ros::Duration&
 
 void PandaJointPositionController::stopping(const ros::Time &time)
 {
-
+  // can't send immediate commands for 0 velocity to robot
 }
 
 void PandaJointPositionController::commandCb(const std_msgs::Float64ConstPtr& msg)

@@ -20,13 +20,13 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hardw
   velocity_joint_interface_ = robot_hardware->get<hardware_interface::VelocityJointInterface>();
   position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
 
-  if (velocity_joint_interface_ == nullptr) 
+  if (velocity_joint_interface_ == nullptr)
   {
     ROS_ERROR(
         "PandaJointVelocityController: Error getting velocity joint interface from hardware!");
     return false;
   }
-  if (position_joint_interface_ == nullptr) 
+  if (position_joint_interface_ == nullptr)
   {
     ROS_ERROR(
         "PandaJointVelocityController: Error getting position joint interface from hardware!");
@@ -48,7 +48,7 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hardw
   }
 
   std::string topic = joint_name + "_veocity_controller";
-  sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 1000, &PandaJointVelocityController::commandCb, this);
+  sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointVelocityController::commandCb, this);
 
   try {
     velocity_joint_handle_ = velocity_joint_interface_->getHandle(joint_name);
@@ -113,7 +113,7 @@ void PandaJointVelocityController::update(const ros::Time&, const ros::Duration&
 
 void PandaJointVelocityController::stopping(const ros::Time &time)
 {
-
+  // can't send immediate commands for 0 velocity to robot
 }
 
 
