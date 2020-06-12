@@ -14,7 +14,6 @@
 #include <ros/time.h>
 #include <std_msgs/Float64.h>
 #include <urdf/model.h>
-#include <realtime_tools/realtime_buffer.h>
 
 
 namespace hiro_panda {
@@ -34,7 +33,6 @@ class PandaJointVelocityController : public controller_interface::MultiInterface
   hardware_interface::PositionJointInterface* position_joint_interface_;
   hardware_interface::JointHandle position_joint_handle_;
   urdf::JointConstSharedPtr joint_urdf_;
-  realtime_tools::RealtimeBuffer<double> command_buffer_;
   ros::Subscriber sub_command_;
 
   void commandCb(const std_msgs::Float64ConstPtr& msg);

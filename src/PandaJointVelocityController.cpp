@@ -90,14 +90,12 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hardw
 void PandaJointVelocityController::starting(const ros::Time &time)
 {
   // Start controller with 0.0 velocity
-  command_buffer_.writeFromNonRT(0.0);
+  command = 0.0;
 }
 
 
 void PandaJointVelocityController::update(const ros::Time&, const ros::Duration& period)
 {
-  // Now get the published command
-  command = *(command_buffer_.readFromRT());
   // Make sure joint velocity is within the limit
   enforceJointVelocityLimit(command);
 
@@ -118,7 +116,7 @@ void PandaJointVelocityController::stopping(const ros::Time &time)
 
 
 void PandaJointVelocityController::commandCb(const std_msgs::Float64ConstPtr& msg){
-  command_buffer_.writeFromNonRT(msg->data);
+  command = msg-> data;
 }
 
 
