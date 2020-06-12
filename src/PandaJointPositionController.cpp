@@ -116,20 +116,36 @@ void PandaJointPositionController::starting(const ros::Time &time)
 void PandaJointPositionController::update(const ros::Time&, const ros::Duration& period) {
     const double delta_angle = 0.001;
     double position_diff = desired_position - curr_position;
+    bool threshold = (abs(position_diff) <= 1);
     enforced = enforceJointPositionLimit(desired_position);
+
     if (enforced)
     {
         if (position_diff == 0)
         {
-            position_joint_handle_.setCommand(0);
+            position_joint_handle_.setCommand(0.0);
         }
-        else if (position_diff > 0)
+        if (threshold)
         {
-            position_joint_handle_.setCommand(delta_angle);
+            if (position_diff > 0)
+            {
+                position_joint_handle_.setCommand(delta_angle/(position_diff*10));
+            }
+            else
+            {
+                position_joint_handle_.setCommand(-delta_angle/(position_diff*10));
+            }
         }
         else
         {
-            position_joint_handle_.setCommand(-delta_angle);
+            if (position_diff > 0)
+            {
+                position_joint_handle_.setCommand(delta_angle);
+            }
+            else
+            {
+                position_joint_handle_.setCommand(-delta_angle);
+            }
         }
     }
 }
