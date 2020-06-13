@@ -1,4 +1,3 @@
-Matrix J
-Matrix xDot
+float64[] xDot
 ---
-Matrix qDot
+float64[] qDot
