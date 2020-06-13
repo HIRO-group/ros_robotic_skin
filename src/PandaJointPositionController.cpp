@@ -14,19 +14,12 @@ namespace hiro_panda
 
 bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardware, ros::NodeHandle &nh)
 {
-    velocity_joint_interface_ = robot_hardware->get<hardware_interface::VelocityJointInterface>();
     position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
 
     if (position_joint_interface_ == nullptr)
     {
         ROS_ERROR(
-        "JointPositionExampleController: Error getting position joint interface from hardware!");
-        return false;
-    }
-    if (velocity_joint_interface_ == nullptr)
-    {
-        ROS_ERROR(
-        "JointPositionExampleController: Error getting velocity joint interface from hardware!");
+        "PandaJointPositionController: Error getting position joint interface from hardware!");
         return false;
     }
 
@@ -54,13 +47,6 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
         "PandaJointPositionController: Exception getting position joint handles: " << ex.what());
         return false;
     }
-    try{
-        velocity_joint_handle_ = velocity_joint_interface_->getHandle(joint_name);
-    }catch (const hardware_interface::HardwareInterfaceException& ex){
-        ROS_ERROR_STREAM(
-        "PandaJointPositionController: Exception getting velocity joint handles: " << ex.what());
-        return false;
-    }
 
     // Get joint margin from parameter server
     if(!nh.getParam("margin", joint_margin))
@@ -77,13 +63,6 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
     }catch (const hardware_interface::HardwareInterfaceException& ex){
         ROS_ERROR_STREAM(
             "PandaJointPositionController: Exception getting position joint handles: " << ex.what());
-        return false;
-    }
-    try{
-        velocity_joint_handle_ = velocity_joint_interface_->getHandle(joint_name);
-    }catch (const hardware_interface::HardwareInterfaceException& ex){
-        ROS_ERROR_STREAM(
-            "PandaJointPositionController: Exception getting velocity joint handles: " << ex.what());
         return false;
     }
 
@@ -114,7 +93,6 @@ void PandaJointPositionController::starting(const ros::Time &time)
 }
 
 void PandaJointPositionController::update(const ros::Time&, const ros::Duration& period) {
-    const double delta_angle = 0.001;
     double position_diff = desired_position - curr_position;
     bool threshold = (abs(position_diff) <= 1);
     float divisor = threshold ? ((1 - position_diff) * 10) : 1;
@@ -185,5 +163,5 @@ void PandaJointPositionController::commandCb(const std_msgs::Float64ConstPtr& ms
 
 }  // namespace hiro_panda
 
-PLUGINLIB_EXPORT_CLASS(franka_example_controllers::JointPositionExampleController,
+PLUGINLIB_EXPORT_CLASS(hiro_panda::PandaJointPositionController,
                        controller_interface::ControllerBase)

@@ -1,5 +1,3 @@
-// Copyright (c) 2017 Franka Emika GmbH
-// Use of this source code is governed by the Apache-2.0 license, see LICENSE
 #pragma once
 
 #include <array>
@@ -30,8 +28,6 @@ class PandaJointPositionController : public controller_interface::MultiInterface
   private:
     hardware_interface::PositionJointInterface* position_joint_interface_;
     hardware_interface::JointHandle position_joint_handle_;
-    hardware_interface::VelocityJointInterface* velocity_joint_interface_;
-    hardware_interface::JointHandle velocity_joint_handle_;
     urdf::JointConstSharedPtr joint_urdf_;
     ros::Subscriber sub_command_;
     ros::Duration elapsed_time_;
@@ -40,6 +36,7 @@ class PandaJointPositionController : public controller_interface::MultiInterface
     // void enforceJointVelocityLimit(double &command);
     // bool enforceJointPositionLimit(double &position);
 
+    const double delta_angle = 0.001;
     double curr_position;
     double desired_position;
     double initial_pose_;
