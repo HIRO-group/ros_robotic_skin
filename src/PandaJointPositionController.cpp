@@ -89,7 +89,7 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
 
     curr_position = position_joint_handle_.getPosition();
     desired_position = curr_position;
-    enforced = enforceJointPositionLimit(desired_position);
+    // enforced = enforceJointPositionLimit(desired_position);
 
     // Get URDF info about joint
     urdf::Model urdf;
@@ -117,37 +117,11 @@ void PandaJointPositionController::update(const ros::Time&, const ros::Duration&
     const double delta_angle = 0.001;
     double position_diff = desired_position - curr_position;
     bool threshold = (abs(position_diff) <= 1);
-    enforced = enforceJointPositionLimit(desired_position);
-
-    if (enforced)
-    {
-        if (position_diff == 0)
-        {
-            position_joint_handle_.setCommand(0.0);
-        }
-        if (threshold)
-        {
-            if (position_diff > 0)
-            {
-                position_joint_handle_.setCommand(delta_angle/(position_diff*10));
-            }
-            else
-            {
-                position_joint_handle_.setCommand(-delta_angle/(position_diff*10));
-            }
-        }
-        else
-        {
-            if (position_diff > 0)
-            {
-                position_joint_handle_.setCommand(delta_angle);
-            }
-            else
-            {
-                position_joint_handle_.setCommand(-delta_angle);
-            }
-        }
-    }
+    float divisor = threshold ? ((1 - position_diff) * 10) : 1;
+    float sign = (position_diff > 0) ? 1 : -1;
+    float command_ = (position_diff == 0) ? 0.0 : ((delta_angle * sign) / divisor);
+    // enforced = enforceJointPositionLimit(desired_position);
+    position_joint_handle_.setCommand(command_);
 }
 
 void PandaJointPositionController::stopping(const ros::Time &time)
@@ -157,56 +131,57 @@ void PandaJointPositionController::stopping(const ros::Time &time)
 
 void PandaJointPositionController::commandCb(const std_msgs::Float64ConstPtr& msg)
 {
-    if (enforceJointPositionLimit(msg->data))
-    {
-        ROS_ERROR("Position '%s' is out of the allowed bounds!", msg->data);
-    }
-    else
-    {
-        desired_position = msg->data;
-    }
+    // if (enforceJointPositionLimit(msg->data))
+    // {
+    //     ROS_ERROR("Position '%s' is out of the allowed bounds!", msg->data);
+    // }
+    // else
+    // {
+    //     desired_position = msg->data;
+    // }
+    desired_position = msg->data;
 }
 
 
 // Note: we may want to remove this function once issue https://github.com/ros/angles/issues/2 is resolved
-void PandaJointPositionController::enforceJointVelocityLimit(double &command)
-{
-    // Check that this joint has applicable limits
-    if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
-    {
-        if (command > joint_urdf_->limits->velocity) // above upper limnit
-        {
-            command = joint_urdf_->limits->velocity;
-        }
-        else if (command < -joint_urdf_->limits->velocity) // below lower limit
-        {
-            command = -joint_urdf_->limits->velocity;
-        }
-    }
-}
+// void PandaJointPositionController::enforceJointVelocityLimit(double &command)
+// {
+//     // Check that this joint has applicable limits
+//     if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
+//     {
+//         if (command > joint_urdf_->limits->velocity) // above upper limnit
+//         {
+//             command = joint_urdf_->limits->velocity;
+//         }
+//         else if (command < -joint_urdf_->limits->velocity) // below lower limit
+//         {
+//             command = -joint_urdf_->limits->velocity;
+//         }
+//     }
+// }
 
 
-bool PandaJointPositionController::enforceJointPositionLimit(double &position)
-{
-    // Check that this joint has applicable limits
-    if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
-    {
-        if (position > joint_urdf_->limits->upper - joint_margin) // above upper limnit
-        {
-            position_joint_handle_.setCommand(0.0);
-            ROS_DEBUG_STREAM(joint_name + " reached the joint position upper limit of " + std::to_string(joint_urdf_->limits->upper));
-            return true;
-        }
-        else if (position < joint_urdf_->limits->lower + joint_margin) // below lower limit
-        {
-            position_joint_handle_.setCommand(0.0);
-            ROS_DEBUG_STREAM(joint_name + " reached the joint position lower limit of " + std::to_string(joint_urdf_->limits->lower));
-            return true;
-        }
-    }
+// bool PandaJointPositionController::enforceJointPositionLimit(double &position)
+// {
+//     // Check that this joint has applicable limits
+//     if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
+//     {
+//         if (position > joint_urdf_->limits->upper - joint_margin) // above upper limnit
+//         {
+//             position_joint_handle_.setCommand(0.0);
+//             ROS_DEBUG_STREAM(joint_name + " reached the joint position upper limit of " + std::to_string(joint_urdf_->limits->upper));
+//             return true;
+//         }
+//         else if (position < joint_urdf_->limits->lower + joint_margin) // below lower limit
+//         {
+//             position_joint_handle_.setCommand(0.0);
+//             ROS_DEBUG_STREAM(joint_name + " reached the joint position lower limit of " + std::to_string(joint_urdf_->limits->lower));
+//             return true;
+//         }
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
 }  // namespace hiro_panda
 

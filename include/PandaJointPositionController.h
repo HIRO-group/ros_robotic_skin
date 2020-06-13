@@ -37,14 +37,14 @@ class PandaJointPositionController : public controller_interface::MultiInterface
     ros::Duration elapsed_time_;
 
     void commandCb(const std_msgs::Float64ConstPtr& msg);
-    void enforceJointVelocityLimit(double &command);
-    bool enforceJointPositionLimit(double &position);
+    // void enforceJointVelocityLimit(double &command);
+    // bool enforceJointPositionLimit(double &position);
 
     double curr_position;
     double desired_position;
     double initial_pose_;
     double joint_margin;
-    bool enforced;
+    // bool enforced;
     std::string joint_name;
 };
 
