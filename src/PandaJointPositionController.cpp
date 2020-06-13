@@ -44,24 +44,6 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
         position_joint_handle_ = position_joint_interface_->getHandle(joint_name);
     }catch (const hardware_interface::HardwareInterfaceException& ex){
         ROS_ERROR_STREAM(
-        "PandaJointPositionController: Exception getting position joint handles: " << ex.what());
-        return false;
-    }
-
-    // Get joint margin from parameter server
-    if(!nh.getParam("margin", joint_margin))
-    {
-        ROS_INFO("Joint Margin of 0.1 [rad/s] will be used");
-        joint_margin = 0.1;
-    }
-
-    std::string topic = joint_name + "_position_controller";
-    sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 1000, &PandaJointPositionController::commandCb, this);
-
-    try{
-        position_joint_handle_ = position_joint_interface_->getHandle(joint_name);
-    }catch (const hardware_interface::HardwareInterfaceException& ex){
-        ROS_ERROR_STREAM(
             "PandaJointPositionController: Exception getting position joint handles: " << ex.what());
         return false;
     }
