@@ -9,7 +9,6 @@
 #include <franka_hw/franka_state_interface.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/robot_hw.h>
-#include <pluginlib/class_list_macros.h>
 #include <ros/node_handle.h>
 #include <ros/time.h>
 #include <std_msgs/Float64.h>
@@ -22,23 +21,24 @@ class PandaJointVelocityController : public controller_interface::MultiInterface
                                            hardware_interface::VelocityJointInterface,
                                            franka_hw::FrankaStateInterface> {
   public:
-    bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
+    bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& node_handle) override;
     void starting(const ros::Time&) override;
     void update(const ros::Time&, const ros::Duration& period) override;
     void stopping(const ros::Time&) override;
 
   private:
-    hardware_interface::VelocityJointInterface* velocity_joint_interface_;
-    hardware_interface::JointHandle velocity_joint_handle_;
-    hardware_interface::PositionJointInterface* position_joint_interface_;
-    hardware_interface::JointHandle position_joint_handle_;
+    hardware_interface::VelocityJointInterface* velocity_joint_interface_; // not really necessary in .h
+    std::unique_ptr<hardware_interface::JointHandle> velocity_joint_handle_;
+    std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
+
     urdf::JointConstSharedPtr joint_urdf_;
     ros::Subscriber sub_command_;
 
     void commandCb(const std_msgs::Float64ConstPtr& msg);
     void enforceJointVelocityLimit(double &command);
-    bool enforceJointPositionLimit(double &position);
+    bool enforceJointPositionSoftLimit(double &position);
 
+    int i_joint;
     double command;
     double position;
     std::string joint_name;
@@ -48,6 +48,3 @@ class PandaJointVelocityController : public controller_interface::MultiInterface
 };
 
 }  // namespace hiro_panda
-
-PLUGINLIB_EXPORT_CLASS(hiro_panda::PandaJointVelocityController,
-                       controller_interface::ControllerBase)
