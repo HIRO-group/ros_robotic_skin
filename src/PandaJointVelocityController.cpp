@@ -36,7 +36,7 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
         return false;
     }
 
-    i_joint = std::stoi(joint_name.back());
+    i_joint = (int)joint_name.back();
     std::string topic = joint_name + "_veocity_controller";
     sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointVelocityController::commandCb, this);
 
@@ -47,6 +47,15 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
     } catch (const hardware_interface::HardwareInterfaceException& ex) {
         ROS_ERROR_STREAM(
         "PandaJointVelocityController: Exception getting velocity joint handles: " << ex.what());
+        return false;
+    }
+
+    std::string arm_id;
+    ROS_WARN(
+        "ForceExampleController: Make sure your robot's endeffector is in contact "
+        "with a horizontal surface before starting the controller!");
+    if (!nh.getParam("arm_id", arm_id)) {
+        ROS_ERROR("ForceExampleController: Could not read parameter arm_id");
         return false;
     }
 
