@@ -33,7 +33,7 @@ class PandaJointPositionController : public controller_interface::MultiInterface
       std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
       ros::Subscriber sub_command_;
       
-      std::array<double, 7> joint_positions{};
+      std::array<double, 7> commanded_joint_positions{};
       std::array<double, 7> joint_velocities{0., 0., 0., 0., 0., 0., 0.};
       std::array<double, 7> joint_accelerations{0., 0., 0., 0., 0., 0., 0.};
 

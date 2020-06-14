@@ -6,7 +6,7 @@ import sys
 import rospy
 import rospkg
 import numpy as np
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float64MultiArray
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
@@ -37,14 +37,28 @@ class RobotArm(object):
         """
 
         self.num_joints = num_joints
-        if controller_names is None:
-            controller_names = []
-            default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, num_joints+1)]
-            default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, num_joints+1)]
-            default_traj_name = ['panda_joint_trajectory_controller' if is_sim else 'joint_trajectory_controller']
-            controller_names.append(default_pos_names)
-            controller_names.append(default_vel_names)
-            controller_names.append(default_traj_name)
+        self.is_sim = is_sim
+        if not self.is_sim :
+
+            if controller_names is None:
+                controller_names = []
+                default_pos_names = ['panda_joint_position_controller']
+                default_vel_names = ['panda_joint_velocities_controller']
+                default_traj_names = ['position_joint_trajectory_controller']
+                controller_names.append(default_pos_names)
+                controller_names.append(default_vel_names)
+                controller_names.append(default_traj_names)
+
+        else:
+
+            if controller_names is None:
+                controller_names = []
+                default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, num_joints+1)]
+                default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, num_joints+1)]
+                default_traj_name = ['panda_joint_trajectory_controller']
+                controller_names.append(default_pos_names)
+                controller_names.append(default_vel_names)
+                controller_names.append(default_traj_name)
 
         # create the controller manager for switching controllers.
         self.controller_manager = RobotControllerManager(controller_names)
@@ -126,8 +140,14 @@ class RobotArm(object):
         if not rospy.is_shutdown():
             # handle differently for real robot.
             self.controller_manager.switch_mode(ControllerType.POSITION)
-            for index, pos in enumerate(positions):
-                self.pos_pubs[index].publish(Float64(pos))
+
+            if self.is_sim:
+
+                for index, pos in enumerate(positions):
+                    self.pos_pubs[index].publish(Float64(pos))
+            else:
+                pass
+
             rospy.sleep(sleep)
 
     def set_joint_velocities(self, velocities):
@@ -140,8 +160,15 @@ class RobotArm(object):
 
         if not rospy.is_shutdown():
             self.controller_manager.switch_mode(ControllerType.VELOCITY)
-            for index, vel in enumerate(velocities):
-                self.vel_pubs[index].publish(Float64(vel))
+
+            if self.is_sim:
+                for index, vel in enumerate(velocities):
+                    self.vel_pubs[index].publish(Float64(vel))
+            
+            # real robot sends all commands at once.
+            else:
+                pass
+                # 
 
     def set_joint_trajectory(self, trajectories, time_per_step=1.0):
         """
@@ -210,7 +237,7 @@ class RobotArm(object):
         traj_controller_name = controller_names[2][0]
         traj_name = '/{}/command'.format(traj_controller_name)
         traj_pub = rospy.Publisher(traj_name, JointTrajectory, queue_size=1)
-
+        # based on if robot is real or not, types of messages published should be different.
         for name in pos_controller_names:
             pub = rospy.Publisher('/{}/command'.format(name), Float64,
                                   queue_size=10)

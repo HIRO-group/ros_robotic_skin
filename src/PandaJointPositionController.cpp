@@ -47,7 +47,7 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW* robot_hardw
 
     for (int i = 0; i < 7; i++)
     {
-        joint_positions[i] = position_joint_handles_[i].getPosition();
+        commanded_joint_positions[i] = position_joint_handles_[i].getPosition();
     }
 
     sub_command_ = node_handle.subscribe<std_msgs::Float64MultiArray>("command", 10, &PandaJointPositionController::jointCommandCb, this);
@@ -78,26 +78,24 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW* robot_hardw
 void PandaJointPositionController::starting(const ros::Time& /* time */) 
 {
   for (size_t i = 0; i < 7; ++i) {
-    joint_positions[i] = position_joint_handles_[i].getPosition();
+    commanded_joint_positions[i] = position_joint_handles_[i].getPosition();
   }
 }
 
 void PandaJointPositionController::update(const ros::Time& /*time*/,
                                             const ros::Duration& period) 
 {
+
+    
     // Get current Franka::RobotState
     franka::RobotState robot_state = state_handle_->getRobotState();
 
+
+    
     for (int i = 0; i < 7; i++)
     {
-        franka::limitRate(franka::kMaxJointVelocity,
-                          franka::kMaxJointAcceleration,
-                          franka::kMaxJointJerk,
-                          joint_positions,
-                          joint_velocities,
-                          joint_accelerations);
 
-        position_joint_handles_[i].setCommand(joint_positions[i]);
+        // position_joint_handles_[i].setCommand(commanded_joint_positions[i]);
     }
 }
 
@@ -109,7 +107,7 @@ void PandaJointPositionController::jointCommandCb(const std_msgs::Float64MultiAr
                         << joint_position_commands->data.size() << " instead of 7 commands!");
     }
 
-    for (int i = 0; i < 7; i++) joint_positions[i] = joint_position_commands->data[i];
+    for (int i = 0; i < 7; i++) commanded_joint_positions[i] = joint_position_commands->data[i];
 }
 
 
