@@ -36,14 +36,19 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
         return false;
     }
 
-    i_joint = (int)joint_name.back();
-    std::string topic = joint_name + "_veocity_controller";
+    // Get joint name from parameter server
+    if (!nh.getParam("i_joint", i_joint))
+    {
+        ROS_ERROR("No joint given (namespace: %s)", nh.getNamespace().c_str());
+        return false;
+    }    
+    
+    std::string topic = "command";
     sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointVelocityController::commandCb, this);
 
     // Get Velocity Joint Handle from Velocity Joint Interface
     try {
-        velocity_joint_handle_ = std::make_unique<hardware_interface::JointHandle>(
-            velocity_joint_interface_->getHandle(joint_name));
+        velocity_joint_handle_ = velocity_joint_interface_->getHandle(joint_name);
     } catch (const hardware_interface::HardwareInterfaceException& ex) {
         ROS_ERROR_STREAM(
         "PandaJointVelocityController: Exception getting velocity joint handles: " << ex.what());
@@ -52,10 +57,10 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
 
     std::string arm_id;
     ROS_WARN(
-        "ForceExampleController: Make sure your robot's endeffector is in contact "
+        "PandaJointVelocityController: Make sure your robot's endeffector is in contact "
         "with a horizontal surface before starting the controller!");
     if (!nh.getParam("arm_id", arm_id)) {
-        ROS_ERROR("ForceExampleController: Could not read parameter arm_id");
+        ROS_ERROR("PandaJointVelocityController: Could not read parameter arm_id");
         return false;
     }
 
@@ -75,7 +80,7 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
     }
 
     franka::RobotState robot_state = state_handle_->getRobotState();
-    bool enforced = enforceJointPositionSoftLimit(robot_state.q[i_joint]);
+
 
     // Get URDF info about joint
     urdf::Model urdf;
@@ -90,6 +95,8 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
         ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
         return false;
     }
+
+    bool enforced = enforceJointPositionSoftLimit(robot_state.q[i_joint]);
 
     return true;
 }
@@ -116,9 +123,20 @@ void PandaJointVelocityController::update(const ros::Time&, const ros::Duration&
     //TODO:
     // Send command if next position is not close to the limit
     // else Slow down the joint velocity to 0
+
     if (!enforceJointPositionSoftLimit(next_position))
     {
-        velocity_joint_handle_->setCommand(command);
+        if (joint_name == "panda_joint1")
+        {
+            ROS_INFO_STREAM(joint_name << "\t" << command);
+        }
+
+        velocity_joint_handle_.setCommand(command);
+
+        if (joint_name == "panda_joint1")
+        {
+            ROS_INFO_STREAM(joint_name << "\t" << command);
+        }
     }
 }
 
@@ -155,22 +173,21 @@ void PandaJointVelocityController::enforceJointVelocityLimit(double &command)
 bool PandaJointVelocityController::enforceJointPositionSoftLimit(double &position)
 {
     // Check that this joint has applicable limits
-    if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
+    if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC) 
     {
         if (position > joint_urdf_->safety->soft_upper_limit) // above upper limnit
         {
-            velocity_joint_handle_->setCommand(0.0);
+            velocity_joint_handle_.setCommand(0.0);
             ROS_DEBUG_STREAM(joint_name + " reached the joint position soft upper limit of " + std::to_string(joint_urdf_->limits->upper));
             return true;
         }
         else if (position < joint_urdf_->safety->soft_lower_limit) // below lower limit
         {
-            velocity_joint_handle_->setCommand(0.0);
+            velocity_joint_handle_.setCommand(0.0);
             ROS_DEBUG_STREAM(joint_name + " reached the joint position soft lower limit of " + std::to_string(joint_urdf_->limits->lower));
             return true;
         }
     }
-
     return false;
 }
 

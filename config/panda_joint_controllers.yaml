@@ -1,0 +1,77 @@
+panda_joint1_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint1
+
+panda_joint2_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint2
+
+panda_joint3_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint3
+
+panda_joint4_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint4
+
+panda_joint5_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint5
+
+panda_joint6_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint6
+
+panda_joint7_position_controller:
+    type: ros_robotic_skin/PandaJointPositionController
+    arm_id: panda
+    joint: panda_joint7
+
+
+panda_joint1_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint1
+    i_joint: 0
+
+panda_joint2_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint2
+    i_joint: 1
+
+panda_joint3_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint3
+    i_joint: 2
+
+panda_joint4_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint4
+    i_joint: 3
+
+panda_joint5_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint5
+    i_joint: 4
+
+panda_joint6_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint6
+    i_joint: 5
+
+panda_joint7_velocity_controller:
+    type: ros_robotic_skin/PandaJointVelocityController
+    arm_id: panda
+    joint: panda_joint7
+    i_joint: 6

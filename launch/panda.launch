@@ -11,8 +11,21 @@
     <arg name="load_gripper" value="$(arg load_gripper)" />
   </include>
 
-  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
-    <arg name="load_gripper" value="$(arg load_gripper)" />
-  </include>
-
+  <rosparam command="load" file="$(find ros_robotic_skin)/config/panda_joint_controllers.yaml" />
+  <!-- <node name="noob" pkg="controller_manager" type="spawner" respawn="false" output="screen" 
+        args="panda_joint1_position_controller
+              panda_joint2_position_controller
+              panda_joint3_position_controller
+              panda_joint4_position_controller
+              panda_joint5_position_controller
+              panda_joint6_position_controller
+              panda_joint7_position_controller"/> -->
+  <node name="noob" pkg="controller_manager" type="spawner" respawn="false" output="screen" 
+        args="panda_joint1_velocity_controller
+              panda_joint2_velocity_controller
+              panda_joint3_velocity_controller
+              panda_joint4_velocity_controller
+              panda_joint5_velocity_controller
+              panda_joint6_velocity_controller
+              panda_joint7_velocity_controller"/>
 </launch>

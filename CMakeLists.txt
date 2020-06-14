@@ -148,6 +148,7 @@ include_directories(
 ## Declare a C++ library
 add_library(ros_robotic_skin
   src/PandaJointVelocityController.cpp
+  src/PandaJointPositionController.cpp
 )
 
 ## Add cmake target dependencies of the library

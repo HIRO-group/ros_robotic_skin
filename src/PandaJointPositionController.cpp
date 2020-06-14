@@ -1,3 +1,5 @@
+#include "PandaJointPositionController.h"
+
 #include <cmath>
 
 #include <controller_interface/controller_base.h>
@@ -7,14 +9,12 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 
-#include "PandaJointPositionController.h"
-
 namespace hiro_panda
 {
 
-bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardware, ros::NodeHandle &nh)
+bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle &nh)
 {
-    position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
+    position_joint_interface_ = robot_hw->get<hardware_interface::PositionJointInterface>();
 
     if (position_joint_interface_ == nullptr)
     {
@@ -24,7 +24,7 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
     }
 
     // Get joint name from parameter server
-    if (!nh.getParam("joint_names", joint_name))
+    if (!nh.getParam("joint", joint_name))
     {
         ROS_ERROR("No joint given (namespace: %s)", nh.getNamespace().c_str());
         return false;
@@ -37,51 +37,55 @@ bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hardw
         joint_margin = 0.1;
     }
 
-    std::string topic = joint_name + "_position_controller";
+    ROS_INFO_STREAM("Joint_name" << joint_name);
+    std::string topic = "command";
     sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointPositionController::commandCb, this);
+    position_joint_handles_.resize(1);
 
     try{
-        position_joint_handle_ = position_joint_interface_->getHandle(joint_name);
+        position_joint_handles_[0] = position_joint_interface_->getHandle(joint_name);
     }catch (const hardware_interface::HardwareInterfaceException& ex){
         ROS_ERROR_STREAM(
             "PandaJointPositionController: Exception getting position joint handles: " << ex.what());
         return false;
     }
 
-    curr_position = position_joint_handle_.getPosition();
-    desired_position = curr_position;
-    // enforced = enforceJointPositionLimit(desired_position);
+    // curr_position = position_joint_handle_.getPosition();
+    // desired_position = curr_position;
+    // // enforced = enforceJointPositionLimit(desired_position);
 
-    // Get URDF info about joint
-    urdf::Model urdf;
-    if(!urdf.initParamWithNodeHandle("robot_description", nh))
-    {
-        ROS_ERROR("Failed to parse urdf file");
-        return false;
-    }
-    joint_urdf_ = urdf.getJoint(joint_name);
-    if(!joint_urdf_)
-    {
-        ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
-        return false;
-    }
+    // // Get URDF info about joint
+    // urdf::Model urdf;
+    // if(!urdf.initParamWithNodeHandle("robot_description", nh))
+    // {
+    //     ROS_ERROR("Failed to parse urdf file");
+    //     return false;
+    // }
+    // joint_urdf_ = urdf.getJoint(joint_name);
+    // if(!joint_urdf_)
+    // {
+    //     ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
+    //     return false;
+    // }
 
     return true;
 }
 
 void PandaJointPositionController::starting(const ros::Time &time)
 {
-    initial_pose_ = position_joint_handle_.getPosition();
+    // initial_pose_ = position_joint_handle_.getPosition();
 }
 
 void PandaJointPositionController::update(const ros::Time&, const ros::Duration& period) {
-    double position_diff = desired_position - curr_position;
-    bool threshold = (abs(position_diff) <= 1);
-    float divisor = threshold ? ((1 - position_diff) * 10) : 1;
-    float sign = (position_diff > 0) ? 1 : -1;
-    float command_ = (position_diff == 0) ? 0.0 : ((delta_angle * sign) / divisor);
+    // curr_position = position_joint_handle_.getPosition();
+    // double position_diff = desired_position - curr_position;
+    // bool threshold = (abs(position_diff) <= 1);
+    // float divisor = threshold ? ((1 - position_diff) * 10) : 1;
+    // float sign = (position_diff > 0) ? 1 : -1;
+    // float command_ = (abs(position_diff) <= 0.02) ? curr_position + 0.0 : curr_position + ((delta_angle * sign) / divisor);
+    // ROS_INFO_STREAM(joint_name << "\t" << std::to_string(command_));
     // enforced = enforceJointPositionLimit(desired_position);
-    position_joint_handle_.setCommand(command_);
+    // position_joint_handle_.setCommand(command_);
 }
 
 void PandaJointPositionController::stopping(const ros::Time &time)
@@ -99,7 +103,8 @@ void PandaJointPositionController::commandCb(const std_msgs::Float64ConstPtr& ms
     // {
     //     desired_position = msg->data;
     // }
-    desired_position = msg->data;
+    // desired_position = msg->data;
+    // ROS_INFO_STREAM(std::to_string(desired_position));
 }
 
 

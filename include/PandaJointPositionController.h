@@ -20,7 +20,7 @@ namespace hiro_panda {
 class PandaJointPositionController : public controller_interface::MultiInterfaceController<
                                            hardware_interface::PositionJointInterface> {
   public:
-    bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
+    bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& nh) override;
     void starting(const ros::Time&) override;
     void update(const ros::Time&, const ros::Duration& period) override;
     void stopping(const ros::Time&) override;
@@ -36,6 +36,7 @@ class PandaJointPositionController : public controller_interface::MultiInterface
     // void enforceJointVelocityLimit(double &command);
     // bool enforceJointPositionLimit(double &position);
 
+    std::vector<hardware_interface::JointHandle> position_joint_handles_;
     const double delta_angle = 0.001;
     double curr_position;
     double desired_position;

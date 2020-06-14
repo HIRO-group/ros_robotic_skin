@@ -21,14 +21,14 @@ class PandaJointVelocityController : public controller_interface::MultiInterface
                                            hardware_interface::VelocityJointInterface,
                                            franka_hw::FrankaStateInterface> {
   public:
-    bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& node_handle) override;
+    bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& nh) override;
     void starting(const ros::Time&) override;
     void update(const ros::Time&, const ros::Duration& period) override;
     void stopping(const ros::Time&) override;
 
   private:
     hardware_interface::VelocityJointInterface* velocity_joint_interface_; // not really necessary in .h
-    std::unique_ptr<hardware_interface::JointHandle> velocity_joint_handle_;
+    hardware_interface::JointHandle velocity_joint_handle_;
     std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
 
     urdf::JointConstSharedPtr joint_urdf_;
@@ -42,9 +42,6 @@ class PandaJointVelocityController : public controller_interface::MultiInterface
     double command;
     double position;
     std::string joint_name;
-    // If joint reaches its limit, it should halt.
-    // margin will be subtracted/added to the limit
-    double joint_margin;
 };
 
 }  // namespace hiro_panda
