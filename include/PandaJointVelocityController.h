@@ -11,37 +11,28 @@
 #include <hardware_interface/robot_hw.h>
 #include <ros/node_handle.h>
 #include <ros/time.h>
-#include <std_msgs/Float64.h>
-#include <urdf/model.h>
-
+#include <std_msgs/Float64MultiArray.h>
 
 namespace hiro_panda {
 
 class PandaJointVelocityController : public controller_interface::MultiInterfaceController<
                                            hardware_interface::VelocityJointInterface,
-                                           franka_hw::FrankaStateInterface> {
+                                           franka_hw::FrankaStateInterface> 
+{
   public:
-    bool init(hardware_interface::RobotHW* robot_hw, ros::NodeHandle& nh) override;
-    void starting(const ros::Time&) override;
-    void update(const ros::Time&, const ros::Duration& period) override;
-    void stopping(const ros::Time&) override;
+      bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
+      void update(const ros::Time&, const ros::Duration& period) override;
+      void starting(const ros::Time&) override;
+      void stopping(const ros::Time&) override;
 
   private:
-    hardware_interface::VelocityJointInterface* velocity_joint_interface_; // not really necessary in .h
-    hardware_interface::JointHandle velocity_joint_handle_;
-    std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
-
-    urdf::JointConstSharedPtr joint_urdf_;
-    ros::Subscriber sub_command_;
-
-    void commandCb(const std_msgs::Float64ConstPtr& msg);
-    void enforceJointVelocityLimit(double &command);
-    bool enforceJointPositionSoftLimit(double &position);
-
-    int i_joint;
-    double command;
-    double position;
-    std::string joint_name;
+      void jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_velocity_commands);
+      hardware_interface::VelocityJointInterface* velocity_joint_interface_;
+      std::vector<hardware_interface::JointHandle> velocity_joint_handles_;
+      std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
+      ros::Subscriber sub_command_;
+      std::array<double, 7> joint_velocities{};
+      double last_time_called;
 };
 
 }  // namespace hiro_panda

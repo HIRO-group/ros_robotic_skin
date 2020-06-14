@@ -1,4 +1,6 @@
-#include "PandaJointPositionController.h"
+// Copyright (c) 2017 Franka Emika GmbH
+// Use of this source code is governed by the Apache-2.0 license, see LICENSE
+#include <PandaJointPositionController.h>
 
 #include <cmath>
 
@@ -7,146 +9,109 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <ros/console.h>
 
-namespace hiro_panda
+namespace hiro_panda {
+
+bool PandaJointPositionController::init(hardware_interface::RobotHW* robot_hardware,
+                                          ros::NodeHandle& node_handle) 
 {
+    position_joint_interface_ = robot_hardware->get<hardware_interface::PositionJointInterface>();
 
-bool PandaJointPositionController::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle &nh)
-{
-    position_joint_interface_ = robot_hw->get<hardware_interface::PositionJointInterface>();
-
-    if (position_joint_interface_ == nullptr)
-    {
+    if (position_joint_interface_ == nullptr) {
         ROS_ERROR(
-        "PandaJointPositionController: Error getting position joint interface from hardware!");
+            "PandaJointPositionController: Error getting position joint interface from hardware!");
         return false;
     }
 
-    // Get joint name from parameter server
-    if (!nh.getParam("joint", joint_name))
-    {
-        ROS_ERROR("No joint given (namespace: %s)", nh.getNamespace().c_str());
+    std::vector<std::string> joint_names;
+    if (!node_handle.getParam("joint_names", joint_names)) {
+        ROS_ERROR("PandaJointPositionController: Could not parse joint names");
+    }
+
+    if (joint_names.size() != 7) {
+        ROS_ERROR_STREAM("PandaJointPositionController: Wrong number of joint names, got "
+                        << joint_names.size() << " instead of 7 names!");
         return false;
     }
 
-    // Get joint margin from parameter server
-    if(!nh.getParam("margin", joint_margin))
-    {
-        ROS_INFO("Joint Margin of 0.1 [rad/s] will be used");
-        joint_margin = 0.1;
-    }
-
-    ROS_INFO_STREAM("Joint_name" << joint_name);
-    std::string topic = "command";
-    sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointPositionController::commandCb, this);
-    position_joint_handles_.resize(1);
-
-    try{
-        position_joint_handles_[0] = position_joint_interface_->getHandle(joint_name);
-    }catch (const hardware_interface::HardwareInterfaceException& ex){
+    position_joint_handles_.resize(7);
+    for (size_t i = 0; i < 7; ++i) {
+        try {
+        position_joint_handles_[i] = position_joint_interface_->getHandle(joint_names[i]);
+        } catch (const hardware_interface::HardwareInterfaceException& e) {
         ROS_ERROR_STREAM(
-            "PandaJointPositionController: Exception getting position joint handles: " << ex.what());
+            "PandaJointPositionController: Exception getting joint handles: " << e.what());
         return false;
+        }
     }
 
-    // curr_position = position_joint_handle_.getPosition();
-    // desired_position = curr_position;
-    // // enforced = enforceJointPositionLimit(desired_position);
+    for (int i = 0; i < 7; i++)
+    {
+        joint_positions[i] = position_joint_handles_[i].getPosition();
+    }
 
-    // // Get URDF info about joint
-    // urdf::Model urdf;
-    // if(!urdf.initParamWithNodeHandle("robot_description", nh))
-    // {
-    //     ROS_ERROR("Failed to parse urdf file");
-    //     return false;
-    // }
-    // joint_urdf_ = urdf.getJoint(joint_name);
-    // if(!joint_urdf_)
-    // {
-    //     ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
-    //     return false;
-    // }
+    sub_command_ = node_handle.subscribe<std_msgs::Float64MultiArray>("command", 10, &PandaJointPositionController::jointCommandCb, this);
 
+
+    std::string arm_id;
+    if (!node_handle.getParam("arm_id", arm_id)) {
+        ROS_ERROR("PandaJointPositionController: Could not read parameter arm_id");
+        return false;
+    }
+    auto* state_interface = robot_hardware->get<franka_hw::FrankaStateInterface>();
+    if (state_interface == nullptr) {
+        ROS_ERROR_STREAM("PandaJointPositionController: Error getting state interface from hardware");
+        return false;
+    }
+    try {
+        state_handle_ = std::make_unique<franka_hw::FrankaStateHandle>(
+            state_interface->getHandle(arm_id + "_robot"));
+    } catch (hardware_interface::HardwareInterfaceException& ex) {
+        ROS_ERROR_STREAM(
+            "PandaJointPositionController: Exception getting state handle from interface: " << ex.what());
+        return false;
+    }
+    
     return true;
 }
 
-void PandaJointPositionController::starting(const ros::Time &time)
+void PandaJointPositionController::starting(const ros::Time& /* time */) 
 {
-    // initial_pose_ = position_joint_handle_.getPosition();
+  for (size_t i = 0; i < 7; ++i) {
+    joint_positions[i] = position_joint_handles_[i].getPosition();
+  }
 }
 
-void PandaJointPositionController::update(const ros::Time&, const ros::Duration& period) {
-    // curr_position = position_joint_handle_.getPosition();
-    // double position_diff = desired_position - curr_position;
-    // bool threshold = (abs(position_diff) <= 1);
-    // float divisor = threshold ? ((1 - position_diff) * 10) : 1;
-    // float sign = (position_diff > 0) ? 1 : -1;
-    // float command_ = (abs(position_diff) <= 0.02) ? curr_position + 0.0 : curr_position + ((delta_angle * sign) / divisor);
-    // ROS_INFO_STREAM(joint_name << "\t" << std::to_string(command_));
-    // enforced = enforceJointPositionLimit(desired_position);
-    // position_joint_handle_.setCommand(command_);
-}
-
-void PandaJointPositionController::stopping(const ros::Time &time)
+void PandaJointPositionController::update(const ros::Time& /*time*/,
+                                            const ros::Duration& period) 
 {
-  // can't send immediate commands for 0 velocity to robot
+    // Get current Franka::RobotState
+    franka::RobotState robot_state = state_handle_->getRobotState();
+
+    for (int i = 0; i < 7; i++)
+    {
+        franka::limitRate(franka::kMaxJointVelocity,
+                          franka::kMaxJointAcceleration,
+                          franka::kMaxJointJerk,
+                          joint_positions,
+                          joint_velocities,
+                          joint_accelerations);
+
+        position_joint_handles_[i].setCommand(joint_positions[i]);
+    }
 }
 
-void PandaJointPositionController::commandCb(const std_msgs::Float64ConstPtr& msg)
+void PandaJointPositionController::jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_position_commands)
 {
-    // if (enforceJointPositionLimit(msg->data))
-    // {
-    //     ROS_ERROR("Position '%s' is out of the allowed bounds!", msg->data);
-    // }
-    // else
-    // {
-    //     desired_position = msg->data;
-    // }
-    // desired_position = msg->data;
-    // ROS_INFO_STREAM(std::to_string(desired_position));
+    if (joint_position_commands->data.size() != 7)
+    {
+        ROS_ERROR_STREAM("PandaJointPositionController: Wrong number of joint position commands, got "
+                        << joint_position_commands->data.size() << " instead of 7 commands!");
+    }
+
+    for (int i = 0; i < 7; i++) joint_positions[i] = joint_position_commands->data[i];
 }
 
-
-// Note: we may want to remove this function once issue https://github.com/ros/angles/issues/2 is resolved
-// void PandaJointPositionController::enforceJointVelocityLimit(double &command)
-// {
-//     // Check that this joint has applicable limits
-//     if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
-//     {
-//         if (command > joint_urdf_->limits->velocity) // above upper limnit
-//         {
-//             command = joint_urdf_->limits->velocity;
-//         }
-//         else if (command < -joint_urdf_->limits->velocity) // below lower limit
-//         {
-//             command = -joint_urdf_->limits->velocity;
-//         }
-//     }
-// }
-
-
-// bool PandaJointPositionController::enforceJointPositionLimit(double &position)
-// {
-//     // Check that this joint has applicable limits
-//     if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
-//     {
-//         if (position > joint_urdf_->limits->upper - joint_margin) // above upper limnit
-//         {
-//             position_joint_handle_.setCommand(0.0);
-//             ROS_DEBUG_STREAM(joint_name + " reached the joint position upper limit of " + std::to_string(joint_urdf_->limits->upper));
-//             return true;
-//         }
-//         else if (position < joint_urdf_->limits->lower + joint_margin) // below lower limit
-//         {
-//             position_joint_handle_.setCommand(0.0);
-//             ROS_DEBUG_STREAM(joint_name + " reached the joint position lower limit of " + std::to_string(joint_urdf_->limits->lower));
-//             return true;
-//         }
-//     }
-
-//     return false;
-// }
 
 }  // namespace hiro_panda
 
