@@ -269,7 +269,7 @@ class DynamicPoseDataSaver():
         positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
         self.curr_pose_name = pose_name
         # first, move to the position from <robot>_positions.txt
-        self.controller.publish_positions(positions, sleep=2)
+        self.controller.publish_positions(positions, sleep=5)
         print('At Position: ' + pose_name,
               map(int, utils.RAD2DEG * np.array(positions)))
 
@@ -292,7 +292,7 @@ class DynamicPoseDataSaver():
             for i, joint_name in enumerate(self.joint_names):
                 # Go to current setting position
                 self.goto_current_pose(pose)
-
+                print("At the pose.")
                 # Initialize Variables
                 self.prepare_recording(joint_name)
                 # Prepare for publishing velocities
@@ -341,8 +341,10 @@ if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
 
+    rospy.init_node('Dynamic Poses Data Saver')
+
     if robot == 'panda':
-        controller = PandaController()
+        controller = PandaController(is_sim=False)
         filename = 'panda_positions.txt'
     elif robot == 'sawyer':
         controller = SawyerController()
