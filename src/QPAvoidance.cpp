@@ -16,7 +16,19 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         ALGLIBbl(i) = bl(i);
         ALGLIBbu(i) = bu(i);
     }
+    ALGLIBAb.setlength(A.rows(), A.cols() + 1);
+    ALGLIBconstraintType.setlength(A.rows());
+    for (int i = 0; i < A.rows(); i++)
+    {
+        for (int j = 0; j < A.cols(); j++)
+        {
+            ALGLIBAb(i,j) = A(i,j);
+        }
+        ALGLIBAb(i, A.cols()) = b(i);
+        ALGLIBconstraintType(i) = -1;
+    }
 
+    std::cout << ALGLIBAb.rows() << std::endl;
 
     // create solver, set quadratic/linear terms
     alglib::minqpcreate(ALGLIBH.cols(), ALGLIBstate);
@@ -146,8 +158,8 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
 
     //////
     obstaclePositionVectors.resize(2);
-    obstaclePositionVectors[0] = (Eigen::Vector3d::Constant(0.35));
-    obstaclePositionVectors[1] = (Eigen::Vector3d::Constant(0.55));
+    obstaclePositionVectors[0] = (Eigen::Vector3d::Constant(1.0));
+    obstaclePositionVectors[1] = (Eigen::Vector3d::Constant(0.9));
     ///////
     // Being m the number of obstacle points detected:
     // See equation #5 in ding paper for first m rows, then an additonal 1 row for equation #7
@@ -210,7 +222,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     // std::cout << "------" << std::endl;
     /////
 
-    std::cout << algLib(H, f, A, b, bl, bu) << std::endl;
+    algLib(H, f, A, b, bl, bu);
     return qDot;
 
 }

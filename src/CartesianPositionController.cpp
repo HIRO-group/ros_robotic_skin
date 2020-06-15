@@ -168,7 +168,7 @@ void on_shutdown(int sig)
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "QPController", ros::init_options::NoSigintHandler);
+    ros::init(argc, argv, "CartesianPositionController", ros::init_options::NoSigintHandler);
     signal(SIGINT, on_shutdown);
     CartesianPositionController controller;
     if (argc == 2)
