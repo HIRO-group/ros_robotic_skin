@@ -54,6 +54,7 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         // NOTE: for convex problems you may try using minqpsetscaleautodiag()
         //       which automatically determines variable scales.
         alglib::minqpsetscale(ALGLIBstate, ALGLIBscale);
+        // alglib::minqpsetscaleautodiag(ALGLIBstate);
 
 
         // SOLVE: 3 options: BLEIC-based, DENSE-AUL, QUICKQP
@@ -63,7 +64,7 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         //
         // Default stopping criteria are used.
         //
-        alglib::minqpsetalgobleic(ALGLIBstate, 0.0, 0.0, 0.0, 0);
+        alglib::minqpsetalgobleic(ALGLIBstate, 0.0, 0.0, 0.0, 70);
         alglib::minqpoptimize(ALGLIBstate);
         alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
         // printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
@@ -77,24 +78,19 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         //
         // Default stopping criteria are used.
         //
-        // alglib::minqpsetalgodenseaul(ALGLIBstate, 1.0e-9, 1.0e+4, 5);
+        // alglib::minqpsetalgodenseaul(ALGLIBstate, 0.0, 1.0e+4, 15);
         // alglib::minqpoptimize(ALGLIBstate);
         // alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
         // printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
-
-        // QuickQP solver is intended for medium and large-scale problems with box
-        // constraints, and...
-        //
-        // ...Oops! It does not support general linear constraints, -5 returned as completion code!
-        //
-        // alglib::minqpsetalgoquickqp(ALGLIBstate, 0.0, 0.0, 0.0, 0, true);
-        // alglib::minqpoptimize(ALGLIBstate);
-        // alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-        // printf("%d\n", int(ALGLIBrep.terminationtype)); // EXPECTED: -5 (In our case positive)
     }
     catch(alglib::ap_error e)
     {
         printf("error msg: %s\n", e.msg.c_str());
+        printf("A: \n");
+        std::cout << A << std::endl;
+        printf("b: \n");
+        std::cout << b << std::endl;
+
     }
 
 
