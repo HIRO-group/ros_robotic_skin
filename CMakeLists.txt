@@ -20,6 +20,11 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
+file(GLOB alglib_SRC
+    "src/alglib/src/*.h"
+    "src/alglib/src/*.cpp"
+)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -119,6 +124,7 @@ catkin_package(CATKIN_DEPENDS xacro message_runtime)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  src/alglib/src
 )
 
 ## Declare a C++ library
@@ -136,7 +142,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(proximity_listener src/proximity_listener.cpp)
 add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp)
+add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp src/QPAvoidance.cpp ${alglib_SRC})
 
 
 

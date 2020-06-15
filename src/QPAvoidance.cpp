@@ -1,6 +1,101 @@
 #include "QPAvoidance.h"
 
-QPAvoidance::QPAvoidance(/* args */)
+#include "stdafx.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include "optimization.h"
+
+using namespace alglib;
+
+void QPAvoidance::algLib()
+{
+        //
+    // This example demonstrates minimization of F(x0,x1) = x0^2 + x1^2 -6*x0 - 4*x1
+    // subject to linear constraint x0+x1<=2
+    //
+    // Exact solution is [x0,x1] = [1.5,0.5]
+    //
+    // IMPORTANT: this solver minimizes  following  function:
+    //     f(x) = 0.5*x'*A*x + b'*x.
+    // Note that quadratic term has 0.5 before it. So if you want to minimize
+    // quadratic function, you should rewrite it in such way that quadratic term
+    // is multiplied by 0.5 too.
+    // For example, our function is f(x)=x0^2+x1^2+..., but we rewrite it as
+    //     f(x) = 0.5*(2*x0^2+2*x1^2) + ....
+    // and pass diag(2,2) as quadratic term - NOT diag(1,1)!
+    //
+
+
+    real_2d_array H = "[[0.207246189049000,	-1.33746751456000e-07,	0.208829979446000,	-1.74513762106000e-06,	0.0973377820450000,	-2.47168268691000e-06,	-6.31777130540000e-18], [-1.33746751456000e-07,	0.211340320462246,	-8.53101499434000e-08,	-0.163941879513274,	-2.89308655825200e-06,	0.0121817129226451,	-4.20621513539400e-22], [0.208829979446000,	-8.53101499434000e-08,	0.210425873284544,	-2.02301987638900e-06,	0.0980816444250112,	-2.65074641903000e-06,	-6.36605217023341e-18], [-1.74513762106000e-06,	-0.163941879513274,	-2.02301987638900e-06,	0.223205778760695,	3.21279127018000e-06,	0.0597683748925631,	-2.39781124919000e-22], [0.0973377820450000,	-2.89308655825200e-06,	0.0980816444250112,	3.21279127018000e-06,	0.0457168542980401,	1.28545249995723e-12,	-2.96728181321843e-18], [-2.47168268691000e-06,	0.0121817129226451,	-2.65074641903000e-06,	0.0597683748925631,	1.28545249995723e-12,	0.0505931706865406,	-3.97767354655250e-22], [-6.31777130540000e-18,	-4.20621513539400e-22,	-6.36605217023341e-18,	-2.39781124919000e-22,	-2.96728181321843e-18,	-3.97767354655250e-22,	1.92593337727719e-34]]";
+    real_1d_array f = "[-0.227621500000000,0.195628946896000,-0.229360542042500,-0.326755083290000,-0.106913467360000,-0.114859910315000,6.939641152500000e-18]";
+    real_1d_array scale = "[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]";
+    real_2d_array Ab = "[[]]";
+    integer_1d_array constraintType = "[]";
+    real_1d_array qDot;
+    minqpstate state;
+    minqpreport rep;
+
+    // create solver, set quadratic/linear terms
+    minqpcreate(H.cols(), state);
+    minqpsetquadraticterm(state, H);
+    minqpsetlinearterm(state, f);
+    minqpsetlc(state, Ab, constraintType);
+
+    // Set scale of the parameters.
+    // It is strongly recommended that you set scale of your variables.
+    // Knowing their scales is essential for evaluation of stopping criteria
+    // and for preconditioning of the algorithm steps.
+    // You can find more information on scaling at http://www.alglib.net/optimization/scaling.php
+    //
+    // NOTE: for convex problems you may try using minqpsetscaleautodiag()
+    //       which automatically determines variable scales.
+    minqpsetscale(state, scale);
+
+    //
+    // Solve problem with BLEIC-based QP solver.
+    //
+    // This solver is intended for problems with moderate (up to 50) number
+    // of general linear constraints and unlimited number of box constraints.
+    //
+    // Default stopping criteria are used.
+    //
+    minqpsetalgobleic(state, 0.0, 0.0, 0.0, 0);
+    minqpoptimize(state);
+    minqpresults(state, qDot, rep);
+    printf("%s\n", qDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
+
+    //
+    // Solve problem with DENSE-AUL solver.
+    //
+    // This solver is optimized for problems with up to several thousands of
+    // variables and large amount of general linear constraints. Problems with
+    // less than 50 general linear constraints can be efficiently solved with
+    // BLEIC, problems with box-only constraints can be solved with QuickQP.
+    // However, DENSE-AUL will work in any (including unconstrained) case.
+    //
+    // Default stopping criteria are used.
+    //
+    minqpsetalgodenseaul(state, 1.0e-9, 1.0e+4, 5);
+    minqpoptimize(state);
+    minqpresults(state, qDot, rep);
+    printf("%s\n", qDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
+
+    //
+    // Solve problem with QuickQP solver.
+    //
+    // This solver is intended for medium and large-scale problems with box
+    // constraints, and...
+    //
+    // ...Oops! It does not support general linear constraints, -5 returned as completion code!
+    //
+    minqpsetalgoquickqp(state, 0.0, 0.0, 0.0, 0, true);
+    minqpoptimize(state);
+    minqpresults(state, qDot, rep);
+    printf("%d\n", int(rep.terminationtype)); // EXPECTED: -5
+}
+
+QPAvoidance::QPAvoidance()
 {
     jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
     jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;

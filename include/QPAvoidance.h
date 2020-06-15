@@ -24,4 +24,5 @@ public:
                                            std::vector<Eigen::Vector3d> obstaclePositionVectors,
                                            int numberControlPoints,
                                            std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors);
+    void algLib();
 };
