@@ -54,12 +54,8 @@
     <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
         args="-d $(find ros_robotic_skin)/config/rviz.rviz" output="screen"/>
 
-    <!-- KDL node -->
-    <!-- <node name="KDL_server" pkg="ros_robotic_skin" type="KDL_server"/> -->
-
-    <!-- Control points visualizer -->
-    <!-- <node pkg="ros_robotic_skin" type="control_point_visualizer"
-          name="control_point_visualizer" /> -->
+    <node pkg="ros_robotic_skin" type="proximity_listener" name="proximity_listener" />
+    <node pkg="ros_robotic_skin" type="proximity_visualizer" name="proximity_visualizer" />
     <!-- <node name="Spheres" pkg="ros_robotic_skin" type="sphere_visualizer.py"/> -->
 
 </launch>
