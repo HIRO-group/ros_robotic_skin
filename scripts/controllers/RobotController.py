@@ -235,4 +235,4 @@ if __name__ == '__main__':
     rospy.init_node('robot_controller', anonymous=True)
     controller = PandaController()
 
-    controller.publish_positions([1, 1, 1, 1, 1, 1, 1])
+    controller.publish_positions([0, 0, 0, -0.0698, 0, 0, 0])
