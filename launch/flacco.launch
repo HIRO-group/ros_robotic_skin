@@ -54,8 +54,6 @@
     <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
         args="-d $(find ros_robotic_skin)/config/rviz.rviz" output="screen"/>
 
-    <node pkg="ros_robotic_skin" type="proximity_listener" name="proximity_listener" />
-    <node pkg="ros_robotic_skin" type="proximity_visualizer" name="proximity_visualizer" />
     <!-- <node name="Spheres" pkg="ros_robotic_skin" type="sphere_visualizer.py"/> -->
 
 </launch>

@@ -999,13 +999,13 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: false
+      Enabled: true
       Marker Topic: visualization_marker
       Name: Marker
       Namespaces:
         {}
       Queue Size: 100
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 238; 238; 236
@@ -1049,10 +1049,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.29126623272895813
+      Pitch: 0.2562662661075592
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.0111963748931885
+      Yaw: 1.7011964321136475
     Saved: ~
 Window Geometry:
   Displays:
