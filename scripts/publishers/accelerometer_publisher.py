@@ -1,11 +1,14 @@
 from robotic_skin.sensor.lsm6ds3 import LSM6DS3_IMU
-from time import sleep
 from sensor_msgs.msg import Imu
 import rospy
+import os
 import rospkg
 import argparse
 
 if __name__ == "__main__":
+    """
+    code for publishing real accelerometer data in ROS.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', action="store",
                         dest="config_file", required=True,
@@ -13,9 +16,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
 
-    config_file = ros_robotic_skin_path + "/config/" + args.config_file
-    
-
+    config_file = os.path.join(ros_robotic_skin_path, 'config', args.config_file)
     accel_gyro = LSM6DS3_IMU(config_file)
     imu_number = str(accel_gyro.config_dict['imu_number'])
 
@@ -35,6 +36,4 @@ if __name__ == "__main__":
         imu_msg.angular_velocity.y = accel_gyro_list[4]
         imu_msg.angular_velocity.z = accel_gyro_list[5]
         pub.publish(imu_msg)
-        # For some reason the rospy sleep doesn't work here
-        # IDK why, so it's better to use python sleep
         r.sleep()
