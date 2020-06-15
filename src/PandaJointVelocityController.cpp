@@ -93,7 +93,7 @@ void PandaJointVelocityController::update(const ros::Time& time,
         {
             // Print out to the terminal just for the 1st joint for debugging.
             // Order: Commanded Joint Velocity << Acutal Commanded Joint Velocity << Current Joint Velocity
-            if (i == 0) ROS_INFO_STREAM("Panda_joint" << i+1 << " " << joint_velocities[i] << " " << robot_state.dq_d[i] << " " << robot_state.dq[i]);
+            // if (i == 0) ROS_INFO_STREAM("Panda_joint" << i+1 << " " << joint_velocities[i] << " " << robot_state.dq_d[i] << " " << robot_state.dq[i]);
             // Send command
             velocity_joint_handles_[i].setCommand(joint_velocities[i]);
         }

@@ -43,7 +43,7 @@ class RobotArm(object):
             if controller_names is None:
                 controller_names = []
                 default_pos_names = ['panda_joint_position_controller']
-                default_vel_names = ['panda_joint_velocities_controller']
+                default_vel_names = ['panda_joint_velocity_controller']
                 default_traj_names = ['position_joint_trajectory_controller']
                 controller_names.append(default_pos_names)
                 controller_names.append(default_vel_names)

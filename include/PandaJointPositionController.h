@@ -14,6 +14,7 @@
 #include <ros/time.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <franka/rate_limiting.h>
+#include <urdf/model.h>
 
 namespace hiro_panda {
 
@@ -21,22 +22,24 @@ class PandaJointPositionController : public controller_interface::MultiInterface
                                            hardware_interface::PositionJointInterface,
                                            franka_hw::FrankaStateInterface> 
 {
-  public:
-      bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
-      void starting(const ros::Time&) override;
-      void update(const ros::Time&, const ros::Duration& period) override;
+    public:
+        bool init(hardware_interface::RobotHW* robot_hardware, ros::NodeHandle& node_handle) override;
+        void starting(const ros::Time&) override;
+        void update(const ros::Time&, const ros::Duration& period) override;
 
-  private:
-      void jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_position_commands);
-      hardware_interface::PositionJointInterface* position_joint_interface_;
-      std::vector<hardware_interface::JointHandle> position_joint_handles_;
-      std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
-      ros::Subscriber sub_command_;
-      
-      std::array<double, 7> commanded_joint_positions{};
-      std::array<double, 7> joint_velocities{0., 0., 0., 0., 0., 0., 0.};
-      std::array<double, 7> joint_accelerations{0., 0., 0., 0., 0., 0., 0.};
-
+    private:
+        void jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_position_commands);
+        bool checkJointVelocityLimits(std::vector<double>& joint_velocities);
+        hardware_interface::PositionJointInterface* position_joint_interface_;
+        std::vector<hardware_interface::JointHandle> position_joint_handles_;
+        std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
+        ros::Subscriber sub_command_;
+        
+        urdf::Model urdf_model;
+        std::vector<std::string> joint_names;
+        std::vector<double> joint_velocities;
+        std::vector<double> commanded_joint_positions;
+        int count;
 };
 
 }  // namespace hiro_panda
