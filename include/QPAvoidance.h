@@ -22,6 +22,8 @@ private:
     //void computeAandbMatrices(Eigen::MatrixXd& A, Eigen::MatrixXd& b);
     Eigen::VectorXd gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q);
     double computebvalue(double distanceNorm);
+    Eigen::VectorXd qDot{7};
+    Eigen::VectorXd algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen::MatrixXd A, Eigen::VectorXd b, Eigen::VectorXd bl, Eigen::VectorXd bu);
 
     // ALGLIB variables
     alglib::real_1d_array ALGLIBscale = "[0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]";
@@ -32,6 +34,7 @@ private:
     alglib::real_1d_array ALGLIBqDot;
     alglib::minqpstate ALGLIBstate;
     alglib::minqpreport ALGLIBrep;
+    alglib::real_1d_array ALGLIBbl, ALGLIBbu;
 
 
 public:
@@ -41,5 +44,5 @@ public:
                                            std::vector<Eigen::Vector3d> obstaclePositionVectors,
                                            int numberControlPoints,
                                            std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors);
-    void algLib();
+
 };

@@ -1,17 +1,29 @@
 #include "QPAvoidance.h"
 
-void QPAvoidance::algLib()
+Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen::MatrixXd A, Eigen::VectorXd b, Eigen::VectorXd bl, Eigen::VectorXd bu)
 {
-    ALGLIBH = "[[0.207246189049000,	-1.33746751456000e-07,	0.208829979446000,	-1.74513762106000e-06,	0.0973377820450000,	-2.47168268691000e-06,	-6.31777130540000e-18], [-1.33746751456000e-07,	0.211340320462246,	-8.53101499434000e-08,	-0.163941879513274,	-2.89308655825200e-06,	0.0121817129226451,	-4.20621513539400e-22], [0.208829979446000,	-8.53101499434000e-08,	0.210425873284544,	-2.02301987638900e-06,	0.0980816444250112,	-2.65074641903000e-06,	-6.36605217023341e-18], [-1.74513762106000e-06,	-0.163941879513274,	-2.02301987638900e-06,	0.223205778760695,	3.21279127018000e-06,	0.0597683748925631,	-2.39781124919000e-22], [0.0973377820450000,	-2.89308655825200e-06,	0.0980816444250112,	3.21279127018000e-06,	0.0457168542980401,	1.28545249995723e-12,	-2.96728181321843e-18], [-2.47168268691000e-06,	0.0121817129226451,	-2.65074641903000e-06,	0.0597683748925631,	1.28545249995723e-12,	0.0505931706865406,	-3.97767354655250e-22], [-6.31777130540000e-18,	-4.20621513539400e-22,	-6.36605217023341e-18,	-2.39781124919000e-22,	-2.96728181321843e-18,	-3.97767354655250e-22,	1.92593337727719e-34]]";
-    ALGLIBf = "[-0.227621500000000,0.195628946896000,-0.229360542042500,-0.326755083290000,-0.106913467360000,-0.114859910315000,6.939641152500000e-18]";
     ALGLIBAb = "[[]]";
     ALGLIBconstraintType = "[]";
+
+    for (int i = 0; i < H.rows(); i++)
+    {
+        for (int j = 0; j < H.cols(); j++)
+        {
+            ALGLIBH(i,j) = H(i,j);
+
+        }
+        ALGLIBf(i) = f(i);
+        ALGLIBbl(i) = bl(i);
+        ALGLIBbu(i) = bu(i);
+    }
+
 
     // create solver, set quadratic/linear terms
     alglib::minqpcreate(ALGLIBH.cols(), ALGLIBstate);
     alglib::minqpsetquadraticterm(ALGLIBstate, ALGLIBH);
     alglib::minqpsetlinearterm(ALGLIBstate, ALGLIBf);
     alglib::minqpsetlc(ALGLIBstate, ALGLIBAb, ALGLIBconstraintType);
+    alglib::minqpsetbc(ALGLIBstate, ALGLIBbl, ALGLIBbu);
 
     // Set scale of the parameters.
     // It is strongly recommended that you set scale of your variables.
@@ -34,7 +46,7 @@ void QPAvoidance::algLib()
     alglib::minqpsetalgobleic(ALGLIBstate, 0.0, 0.0, 0.0, 0);
     alglib::minqpoptimize(ALGLIBstate);
     alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-    printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
+    // printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
 
 
     // DENSE-AUL solver is optimized for problems with up to several thousands of
@@ -45,20 +57,27 @@ void QPAvoidance::algLib()
     //
     // Default stopping criteria are used.
     //
-    alglib::minqpsetalgodenseaul(ALGLIBstate, 1.0e-9, 1.0e+4, 5);
-    alglib::minqpoptimize(ALGLIBstate);
-    alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-    printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
+    // alglib::minqpsetalgodenseaul(ALGLIBstate, 1.0e-9, 1.0e+4, 5);
+    // alglib::minqpoptimize(ALGLIBstate);
+    // alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
+    // printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
 
     // QuickQP solver is intended for medium and large-scale problems with box
     // constraints, and...
     //
     // ...Oops! It does not support general linear constraints, -5 returned as completion code!
     //
-    alglib::minqpsetalgoquickqp(ALGLIBstate, 0.0, 0.0, 0.0, 0, true);
-    alglib::minqpoptimize(ALGLIBstate);
-    alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-    printf("%d\n", int(ALGLIBrep.terminationtype)); // EXPECTED: -5 (In our case positive)
+    // alglib::minqpsetalgoquickqp(ALGLIBstate, 0.0, 0.0, 0.0, 0, true);
+    // alglib::minqpoptimize(ALGLIBstate);
+    // alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
+    // printf("%d\n", int(ALGLIBrep.terminationtype)); // EXPECTED: -5 (In our case positive)
+
+    for (int i = 0; i < ALGLIBqDot.length(); i++)
+    {
+        qDot(i) = ALGLIBqDot(i);
+    }
+
+    return qDot;
 }
 
 QPAvoidance::QPAvoidance()
@@ -67,6 +86,10 @@ QPAvoidance::QPAvoidance()
     jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
+    ALGLIBH.setlength(7, 7);
+    ALGLIBf.setlength(7);
+    ALGLIBbl.setlength(7);
+    ALGLIBbu.setlength(7);
 }
 
 QPAvoidance::~QPAvoidance()
@@ -92,8 +115,6 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
                                                     int numberControlPoints,
                                                     std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors)
 {
-    Eigen::VectorXd qDot(7);
-
     // Equation #3
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)
@@ -189,9 +210,9 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     // std::cout << "------" << std::endl;
     /////
 
-    // Send to Matlab H, f, A, b, bl, bu;
-
+    std::cout << algLib(H, f, A, b, bl, bu) << std::endl;
     return qDot;
+
 }
 
 Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q)
