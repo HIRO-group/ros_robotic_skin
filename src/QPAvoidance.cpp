@@ -16,19 +16,25 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         ALGLIBbl(i) = bl(i);
         ALGLIBbu(i) = bu(i);
     }
-    ALGLIBAb.setlength(A.rows(), A.cols() + 1);
-    ALGLIBconstraintType.setlength(A.rows());
-    for (int i = 0; i < A.rows(); i++)
-    {
-        for (int j = 0; j < A.cols(); j++)
-        {
-            ALGLIBAb(i,j) = A(i,j);
-        }
-        ALGLIBAb(i, A.cols()) = b(i);
-        ALGLIBconstraintType(i) = -1;
-    }
 
-    std::cout << ALGLIBAb.rows() << std::endl;
+    if (A.rows() == 0)
+    {
+        ALGLIBAb = "[[]]";
+    }
+    else
+    {
+        ALGLIBAb.setlength(A.rows(), A.cols() + 1);
+        ALGLIBconstraintType.setlength(A.rows());
+        for (int i = 0; i < A.rows(); i++)
+        {
+            for (int j = 0; j < A.cols(); j++)
+            {
+                ALGLIBAb(i,j) = A(i,j);
+            }
+            ALGLIBAb(i, A.cols()) = b(i);
+            ALGLIBconstraintType(i) = -1;
+        }
+    }
 
     // create solver, set quadratic/linear terms
     alglib::minqpcreate(ALGLIBH.cols(), ALGLIBstate);
@@ -153,14 +159,9 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
     Eigen::MatrixXd qGroundTruth = Jpinv * xDot ;
 
-    Eigen::MatrixXd H = J.transpose() * J; - computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
+    Eigen::MatrixXd H = J.transpose() * J + computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
     Eigen::VectorXd f = - xDot.transpose() * J;
 
-    //////
-    obstaclePositionVectors.resize(2);
-    obstaclePositionVectors[0] = (Eigen::Vector3d::Constant(1.0));
-    obstaclePositionVectors[1] = (Eigen::Vector3d::Constant(0.9));
-    ///////
     // Being m the number of obstacle points detected:
     // See equation #5 in ding paper for first m rows, then an additonal 1 row for equation #7
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(obstaclePositionVectors.size() + 1, 7);
@@ -216,6 +217,13 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     // Last row in A, equation #7
     A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
     b[obstaclePositionVectors.size()] = 0;
+
+    if (obstaclePositionVectors.size() == 0)
+    {
+        A = Eigen::MatrixXd(0,7);
+        b = Eigen::VectorXd(0);
+    }
+
 
     //////
     // std::cout << b << std::endl;

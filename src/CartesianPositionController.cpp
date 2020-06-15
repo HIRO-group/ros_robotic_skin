@@ -179,7 +179,7 @@ int main(int argc, char **argv)
     {
         controller.setMode(noAvoidance);
     }
-
+    Eigen::MatrixXd empt(0,0);
     while (ros::ok())
     {
         controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
