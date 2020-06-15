@@ -12,14 +12,21 @@ if __name__ == "__main__":
                         help="The configuration yaml file name in package's config folder")
     args = parser.parse_args()
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+
     config_file = ros_robotic_skin_path + "/config/" + args.config_file
+    
+
     accel_gyro = LSM6DS3_IMU(config_file)
-    rospy.init_node('talker_{imu_number}'.format(imu_number=str(accel_gyro.config_dict['imu_number'])), anonymous=True)
-    pub = rospy.Publisher('/imu_data{imu_number}'.format(imu_number=str(accel_gyro.config_dict['imu_number'])), Imu,
-                          queue_size=10)
+    imu_number = str(accel_gyro.config_dict['imu_number'])
+
+    rospy.init_node('talker_{imu_number}'.format(imu_number=imu_number), anonymous=True)
+    pub = rospy.Publisher('/imu_data{imu_number}'.format(imu_number=imu_number), Imu, queue_size=10)
+    r = rospy.Rate(100)
+
     imu_msg = Imu()
     while not rospy.is_shutdown():
         accel_gyro_list = accel_gyro.read()
+        imu_msg.header.frame_id = imu_number
         imu_msg.header.stamp = rospy.Time.now()
         imu_msg.linear_acceleration.x = accel_gyro_list[0]
         imu_msg.linear_acceleration.y = accel_gyro_list[1]
@@ -30,4 +37,4 @@ if __name__ == "__main__":
         pub.publish(imu_msg)
         # For some reason the rospy sleep doesn't work here
         # IDK why, so it's better to use python sleep
-        sleep(0.1)
+        r.sleep()
