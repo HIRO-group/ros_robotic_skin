@@ -84,6 +84,7 @@ void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr&
         marker_array.markers.push_back(marker);
     }
     pub.publish<visualization_msgs::MarkerArray>(marker_array);
+    std::cout << msg->points.size() << std::endl;
     marker_array.markers.clear();
 }
 
