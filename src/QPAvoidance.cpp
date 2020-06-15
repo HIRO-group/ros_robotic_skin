@@ -229,27 +229,21 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         // Last row in A, equation #7
         A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
         b[obstaclePositionVectors.size()] = 0;
-        A.conservativeResize(obstaclePositionVectors.size(), 7);
-        b.conservativeResize(obstaclePositionVectors.size());
+        /////// UNCOMENT TO DISABLE EQ.5 //////
+        // A.conservativeResize(obstaclePositionVectors.size(), 7);
+        // b.conservativeResize(obstaclePositionVectors.size());
+        ///////////////////////////////////////
     }
-
-
-
-    //////
-    // std::cout << b << std::endl;
-    // std::cout << "------" << std::endl;
-    /////
 
     algLib(H, f, A, b, bl, bu);
     return qDot;
-
 }
 
 Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q)
 {
     // The value of the derivative is dependent on h, generally the smaller the better the aproximation.
     Eigen::VectorXd qplus(7), qminus(7), result(7);
-    double h{0.001};
+    double h{0.0001};
     for (int i = 0; i < 7; i++)
     {
         qplus = q;
