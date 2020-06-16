@@ -28,6 +28,7 @@ class ImuListener():
         ----------
         returns: None
         """
+        self.norms = []
         rospy.init_node('skin_calibration', anonymous=True)
         # create subscribers for num_imus topics
         for i in range(1, num_imus):
@@ -52,7 +53,8 @@ class ImuListener():
         """
         A = data.linear_acceleration
         norm = np.linalg.norm([A.x, A.y, A.z])
-        rospy.loginfo('{},  {}'.format(data.header.frame_id, norm))
+        self.norms.append(norm)
+        rospy.loginfo('{},  {},  {}'.format(data.header.frame_id, norm, np.mean(self.norms)))
 
 
 if __name__ == '__main__':
