@@ -269,7 +269,7 @@ class DynamicPoseDataSaver():
         positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
         self.curr_pose_name = pose_name
         # first, move to the position from <robot>_positions.txt
-        self.controller.publish_positions(positions, sleep=5)
+        self.controller.publish_positions(positions, sleep=10)
         print('At Position: ' + pose_name,
               map(int, utils.RAD2DEG * np.array(positions)))
 
@@ -315,7 +315,7 @@ class DynamicPoseDataSaver():
                 self.watch_motion.stop()
                 rospy.sleep(1)
 
-    def save(self, save=True, verbose=False, clean=True):
+    def save(self, save=True, verbose=False, clean=False):
         """
         Save data to a pickle file.
 
@@ -341,7 +341,7 @@ if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
 
-    rospy.init_node('Dynamic Poses Data Saver')
+    rospy.init_node('dynamic_pose_saver')
 
     if robot == 'panda':
         controller = PandaController(is_sim=False)

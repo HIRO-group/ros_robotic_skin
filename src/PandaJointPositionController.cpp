@@ -110,11 +110,13 @@ void PandaJointPositionController::update(const ros::Time& /*time*/,
     for (int i = 0; i < 7; i++) {
         position_diff[i] = commanded_joint_positions[i] - position_joint_handles_[i].getPosition();
 
-        if ((count % 1000 == 0) && (joint_names[i] == "panda_joint1")) {
-            ROS_INFO_STREAM(commanded_joint_positions[i] << " " <<  position_joint_handles_[i].getPosition());
-        }
-
-        if (position_diff[i] < 0) {
+        // if ((count % 1000 == 0) && (joint_names[i] == "panda_joint1"))
+        // {
+        //     ROS_INFO_STREAM(commanded_joint_positions[i] << " " <<  position_joint_handles_[i].getPosition());
+        // }
+        
+        if (position_diff[i] < 0)
+        {
             sign[i] = -1;
         } else if (position_diff[i] > 0) {
             sign[i] = 1;
@@ -127,9 +129,10 @@ void PandaJointPositionController::update(const ros::Time& /*time*/,
         double next_position = position_joint_handles_[i].getPosition() + delta_angle;
         position_joint_handles_[i].setCommand(next_position);
 
-        if ((count % 1000 == 0) && (joint_names[i] == "panda_joint1")) {
-            ROS_INFO_STREAM(joint_names[i] << " " << position_diff[i] << " " << gain << " " << delta_angle << " " << position_joint_handles_[i].getPosition() << " " << robot_state.q[i] << " " << next_position);
-        }
+        // if ((count % 1000 == 0) && (joint_names[i] == "panda_joint1"))
+        // {
+        //     ROS_INFO_STREAM(joint_names[i] << " " << position_diff[i] << " " << gain << " " << delta_angle << " " << position_joint_handles_[i].getPosition() << " " << robot_state.q[i] << " " << next_position);
+        // }
     }
 
     count += 1;

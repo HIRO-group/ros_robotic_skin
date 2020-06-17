@@ -202,7 +202,7 @@ class StaticPoseDataSaver():
 
             self.data_storage.append(
                 pose_name=self.curr_pose_name,     # for each defined initial pose
-                imu_name=data.header.frame_id,      # for each imu
+                imu_name=data.header.frame_id,      # frame id of imu
                 data=np.r_[
                     quaternion,
                     acceleration,
@@ -220,7 +220,7 @@ class StaticPoseDataSaver():
         """
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-            self.controller.publish_positions(positions, 0.1)
+            self.controller.publish_positions(positions, 10)
             print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
@@ -228,11 +228,15 @@ class StaticPoseDataSaver():
             rospy.sleep(time)
             self.ready = False
 
-    def save(self, save=True, verbose=False):
+    def save(self, save=True, verbose=False, clean=True):
         """
         Save data to a pickle file.
         """
-        data = self.data_storage.clean_data(verbose)
+        if clean:
+            data = self.data_storage.clean_data(verbose)
+        else:
+            data = self.data_storage.data
+
 
         if save:
             self.data_storage.save(data)
@@ -240,10 +244,12 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    # robot = sys.argv[1]
-    robot = 'panda'
+    robot = sys.argv[1]
+
+    rospy.init_node('static_pose_saver')
+    
     if robot == 'panda':
-        controller = PandaController()
+        controller = PandaController(is_sim=False)
         filename = 'panda_positions.txt'
     elif robot == 'sawyer':
         controller = SawyerController()

@@ -16,12 +16,13 @@ if __name__ == "__main__":
     r = rospy.Rate(100)
 
     while not rospy.is_shutdown():
+        imu_msg.header.frame_id = 'imu_link' + str(i_imu)
         imu_msg.header.stamp = rospy.Time.now()
-        imu_msg.linear_acceleration.x = 0.0
-        imu_msg.linear_acceleration.y = 0.0
-        imu_msg.linear_acceleration.z = 0.0
-        imu_msg.angular_velocity.x = 0.0
-        imu_msg.angular_velocity.y = 0.0
-        imu_msg.angular_velocity.z = 0.0
+        imu_msg.linear_acceleration.x = 1.0
+        imu_msg.linear_acceleration.y = 1.0
+        imu_msg.linear_acceleration.z = 1.0
+        imu_msg.angular_velocity.x = 1.0
+        imu_msg.angular_velocity.y = 1.0
+        imu_msg.angular_velocity.z = 1.0
         pub.publish(imu_msg)
         r.sleep()
