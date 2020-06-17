@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "optimization.h"
+#include <math.h>
 
 
 class QPAvoidance

@@ -208,7 +208,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
             assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
             d = obstaclePositionVectors[i] - kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(assignedIndex), q);
             distanceNorms[i] = d.norm();
-            distanceNormsSum = distanceNormsSum + distanceNorms[i];
+            w[i] = 1/(1 + std::exp(6*(2*distanceNorms[i]/0.4 - 1))) ;
             Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
             JpcNormalized.block(0, 0, 3, Jpc.cols()) = Jpc.block(0, 0, 3, Jpc.cols());
             A.row(i) = d.normalized().transpose() * JpcNormalized;
@@ -216,19 +216,20 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
             C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], std::string("control_point") + std::to_string(assignedIndex), q);
         }
 
-        // Calculate the weights to complet equation #7
-        for (int i = 0; i < obstaclePositionVectors.size(); i++)
+        // Last row in A, equation #7, if obstacles are close enough
+        if (w.maxCoeff() < 0.1)
         {
-            w[i] = distanceNorms[i] / distanceNormsSum;
+            A.conservativeResize(obstaclePositionVectors.size(), 7);
+            b.conservativeResize(obstaclePositionVectors.size());
+        }
+        else
+        {
+            A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
+            b[obstaclePositionVectors.size()] = 0;
         }
 
-        // Last row in A, equation #7
-        A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
-        b[obstaclePositionVectors.size()] = 0;
-        /////// UNCOMENT TO DISABLE EQ.5 //////
-        // A.conservativeResize(obstaclePositionVectors.size(), 7);
-        // b.conservativeResize(obstaclePositionVectors.size());
-        ///////////////////////////////////////
+
+
     }
 
     algLib(H, f, A, b, bl, bu);
