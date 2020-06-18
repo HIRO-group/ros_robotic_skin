@@ -33,7 +33,7 @@ class ProximityListener {
         std::unique_ptr<tf::StampedTransform[]> transform_control_points;
         tf::TransformListener listener;
         bool isInSphere(Eigen::Vector3d);
-        
+
  public:
         ros::NodeHandle n;
         ProximityListener(int argc, char **argv, int num_sensors, int num_control_points, float distance_threshold, bool removeFloor, float floor_threshold);
@@ -105,7 +105,8 @@ void ProximityListener::start() {
     while (ros::ok()) {
         for (int i = 0; i < num_sensors; i++) {
             if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor) );
-            else {
+            else 
+            {
                 point.x = live_points[i].x();
                 point.y = live_points[i].y();
                 point.z = live_points[i].z();
