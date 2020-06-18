@@ -14,8 +14,6 @@ jobs:
       run: sudo apt-get install flake8 && sudo apt-get install python-rostest && sudo apt-get install -y python-rospy
     - name: Run flake8 on the entire repository
       run: flake8 . --count --max-complexity=10 --max-line-length=140 --statistics
-    - name: Install pip wheel
-      run: pip install wheel
     - name: Install cpplint
       run: sudo pip install cpplint
     - name: Run cpplint on the entire repository
