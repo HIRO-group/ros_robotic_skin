@@ -18,20 +18,18 @@
 // https://medium.com/@sarvagya.vaish/forward-kinematics-using-orocos-kdl-da7035f9c8e
 // http://mirror.umd.edu/roswiki/pr2_mechanism(2f)Tutorials(2f)Coding(20)a(20)realtime(20)Cartesian(20)controller(20)with(20)KDL.html
 
-class TreeHelper{
-
-public:
+class TreeHelper {
+ public:
     std::string robot_desc_string;
     KDL::Tree kdlTree;
     // Get KDL::Tree from parameter server
-    TreeHelper(ros::NodeHandle &n){
+    TreeHelper(ros::NodeHandle &n) {
         n.param("robot_description", robot_desc_string, std::string());
         get_kdl_string();
-
     }
 
-    bool get_kdl_string(){
-        if (!kdl_parser::treeFromString(robot_desc_string, kdlTree)){
+    bool get_kdl_string() {
+        if (!kdl_parser::treeFromString(robot_desc_string, kdlTree)) {
             ROS_ERROR("Failed to construct kdl tree");
             return false;
         }
@@ -39,7 +37,7 @@ public:
     }
 
     bool compute_jacobian(ros_robotic_skin::getJacobian::Request& req,
-                      ros_robotic_skin::getJacobian::Response& res){
+                      ros_robotic_skin::getJacobian::Response& res) {
         // Select the end effector and get the chain from base (panda_link0) to selected end effector
         KDL::Chain kdlChain;
         kdlTree.getChain("panda_link0", req.end_effector_name, kdlChain);
@@ -51,17 +49,16 @@ public:
             jointAngles(i) = req.joint_states[i+2];
 
         // Compute jacobian
-        KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain); //OUT
+        KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain);  // OUT
         KDL::Jacobian  J;
         J.resize(number_joints);
         JSolver.JntToJac(jointAngles, J);
 
         // Get jacobian in list form
         std::vector <double> J_vector;
-        for (unsigned int i = 0 ; i < 6 ; i++)
-        {
+        for (unsigned int i = 0 ; i < 6 ; i++) {
             for (unsigned int j = 0 ; j < number_joints ; j++)
-                J_vector.push_back(J(i,j));
+                J_vector.push_back(J(i, j));
         }
 
         res.J.end_effector_name = req.end_effector_name;
@@ -73,8 +70,7 @@ public:
     }
 };
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     ros::init(argc, argv, "KDL_server");
     ros::NodeHandle n;
     TreeHelper my_tree(n);
