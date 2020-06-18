@@ -17,6 +17,6 @@ jobs:
     - name: Install pip wheel
       run: pip install wheel
     - name: Install cpplint
-      run: pip install cpplint && export PATH=$PATH:~/.local/bin/
+      run: sudo pip install cpplint
     - name: Run cpplint on the entire repository
       run: cpplint --recursive --filter=-whitespace,-build,-legal/copyright,-runtime --linelength=200 .
