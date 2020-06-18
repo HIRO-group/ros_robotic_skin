@@ -15,30 +15,30 @@
 int num_callbacks = 0;
 class ProximityListener
 {
-private:
-    int num_sensors{0};
-    int num_control_points{0};
-    float distance_threshold{0.0};
-    float floor_threshold{0.04};
-    bool removeFloor{true};
-    std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
-    std::unique_ptr<Eigen::Vector3d[]> live_points;
+    private:
+        int num_sensors{0};
+        int num_control_points{0};
+        float distance_threshold{0.0};
+        float floor_threshold{0.04};
+        bool removeFloor{true};
+        std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
+        std::unique_ptr<Eigen::Vector3d[]> live_points;
 
-    void sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
-    std::unique_ptr<ros::Subscriber[]> sub;
-    std::unique_ptr<Eigen::Vector3d[]> translation1;
-    std::unique_ptr<Eigen::Vector3d[]> translation2;
-    std::unique_ptr<Eigen::Vector3d[]> translation_control_points;
-    std::unique_ptr<Eigen::Quaterniond[]> rotation;
-    std::unique_ptr<tf::StampedTransform[]> transform;
-    std::unique_ptr<tf::StampedTransform[]> transform_control_points;
-    tf::TransformListener listener;
-    bool isInSphere(Eigen::Vector3d);
-public:
-    ros::NodeHandle n;
-    ProximityListener(int argc, char **argv, int num_sensors, int num_control_points, float distance_threshold, bool removeFloor, float floor_threshold);
-    ~ProximityListener();
-    void start();
+        void sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
+        std::unique_ptr<ros::Subscriber[]> sub;
+        std::unique_ptr<Eigen::Vector3d[]> translation1;
+        std::unique_ptr<Eigen::Vector3d[]> translation2;
+        std::unique_ptr<Eigen::Vector3d[]> translation_control_points;
+        std::unique_ptr<Eigen::Quaterniond[]> rotation;
+        std::unique_ptr<tf::StampedTransform[]> transform;
+        std::unique_ptr<tf::StampedTransform[]> transform_control_points;
+        tf::TransformListener listener;
+        bool isInSphere(Eigen::Vector3d);
+    public:
+        ros::NodeHandle n;
+        ProximityListener(int argc, char **argv, int num_sensors, int num_control_points, float distance_threshold, bool removeFloor, float floor_threshold);
+        ~ProximityListener();
+        void start();
 };
 
 ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int num_control_points,
