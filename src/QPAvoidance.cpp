@@ -208,7 +208,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
             assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
             d = obstaclePositionVectors[i] - kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(assignedIndex), q);
             distanceNorms[i] = d.norm();
-            w[i] = 1/(1 + std::exp(6*(2*distanceNorms[i]/0.4 - 1))) ;
+            w[i] = distanceNorms[i];
             Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
             JpcNormalized.block(0, 0, 3, Jpc.cols()) = Jpc.block(0, 0, 3, Jpc.cols());
             A.row(i) = d.normalized().transpose() * JpcNormalized;
@@ -217,13 +217,24 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         }
 
         // Last row in A, equation #7, if obstacles are close enough
-        if (w.maxCoeff() < 0.1)
+        if (w.minCoeff() > 0.5)
         {
             A.conservativeResize(obstaclePositionVectors.size(), 7);
             b.conservativeResize(obstaclePositionVectors.size());
         }
         else
         {
+            for (int i = 0; i < w.size(); i++)
+            {
+                w[i] = 1 / w[i];
+            }
+            double weightsum = w.sum();
+            for (int i = 0; i < w.size(); i++)
+            {
+                w[i] = w[i] / weightsum;
+            }
+            std::cout << w << std::endl;
+
             A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
             b[obstaclePositionVectors.size()] = 0;
         }
