@@ -12,9 +12,8 @@
 
 enum AvoidanceMode {noAvoidance, Flacco, QP};
 
-class CartesianPositionController
-{
-private:
+class CartesianPositionController {
+ private:
     AvoidanceMode avoidanceMode{noAvoidance};
     double position_error_threshold{0.01}, pGain {2.5}, secondaryTaskGain{5.0};
     ros::NodeHandle n;
@@ -31,7 +30,7 @@ private:
     void readEndEffectorPosition();
     Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
 
-public:
+ public:
     CartesianPositionController();
     ~CartesianPositionController();
     JointVelocityController jointVelocityController;
@@ -41,8 +40,7 @@ public:
     void moveToPosition(Eigen::Vector3d position_vector);
 };
 
-CartesianPositionController::CartesianPositionController()
-{
+CartesianPositionController::CartesianPositionController() {
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
@@ -52,64 +50,51 @@ CartesianPositionController::CartesianPositionController()
     readEndEffectorPosition();
 }
 
-CartesianPositionController::~CartesianPositionController()
-{
+CartesianPositionController::~CartesianPositionController() {
 }
 
-void CartesianPositionController::readEndEffectorPosition()
-{
-    while (ros::ok())
-    {
-        try
-        {
+void CartesianPositionController::readEndEffectorPosition() {
+    while (ros::ok()) {
+        try {
             transform_listener.lookupTransform("/world", "/end_effector",
                                     ros::Time(0), transform);
             endEffectorPositionVector << transform.getOrigin().getX(),
                                          transform.getOrigin().getY(),
                                          transform.getOrigin().getZ();
             break;
-        }
-        catch (tf::TransformException ex)
-        {
+        } catch (tf::TransformException ex) {
             ros::Duration(0.3).sleep();
         }
     }
 }
 
-void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
-{
+void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
     q << msg->position[2], msg->position[3], msg->position[4], msg->position[5], msg->position[6], msg->position[7], msg->position[8];
 }
 
-Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q)
-{
+Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q) {
     return 2.0/7.0 * (q - jointMiddleValues).cwiseQuotient(jointRanges);
 }
 
-Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity)
-{
-    J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0,0,3,7);
+Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity) {
+    J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0, 0, 3, 7);
     Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
-    return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7,7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
+    return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
 }
 
-void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName)
-{
+void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName) {
     avoidanceMode = avoidanceModeName;
 }
 
-void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector)
-{
+void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector) {
     positionErrorVector = desiredPositionVector - endEffectorPositionVector;
 
-    while (positionErrorVector.norm() > position_error_threshold && ros::ok())
-    {
+    while (positionErrorVector.norm() > position_error_threshold && ros::ok()) {
         readEndEffectorPosition();
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
         desiredEEVelocity = pGain * positionErrorVector;
         ros::spinOnce();
-        switch (avoidanceMode)
-        {
+        switch (avoidanceMode) {
             case Flacco:
                 ROS_INFO("Flacco selected");
                 ros::shutdown();
@@ -126,21 +111,18 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
     jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
 }
 
-void on_shutdown(int sig)
-{
+void on_shutdown(int sig) {
     CartesianPositionController endController;
     endController.jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
     ros::shutdown();
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     ros::init(argc, argv, "QPController", ros::init_options::NoSigintHandler);
     signal(SIGINT, on_shutdown);
     CartesianPositionController controller;
     controller.setMode(noAvoidance);
-    while (ros::ok())
-    {
+    while (ros::ok()) {
         controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
         controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
     }
