@@ -56,7 +56,6 @@ ProximityVisualizer::ProximityVisualizer() {
 }
 
 ProximityVisualizer::~ProximityVisualizer() {
-
 }
 
 void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr& msg) {

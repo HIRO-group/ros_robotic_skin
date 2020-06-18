@@ -42,7 +42,7 @@ class ProximityListener {
 };
 
 ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int num_control_points,
-                                     float distance_threshold=0.0, bool removeFloor=true, float floor_threshold=0.04) {
+                                     float distance_threshold = 0.0, bool removeFloor = true, float floor_threshold = 0.04) {
     distance_threshold = distance_threshold;
     removeFloor = removeFloor;
     floor_threshold = floor_threshold;
@@ -56,8 +56,7 @@ ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int
     this->transform = std::make_unique<tf::StampedTransform[]>(num_sensors);
     this->transform_control_points = std::make_unique<tf::StampedTransform[]>(num_control_points);
     this->translation_control_points = std::make_unique<Eigen::Vector3d[]>(num_control_points);
-    for (int i = 0; i < num_sensors; i++)
-    {
+    for (int i = 0; i < num_sensors; i++) {
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
     }
     n.setParam("num_sensors", num_sensors);
@@ -105,7 +104,7 @@ void ProximityListener::start() {
     while (ros::ok()) {
         for (int i = 0; i < num_sensors; i++) {
             if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor) );
-            else 
+            else
             {
                 point.x = live_points[i].x();
                 point.y = live_points[i].y();

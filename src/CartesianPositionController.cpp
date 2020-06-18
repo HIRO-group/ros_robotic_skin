@@ -77,7 +77,7 @@ Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen
 }
 
 Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity) {
-    J = kdlSolver.computeJacobian(std::string ("end_effector"), q); J = J.block(0, 0, 3, 7);
+    J = kdlSolver.computeJacobian(std::string("end_effector"), q); J = J.block(0, 0, 3, 7);
     Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
     return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
 }
