@@ -13,8 +13,7 @@
 namespace hiro_panda {
 
 bool PandaJointVelocityController::init(hardware_interface::RobotHW* robot_hardware,
-                                        ros::NodeHandle& node_handle) 
-{
+                                        ros::NodeHandle& node_handle) {
     velocity_joint_interface_ = robot_hardware->get<hardware_interface::VelocityJointInterface>();
     if (velocity_joint_interface_ == nullptr) {
         ROS_ERROR(
@@ -42,8 +41,7 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW* robot_hardw
         }
     }
 
-    for (int i = 0; i < 7; i++)
-    {
+    for (int i = 0; i < 7; i++) {
         joint_velocities[i] = 0.0;
     }
 
@@ -73,25 +71,19 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW* robot_hardw
     return true;
 }
 
-void PandaJointVelocityController::starting(const ros::Time& /* time */) 
-{
+void PandaJointVelocityController::starting(const ros::Time& /* time */) {
 }
 
 void PandaJointVelocityController::update(const ros::Time& time,
-                                          const ros::Duration& period) 
-{
+                                          const ros::Duration& period) {
     // Get current Franka::RobotState
     franka::RobotState robot_state = state_handle_->getRobotState();
-    
+
     // If there is no command for more than 0.1 sec, set velocity to 0.0
-    if (ros::Time::now().toSec() - last_time_called > 0.1) 
-    {
+    if (ros::Time::now().toSec() - last_time_called > 0.1) {
         for (int i = 0; i < 7; i++) velocity_joint_handles_[i].setCommand(0.0);
-    } 
-    else // If command recieved, send the command to the controller
-    {
-        for (int i = 0; i < 7; i++) 
-        {
+    } else {  // If command recieved, send the command to the controller
+        for (int i = 0; i < 7; i++) {
             // Print out to the terminal just for the 1st joint for debugging.
             // Order: Commanded Joint Velocity << Acutal Commanded Joint Velocity << Current Joint Velocity
             // if (i == 0) ROS_INFO_STREAM("Panda_joint" << i+1 << " " << joint_velocities[i] << " " << robot_state.dq_d[i] << " " << robot_state.dq[i]);
@@ -99,20 +91,16 @@ void PandaJointVelocityController::update(const ros::Time& time,
             velocity_joint_handles_[i].setCommand(joint_velocities[i]);
         }
     }
-    
 }
 
-void PandaJointVelocityController::stopping(const ros::Time& /*time*/) 
-{
+void PandaJointVelocityController::stopping(const ros::Time& /*time*/) {
     // WARNING: DO NOT SEND ZERO VELOCITIES HERE AS IN CASE OF ABORTING DURING MOTION
     // A JUMP TO ZERO WILL BE COMMANDED PUTTING HIGH LOADS ON THE ROBOT. LET THE DEFAULT
     // BUILT-IN STOPPING BEHAVIOR SLOW DOWN THE ROBOT.
 }
 
-void PandaJointVelocityController::jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_velocity_commands)
-{
-    if (joint_velocity_commands->data.size() != 7)
-    {
+void PandaJointVelocityController::jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_velocity_commands) {
+    if (joint_velocity_commands->data.size() != 7) {
         ROS_ERROR_STREAM("PandaJointVelocityController: Wrong number of joint velocity commands, got "
                         << joint_velocity_commands->data.size() << " instead of 7 commands!");
     }
