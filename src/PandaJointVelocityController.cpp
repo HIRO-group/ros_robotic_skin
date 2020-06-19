@@ -87,7 +87,8 @@ void PandaJointVelocityController::update(const ros::Time& time,
     if (ros::Time::now().toSec() - last_time_called > 0.1) 
     {
         for (int i = 0; i < 7; i++) velocity_joint_handles_[i].setCommand(0.0);
-    } else // If command recieved, send the command to the controller
+    } 
+    else // If command recieved, send the command to the controller
     {
         for (int i = 0; i < 7; i++) 
         {
