@@ -104,7 +104,8 @@ void ProximityListener::start() {
     while (ros::ok()) {
         for (int i = 0; i < num_sensors; i++) {
             if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor) );
-            else {
+            else 
+            {
                 point.x = live_points[i].x();
                 point.y = live_points[i].y();
                 point.z = live_points[i].z();
