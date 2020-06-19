@@ -1,18 +1,15 @@
 #include "KDLSolver.h"
 
-KDLSolver::KDLSolver()
-{
+KDLSolver::KDLSolver() {
     n.param("robot_description", robot_desc_string, std::string());
     if (!kdl_parser::treeFromString(robot_desc_string, kdlTree))
         ROS_ERROR("Failed to construct kdl tree");
 }
 
-KDLSolver::~KDLSolver()
-{
+KDLSolver::~KDLSolver() {
 }
 
-Eigen::MatrixXd KDLSolver::computeJacobian(std::string controlPointName, Eigen::VectorXd q)
-{
+Eigen::MatrixXd KDLSolver::computeJacobian(std::string controlPointName, Eigen::VectorXd q) {
     KDL::Chain kdlChain;
     kdlTree.getChain("panda_link0", controlPointName, kdlChain);
     int number_joints = kdlChain.getNrOfJoints();
