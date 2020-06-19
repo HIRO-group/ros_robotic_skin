@@ -19,5 +19,3 @@ if __name__ == '__main__':
     for pose in panda_positions_arr:
         print(list(pose))
         panda_controller.publish_positions(list(pose), sleep=10.0)
-
-

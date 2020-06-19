@@ -61,7 +61,7 @@ class RobotControllerManager():
                         self.mode = ControllerType.VELOCITY
                     elif controller.name in trajectory_controller_names:
                         self.mode = ControllerType.TRAJECTORY
-            
+
         except rospy.ServiceException as e:
             rospy.logerr("Controller Manager service exception:", e)
 

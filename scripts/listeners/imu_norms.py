@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import Int16
 from sensor_msgs.msg import Imu
 
 import numpy as np
@@ -60,5 +59,3 @@ class ImuListener():
 if __name__ == '__main__':
     # create the IMU listener, and spin.
     imu_listener = ImuListener(num_imus=7)
-
-
