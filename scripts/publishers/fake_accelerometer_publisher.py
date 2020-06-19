@@ -7,7 +7,7 @@ from sensor_msgs.msg import Imu
 if __name__ == "__main__":
     if len(sys.argv) < 1:
         rospy.logerr("usage: fake_accelerometer_publisher.py imu_number")
-    
+
     i_imu = int(sys.argv[1])
 
     rospy.init_node('fake_imu_publisher{}'.format(i_imu))

@@ -15,7 +15,7 @@
   <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
   <rosparam command="load" file="$(find ros_robotic_skin)/config/panda_joint_controllers.yaml"/>
-  <node name="noob" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_position_controller"/>
+  <node name="panda_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_position_controller"/>
 
   <node name="controller_spawn_stopped" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped panda_joint_velocity_controller" />
   
