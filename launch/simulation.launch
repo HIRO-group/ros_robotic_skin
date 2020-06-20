@@ -104,4 +104,7 @@
         <param name="original_imu_publisher_name" value="/imu_data6" />
     </node> -->
 
+    <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler"
+          args="--layout $(find ros_robotic_skin)/config/verify_joint_velocities_in_sim.xml"/>
+
 </launch>

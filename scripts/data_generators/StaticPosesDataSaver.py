@@ -133,7 +133,7 @@ class StaticPoseData():
 
                 joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 if imu_name == 'imu_link0':
-                        joints = self.data[pose_name][imu_name][:, 7:]
+                    joints = self.data[pose_name][imu_name][:, 7:]
                 j = np.mean(joints, axis=0)
 
                 data[pose_name][imu_name] = np.r_[q, m, j]
@@ -247,7 +247,6 @@ class StaticPoseDataSaver():
         else:
             data = self.data_storage.data
 
-
         if save:
             self.data_storage.save(data)
 
@@ -257,7 +256,7 @@ if __name__ == "__main__":
     robot = sys.argv[1]
 
     rospy.init_node('static_pose_saver')
-    
+
     if robot == 'panda':
         controller = PandaController(is_sim=IS_SIM)
         filename = 'panda_positions.txt'

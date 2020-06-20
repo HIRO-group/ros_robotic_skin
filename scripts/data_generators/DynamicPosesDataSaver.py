@@ -19,8 +19,8 @@ from scripts.controllers.RobotController import PandaController, SawyerControlle
 
 SIM_DT = 1.0 / rospy.get_param('/dynamic_frequency')
 OSCILLATION_TIME = rospy.get_param('/oscillation_time')
-FREQ = rospy.get_param('/oscillation_frequency')
-AMPLITUDE = rospy.get_param('/oscillation_magnitude')
+FREQS = rospy.get_param('/oscillation_frequency')
+AMPLITUDES = rospy.get_param('/oscillation_magnitude')
 IS_SIM = rospy.get_param('/is_sim')
 
 
@@ -239,14 +239,13 @@ class DynamicPoseDataSaver():
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
         if self.watch_motion.is_started():
-            
             acceleration = utils.Vector3_to_np(data.linear_acceleration)
 
             dt = self.watch_dt.get_elapsed_time()
             self.watch_dt.restart()
             if self.is_sim and dt <= 0.9*SIM_DT:
                 return
-            
+
             curr_angular_velocity = self.controller.joint_velocity(self.curr_joint_name)
             angular_acceleration = (curr_angular_velocity - self.prev_angular_velocity) / dt
             self.prev_angular_velocity = curr_angular_velocity
@@ -264,7 +263,7 @@ class DynamicPoseDataSaver():
                     joint_angles,
                     t,
                     angular_acceleration,
-                    AMPLITUDE,
+                    AMPLITUDES[0],
                     curr_angular_velocity,
                 ]
             )
@@ -309,7 +308,7 @@ class DynamicPoseDataSaver():
                     t = self.watch_motion.get_elapsed_time()
 
                     # Oscillated Velocity pattern
-                    velocities[i] = AMPLITUDE * np.sin(2 * pi * FREQ * t)
+                    velocities[i] = AMPLITUDES[i] * np.sin(2 * pi * FREQS[i] * t)
                     self.controller.send_velocities(velocities)
 
                     if t > OSCILLATION_TIME:
