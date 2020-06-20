@@ -10,17 +10,16 @@
 #include <kdl/chainjnttojacsolver.hpp>
 #include "ros_robotic_skin/getJacobian.h"
 
-class KDLSolver
-{
-private:
+class KDLSolver {
+ private:
     ros::NodeHandle n;
     std::string robot_desc_string;
     KDL::Tree kdlTree;
 
-public:
+ public:
     KDLSolver();
     ~KDLSolver();
     Eigen::MatrixXd computeJacobian(std::string controlPointName, Eigen::VectorXd q);
 };
 
-#endif // KDL_SOLVER_H
+#endif  // KDL_SOLVER_H
