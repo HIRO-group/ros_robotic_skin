@@ -21,6 +21,7 @@ SIM_DT = 1.0 / rospy.get_param('/dynamic_frequency')
 OSCILLATION_TIME = rospy.get_param('/oscillation_time')
 FREQ = rospy.get_param('/oscillation_frequency')
 AMPLITUDE = rospy.get_param('/oscillation_magnitude')
+IS_SIM = rospy.get_param('/is_sim')
 
 
 class DynamicPoseData():
@@ -84,6 +85,7 @@ class DynamicPoseData():
 
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
+        # rospy.loginfo('[{}, {}, {}] {}'.format(pose_name, joint_name, imu_name, data[:3]))
 
     def clean_data(self, verbose=False, time_range=(0.04, 0.16),
                    eliminate_outliers=True):
@@ -189,7 +191,7 @@ class DynamicPoseDataSaver():
     """
     Class for collecting dynamic pose data and save them as a pickle file
     """
-    def __init__(self, controller, poses_list, filepath='data/dynamic_data'):
+    def __init__(self, controller, poses_list, filepath='data/dynamic_data', is_sim=True):
         """
         Initializes DynamicPoseDataSaver class.
 
@@ -205,6 +207,7 @@ class DynamicPoseDataSaver():
         """
         self.controller = controller
         self.poses_list = poses_list
+        self.is_sim = is_sim
         # constant
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = map(str, self.controller.joint_names)
@@ -236,13 +239,14 @@ class DynamicPoseDataSaver():
             http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
         """
         if self.watch_motion.is_started():
+            
             acceleration = utils.Vector3_to_np(data.linear_acceleration)
 
             dt = self.watch_dt.get_elapsed_time()
             self.watch_dt.restart()
-            if dt <= 0.9*SIM_DT:
+            if self.is_sim and dt <= 0.9*SIM_DT:
                 return
-
+            
             curr_angular_velocity = self.controller.joint_velocity(self.curr_joint_name)
             angular_acceleration = (curr_angular_velocity - self.prev_angular_velocity) / dt
             self.prev_angular_velocity = curr_angular_velocity
@@ -332,6 +336,8 @@ class DynamicPoseDataSaver():
         else:
             data = self.data_storage.data
 
+        print(data)
+
         if save:
             rospy.loginfo('saving')
             self.data_storage.save(data)
@@ -344,7 +350,7 @@ if __name__ == "__main__":
     rospy.init_node('dynamic_pose_saver')
 
     if robot == 'panda':
-        controller = PandaController(is_sim=False)
+        controller = PandaController(is_sim=IS_SIM)
         filename = 'panda_positions.txt'
     elif robot == 'sawyer':
         controller = SawyerController()
@@ -358,6 +364,6 @@ if __name__ == "__main__":
     poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/dynamic_data', robot])
 
-    dd = DynamicPoseDataSaver(controller, poses_list, filepath)
+    dd = DynamicPoseDataSaver(controller, poses_list, filepath, IS_SIM)
     dd.move_like_sine_dynamic()
     dd.save(save=True, verbose=False, clean=False)

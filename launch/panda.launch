@@ -5,6 +5,7 @@
   <!-- robot ip of the panda must be specified -->
   <arg name="robot_ip" />
   <arg name="load_gripper" default="true" />
+
   <!-- side note - we need to modify the original franka control to also have the joint trajectory controller -->
   <include file="$(find franka_control)/launch/franka_control.launch" >
     <arg name="robot_ip" value="$(arg robot_ip)" />
@@ -13,6 +14,7 @@
 
   <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
   <rosparam command="load" file="$(arg constants_file_yaml)"/>
+  <rosparam param="is_sim">false</rosparam>
 
   <rosparam command="load" file="$(find ros_robotic_skin)/config/panda_joint_controllers.yaml"/>
   <node name="panda_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_position_controller"/>

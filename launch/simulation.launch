@@ -65,6 +65,7 @@
     <!--    Add Params YAML File-->
     <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
+    <rosparam param="is_sim">true</rosparam>
 
     <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
     <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
