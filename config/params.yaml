@@ -5,19 +5,19 @@
   dynamic_frequency: 100.0
   gravity_constant: 9.81
   oscillation_magnitude:
-    - 2.0
-    - 1.0
-    - 1.0
-    - 2.0
-    - 2.0
-    - 2.0
-    - 2.0
+    - 0.75
+    - 0.25
+    - 0.35
+    - 0.55
+    - 0.75
+    - 0.9
+    - 0.9
   oscillation_frequency:
-    - 1.0
-    - 1.0
-    - 1.0
-    - 1.0
-    - 1.0
-    - 1.0
-    - 1.0
+    - 2.0
+    - 2.0
+    - 2.0
+    - 2.0
+    - 2.0
+    - 2.0
+    - 2.0
   oscillation_time: 3.0

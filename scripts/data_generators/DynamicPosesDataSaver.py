@@ -314,9 +314,13 @@ class DynamicPoseDataSaver():
                     if t > OSCILLATION_TIME:
                         break
 
+                    if rospy.is_shutdown():
+                        return
+
                     self.controller.r.sleep()
                 self.watch_motion.stop()
                 rospy.sleep(1)
+
 
     def save(self, save=True, verbose=False, clean=False):
         """
@@ -334,8 +338,6 @@ class DynamicPoseDataSaver():
             data = self.data_storage.clean_data(verbose)
         else:
             data = self.data_storage.data
-
-        print(data)
 
         if save:
             rospy.loginfo('saving')

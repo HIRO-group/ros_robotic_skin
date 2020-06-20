@@ -29,4 +29,5 @@
   <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher5" type="fake_accelerometer_publisher.py" output="screen" args="5"/> -->
   <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher6" type="fake_accelerometer_publisher.py" output="screen" args="6"/> -->
 
+  <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler" args="--layout $(find ros_robotic_skin)/config/verify_joint_velocities_in_real.xml"/>
 </launch>

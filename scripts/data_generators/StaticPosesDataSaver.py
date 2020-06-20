@@ -119,21 +119,23 @@ class StaticPoseData():
         # retrigger
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
-            for imu_name in self.imu_names:
-
-                qs = reject_outliers(self.data[pose_name][imu_name][:, :4])
+            for imu_name in self.imu_names:             
                 if imu_name == 'imu_link0':
                     qs = self.data[pose_name][imu_name][:, 4]
+                else:
+                    qs = reject_outliers(self.data[pose_name][imu_name][:, :4])
                 q = np.mean(qs, axis=0)
 
-                d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
                 if imu_name == 'imu_link0':
                     d = self.data[pose_name][imu_name][:, 4:7]
+                else:
+                    d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])                    
                 m = np.mean(d, axis=0)
 
-                joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 if imu_name == 'imu_link0':
                     joints = self.data[pose_name][imu_name][:, 7:]
+                else:
+                    joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 j = np.mean(joints, axis=0)
 
                 data[pose_name][imu_name] = np.r_[q, m, j]
@@ -237,6 +239,9 @@ class StaticPoseDataSaver():
             self.ready = True
             rospy.sleep(time)
             self.ready = False
+
+            if rospy.is_shutdown():
+                return
 
     def save(self, save=True, verbose=False, clean=True):
         """
