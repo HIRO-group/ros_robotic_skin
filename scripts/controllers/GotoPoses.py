@@ -7,7 +7,11 @@ from RobotController import PandaController
 
 
 if __name__ == '__main__':
-    rospy.init_node('matt_strong')
+    """
+    A small script to test the panda controller (in real life)
+    through the same positions we use for data collection.
+    """
+    rospy.init_node('goto_poses')
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     panda_positions_path = os.path.join(ros_robotic_skin_path, 'config', 'panda_positions.txt')
 

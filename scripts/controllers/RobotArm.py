@@ -38,30 +38,10 @@ class RobotArm(object):
 
         self.num_joints = num_joints
         self.is_sim = is_sim
-        if not self.is_sim:
-
-            if controller_names is None:
-                controller_names = []
-                default_pos_names = ['panda_joint_position_controller']
-                default_vel_names = ['panda_joint_velocity_controller']
-                default_traj_names = ['position_joint_trajectory_controller']
-                controller_names.append(default_pos_names)
-                controller_names.append(default_vel_names)
-                controller_names.append(default_traj_names)
-
-        else:
-
-            if controller_names is None:
-                controller_names = []
-                default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, num_joints+1)]
-                default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, num_joints+1)]
-                default_traj_name = ['panda_joint_trajectory_controller']
-                controller_names.append(default_pos_names)
-                controller_names.append(default_vel_names)
-                controller_names.append(default_traj_name)
+        self.controller_names = self.get_controller_lists(controller_names)
 
         # create the controller manager for switching controllers.
-        self.controller_manager = RobotControllerManager(controller_names)
+        self.controller_manager = RobotControllerManager(self.controller_names)
 
         self.ignore_joints_arr = ignore_joints_arr
         self.data_exists = False
@@ -75,6 +55,29 @@ class RobotArm(object):
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
         # need a sleep, so message is sent from publisher, interestingly.
         rospy.sleep(2)
+
+    def get_controller_lists(self, controller_names):
+        """
+        get the list of position, velocity
+        and trajectory controllers depending on if we're
+        in simulation or real life.
+        """
+        if controller_names is None:
+            controller_names = []
+            if self.is_sim:
+                default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, self.num_joints+1)]
+                default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, self.num_joints+1)]
+                default_traj_names = ['panda_joint_trajectory_controller']
+            else:
+                default_pos_names = ['panda_joint_position_controller']
+                default_vel_names = ['panda_joint_velocity_controller']
+                default_traj_names = ['position_joint_trajectory_controller']
+
+            controller_names.append(default_pos_names)
+            controller_names.append(default_vel_names)
+            controller_names.append(default_traj_names)
+
+        return controller_names
 
     def joint_names(self):
         """
