@@ -19,8 +19,9 @@ from scripts.controllers.RobotController import PandaController, SawyerControlle
 
 SIM_DT = 1.0 / rospy.get_param('/dynamic_frequency')
 OSCILLATION_TIME = rospy.get_param('/oscillation_time')
-FREQ = rospy.get_param('/oscillation_frequency')
-AMPLITUDE = rospy.get_param('/oscillation_magnitude')
+FREQS = rospy.get_param('/oscillation_frequency')
+AMPLITUDES = rospy.get_param('/oscillation_magnitude')
+IS_SIM = rospy.get_param('/is_sim')
 
 
 class DynamicPoseData():
@@ -84,6 +85,7 @@ class DynamicPoseData():
 
         self.data[pose_name][joint_name][imu_name] = \
             np.append(self.data[pose_name][joint_name][imu_name], np.array([data]), axis=0)
+        # rospy.loginfo('[{}, {}, {}] {}'.format(pose_name, joint_name, imu_name, data[:3]))
 
     def clean_data(self, verbose=False, time_range=(0.04, 0.16),
                    eliminate_outliers=True):
@@ -189,7 +191,7 @@ class DynamicPoseDataSaver():
     """
     Class for collecting dynamic pose data and save them as a pickle file
     """
-    def __init__(self, controller, poses_list, filepath='data/dynamic_data'):
+    def __init__(self, controller, poses_list, filepath='data/dynamic_data', is_sim=True):
         """
         Initializes DynamicPoseDataSaver class.
 
@@ -205,6 +207,7 @@ class DynamicPoseDataSaver():
         """
         self.controller = controller
         self.poses_list = poses_list
+        self.is_sim = is_sim
         # constant
         self.pose_names = [pose[2] for pose in poses_list]
         self.joint_names = map(str, self.controller.joint_names)
@@ -240,7 +243,7 @@ class DynamicPoseDataSaver():
 
             dt = self.watch_dt.get_elapsed_time()
             self.watch_dt.restart()
-            if dt <= 0.9*SIM_DT:
+            if self.is_sim and dt <= 0.9*SIM_DT:
                 return
 
             curr_angular_velocity = self.controller.joint_velocity(self.curr_joint_name)
@@ -260,7 +263,7 @@ class DynamicPoseDataSaver():
                     joint_angles,
                     t,
                     angular_acceleration,
-                    AMPLITUDE,
+                    AMPLITUDES[0],
                     curr_angular_velocity,
                 ]
             )
@@ -269,7 +272,7 @@ class DynamicPoseDataSaver():
         positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
         self.curr_pose_name = pose_name
         # first, move to the position from <robot>_positions.txt
-        self.controller.publish_positions(positions, sleep=5)
+        self.controller.publish_positions(positions, sleep=10)
         print('At Position: ' + pose_name,
               map(int, utils.RAD2DEG * np.array(positions)))
 
@@ -305,17 +308,21 @@ class DynamicPoseDataSaver():
                     t = self.watch_motion.get_elapsed_time()
 
                     # Oscillated Velocity pattern
-                    velocities[i] = AMPLITUDE * np.sin(2 * pi * FREQ * t)
+                    velocities[i] = AMPLITUDES[i] * np.sin(2 * pi * FREQS[i] * t)
                     self.controller.send_velocities(velocities)
 
                     if t > OSCILLATION_TIME:
                         break
 
+                    if rospy.is_shutdown():
+                        return
+
                     self.controller.r.sleep()
                 self.watch_motion.stop()
                 rospy.sleep(1)
 
-    def save(self, save=True, verbose=False, clean=True):
+
+    def save(self, save=True, verbose=False, clean=False):
         """
         Save data to a pickle file.
 
@@ -341,10 +348,10 @@ if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
     robot = sys.argv[1]
 
-    rospy.init_node('Dynamic Poses Data Saver')
+    rospy.init_node('dynamic_pose_saver')
 
     if robot == 'panda':
-        controller = PandaController(is_sim=False)
+        controller = PandaController(is_sim=IS_SIM)
         filename = 'panda_positions.txt'
     elif robot == 'sawyer':
         controller = SawyerController()
@@ -358,6 +365,6 @@ if __name__ == "__main__":
     poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/dynamic_data', robot])
 
-    dd = DynamicPoseDataSaver(controller, poses_list, filepath)
+    dd = DynamicPoseDataSaver(controller, poses_list, filepath, IS_SIM)
     dd.move_like_sine_dynamic()
     dd.save(save=True, verbose=False, clean=False)

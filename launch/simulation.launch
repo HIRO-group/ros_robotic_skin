@@ -65,6 +65,7 @@
     <!--    Add Params YAML File-->
     <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
+    <rosparam param="is_sim">true</rosparam>
 
     <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
     <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
@@ -102,5 +103,8 @@
         <param name="imu_pose_publisher_name" value="imu6_pose" />
         <param name="original_imu_publisher_name" value="/imu_data6" />
     </node> -->
+
+    <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler"
+          args="--layout $(find ros_robotic_skin)/config/verify_joint_velocities_in_sim.xml"/>
 
 </launch>

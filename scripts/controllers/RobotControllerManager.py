@@ -83,7 +83,6 @@ class RobotControllerManager():
                     resp = switch_controller(self.controller_names[desired_mode],
                                              self.controller_names[self.mode], 1, True, 10)
                     # Break from while loop is response is Okay meaning the switching was successful
-                    print(resp)
                     if resp.ok:
                         break
 
