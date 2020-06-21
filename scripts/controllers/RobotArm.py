@@ -50,7 +50,7 @@ class RobotArm(object):
         self.positions = None
 
         # get list of position and velocity publishers ... and trajectory publisher.
-        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(controller_names)
+        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(self.controller_names)
 
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
         # need a sleep, so message is sent from publisher, interestingly.
