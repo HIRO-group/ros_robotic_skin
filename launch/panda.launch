@@ -20,11 +20,11 @@
   <node name="controller_spawn_stopped" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped panda_joint_velocity_controller" />
   
   <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher0" type="fake_accelerometer_publisher.py" output="screen" args="0"/>
-  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher1" type="fake_accelerometer_publisher.py" output="screen" args="1"/> -->
-  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher2" type="fake_accelerometer_publisher.py" output="screen" args="2"/> -->
-  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher3" type="fake_accelerometer_publisher.py" output="screen" args="3"/> -->
-  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher4" type="fake_accelerometer_publisher.py" output="screen" args="4"/> -->
-  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher5" type="fake_accelerometer_publisher.py" output="screen" args="5"/> -->
-  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher6" type="fake_accelerometer_publisher.py" output="screen" args="6"/> -->
+  <!-- <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher1" type="fake_accelerometer_publisher.py" output="screen" args="1"/>
+  <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher2" type="fake_accelerometer_publisher.py" output="screen" args="2"/>
+  <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher3" type="fake_accelerometer_publisher.py" output="screen" args="3"/>
+  <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher4" type="fake_accelerometer_publisher.py" output="screen" args="4"/>
+  <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher5" type="fake_accelerometer_publisher.py" output="screen" args="5"/>
+  <node pkg="ros_robotic_skin" name="fake_accelerometer_publisher6" type="fake_accelerometer_publisher.py" output="screen" args="6"/> -->
 
 </launch>
