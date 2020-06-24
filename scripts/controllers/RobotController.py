@@ -4,10 +4,15 @@ This code serves as the generic RobotController
 class.
 """
 
+import sys
+import rospkg
 import rospy
 import numpy as np
 import intera_interface
 from RobotArm import RobotArm
+
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts.exceptions import InvalidInputShapeException  # noqa:E402
 
 
 class RobotController(object):
@@ -106,13 +111,28 @@ class RobotController(object):
         """
         publishes a robot trajectory. Takes care of positions, velocities,
         and accelerations, which are more intuitive than a 3-d tensor.
+
+        Each of positions, velocities, and accelerations should
+        be a 2-d array.
         """
         # shape is amount of poses, 3 rows for pos,vel,acc, with num_joints
+        self.check_trajectory_shape(positions, velocities, accelerations)
         traj = np.zeros((len(positions), 3, self.arm.num_joints))
         for idx, (pos, vel, acc) in enumerate(zip(positions, velocities, accelerations)):
             traj[idx] = np.vstack((pos, vel, acc))
         self.arm.set_joint_trajectory(traj)
         rospy.sleep(sleep)
+
+    def check_trajectory_shape(self, positions, velocities, accelerations):
+        """
+        check the trajectory shapes.
+        """
+        if len(np.array(positions).shape) != 2:
+            raise InvalidInputShapeException("Wrong shape for positions!")
+        elif len(np.array(velocities).shape) != 2:
+            raise InvalidInputShapeException("Wrong shape for velocities!")
+        elif len(np.array(accelerations).shape) != 2:
+            raise InvalidInputShapeException("Wrong shape for accelerations!")
 
     def set_positions_list(self, poses, sleep):
         """
