@@ -233,6 +233,6 @@ if __name__ == '__main__':
     and publishing positions to all of the joints.
     """
     rospy.init_node('robot_controller', anonymous=True)
-    controller = PandaController(is_sim=False)
+    controller = PandaController(is_sim=True)
 
-    controller.publish_positions([0, 0, 0, -0.0698, 0, 1.57, 0])
+    controller.publish_positions([0, 0, 0, -0.0698, 0, 0, 0])
