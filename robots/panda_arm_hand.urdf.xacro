@@ -17,7 +17,7 @@
   <xacro:imu imu_id="3" xyz="0.06 0.0 0.08" rpy="0.0 1.57 0.0" gravity="true" connected_to="panda_link4"/>
   <xacro:imu imu_id="4" xyz="0.0 0.15 0.0" rpy="-1.57 0.0 0.0" gravity="true" connected_to="panda_link5"/>
   <xacro:imu imu_id="5" xyz="0.01 0.0 0.06" rpy="0.0 0.0 1.57" gravity="true" connected_to="panda_link6"/>
-  <xacro:imu imu_id="6" xyz="0.0 -0.05 0.0" rpy="0.0 0.0 -1.57" gravity="true" connected_to="panda_link7"/>
+  <xacro:imu imu_id="6" xyz="0.0 -0.05 0.0" rpy="1.57 0.0 0.0" gravity="true" connected_to="panda_link7"/>
 
   <!-- for simulation -->
   <xacro:arg name="robot_name" default="panda"/>
