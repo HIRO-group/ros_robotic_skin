@@ -21,8 +21,10 @@ private:
     float distance_threshold{0.0};
     float floor_threshold{0.04};
     bool removeFloor{true};
+    int bufferSize{50};
     std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
     std::unique_ptr<Eigen::Vector3d[]> live_points;
+    Eigen::MatrixXd buffer;
 
     void sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
     std::unique_ptr<ros::Subscriber[]> sub;
@@ -68,6 +70,7 @@ ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
     }
     n.setParam("num_sensors", num_sensors);
+    buffer = Eigen::MatrixXd::Constant(3, bufferSize, 6.0);
 }
 
 ProximityListener::~ProximityListener()
@@ -122,26 +125,25 @@ void ProximityListener::start()
         newReadingsMatrix.conservativeResize(newReadingsMatrix.rows(), 0);
         for (int i = 0; i < num_sensors; i++)
         {
-            if (!std::isnan(live_points[i].x()) && !(live_points[i].z() < floor_threshold) )
+            if (!std::isnan(live_points[i].x()) && !(live_points[i].z() < floor_threshold) && ! (isInSphere(live_points[i])))
             {
                 newReadingsMatrix.conservativeResize(newReadingsMatrix.rows(), newReadingsMatrix.cols()+1);
                 newReadingsMatrix.col(newReadingsMatrix.cols() - 1) = live_points[i];
             }
         }
-        for (int i = 0; i < newReadingsMatrix.cols(); i++)
+        if (newReadingsMatrix.cols() > 0)
         {
-            if (! isInSphere(newReadingsMatrix.col(i)))
+            buffer.block(0, newReadingsMatrix.cols(), 3, buffer.cols() - newReadingsMatrix.cols()) = buffer.block(0, 0, 3, newReadingsMatrix.cols());
+            buffer.block(0, 0, 3, newReadingsMatrix.cols()) = newReadingsMatrix;
+            for (int i = 0; i < buffer.cols(); i++)
             {
-                point.x = newReadingsMatrix.col(i).x();
-                point.y = newReadingsMatrix.col(i).y();
-                point.z = newReadingsMatrix.col(i).z();
-                msg.points.push_back(point);
-                // std::cout << live_points[i].z() << std::endl ;
+                    point.x = buffer.col(i).x();
+                    point.y = buffer.col(i).y();
+                    point.z = buffer.col(i).z();
+                    msg.points.push_back(point);
             }
         }
 
-
-        std::cout << newReadingsMatrix.cols() << std::endl;
         pub.publish<ros_robotic_skin::PointArray>(msg);
         msg.points.clear();
         rate.sleep();
