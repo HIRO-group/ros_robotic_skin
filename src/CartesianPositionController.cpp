@@ -142,9 +142,38 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         switch (avoidanceMode)
         {
             case Flacco:
-                ROS_INFO("Flacco selected");
-                ros::shutdown();
+            {
+                Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
+
+                Eigen::Vector3d c = controlPointPositionVectors[5];
+
+                Eigen::Vector3d v1, v3;
+                transform_listener.lookupTransform("/world", "/panda_link1",
+                                        ros::Time(0), transform);
+                v1 << transform.getOrigin().getX(),
+                      transform.getOrigin().getY(),
+                      transform.getOrigin().getZ();
+                transform_listener.lookupTransform("/world", "/panda_link3",
+                                        ros::Time(0), transform);
+                v3 << transform.getOrigin().getX(),
+                      transform.getOrigin().getY(),
+                      transform.getOrigin().getZ();
+                double t;
+                t = (c-v1)[0] / (v3 - v1)[0];
+
+                Eigen::MatrixXd J2 = kdlSolver.computeJacobian2("panda_link4", q, t, 0);
+                Eigen::VectorXd va(3); va << 1,2,4;
+                std::cout << J2 << std::endl;
+                std::cout << "----------------" << std::endl;
+                std::cout << Jreal << std::endl;
+                std::cout << "----------------" << std::endl;
+                std::cout << "----------------" << std::endl;
+
+                jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+
                 break;
+            }
+
             case QP:
             {
                 qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, numberControlPoints, controlPointPositionVectors);
