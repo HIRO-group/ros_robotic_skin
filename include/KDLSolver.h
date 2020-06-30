@@ -16,8 +16,7 @@ private:
     ros::NodeHandle n;
     std::string robot_desc_string;
     KDL::Tree kdlTree;
-    std::unique_ptr<KDL::Chain[]> kdlChainsControlPoints;
-    std::vector<KDL::Chain[]> kdlChainsJoint;
+    std::unique_ptr<KDL::Chain[]> kdlChains;
     int controlPointCount{0};
 
 public:
