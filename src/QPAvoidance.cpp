@@ -206,7 +206,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
             for (int j = 0; j < numberControlPoints; j++)
                 distancesToControlPoints[j] = (obstaclePositionVectors[i] - controlPointPositionVectors[j]).norm();
             assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
-            d = obstaclePositionVectors[i] - kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(assignedIndex), q);
+            d = obstaclePositionVectors[i] - kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(assignedIndex), q);
             distanceNorms[i] = d.norm();
             w[i] = 1 / distanceNorms[i];
             Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
@@ -251,8 +251,8 @@ Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePosi
         qminus = q;
         qplus[i] = qplus[i] + h;
         qminus[i] = qminus[i] - h;
-        result[i] = ((obstaclePositionVector - kdlSolver.forwardKinematics(controlPointName, qplus)).norm() -
-             (obstaclePositionVector - kdlSolver.forwardKinematics(controlPointName, qminus)).norm()) / (2*h);
+        result[i] = ((obstaclePositionVector - kdlSolver.forwardKinematicsControlPoints(controlPointName, qplus)).norm() -
+             (obstaclePositionVector - kdlSolver.forwardKinematicsControlPoints(controlPointName, qminus)).norm()) / (2*h);
     }
     return result;
 }

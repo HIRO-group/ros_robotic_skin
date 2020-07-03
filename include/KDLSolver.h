@@ -16,15 +16,16 @@ private:
     ros::NodeHandle n;
     std::string robot_desc_string;
     KDL::Tree kdlTree;
-    std::unique_ptr<KDL::Chain[]> kdlChains;
+    std::unique_ptr<KDL::Chain[]> kdlChainsControlPoints;
+    std::unique_ptr<KDL::Chain[]> kdlChainsJoints;
     int controlPointCount{0};
 
 public:
     KDLSolver();
-    ~KDLSolver();
     Eigen::MatrixXd computeJacobian(std::string controlPointName, Eigen::VectorXd q);
     Eigen::MatrixXd computeJacobian2(std::string controlPointName, Eigen::VectorXd q, double t, double nrm);
-    Eigen::Vector3d forwardKinematics(std::string controlPointName, Eigen::VectorXd q);
+    Eigen::MatrixXd forwardKinematicsJoints(const Eigen::VectorXd & q);
+    Eigen::Vector3d forwardKinematicsControlPoints(std::string controlPointName, Eigen::VectorXd q);
     int getNumberControlPoints();
 };
 
