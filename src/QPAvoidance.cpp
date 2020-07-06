@@ -182,14 +182,14 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         b = Eigen::VectorXd(obstaclePositionVectors.size() + 1);
         // Will set w dependent on the distance value
         Eigen::VectorXd w = Eigen::VectorXd::Ones(obstaclePositionVectors.size());
+        Eigen::VectorXd distanceNorms{obstaclePositionVectors.size()};
         // C comes from equation #6, intermediate value
         Eigen::MatrixXd C(obstaclePositionVectors.size(), 7), Jpc, JpcNormalized = Eigen::MatrixXd::Zero(3, 7);
         // temp variable used to hold distance
         Eigen::Vector3d d;
         // temp variable used to pick the control point closest to each of obstacle points
-        std::vector<double> distancesToControlPoints, distanceNorms;
+        std::vector<double> distancesToControlPoints;
         distancesToControlPoints.resize(numberControlPoints);
-        distanceNorms.resize(obstaclePositionVectors.size());
 
         int assignedIndex{0};
         double distanceNormsSum{0};
@@ -206,7 +206,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
             for (int j = 0; j < numberControlPoints; j++)
                 distancesToControlPoints[j] = (obstaclePositionVectors[i] - controlPointPositionVectors[j]).norm();
             assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
-            d = obstaclePositionVectors[i] - kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(assignedIndex), q);
+            d = obstaclePositionVectors[i] - kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(assignedIndex), q);
             distanceNorms[i] = d.norm();
             w[i] = 1 / distanceNorms[i];
             Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
@@ -217,7 +217,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         }
 
         // Last row in A, equation #7, if obstacles are close enough
-        if (w.minCoeff() > 0.5)
+        if (distanceNorms.minCoeff() > 0.5)
         {
             A.conservativeResize(obstaclePositionVectors.size(), 7);
             b.conservativeResize(obstaclePositionVectors.size());
@@ -234,9 +234,6 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
             A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
             b[obstaclePositionVectors.size()] = 0;
         }
-
-
-
     }
 
     algLib(H, f, A, b, bl, bu);
@@ -254,8 +251,8 @@ Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePosi
         qminus = q;
         qplus[i] = qplus[i] + h;
         qminus[i] = qminus[i] - h;
-        result[i] = ((obstaclePositionVector - kdlSolver.forwardKinematics(controlPointName, qplus)).norm() -
-             (obstaclePositionVector - kdlSolver.forwardKinematics(controlPointName, qminus)).norm()) / (2*h);
+        result[i] = ((obstaclePositionVector - kdlSolver.forwardKinematicsControlPoints(controlPointName, qplus)).norm() -
+             (obstaclePositionVector - kdlSolver.forwardKinematicsControlPoints(controlPointName, qminus)).norm()) / (2*h);
     }
     return result;
 }
