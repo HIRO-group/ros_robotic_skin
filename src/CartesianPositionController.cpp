@@ -92,7 +92,7 @@ void CartesianPositionController::readEndEffectorPosition()
 void CartesianPositionController::readControlPointPositions()
 {
     for (int i = 0; i < numberControlPoints; i++)
-        controlPointPositionVectors[i] = kdlSolver.forwardKinematics(std::string("control_point") + std::to_string(i), q);
+        controlPointPositionVectors[i] = kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(i), q);
 }
 
 void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
@@ -143,31 +143,33 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         {
             case Flacco:
             {
-                Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
+                // Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
 
-                Eigen::Vector3d c = controlPointPositionVectors[5];
+                // Eigen::Vector3d c = controlPointPositionVectors[5];
 
-                Eigen::Vector3d v1, v3;
-                transform_listener.lookupTransform("/world", "/panda_link1",
-                                        ros::Time(0), transform);
-                v1 << transform.getOrigin().getX(),
-                      transform.getOrigin().getY(),
-                      transform.getOrigin().getZ();
-                transform_listener.lookupTransform("/world", "/panda_link3",
-                                        ros::Time(0), transform);
-                v3 << transform.getOrigin().getX(),
-                      transform.getOrigin().getY(),
-                      transform.getOrigin().getZ();
-                double t;
-                t = (c-v1)[0] / (v3 - v1)[0];
+                // Eigen::Vector3d v1, v3;
+                // transform_listener.lookupTransform("/world", "/panda_link1",
+                //                         ros::Time(0), transform);
+                // v1 << transform.getOrigin().getX(),
+                //       transform.getOrigin().getY(),
+                //       transform.getOrigin().getZ();
+                // transform_listener.lookupTransform("/world", "/panda_link3",
+                //                         ros::Time(0), transform);
+                // v3 << transform.getOrigin().getX(),
+                //       transform.getOrigin().getY(),
+                //       transform.getOrigin().getZ();
+                // double t;
+                // t = (c-v1)[0] / (v3 - v1)[0];
 
-                Eigen::MatrixXd J2 = kdlSolver.computeJacobian2("panda_link4", q, t, 0);
-                Eigen::VectorXd va(3); va << 1,2,4;
-                std::cout << J2 << std::endl;
-                std::cout << "----------------" << std::endl;
-                std::cout << Jreal << std::endl;
-                std::cout << "----------------" << std::endl;
-                std::cout << "----------------" << std::endl;
+                // Eigen::MatrixXd J2 = kdlSolver.computeJacobian2("panda_link4", q, t, 0);
+                // Eigen::VectorXd va(3); va << 1,2,4;
+                // std::cout << J2 << std::endl;
+                // std::cout << "----------------" << std::endl;
+                // std::cout << Jreal << std::endl;
+                // std::cout << "----------------" << std::endl;
+                // std::cout << "----------------" << std::endl;
+
+                std::cout << kdlSolver.forwardKinematicsJoints(q) << std::endl;
 
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
 
@@ -202,7 +204,7 @@ int main(int argc, char **argv)
     CartesianPositionController controller;
     if (argc == 2)
     {
-        controller.setMode(QP);
+        controller.setMode(Flacco);
     }
     else
     {

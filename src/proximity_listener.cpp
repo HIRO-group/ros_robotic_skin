@@ -21,7 +21,7 @@ private:
     float distance_threshold{0.0};
     float floor_threshold{0.04};
     bool removeFloor{true};
-    int bufferSize{50};
+    int bufferSize{200};
     std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
     std::unique_ptr<Eigen::Vector3d[]> live_points;
     Eigen::MatrixXd buffer;
