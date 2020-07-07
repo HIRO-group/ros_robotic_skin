@@ -93,7 +93,7 @@ Eigen::Vector3d KDLSolver::forwardKinematicsControlPoints(std::string controlPoi
 
 Eigen::MatrixXd KDLSolver::forwardKinematicsJoints(const Eigen::VectorXd & q)
 {
-    std::vector<int> jointNumbers = {1, 3, 4, 5, 7, 9};
+    std::vector<int> jointNumbers = {2, 3, 4, 6, 7, 9};
     Eigen::MatrixXd result(3,jointNumbers.size());
     int index = 0;
     for (auto &&i : jointNumbers)
