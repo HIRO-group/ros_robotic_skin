@@ -203,16 +203,21 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         // 7) Take the gradient os the norm distance with
         for (int i = 0; i < obstaclePositionVectors.size(); i++)
         {
+            //  Find closest control point
             for (int j = 0; j < numberControlPoints; j++)
                 distancesToControlPoints[j] = (obstaclePositionVectors[i] - controlPointPositionVectors[j]).norm();
             assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
+            // Obtain distance
             d = obstaclePositionVectors[i] - kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(assignedIndex), q);
             distanceNorms[i] = d.norm();
             w[i] = 1 / distanceNorms[i];
+            // Obtain row i in A and b
+            // TODO: Remove rows if b[i] == 5000
+            b[i] = computebvalue(distanceNorms[i]); // From fig. 5
             Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
             JpcNormalized.block(0, 0, 3, Jpc.cols()) = Jpc.block(0, 0, 3, Jpc.cols());
             A.row(i) = d.normalized().transpose() * JpcNormalized;
-            b[i] = computebvalue(distanceNorms[i]); // From fig. 5
+            // Obtain row i for C, which is used in eq #7 to compute the last row
             C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], std::string("control_point") + std::to_string(assignedIndex), q);
         }
 
@@ -224,12 +229,12 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         }
         else
         {
+            // Normalize weights
             double weightsum = w.sum();
             for (int i = 0; i < w.size(); i++)
             {
                 w[i] = w[i] / weightsum;
             }
-            std::cout << w << std::endl;
 
             A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
             b[obstaclePositionVectors.size()] = 0;
@@ -279,6 +284,6 @@ double QPAvoidance::computebvalue(double distanceNorm)
     }
     else
     {
-        return 1000.0;
+        return 5000.0;
     }
 }
