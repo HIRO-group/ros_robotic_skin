@@ -1,7 +1,6 @@
 #include <iostream>
 #include <math.h>
 #include "Eigen/Dense"
-#include "KDLSolver.h"
 
 #include "stdafx.h"
 #include <stdlib.h>
@@ -15,8 +14,6 @@ class HIROAvoidance
 {
 private:
     // Class Variables
-    KDLSolver kdlSolver;
-
     Eigen::VectorXd jointVelocityLimitsMin{7};
     Eigen::VectorXd jointVelocityLimitsMax{7};
     Eigen::VectorXd jointLimitsMin{7};
@@ -28,15 +25,12 @@ private:
 
 
 public:
-    // Class Variables
-
-    // Class Methods
-
     //Constructor
     HIROAvoidance();
-
-    //Deconstructor
-    ~HIROAvoidance();
-
+    // Class Variables
+    // Class Methods
     void getClosestControlPoint();
+
+
+
 };

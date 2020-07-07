@@ -1,7 +1,5 @@
 #include "HIROAvoidance.h"
 
-//#include "Eigen/Dense"
-
 HIROAvoidance::HIROAvoidance()
 {
     jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
@@ -10,11 +8,8 @@ HIROAvoidance::HIROAvoidance()
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
 }
 
-HIROAvoidance::~HIROAvoidance()
+Eigen::Vector3d HIROAvoidance::getClosestPointOnLine(Eigen::Vector3d a, Eigen::Vector3d b, Eigen::Vector3d p)
 {
-}
-
-Eigen::Vector3d getClosestPointOnLine(Eigen::Vector3d a, Eigen::Vector3d b, Eigen::Vector3d p){
     //https://math.stackexchange.com/a/2193733/801563
     Eigen::Vector3d v = b - a;
     Eigen::Vector3d u = a - p;
@@ -45,7 +40,8 @@ Eigen::Vector3d getClosestPointOnLine(Eigen::Vector3d a, Eigen::Vector3d b, Eige
 }
 
 //TODO: check that this is the correct data type passed in
-void HIROAvoidance::getClosestControlPoint(){
+void HIROAvoidance::getClosestControlPoint()
+{
 
     Eigen::Vector3d obstacle(0.5, 0, 0.6);
     // TODO: Get all potential joints that create lines from Anders function
@@ -55,8 +51,9 @@ void HIROAvoidance::getClosestControlPoint(){
     Eigen::Vector3d closest_point = HIROAvoidance::getClosestPointOnLine(joint_one, joint_two, obstacle);
     double distance_to_obstacle = (obstacle - closest_point).norm();
 
-
 }
+
+
 
 
 // % Closest point to P in segment AB
@@ -80,5 +77,3 @@ void HIROAvoidance::getClosestControlPoint(){
 //         C = B;
 //     end
 // end
-
-
