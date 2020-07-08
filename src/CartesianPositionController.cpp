@@ -11,6 +11,7 @@
 #include "tf/transform_listener.h"
 #include "KDLSolver.h"
 #include "Eigen/Dense"
+#include "HIROAvoidance.h"
 
 
 enum AvoidanceMode {noAvoidance, Flacco, QP};
@@ -40,6 +41,7 @@ private:
     void readControlPointPositions();
     Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
 
+
 public:
     CartesianPositionController();
     ~CartesianPositionController();
@@ -48,6 +50,7 @@ public:
     Eigen::VectorXd secondaryTaskFunctionGradient(Eigen::VectorXd q);
     void setMode(AvoidanceMode avoidanceModeName);
     void moveToPosition(Eigen::Vector3d position_vector);
+    HIROAvoidance hiroAvoidance;
 };
 
 CartesianPositionController::CartesianPositionController()
@@ -169,9 +172,15 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 // std::cout << "----------------" << std::endl;
                 // std::cout << "----------------" << std::endl;
 
-                std::cout << kdlSolver.forwardKinematicsJoints(q) << std::endl;
+                //std::cout << kdlSolver.forwardKinematicsJoints(q) << std::endl;
 
-                jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                //jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                obstaclePositionVectors.clear();
+                Eigen::Vector3d test_point(0.1, 0.0, 0.383);
+                Eigen::Vector3d test_point2(0.012, 0.0002, 0.7);
+                obstaclePositionVectors.push_back(test_point);
+                obstaclePositionVectors.push_back(test_point2);
+                hiroAvoidance.getClosestControlPoint(kdlSolver, q, obstaclePositionVectors);
 
                 break;
             }
