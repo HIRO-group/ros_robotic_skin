@@ -1,3 +1,9 @@
+// Link to Ding Paper Presentation: 
+// https://docs.google.com/presentation/d/1LrW7mna1wRgHsIzw3wXOrvIg3xlkNpIfmVRfGyxG_v0/edit?usp=sharing
+
+// Link to Overleaf file with the math in the presentation
+// https://www.overleaf.com/read/hwndqxxqtvds
+
 #include "QPAvoidance.h"
 
 Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen::MatrixXd A, Eigen::VectorXd b, Eigen::VectorXd bl, Eigen::VectorXd bu)
