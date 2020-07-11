@@ -357,7 +357,7 @@ class PandaController(object):
             self.trajectory_pub.publish(self.msg)
 
             if sleep:
-                rospy.sleep(self.sleep_time_static)
+                rospy.sleep(sleep)
             else:
                 self.r.sleep()
 
