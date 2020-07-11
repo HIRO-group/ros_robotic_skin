@@ -129,3 +129,12 @@ Whenever you use it, load it like `example_param = ropsy.get_param("/example_par
 Refer to
 - https://roboticsbackend.com/ros-param-yaml-format/
 - https://roboticsbackend.com/get-set-ros-params-rospy-roscpp/
+
+# Miscellaneous
+Here are some extra resources for this package.
+
+## Ding Paper Explanation Resources
+Below are links to an explanation of the Ding control paper and the Overleaf document that has the equations included in the explanation.
+
+- Ding Explanation: [here...](https://docs.google.com/presentation/d/1LrW7mna1wRgHsIzw3wXOrvIg3xlkNpIfmVRfGyxG_v0/edit#slide=id.g8a4d24af98_0_32-)
+- Overleaf File: [here...](https://www.overleaf.com/read/hwndqxxqtvds)
