@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import rospy
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float64
@@ -9,7 +10,7 @@ import numpy as np
 
 class ImuListener():
 
-    def __init__(self, num_imus):
+    def __init__(self, num_imus, axis):
         """
         ImuListener class for registering when IMUs are
         activated; that is, the IMU is moved enough.
@@ -29,7 +30,9 @@ class ImuListener():
         returns: None
         """
         # create subscribers for num_imus topics
-        self.norms = np.zeros(num_imus)
+        self.num_imus = num_imus
+        self.axis = axis
+        self.values = []
         for i in range(1, num_imus):
             rospy.Subscriber('imu_data{}'.format(i), Imu, self.imu_callback)
 
@@ -49,25 +52,25 @@ class ImuListener():
         returns: None
         """
         A = data.linear_acceleration
-        norm = np.linalg.norm([A.x, A.y, A.z])
-        # rospy.loginfo('{},  {}'.format(data.header.frame_id, norm))
 
-        i = int(data.header.frame_id[-1])
-        self.norms[i] = norm
+        if self.axis == 'x':
+            value = A.x
+        elif self.axis == 'y':
+            value = A.y
+        elif self.axis == 'z':
+            value = A.z
+        else:
+            raise ValueError('No such key as ' + self.axis)
+        
+        self.values.append(value)
+        rospy.loginfo('{},  {}'.format(data.header.frame_id, np.mean(self.values)))
 
 
 if __name__ == '__main__':
     # create the IMU listener, and spin.
-    rospy.init_node('skin_calibration', anonymous=True)
+    rospy.init_node('record_norm', anonymous=True)
+    axis = sys.argv[1]
 
     num_imus = 7
-    imu_listener = ImuListener(num_imus)
-    publishers = []
-    for i in range(num_imus):
-        publishers.append(rospy.Publisher('imu_norm{}'.format(i), Float64, queue_size=10))
-    r = rospy.Rate(100)
-
-    while not rospy.is_shutdown():
-        for i in range(num_imus):
-            publishers[i].publish(imu_listener.norms[i])
-        r.sleep()
+    imu_listener = ImuListener(num_imus, axis)
+    rospy.spin()
