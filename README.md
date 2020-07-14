@@ -1,4 +1,6 @@
-![ROS_Robotic_Skin CI](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS_Robotic_Skin%20CI/badge.svg)
+![Github Actions:Build](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS_Robotic_Skin%20CI/badge.svg)
+![Documentation Generation](https://github.com/HIRO-group/ros_robotic_skin/workflows/Documentation%20Generation/badge.svg)
+
 
 # ROS Robotic Skin
 - **Current Release**: `0.0.1` as of 2020/3/25
