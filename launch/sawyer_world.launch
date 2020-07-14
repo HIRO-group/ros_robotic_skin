@@ -90,7 +90,6 @@
       <arg name="head_camera" value="$(arg head_camera)" />
   </include>
 
-  <!--node pkg="ros_robotic_skin" name="sawyer_joint_movement" type="sawyer_joint_movement.py"/-->
   <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
   <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
