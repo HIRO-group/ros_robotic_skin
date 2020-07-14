@@ -272,7 +272,7 @@ class DynamicPoseDataSaver():
         positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
         self.curr_pose_name = pose_name
         # first, move to the position from <robot>_positions.txt
-        self.controller.publish_positions(positions, sleep=10)
+        self.controller.publish_positions(positions, sleep=3)
         print('At Position: ' + pose_name,
               map(int, utils.RAD2DEG * np.array(positions)))
 
