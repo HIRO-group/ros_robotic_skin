@@ -1,6 +1,8 @@
-![ROS_Robotic_Skin CI](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS_Robotic_Skin%20CI/badge.svg)
+![Github Actions:Build](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS%20Robotic%20Skin%20CI/badge.svg)
+![Documentation Generation](https://github.com/HIRO-group/ros_robotic_skin/workflows/Documentation%20Generation/badge.svg)
 
-# General
+
+# ROS Robotic Skin
 - **Current Release**: `0.0.1` as of 2020/3/25
 - **Suporting Version**: `ROS Melodic`
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
@@ -129,3 +131,12 @@ Whenever you use it, load it like `example_param = ropsy.get_param("/example_par
 Refer to
 - https://roboticsbackend.com/ros-param-yaml-format/
 - https://roboticsbackend.com/get-set-ros-params-rospy-roscpp/
+
+# Miscellaneous
+Here are some extra resources for this package.
+
+## Ding Paper Explanation Resources
+Below are links to an explanation of the Ding control paper and the Overleaf document that has the equations included in the explanation.
+
+- Ding Explanation: [here...](https://docs.google.com/presentation/d/1LrW7mna1wRgHsIzw3wXOrvIg3xlkNpIfmVRfGyxG_v0/edit?usp=sharing)
+- Overleaf File: [here...](https://www.overleaf.com/read/hwndqxxqtvds)

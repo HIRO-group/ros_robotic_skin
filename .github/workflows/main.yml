@@ -1,4 +1,4 @@
-name: ROS_Robotic_Skin CI
+name: ROS Robotic Skin CI
 
 on: [push]
 
