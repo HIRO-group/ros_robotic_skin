@@ -1,4 +1,4 @@
-![Github Actions:Build](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS_Robotic_Skin%20CI/badge.svg)
+![Github Actions:Build](https://github.com/HIRO-group/ros_robotic_skin/workflows/ROS%20Robotic%20Skin%20CI/badge.svg)
 ![Documentation Generation](https://github.com/HIRO-group/ros_robotic_skin/workflows/Documentation%20Generation/badge.svg)
 
 
