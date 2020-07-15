@@ -12,7 +12,7 @@ import sys
 import numpy as np
 import rospkg
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.RobotController import PandaController  # noqa: E402
 
 
 class PandaPositionMover(GridLayout):

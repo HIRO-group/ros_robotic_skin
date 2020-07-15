@@ -3,7 +3,7 @@ import sys
 import rospy
 import rospkg
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.controllers.PandaController import PandaController  # noqa: E402
+from scripts.controllers.RobotController import PandaController  # noqa: E402
 
 COMMAND_SWITCHING_TIME = 5
 POSITION1 = [0, 0, 0, 0, 0, 0, 0]
