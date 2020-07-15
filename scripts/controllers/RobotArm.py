@@ -6,7 +6,7 @@ import sys
 import rospy
 import rospkg
 import numpy as np
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float64MultiArray
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from RobotControllerManager import RobotControllerManager, ControllerType
@@ -37,17 +37,11 @@ class RobotArm(object):
         """
 
         self.num_joints = num_joints
-        if controller_names is None:
-            controller_names = []
-            default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, num_joints+1)]
-            default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, num_joints+1)]
-            default_traj_name = ['panda_joint_trajectory_controller' if is_sim else 'joint_trajectory_controller']
-            controller_names.append(default_pos_names)
-            controller_names.append(default_vel_names)
-            controller_names.append(default_traj_name)
+        self.is_sim = is_sim
+        self.controller_names = self.get_controller_lists(controller_names)
 
         # create the controller manager for switching controllers.
-        self.controller_manager = RobotControllerManager(controller_names)
+        self.controller_manager = RobotControllerManager(self.controller_names)
 
         self.ignore_joints_arr = ignore_joints_arr
         self.data_exists = False
@@ -56,11 +50,34 @@ class RobotArm(object):
         self.positions = None
 
         # get list of position and velocity publishers ... and trajectory publisher.
-        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(controller_names)
+        self.pos_pubs, self.vel_pubs, self.traj_pub = self.get_publishers(self.controller_names)
 
         rospy.Subscriber(joint_states_topic, JointState, self.joint_state_callback)
         # need a sleep, so message is sent from publisher, interestingly.
         rospy.sleep(2)
+
+    def get_controller_lists(self, controller_names):
+        """
+        get the list of position, velocity
+        and trajectory controllers depending on if we're
+        in simulation or real life.
+        """
+        if controller_names is None:
+            controller_names = []
+            if self.is_sim:
+                default_pos_names = ['panda_joint{}_position_controller'.format(i) for i in range(1, self.num_joints+1)]
+                default_vel_names = ['panda_joint{}_velocity_controller'.format(i) for i in range(1, self.num_joints+1)]
+                default_traj_names = ['panda_joint_trajectory_controller']
+            else:
+                default_pos_names = ['panda_joint_position_controller']
+                default_vel_names = ['panda_joint_velocity_controller']
+                default_traj_names = ['position_joint_trajectory_controller']
+
+            controller_names.append(default_pos_names)
+            controller_names.append(default_vel_names)
+            controller_names.append(default_traj_names)
+
+        return controller_names
 
     def joint_names(self):
         """
@@ -124,9 +141,16 @@ class RobotArm(object):
             raise InvalidNumJointException("Wrong number of joints for pos control.")
 
         if not rospy.is_shutdown():
+            # handle differently for real robot.
             self.controller_manager.switch_mode(ControllerType.POSITION)
-            for index, pos in enumerate(positions):
-                self.pos_pubs[index].publish(Float64(pos))
+
+            if self.is_sim:
+                for index, pos in enumerate(positions):
+                    self.pos_pubs[index].publish(Float64(pos))
+            else:
+                # real robot controller sends all commands at once.
+                self.pos_pubs[0].publish(Float64MultiArray(data=positions))
+
             rospy.sleep(sleep)
 
     def set_joint_velocities(self, velocities):
@@ -139,8 +163,13 @@ class RobotArm(object):
 
         if not rospy.is_shutdown():
             self.controller_manager.switch_mode(ControllerType.VELOCITY)
-            for index, vel in enumerate(velocities):
-                self.vel_pubs[index].publish(Float64(vel))
+
+            if self.is_sim:
+                for index, vel in enumerate(velocities):
+                    self.vel_pubs[index].publish(Float64(vel))
+            else:
+                # real robot controller sends all commands at once.
+                self.vel_pubs[0].publish(Float64MultiArray(data=velocities))
 
     def set_joint_trajectory(self, trajectories, time_per_step=1.0):
         """
@@ -200,15 +229,53 @@ class RobotArm(object):
     def get_publishers(self, controller_names):
         """
         gets position, velocity, and trajectory publisher(s). Lengths may
-        be different.
+        be different. Publishers will be different.
         """
-        joint_position_pubs = []
-        joint_velocity_pubs = []
         pos_controller_names = controller_names[0]
         vel_controller_names = controller_names[1]
         traj_controller_name = controller_names[2][0]
         traj_name = '/{}/command'.format(traj_controller_name)
         traj_pub = rospy.Publisher(traj_name, JointTrajectory, queue_size=1)
+        # based on if robot is real or not, types of messages published should be different.
+
+        if self.is_sim:
+            joint_position_pubs, joint_velocity_pubs = self.get_publishers_sim(pos_controller_names,
+                                                                               vel_controller_names)
+        else:
+            joint_position_pubs, joint_velocity_pubs = self.get_publishers_physical(pos_controller_names,
+                                                                                    vel_controller_names)
+
+        return joint_position_pubs, joint_velocity_pubs, traj_pub
+
+    def get_publishers_physical(self, pos_controller_names, vel_controller_names):
+        """
+        gets
+        joint position and joint velocity
+        publishers in physical robot.
+        """
+        joint_position_pubs = []
+        joint_velocity_pubs = []
+
+        for name in pos_controller_names:
+            pub = rospy.Publisher('/{}/command'.format(name), Float64MultiArray,
+                                  queue_size=10)
+            joint_position_pubs.append(pub)
+
+        for name in vel_controller_names:
+            pub = rospy.Publisher('/{}/command'.format(name), Float64MultiArray,
+                                  queue_size=10)
+            joint_velocity_pubs.append(pub)
+
+        return joint_position_pubs, joint_velocity_pubs
+
+    def get_publishers_sim(self, pos_controller_names, vel_controller_names):
+        """
+        gets
+        joint position and joint velocity
+        publishers in simulation robot.
+        """
+        joint_position_pubs = []
+        joint_velocity_pubs = []
 
         for name in pos_controller_names:
             pub = rospy.Publisher('/{}/command'.format(name), Float64,
@@ -220,4 +287,4 @@ class RobotArm(object):
                                   queue_size=10)
             joint_velocity_pubs.append(pub)
 
-        return joint_position_pubs, joint_velocity_pubs, traj_pub
+        return joint_position_pubs, joint_velocity_pubs

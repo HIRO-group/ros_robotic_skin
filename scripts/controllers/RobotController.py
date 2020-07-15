@@ -21,8 +21,6 @@ class RobotController(object):
         """
         self.is_sim = is_sim
         self.arm = self.get_arm(num_joints, is_sim)
-        self.sleep_time_static = rospy.get_param('/static_sleep_time')
-        self.r = rospy.Rate(rospy.get_param('/dynamic_frequency'))
         self.pose_name = ''
 
     def get_arm(self, num_joints, is_sim=True):
@@ -233,6 +231,6 @@ if __name__ == '__main__':
     and publishing positions to all of the joints.
     """
     rospy.init_node('robot_controller', anonymous=True)
-    controller = PandaController()
+    controller = PandaController(is_sim=False)
 
     controller.publish_positions([0, 0, 0, -0.0698, 0, 0, 0])
