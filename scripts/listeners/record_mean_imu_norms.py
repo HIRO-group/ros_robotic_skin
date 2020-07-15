@@ -3,7 +3,6 @@
 import sys
 import rospy
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Float64
 
 import numpy as np
 
@@ -61,7 +60,7 @@ class ImuListener():
             value = A.z
         else:
             raise ValueError('No such key as ' + self.axis)
-        
+
         self.values.append(value)
         rospy.loginfo('{},  {}'.format(data.header.frame_id, np.mean(self.values)))
 

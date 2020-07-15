@@ -325,7 +325,6 @@ class DynamicPoseDataSaver():
                 self.watch_motion.stop()
                 rospy.sleep(1)
 
-
     def save(self, save=True, verbose=False, clean=False):
         """
         Save data to a pickle file.
