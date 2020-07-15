@@ -38,10 +38,16 @@ Inheritance diagram for scripts.controllers.RobotArm.RobotArm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5437f39853bb98ec1ecbece96ecfec81"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a5437f39853bb98ec1ecbece96ecfec81">__init__</a> (self, <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a594d4c5847e2cf15bd5704aed080b467">num_joints</a>, is_sim=True, joint_states_topic='/joint_states', <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a6fb6ce2a44b82c42cd7bb7f54f112fb7">ignore_joints_arr</a>=['panda_finger_joint1', panda_finger_joint2, controller_names=None)</td></tr>
+<tr class="memitem:a5437f39853bb98ec1ecbece96ecfec81"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a5437f39853bb98ec1ecbece96ecfec81">__init__</a> (self, <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a594d4c5847e2cf15bd5704aed080b467">num_joints</a>, <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a3f598e74a457f062d7b0852fa9744712">is_sim</a>=True, joint_states_topic='/joint_states', <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a6fb6ce2a44b82c42cd7bb7f54f112fb7">ignore_joints_arr</a>=['panda_finger_joint1', panda_finger_joint2, <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#ab88c54477e66e02276b3e2ef30c44aab">controller_names</a>=None)</td></tr>
 <tr class="separator:a5437f39853bb98ec1ecbece96ecfec81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a019b75ca8f471cdba2d74130124f0627"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a019b75ca8f471cdba2d74130124f0627">get_publishers</a> (self, controller_names)</td></tr>
+<tr class="memitem:adac9799a72d94c029c209d6f74ea2d37"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#adac9799a72d94c029c209d6f74ea2d37">get_controller_lists</a> (self, <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#ab88c54477e66e02276b3e2ef30c44aab">controller_names</a>)</td></tr>
+<tr class="separator:adac9799a72d94c029c209d6f74ea2d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a019b75ca8f471cdba2d74130124f0627"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a019b75ca8f471cdba2d74130124f0627">get_publishers</a> (self, <a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#ab88c54477e66e02276b3e2ef30c44aab">controller_names</a>)</td></tr>
 <tr class="separator:a019b75ca8f471cdba2d74130124f0627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49c4c17a29ab7b2442d78877f5632c65"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a49c4c17a29ab7b2442d78877f5632c65">get_publishers_physical</a> (self, pos_controller_names, vel_controller_names)</td></tr>
+<tr class="separator:a49c4c17a29ab7b2442d78877f5632c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45ff579d8ace05cf5d4bea6b82c4f526"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a45ff579d8ace05cf5d4bea6b82c4f526">get_publishers_sim</a> (self, pos_controller_names, vel_controller_names)</td></tr>
+<tr class="separator:a45ff579d8ace05cf5d4bea6b82c4f526"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac28705c9d9304e98697284f62be384ee"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#ac28705c9d9304e98697284f62be384ee">joint_angle</a> (self, joint_name)</td></tr>
 <tr class="separator:ac28705c9d9304e98697284f62be384ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e9f1cef9dcc2ef2f0af2237cda7f1f9"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a8e9f1cef9dcc2ef2f0af2237cda7f1f9">joint_angles</a> (self)</td></tr>
@@ -67,10 +73,14 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a1336b6a8f645a5c5be6d06d30dcd9782"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a1336b6a8f645a5c5be6d06d30dcd9782">controller_manager</a></td></tr>
 <tr class="separator:a1336b6a8f645a5c5be6d06d30dcd9782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab88c54477e66e02276b3e2ef30c44aab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#ab88c54477e66e02276b3e2ef30c44aab">controller_names</a></td></tr>
+<tr class="separator:ab88c54477e66e02276b3e2ef30c44aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a775358b33c7ecf97be05bc7d3bb6b6a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a775358b33c7ecf97be05bc7d3bb6b6a6">data_exists</a></td></tr>
 <tr class="separator:a775358b33c7ecf97be05bc7d3bb6b6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fb6ce2a44b82c42cd7bb7f54f112fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a6fb6ce2a44b82c42cd7bb7f54f112fb7">ignore_joints_arr</a></td></tr>
 <tr class="separator:a6fb6ce2a44b82c42cd7bb7f54f112fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f598e74a457f062d7b0852fa9744712"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a3f598e74a457f062d7b0852fa9744712">is_sim</a></td></tr>
+<tr class="separator:a3f598e74a457f062d7b0852fa9744712"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0834a516d521609f5aefc09771ca854f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a0834a516d521609f5aefc09771ca854f">joint_data</a></td></tr>
 <tr class="separator:a0834a516d521609f5aefc09771ca854f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a150877f695fb14774a1c5811407d079a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classscripts_1_1controllers_1_1RobotArm_1_1RobotArm.html#a150877f695fb14774a1c5811407d079a">mapping</a></td></tr>
@@ -161,6 +171,39 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="adac9799a72d94c029c209d6f74ea2d37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adac9799a72d94c029c209d6f74ea2d37">&#9670;&nbsp;</a></span>get_controller_lists()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.controllers.RobotArm.RobotArm.get_controller_lists </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>controller_names</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">get the list of position, velocity
+and trajectory controllers depending on if we're
+in simulation or real life.
+</pre> 
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00059">59</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+
+</div>
+</div>
 <a id="a019b75ca8f471cdba2d74130124f0627"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a019b75ca8f471cdba2d74130124f0627">&#9670;&nbsp;</a></span>get_publishers()</h2>
 
@@ -187,9 +230,87 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <pre class="fragment">gets position, velocity, and trajectory publisher(s). Lengths may
-be different.
+be different. Publishers will be different.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00200">200</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00229">229</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+
+</div>
+</div>
+<a id="a49c4c17a29ab7b2442d78877f5632c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49c4c17a29ab7b2442d78877f5632c65">&#9670;&nbsp;</a></span>get_publishers_physical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.controllers.RobotArm.RobotArm.get_publishers_physical </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pos_controller_names</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>vel_controller_names</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">gets
+joint position and joint velocity
+publishers in physical robot.
+</pre> 
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00250">250</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+
+</div>
+</div>
+<a id="a45ff579d8ace05cf5d4bea6b82c4f526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45ff579d8ace05cf5d4bea6b82c4f526">&#9670;&nbsp;</a></span>get_publishers_sim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def scripts.controllers.RobotArm.RobotArm.get_publishers_sim </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>pos_controller_names</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>vel_controller_names</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<pre class="fragment">gets
+joint position and joint velocity
+publishers in simulation robot.
+</pre> 
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00271">271</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -222,7 +343,7 @@ be different.
 
 returns nan if data does not exist (from the callback)
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00092">92</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00109">109</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -243,7 +364,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">gets the joint angles of the robot arm
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00074">74</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00091">91</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -264,7 +385,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">get the joint names of the robot
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00065">65</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00082">82</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -295,7 +416,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">callback that takes care of the joint state data.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00183">183</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00212">212</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -316,7 +437,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">gets the joint velocities of the robot arm
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00083">83</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00100">100</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -349,7 +470,7 @@ returns nan if data does not exist (from the callback)
 
 returns nan if data does not exist (from the callback)
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00104">104</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00121">121</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -392,7 +513,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">moves robot to specific joint positions.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00119">119</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00136">136</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -422,7 +543,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00116">116</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00133">133</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -459,7 +580,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">sends a joint trajectory command.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00145">145</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00174">174</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -490,7 +611,7 @@ returns nan if data does not exist (from the callback)
 </div><div class="memdoc">
 <pre class="fragment">affects the set joint velocities
 </pre> 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00132">132</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00156">156</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -507,7 +628,23 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00050">50</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00044">44</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+
+</div>
+</div>
+<a id="ab88c54477e66e02276b3e2ef30c44aab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab88c54477e66e02276b3e2ef30c44aab">&#9670;&nbsp;</a></span>controller_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scripts.controllers.RobotArm.RobotArm.controller_names</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00041">41</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -523,7 +660,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00053">53</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00047">47</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -539,7 +676,23 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00052">52</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00046">46</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+
+</div>
+</div>
+<a id="a3f598e74a457f062d7b0852fa9744712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f598e74a457f062d7b0852fa9744712">&#9670;&nbsp;</a></span>is_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">scripts.controllers.RobotArm.RobotArm.is_sim</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00040">40</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -555,7 +708,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00054">54</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00048">48</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -571,7 +724,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00194">194</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00223">223</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -587,7 +740,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00055">55</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00049">49</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -619,7 +772,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00056">56</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00050">50</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -635,7 +788,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00059">59</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00053">53</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -651,7 +804,7 @@ returns nan if data does not exist (from the callback)
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00192">192</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="RobotArm_8py_source.html#l00221">221</a> of file <a class="el" href="RobotArm_8py_source.html">RobotArm.py</a>.</p>
 
 </div>
 </div>
@@ -664,7 +817,7 @@ returns nan if data does not exist (from the callback)
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 15 2020 04:07:43</small>
+<small>autogenerated on Wed Jul 15 2020 06:06:45</small>
 </div>
 </body>
 </html>
