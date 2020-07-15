@@ -119,7 +119,7 @@ class StaticPoseData():
         # retrigger
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
-            for imu_name in self.imu_names:             
+            for imu_name in self.imu_names:
                 if imu_name == 'imu_link0':
                     qs = self.data[pose_name][imu_name][:, 4]
                 else:
@@ -129,7 +129,7 @@ class StaticPoseData():
                 if imu_name == 'imu_link0':
                     d = self.data[pose_name][imu_name][:, 4:7]
                 else:
-                    d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])                    
+                    d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
                 m = np.mean(d, axis=0)
 
                 if imu_name == 'imu_link0':

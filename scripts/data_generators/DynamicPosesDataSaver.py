@@ -17,11 +17,13 @@ from scripts import utils  # noqa: E402
 from scripts.data_generators.stopwatch import StopWatch  # noqa: E402
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
-SIM_DT = 1.0 / rospy.get_param('/dynamic_frequency')
+RATE = rospy.get_param('/dynamic_frequency')
+SIM_DT = 1.0 / RATE
 OSCILLATION_TIME = rospy.get_param('/oscillation_time')
 FREQS = rospy.get_param('/oscillation_frequency')
 AMPLITUDES = rospy.get_param('/oscillation_magnitude')
 IS_SIM = rospy.get_param('/is_sim')
+REST_TIME = rospy.get_param('/rest_time')
 
 
 class DynamicPoseData():
@@ -222,6 +224,8 @@ class DynamicPoseDataSaver():
         self.watch_dt = StopWatch()
         self.watch_motion = StopWatch()
 
+        self.r = rospy.Rate(RATE)
+
         # data storage
         self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
         # Subscribe to IMUs
@@ -272,7 +276,7 @@ class DynamicPoseDataSaver():
         positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
         self.curr_pose_name = pose_name
         # first, move to the position from <robot>_positions.txt
-        self.controller.publish_positions(positions, sleep=10)
+        self.controller.publish_positions(positions, sleep=REST_TIME)
         print('At Position: ' + pose_name,
               map(int, utils.RAD2DEG * np.array(positions)))
 
@@ -317,7 +321,7 @@ class DynamicPoseDataSaver():
                     if rospy.is_shutdown():
                         return
 
-                    self.controller.r.sleep()
+                    self.r.sleep()
                 self.watch_motion.stop()
                 rospy.sleep(1)
 

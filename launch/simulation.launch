@@ -22,11 +22,14 @@
         <arg name="headless" value="$(arg headless)"/>
     </include>
 
+    <!--    Add Params YAML File-->
+    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/params/simulation.yaml"/>
+    <rosparam command="load" file="$(arg constants_file_yaml)"/>
+
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description_with_imu -urdf -model panda"/>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find panda_simulation)/config/panda_control.yaml" command="load"/>
-
 
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_trajectory_controller joint_state_controller" />
@@ -61,11 +64,6 @@
 
     <!-- launch robot control node for moveit motion planning -->
     <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/>
-
-    <!--    Add Params YAML File-->
-    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
-    <rosparam command="load" file="$(arg constants_file_yaml)"/>
-    <rosparam param="is_sim">true</rosparam>
 
     <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
     <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
@@ -105,6 +103,6 @@
     </node> -->
 
     <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler"
-          args="--layout $(find ros_robotic_skin)/config/verify_joint_velocities_in_sim.xml"/>
+          args="--layout $(find ros_robotic_skin)/config/plotjuggler/verify_joint_velocities_in_sim.xml"/>
 
 </launch>
