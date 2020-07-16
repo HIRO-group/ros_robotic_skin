@@ -1,5 +1,5 @@
 <!-- This is the main launch file which should be  -->
-<!-- launched when Panda along with all accelerometers needs -->
+<!-- launched when Panda along with all imus -->
 <!-- to be seen. Then you can run some python files like joint_movement.py etc -->
 <!-- to see the Panda robot move. -->
 <launch>

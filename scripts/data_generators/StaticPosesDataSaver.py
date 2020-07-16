@@ -232,7 +232,7 @@ class StaticPoseDataSaver():
         """
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-            self.controller.publish_positions(positions, 10)
+            self.controller.publish_positions(positions, 3)
             print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
@@ -264,7 +264,7 @@ if __name__ == "__main__":
         robot = 'panda'
 
     rospy.init_node('static_pose_saver')
-
+    robot = 'panda'
     if robot == 'panda':
         controller = PandaController(is_sim=IS_SIM)
         filename = 'panda_positions.txt'
@@ -273,9 +273,6 @@ if __name__ == "__main__":
         filename = 'sawyer_positions.txt'
     else:
         raise ValueError("Must be either panda or sawyer")
-
-    if len(sys.argv) > 2:
-        filename = sys.argv[2]
 
     poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/static_data', robot])
