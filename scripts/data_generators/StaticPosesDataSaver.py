@@ -16,6 +16,7 @@ from scripts.controllers.RobotController import PandaController, SawyerControlle
 
 
 RAD2DEG = 180.0/np.pi
+IS_SIM = rospy.get_param('/is_sim')
 
 
 def reject_outliers(data, m=1):
@@ -119,13 +120,24 @@ class StaticPoseData():
         data = copy.deepcopy(self.data)
         for pose_name in self.pose_names:
             for imu_name in self.imu_names:
-                qs = reject_outliers(self.data[pose_name][imu_name][:, :4])
+                if imu_name == 'imu_link0':
+                    qs = self.data[pose_name][imu_name][:, 4]
+                else:
+                    qs = reject_outliers(self.data[pose_name][imu_name][:, :4])
                 q = np.mean(qs, axis=0)
-                d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
+
+                if imu_name == 'imu_link0':
+                    d = self.data[pose_name][imu_name][:, 4:7]
+                else:
+                    d = reject_outliers(self.data[pose_name][imu_name][:, 4:7])
                 m = np.mean(d, axis=0)
-                # s = np.std(d, axis=0)
-                joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
+
+                if imu_name == 'imu_link0':
+                    joints = self.data[pose_name][imu_name][:, 7:]
+                else:
+                    joints = reject_outliers(self.data[pose_name][imu_name][:, 7:])
                 j = np.mean(joints, axis=0)
+
                 data[pose_name][imu_name] = np.r_[q, m, j]
                 if verbose:
                     rospy.loginfo('[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)' % (pose_name, imu_name, m[0], m[1], m[2]))
@@ -202,7 +214,7 @@ class StaticPoseDataSaver():
 
             self.data_storage.append(
                 pose_name=self.curr_pose_name,     # for each defined initial pose
-                imu_name=data.header.frame_id,      # for each imu
+                imu_name=data.header.frame_id,      # frame id of imu
                 data=np.r_[
                     quaternion,
                     acceleration,
@@ -220,7 +232,7 @@ class StaticPoseDataSaver():
         """
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-            self.controller.publish_positions(positions, 0.1)
+            self.controller.publish_positions(positions, 10)
             print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
@@ -228,11 +240,17 @@ class StaticPoseDataSaver():
             rospy.sleep(time)
             self.ready = False
 
-    def save(self, save=True, verbose=False):
+            if rospy.is_shutdown():
+                return
+
+    def save(self, save=True, verbose=False, clean=True):
         """
         Save data to a pickle file.
         """
-        data = self.data_storage.clean_data(verbose)
+        if clean:
+            data = self.data_storage.clean_data(verbose)
+        else:
+            data = self.data_storage.data
 
         if save:
             self.data_storage.save(data)
@@ -240,10 +258,12 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    # robot = sys.argv[1]
-    robot = 'panda'
+    robot = sys.argv[1]
+
+    rospy.init_node('static_pose_saver')
+
     if robot == 'panda':
-        controller = PandaController()
+        controller = PandaController(is_sim=IS_SIM)
         filename = 'panda_positions.txt'
     elif robot == 'sawyer':
         controller = SawyerController()
@@ -259,4 +279,4 @@ if __name__ == "__main__":
 
     sd = StaticPoseDataSaver(controller, poses_list, filepath)
     sd.set_poses()
-    sd.save(save=True, verbose=True)
+    sd.save(save=True, verbose=True, clean=True)

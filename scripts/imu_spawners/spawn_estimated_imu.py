@@ -14,8 +14,7 @@ from geometry_msgs.msg import Pose, Quaternion, Point
 import sys
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 # import scripts.utils
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
 class EstimatedIMUBoxStateManager():

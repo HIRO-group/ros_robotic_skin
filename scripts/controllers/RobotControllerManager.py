@@ -50,6 +50,7 @@ class RobotControllerManager():
             rospy.wait_for_service(self.list_controller_service_name)
             list_controllers = rospy.ServiceProxy(self.list_controller_service_name, ListControllers)
             controller_list = list_controllers().controller
+            print(controller_list)
             self.mode = ControllerType.TRAJECTORY
 
             for controller in controller_list:
