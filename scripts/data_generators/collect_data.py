@@ -1,3 +1,6 @@
+import rospy
+import rospkg
+
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
 from scripts.data_generators.stopwatch import StopWatch  # noqa: E402
