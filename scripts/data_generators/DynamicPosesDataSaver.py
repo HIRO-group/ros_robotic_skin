@@ -349,7 +349,10 @@ class DynamicPoseDataSaver():
 
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
-    robot = sys.argv[1]
+    if len(sys.argv) > 1:
+        robot = sys.argv[1]
+    else:
+        robot = 'panda'
 
     rospy.init_node('dynamic_pose_saver')
 
