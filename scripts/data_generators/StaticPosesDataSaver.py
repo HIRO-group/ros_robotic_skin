@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+from ros_robotic_skin.scripts.data_generators.DynamicPosesDataSaver import REST_TIME
 import sys
 from collections import OrderedDict
 import copy
@@ -232,7 +233,7 @@ class StaticPoseDataSaver():
         """
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-            self.controller.publish_positions(positions, 3)
+            self.controller.publish_positions(positions, REST_TIME)
             print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
