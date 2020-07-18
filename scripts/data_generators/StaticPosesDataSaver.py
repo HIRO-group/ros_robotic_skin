@@ -257,10 +257,9 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    robot = sys.argv[1]
-
+    print("here")
     rospy.init_node('static_pose_saver')
-
+    robot = 'panda'
     if robot == 'panda':
         controller = PandaController(is_sim=IS_SIM)
         filename = 'panda_positions.txt'
@@ -269,9 +268,6 @@ if __name__ == "__main__":
         filename = 'sawyer_positions.txt'
     else:
         raise ValueError("Must be either panda or sawyer")
-
-    if len(sys.argv) > 2:
-        filename = sys.argv[2]
 
     poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/static_data', robot])

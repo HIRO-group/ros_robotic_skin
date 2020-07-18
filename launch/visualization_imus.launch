@@ -1,0 +1,9 @@
+<launch>
+    <include file="$(find ros_robotic_skin)/launch/simulation.launch">
+    </include>
+
+    <rosparam file="$(find ros_robotic_skin)/config/simulation.yaml" command="load"/>
+    <arg name="node_start_delay" default="15.0" />  
+    <!-- this node will run both static and dynamic data collection in the future -->
+    <node name="data_collection" pkg="ros_robotic_skin" type="spawn_estimated_imu.py" required="true" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " output="screen" />
+</launch>

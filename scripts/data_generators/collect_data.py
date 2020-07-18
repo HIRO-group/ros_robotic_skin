@@ -241,8 +241,8 @@ if __name__ == '__main__':
 
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     savedir = os.path.join(ros_robotic_skin_path, 'data')
-    static_filename = 'test_static_data_panda.pickle'
-    dynamic_filename = 'test_dynamic_data_panda.pickle'
+    static_filename = 'static_data_panda.pickle'
+    dynamic_filename = 'dynamic_data_panda.pickle'
 
     data_collector = DataCollector(
         controller=controller,
