@@ -12,7 +12,6 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
-from scripts.data_generators.DynamicPosesDataSaver import REST_TIME
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
