@@ -18,7 +18,6 @@ from scripts import utils  # noqa: E402
 from scripts.data_generators.stopwatch import StopWatch  # noqa: E402
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
-RAD2DEG = 180.0/np.pi
 DATA_COLLECTION_TIME = 3.0
 CONSTANT_VELOCITY = 1.0
 JOINT_ROT_TIME = 0.5
@@ -228,7 +227,7 @@ class ConstantRotationDataSaver():
         # first, move to the position from <robot>_positions.txt
         self.controller.publish_positions(positions, sleep=2)
         print('At Position: ' + pose_name,
-              map(int, utils.RAD2DEG * np.array(positions)))
+              map(int, np.rad2deg * np.array(positions)))
 
     def rotate_at_constant_vel(self):
         """
