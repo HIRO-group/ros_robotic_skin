@@ -4,4 +4,9 @@
       A controller that subscribes to a joint velocity topic and send to franka's hardware_interface.
     </description>
   </class>
+  <class name="ros_robotic_skin/PandaJointPositionController" type="hiro_panda::PandaJointPositionController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that subscribes to a joint position topic and send to franka's hardware_interface.
+    </description>
+  </class>
 </library>

@@ -8,17 +8,16 @@
 #include "controller_manager_msgs/SwitchController.h"
 #include "Eigen/Dense"
 
-class JointVelocityController
-{
-    private:
-        ros::NodeHandle n;
-        std::vector<ros::Publisher> publishers;
-        std_msgs::Float64 msg;
+class JointVelocityController {
+ private:
+    ros::NodeHandle n;
+    std::vector<ros::Publisher> publishers;
+    std_msgs::Float64 msg;
 
-    public:
-        JointVelocityController();
-        ~JointVelocityController();
-        void sendVelocities(const Eigen::VectorXd vel);
+ public:
+    JointVelocityController();
+    ~JointVelocityController();
+    void sendVelocities(const Eigen::VectorXd vel);
 
 };
 

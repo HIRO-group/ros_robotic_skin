@@ -1,66 +1,60 @@
-#include "PandaJointVelocityController.h"
+// Copyright (c) 2017 Franka Emika GmbH
+// Use of this source code is governed by the Apache-2.0 license, see LICENSE
+#include <PandaJointVelocityController.h>
 
-#include <array>
 #include <cmath>
-#include <memory>
-#include <string>
 
 #include <controller_interface/controller_base.h>
-#include <franka_hw/franka_state_interface.h>
 #include <hardware_interface/hardware_interface.h>
 #include <hardware_interface/joint_command_interface.h>
-#include <joint_limits_interface/joint_limits_interface.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
-#include <ros/console.h>
-#include <franka/robot_state.h>
 
-namespace hiro_panda
-{
+namespace hiro_panda {
 
-bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle &nh)
-{
-    velocity_joint_interface_ = robot_hw->get<hardware_interface::VelocityJointInterface>();
-
-    if (velocity_joint_interface_ == nullptr)
-    {
+bool PandaJointVelocityController::init(hardware_interface::RobotHW* robot_hardware,
+                                        ros::NodeHandle& node_handle) {
+    velocity_joint_interface_ = robot_hardware->get<hardware_interface::VelocityJointInterface>();
+    if (velocity_joint_interface_ == nullptr) {
         ROS_ERROR(
-        "PandaJointVelocityController: Error getting velocity joint interface from hardware!");
+            "PandaJointVelocityController: Error getting velocity joint interface from hardware!");
+        return false;
+    }
+    std::vector<std::string> joint_names;
+    if (!node_handle.getParam("joint_names", joint_names)) {
+        ROS_ERROR("PandaJointVelocityController: Could not parse joint names");
+    }
+    if (joint_names.size() != 7) {
+        ROS_ERROR_STREAM("PandaJointVelocityController: Wrong number of joint names, got "
+                        << joint_names.size() << " instead of 7 names!");
         return false;
     }
 
-    // Get joint name from parameter server
-    if (!nh.getParam("joint", joint_name))
-    {
-        ROS_ERROR("No joint given (namespace: %s)", nh.getNamespace().c_str());
-        return false;
-    }
-
-    i_joint = (int)joint_name.back();
-    std::string topic = joint_name + "_veocity_controller";
-    sub_command_ = nh.subscribe<std_msgs::Float64>(topic, 10, &PandaJointVelocityController::commandCb, this);
-
-    // Get Velocity Joint Handle from Velocity Joint Interface
-    try {
-        velocity_joint_handle_ = std::make_unique<hardware_interface::JointHandle>(
-            velocity_joint_interface_->getHandle(joint_name));
-    } catch (const hardware_interface::HardwareInterfaceException& ex) {
+    velocity_joint_handles_.resize(7);
+    for (size_t i = 0; i < 7; ++i) {
+        try {
+        velocity_joint_handles_[i] = velocity_joint_interface_->getHandle(joint_names[i]);
+        } catch (const hardware_interface::HardwareInterfaceException& ex) {
         ROS_ERROR_STREAM(
-        "PandaJointVelocityController: Exception getting velocity joint handles: " << ex.what());
+            "PandaJointVelocityController: Exception getting joint handles: " << ex.what());
         return false;
+        }
     }
+
+    for (int i = 0; i < 7; i++) {
+        joint_velocities[i] = 0.0;
+    }
+
+    last_time_called = ros::Time::now().toSec();
+
+    sub_command_ = node_handle.subscribe<std_msgs::Float64MultiArray>("command", 10, &PandaJointVelocityController::jointCommandCb, this);
 
     std::string arm_id;
-    ROS_WARN(
-        "ForceExampleController: Make sure your robot's endeffector is in contact "
-        "with a horizontal surface before starting the controller!");
-    if (!nh.getParam("arm_id", arm_id)) {
-        ROS_ERROR("ForceExampleController: Could not read parameter arm_id");
+    if (!node_handle.getParam("arm_id", arm_id)) {
+        ROS_ERROR("PandaJointVelocityController: Could not read parameter arm_id");
         return false;
     }
-
-    // Get State Interface and Handle
-    auto* state_interface = robot_hw->get<franka_hw::FrankaStateInterface>();
+    auto* state_interface = robot_hardware->get<franka_hw::FrankaStateInterface>();
     if (state_interface == nullptr) {
         ROS_ERROR_STREAM("PandaJointVelocityController: Error getting state interface from hardware");
         return false;
@@ -74,107 +68,51 @@ bool PandaJointVelocityController::init(hardware_interface::RobotHW *robot_hw, r
         return false;
     }
 
-    franka::RobotState robot_state = state_handle_->getRobotState();
-    bool enforced = enforceJointPositionSoftLimit(robot_state.q[i_joint]);
-
-    // Get URDF info about joint
-    urdf::Model urdf;
-    if (!urdf.initParamWithNodeHandle("robot_description", nh))
-    {
-        ROS_ERROR("Failed to parse urdf file");
-        return false;
-    }
-    joint_urdf_ = urdf.getJoint(joint_name);
-    if (!joint_urdf_)
-    {
-        ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
-        return false;
-    }
-
     return true;
 }
 
-
-void PandaJointVelocityController::starting(const ros::Time &time)
-{
-    // Start controller with 0.0 velocity
-    command = 0.0;
+void PandaJointVelocityController::starting(const ros::Time& /* time */) {
 }
 
-
-void PandaJointVelocityController::update(const ros::Time&, const ros::Duration& period)
-{
-    // Make sure joint velocity is within the limit
-    // If it doesn't work, replace with
-    // velocity_joint_limit_interface.enforceLimits(period);
-    // enforceJointVelocityLimit(command);
-
-    // Check if the joint positionreached the limit or not
+void PandaJointVelocityController::update(const ros::Time& time,
+                                          const ros::Duration& period) {
+    // Get current Franka::RobotState
     franka::RobotState robot_state = state_handle_->getRobotState();
-    double next_position = robot_state.q[i_joint] + command * period.toSec();
 
-    //TODO:
-    // Send command if next position is not close to the limit
-    // else Slow down the joint velocity to 0
-    if (!enforceJointPositionSoftLimit(next_position))
-    {
-        velocity_joint_handle_->setCommand(command);
-    }
-}
-
-
-void PandaJointVelocityController::stopping(const ros::Time &time)
-{
-  // can't send immediate commands for 0 velocity to robot
-}
-
-
-void PandaJointVelocityController::commandCb(const std_msgs::Float64ConstPtr& msg){
-    command = msg-> data;
-}
-
-
-// Note: we may want to remove this function once issue https://github.com/ros/angles/issues/2 is resolved
-void PandaJointVelocityController::enforceJointVelocityLimit(double &command)
-{
-    // Check that this joint has applicable limits
-    if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
-    {
-        if (command > joint_urdf_->limits->velocity) // above upper limnit
-        {
-            command = joint_urdf_->limits->velocity;
-        }
-        else if (command < -joint_urdf_->limits->velocity) // below lower limit
-        {
-            command = -joint_urdf_->limits->velocity;
+    // If there is no command for more than 0.1 sec, set velocity to 0.0
+    if (ros::Time::now().toSec() - last_time_called > 0.1) {
+        for (int i = 0; i < 7; i++) velocity_joint_handles_[i].setCommand(0.0);
+    } else {  // If command recieved, send the command to the controller
+        for (int i = 0; i < 7; i++) {
+            // Print out to the terminal just for the 1st joint for debugging.
+            // Order: Commanded Joint Velocity << Acutal Commanded Joint Velocity << Current Joint Velocity
+            // if (i == 0) ROS_INFO_STREAM("Panda_joint" << i+1 << " " << joint_velocities[i] << " " << robot_state.dq_d[i] << " " << robot_state.dq[i]);
+            // Send command
+            velocity_joint_handles_[i].setCommand(joint_velocities[i]);
         }
     }
 }
 
+void PandaJointVelocityController::stopping(const ros::Time& /*time*/) {
+    // WARNING: DO NOT SEND ZERO VELOCITIES HERE AS IN CASE OF ABORTING DURING MOTION
+    // A JUMP TO ZERO WILL BE COMMANDED PUTTING HIGH LOADS ON THE ROBOT. LET THE DEFAULT
+    // BUILT-IN STOPPING BEHAVIOR SLOW DOWN THE ROBOT.
+}
 
-bool PandaJointVelocityController::enforceJointPositionSoftLimit(double &position)
-{
-    // Check that this joint has applicable limits
-    if (joint_urdf_->type == urdf::Joint::REVOLUTE || joint_urdf_->type == urdf::Joint::PRISMATIC)
-    {
-        if (position > joint_urdf_->safety->soft_upper_limit) // above upper limnit
-        {
-            velocity_joint_handle_->setCommand(0.0);
-            ROS_DEBUG_STREAM(joint_name + " reached the joint position soft upper limit of " + std::to_string(joint_urdf_->limits->upper));
-            return true;
-        }
-        else if (position < joint_urdf_->safety->soft_lower_limit) // below lower limit
-        {
-            velocity_joint_handle_->setCommand(0.0);
-            ROS_DEBUG_STREAM(joint_name + " reached the joint position soft lower limit of " + std::to_string(joint_urdf_->limits->lower));
-            return true;
-        }
+void PandaJointVelocityController::jointCommandCb(const std_msgs::Float64MultiArray::ConstPtr& joint_velocity_commands) {
+    if (joint_velocity_commands->data.size() != 7) {
+        ROS_ERROR_STREAM("PandaJointVelocityController: Wrong number of joint velocity commands, got "
+                        << joint_velocity_commands->data.size() << " instead of 7 commands!");
     }
 
-    return false;
+    // Receive Joint Velocity Commands from a topic and save them in joint_velocities.
+    for (int i = 0; i < 7; i++) joint_velocities[i] = joint_velocity_commands->data[i];
+    // Save the time when the last topic was published
+    last_time_called = ros::Time::now().toSec();
 }
 
-}
+
+}  // namespace hiro_panda
 
 PLUGINLIB_EXPORT_CLASS(hiro_panda::PandaJointVelocityController,
                        controller_interface::ControllerBase)
