@@ -21,13 +21,13 @@ if __name__ == "__main__":
     imu_number = str(accel_gyro.config_dict['imu_number'])
 
     rospy.init_node('talker_{imu_number}'.format(imu_number=imu_number), anonymous=True)
-    pub = rospy.Publisher('/imu_data{imu_number}'.format(imu_number=imu_number), Imu, queue_size=10)
+    pub = rospy.Publisher('/imu_data{imu_number}'.format(imu_number=imu_number), Imu, queue_size=100)
     r = rospy.Rate(100)
 
     imu_msg = Imu()
     while not rospy.is_shutdown():
         accel_gyro_list = accel_gyro.read()
-        imu_msg.header.frame_id = imu_number
+        imu_msg.header.frame_id = 'imu_link' + imu_number
         imu_msg.header.stamp = rospy.Time.now()
         imu_msg.linear_acceleration.x = accel_gyro_list[0]
         imu_msg.linear_acceleration.y = accel_gyro_list[1]
