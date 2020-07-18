@@ -21,8 +21,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">scripts.utils Namespace Reference</div>  </div>
 </div><!--header-->
@@ -50,13 +49,6 @@ Functions</h2></td></tr>
 <tr class="separator:a9dd7bd07af1b40d9562ed3beb81fd133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad3f09b0d1c7a5ceeb281a494446dba2"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#aad3f09b0d1c7a5ceeb281a494446dba2">Vector3_to_np</a> (vector)</td></tr>
 <tr class="separator:aad3f09b0d1c7a5ceeb281a494446dba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ae6e32d222e3689f74f93f49d975bc21e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#ae6e32d222e3689f74f93f49d975bc21e">DEG2RAD</a> = np.pi / 180.0</td></tr>
-<tr class="separator:ae6e32d222e3689f74f93f49d975bc21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d16357d8b1909338741179d798db009"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacescripts_1_1utils.html#a9d16357d8b1909338741179d798db009">RAD2DEG</a> = 180.0 / np.pi</td></tr>
-<tr class="separator:a9d16357d8b1909338741179d798db009"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><pre class="fragment">utils xacro file
@@ -106,7 +98,7 @@ which indicates that the imu 0 is on link 1 of the model.
 `rostopic echo /imu_data0` which echo the contents of the published IMU
 messages in ROS
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00017">17</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00014">14</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -149,7 +141,7 @@ from which the xacro file is parsed.
 Returns
 -----------
 The list of links the imus are in (in order by imu id)</pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00068">68</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00065">65</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -183,7 +175,7 @@ returns: `poses_list`: `list`
     `j` joint positions, an empty lits, and a string
     that consists of `Pose_{p+1}`, where p is the pose number.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00122">122</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00119">119</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -233,7 +225,7 @@ Arguments
     The number of standard deviations to determine
     what data points are outliers.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00151">151</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00148">148</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -281,7 +273,7 @@ Arguments
     cutoff frequency; that is, data that is &gt; = `cutoff_freq` will
     be attentuated.
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00205">205</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00202">202</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -320,7 +312,7 @@ Arguments
 `window_size`: `int`
     Window size from which the average is calculated
     for each point</pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00182">182</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00179">179</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -358,7 +350,7 @@ Arguments
 
 `precision`: `int`
     The precision desired on each entry in the array.</pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00106">106</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00103">103</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -378,7 +370,7 @@ Arguments
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00265">265</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00262">262</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -422,7 +414,7 @@ Returns
 ----------
 returns: None
 </pre> 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00239">239</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00236">236</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -442,40 +434,7 @@ returns: None
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00261">261</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="ae6e32d222e3689f74f93f49d975bc21e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6e32d222e3689f74f93f49d975bc21e">&#9670;&nbsp;</a></span>DEG2RAD</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">float scripts.utils.DEG2RAD = np.pi / 180.0</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00013">13</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
-
-</div>
-</div>
-<a id="a9d16357d8b1909338741179d798db009"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d16357d8b1909338741179d798db009">&#9670;&nbsp;</a></span>RAD2DEG</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">float scripts.utils.RAD2DEG = 180.0 / np.pi</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00012">12</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
+<p class="definition">Definition at line <a class="el" href="utils_8py_source.html#l00258">258</a> of file <a class="el" href="utils_8py_source.html">utils.py</a>.</p>
 
 </div>
 </div>
@@ -485,7 +444,7 @@ returns: None
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 15 2020 06:06:45</small>
+<small>autogenerated on Sat Jul 18 2020 21:37:30</small>
 </div>
 </body>
 </html>
