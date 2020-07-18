@@ -2,8 +2,8 @@
     <include file="$(find ros_robotic_skin)/launch/simulation.launch">
     </include>
 
-    <rosparam file="$(find panda_simulation)/config/simulation.yaml" command="load"/>
+    <rosparam file="$(find ros_robotic_skin)/config/simulation.yaml" command="load"/>
     <arg name="node_start_delay" default="30.0" />  
     <!-- this node will run both static and dynamic data collection in the future -->
-    <node name="data_collection" pkg="ros_robotic_skin" type="StaticPosesDataSaver.py" required="true" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " output="screen" />
+    <node name="data_collection" pkg="ros_robotic_skin" type="collect_data.py" required="true" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " output="screen" />
 </launch>
