@@ -349,12 +349,8 @@ class DynamicPoseDataSaver():
 
 if __name__ == "__main__":
     # [Pose, Joint, IMU, x, y, z]* number os samples according to hertz
-    if len(sys.argv) > 1:
-        robot = sys.argv[1]
-    else:
-        robot = 'panda'
-
     rospy.init_node('dynamic_pose_saver')
+    robot = 'panda'
 
     if robot == 'panda':
         controller = PandaController(is_sim=IS_SIM)
@@ -364,9 +360,6 @@ if __name__ == "__main__":
         filename = 'sawyer_positions.txt'
     else:
         raise ValueError("Must be either panda or sawyer")
-
-    if len(sys.argv) > 2:
-        filename = sys.argv[2]
 
     poses_list = utils.get_poses_list_file(filename)
     filepath = '_'.join(['data/dynamic_data', robot])
