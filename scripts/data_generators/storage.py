@@ -3,14 +3,15 @@ import os
 import sys
 from collections import OrderedDict
 import copy
-from math import pi
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 # ROS packages
 import rospy
 import rospkg
-from sensor_msgs.msg import Imu
+
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
+from scripts import utils  # noqa: E402
 
 
 def reject_outliers(data, m=1):
@@ -118,16 +119,17 @@ class StaticPoseData():
                 if imu_name == 'imu_link0':
                     quaternion = np.zeros(4)
                     acceleration = np.zeros(3)
-                    j = np.zeros(7)
+                    joint = np.zeros(7)
                 # For other IMUs
                 else:
                     d = self.data[pose_name][imu_name]
+                    # Quaternions
                     quaternions = reject_outliers(d[:, :4])
                     quaternion = np.mean(quaternions, axis=0)
-
+                    # Linear Accelerations
                     accelerations = reject_outliers(d[:, 4:7])
                     acceleration = np.mean(accelerations, axis=0)
-
+                    # Joint Angles
                     joints = reject_outliers(d[:, 7:])
                     joint = np.mean(joints, axis=0)
 
@@ -136,7 +138,7 @@ class StaticPoseData():
                 if verbose:
                     rospy.loginfo(
                         '[%s, %s] Mean Acceleration: (%.3f %.3f %.3f)' % (
-                            pose_name, imu_name, acceleration[0], acceleration1], acceleration[2]
+                            pose_name, imu_name, acceleration[0], acceleration[1], acceleration[2]
                         )
                     )
 

@@ -10,7 +10,7 @@ sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
 from scripts.data_generators.stopwatch import StopWatch  # noqa: E402
 from scripts.data_generators.storage import StaticPoseData, DynamicPoseData  # noqa: E402
-from scripts.controllers.RobotController import PandaController# noqa: E402
+from scripts.controllers.RobotController import PandaController  # noqa: E402
 
 RATE = rospy.get_param('/dynamic_frequency')
 SIM_DT = 1.0 / RATE
@@ -118,7 +118,7 @@ class DataCollector:
                     joint_angles,
                     t,
                     angular_acceleration,
-                    AMPLITUDES[0], # Need to remove this later.
+                    AMPLITUDES[0],  # Need to remove this later.
                     curr_angular_velocity,
                 ]
             )
