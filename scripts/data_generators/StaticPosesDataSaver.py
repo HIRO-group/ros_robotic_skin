@@ -259,11 +259,6 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
-    if len(sys.argv) > 1:
-        robot = sys.argv[1]
-    else:
-        robot = 'panda'
-
     rospy.init_node('static_pose_saver')
     robot = 'panda'
     if robot == 'panda':
