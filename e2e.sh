@@ -61,4 +61,8 @@ fi
 sleep 2
 
 # execution of optimization
-python3 $ROBOSKIN_PATH/examples/calibration/calibrate_imu_poses.py --log INFO
+python3 $ROBOSKIN_PATH/robotic_skin/examples/calibration/calibrate_imu_poses.py --log INFO
+
+sleep 2
+
+roslaunch ros_robotic_skin visualization_imus.launch
