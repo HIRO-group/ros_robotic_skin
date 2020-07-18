@@ -67,6 +67,8 @@ class DataCollector:
         self.sim_dt = 1.0/RATE
 
         # data storage
+        static_filename = os.path.join(savedir, static_filename)
+        dynamic_filename = os.path.join(savedir, dynamic_filename)
         self.static_acceleration_storage = StaticPoseData(self.pose_names, self.imu_names, static_filename)
         self.dynamic_acceleration_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, dynamic_filename)
         # Subscribe to IMUs
