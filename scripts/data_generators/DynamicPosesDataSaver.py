@@ -278,7 +278,7 @@ class DynamicPoseDataSaver():
         # first, move to the position from <robot>_positions.txt
         self.controller.publish_positions(positions, sleep=REST_TIME)
         print('At Position: ' + pose_name,
-              map(int, utils.RAD2DEG * np.array(positions)))
+              map(int, np.rad2deg * np.array(positions)))
 
     def prepare_recording(self, joint_name):
         # Set current joint

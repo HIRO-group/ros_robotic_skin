@@ -9,9 +9,6 @@ import rospkg
 import rospy
 import pickle
 
-RAD2DEG = 180.0 / np.pi
-DEG2RAD = np.pi / 180.0
-
 
 def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
                              directory='robots'):

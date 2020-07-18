@@ -16,7 +16,6 @@ from scripts.data_generators.DynamicPosesDataSaver import REST_TIME
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
-RAD2DEG = 180.0/np.pi
 IS_SIM = rospy.get_param('/is_sim')
 
 
@@ -233,8 +232,8 @@ class StaticPoseDataSaver():
         """
         for pose in self.poses_list:
             positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
-            self.controller.publish_positions(positions, REST_TIME)
-            print('At Position: ' + pose_name, map(int, RAD2DEG*np.array(positions)))
+            self.controller.publish_positions(positions, 10)
+            print('At Position: ' + pose_name, map(int, np.rad2deg*np.array(positions)))
             self.curr_pose_name = pose_name
             rospy.sleep(0.5)
             self.ready = True
