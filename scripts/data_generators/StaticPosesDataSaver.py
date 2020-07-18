@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-from ros_robotic_skin.scripts.data_generators.DynamicPosesDataSaver import REST_TIME
 import sys
 from collections import OrderedDict
 import copy
@@ -13,6 +12,7 @@ from sensor_msgs.msg import Imu
 
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts import utils  # noqa: E402
+from scripts.data_generators.DynamicPosesDataSaver import REST_TIME
 from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
@@ -259,6 +259,7 @@ class StaticPoseDataSaver():
 
 if __name__ == "__main__":
     # get poses from file?
+    print("here")
     rospy.init_node('static_pose_saver')
     robot = 'panda'
     if robot == 'panda':
