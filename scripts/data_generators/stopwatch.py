@@ -20,9 +20,18 @@ class StopWatch():
         self.timer = timer
 
     def is_ended(self):
-        if self.is_started and self.timer:
-            if self.get_elapsed_time > self.timer:
-                return True
+        if not self.is_started:
+            raise ValueError('Not Started')
+        if not self.is_timer_set:
+            raise ValueError('Timer not Set')
+
+        if self.get_elapsed_time() > self.timer:
+            return True
+        return False
+
+    def is_timer_set(self):
+        if self.timer:
+            return True
         return False
 
     def restart(self):
@@ -32,4 +41,7 @@ class StopWatch():
         self.start_time = None
 
     def is_started(self):
-        return self.start_time
+        if self.start_time:
+            return True
+
+        return False

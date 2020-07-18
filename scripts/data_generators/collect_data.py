@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 import numpy as np
 # ROS packages
@@ -26,7 +27,11 @@ class DataCollector:
     """
     Class for collecting dynamic pose data and save them as a pickle file
     """
-    def __init__(self, controller, poses_list, filepath='data/collected_data', is_sim=True):
+    def __init__(self, controller, poses_list, is_sim=True,
+                 savedir='data',
+                 static_filename='static_data.pickle',
+                 dynamic_filename='dynamic_data.pickle',
+                 ):
         """
         Initializes DataCollector class.
 
@@ -62,8 +67,8 @@ class DataCollector:
         self.sim_dt = 1.0/RATE
 
         # data storage
-        self.static_acceleration_storage = StaticPoseData(self.pose_names, self.imu_names, filepath+'_static')
-        self.dynamic_acceleration_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath+'_dynamic')
+        self.static_acceleration_storage = StaticPoseData(self.pose_names, self.imu_names, static_filename)
+        self.dynamic_acceleration_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, dynamic_filename)
         # Subscribe to IMUs
         for imu_topic in self.imu_topics:
             rospy.Subscriber(imu_topic, Imu, self.callback)
@@ -123,7 +128,7 @@ class DataCollector:
                 ]
             )
 
-    def goto_defined_pose(self, pose, rest_time):
+    def goto_defined_pose(self, pose, rest_time, log=True):
         positions, _, pose_name = pose[0], pose[1], pose[2]  # noqa: F841
         # first, move to the position from <robot>_positions.txt
         # TODO: We have to ensure that commanded positions are reached
@@ -131,8 +136,11 @@ class DataCollector:
         self.controller.publish_positions(positions, sleep=rest_time)
 
         self.curr_pose_name = pose_name
-        print('At Position: ' + pose_name,
-              map(int, np.rad2deg * np.array(positions)))
+        if log:
+            print(
+                'At Position: ' + pose_name,
+                map(int, np.rad2deg(np.array(positions)))
+            )
 
     def record_static_motion(self, static_motion_record_time=3):
         self.watch_static_motion.start()
@@ -161,18 +169,21 @@ class DataCollector:
         self.controller.set_joint_position_speed(speed=1.0)
 
         for pose in self.poses_list:
+            self.goto_defined_pose(pose, rest_time)
+            # Record for given time
+            self.record_static_motion(static_motion_record_time)
+
             for i, joint_name in enumerate(self.joint_names):
                 # Go to current setting position
-                self.goto_defined_pose(pose, rest_time)
-                # Record for given time
-                self.record_static_motion(static_motion_record_time)
+                if i != 0:
+                    self.goto_defined_pose(pose, rest_time, log=False)
 
                 # Prepare for recording dynamic motion
                 self.prepare_prev_states(joint_name)
                 self.start_watches(dynamic_motion_record_time)
 
                 velocities = np.zeros(len(self.joint_names))
-                while not rospy.is_shutdown():
+                while True:
                     # time within motion
                     t = self.watch_dynamic_motion.get_elapsed_time()
 
@@ -182,10 +193,13 @@ class DataCollector:
 
                     if self.watch_dynamic_motion.is_ended():
                         break
+
+                    if rospy.is_shutdown():
+                        return
                     self.r.sleep()
 
                 self.watch_dynamic_motion.stop()
-                rospy.sleep(1)
+                rospy.sleep(0.1)
 
     def save(self, save=True, verbose=False, clean_static=True, clean_dynamic=False):
         """
@@ -222,13 +236,26 @@ if __name__ == '__main__':
     filename = 'panda_positions.txt'
 
     poses_list = utils.get_poses_list_file(filename)
-    filepath = 'data/collected_data_panda'
 
-    data_collector = DataCollector(controller, poses_list, filepath, IS_SIM)
+    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
+    savedir = os.path.join(ros_robotic_skin_path, 'data')
+    static_filename = 'test_static_data_panda.pickle'
+    dynamic_filename = 'test_dynamic_data_panda.pickle'
+
+    data_collector = DataCollector(
+        controller=controller,
+        poses_list=poses_list,
+        is_sim=IS_SIM,
+        savedir=savedir,
+        static_filename=static_filename,
+        dynamic_filename=dynamic_filename
+    )
+
     data_collector.collect_data(
         amplitudes=AMPLITUDES,
         freqs=FREQS,
         rest_time=REST_TIME,
         static_motion_record_time=STATIC_MOTION_RECORD_TIME,
-        dynamic_motion_record_time=DYNAMIC_MOTION_RECORD_TIME)
+        dynamic_motion_record_time=DYNAMIC_MOTION_RECORD_TIME
+    )
     data_collector.save(save=True, verbose=False)

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os
 import sys
 from collections import OrderedDict
 import copy
@@ -153,10 +152,7 @@ class StaticPoseData():
         `data`: `OrderedDict`
             The data from static data collection, saved to a pickle file.
         """
-        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-        filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
-
-        with open(filepath, 'wb') as f:
+        with open(self.filepath, 'wb') as f:
             pickle.dump(data, f)
 
 
@@ -315,8 +311,5 @@ class DynamicPoseData():
         `data`: `OrderedDict`
             The data to be saved
         """
-        ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-        filepath = os.path.join(ros_robotic_skin_path, self.filepath+'.pickle')
-
-        with open(filepath, 'wb') as f:
+        with open(self.filepath, 'wb') as f:
             pickle.dump(data, f)
