@@ -58,7 +58,7 @@ else
 fi
 
 # sleep to wait for complete shutdown of ros nodes
-sleep 20
+sleep 2
 
 # execution of optimization
 python3 $ROBOSKIN_PATH/examples/calibration/calibrate_imu_poses.py --log INFO
