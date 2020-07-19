@@ -192,21 +192,20 @@ def parse_pickle_data(pickle_filename):
 
 
 if __name__ == '__main__':
-    # rospy.init_node("set_estimated_imu_positions")
-    parser = argparse.ArgumentParser(description='IMU Spawner')
-    parser.add_argument('-r', '--robot', type=str, default='panda',
-                        help="Currently only 'panda' and 'sawyer' are supported")
-    parser.add_argument('-p', '--picklepath', type=str, default='panda_OM.pickle',
-                        help="Path to pickle file from within the data directory.")
-    parser.add_argument('-f', '--frequency', type=float, default=50.0,
-                        help='Frequency at which the animation occurs.')
-    args = parser.parse_args()
-    robot = args.robot
-
+    rospy.init_node("set_estimated_imu_positions")
+    # parser = argparse.ArgumentParser(description='IMU Spawner')
+    # parser.add_argument('-r', '--robot', type=str, default='panda',
+    #                     help="Currently only 'panda' and 'sawyer' are supported")
+    # parser.add_argument('-p', '--picklepath', type=str, default='panda_OM.pickle',
+    #                     help="Path to pickle file from within the data directory.")
+    # parser.add_argument('-f', '--frequency', type=float, default=50.0,
+    #                     help='Frequency at which the animation occurs.')
+    # args = parser.parse_args()
+    robot = 'panda'
     # data from corresponding method
-    filename = args.picklepath
+    filename = 'panda_OM.pickle'
 
-    frequency = args.frequency
+    frequency = 50.0
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     load_path = os.path.join(ros_robotic_skin_path, 'data', filename)
 
