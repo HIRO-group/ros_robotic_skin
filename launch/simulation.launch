@@ -23,7 +23,7 @@
     </include>
 
     <!--    Add Params YAML File-->
-    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/params/simulation.yaml"/>
+    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/simulation.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description_with_imu -urdf -model panda"/>
