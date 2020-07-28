@@ -27,6 +27,7 @@ private:
     bool removeFloor{true};
     std::vector<float> sphere_radiuses{0.23, 0.24, 0.2, 0.237, 0.225, 0.20, 0.27, 0.3};
     std::unique_ptr<Eigen::Vector3d[]> live_points;
+    std::vector<Eigen::Vector3d> final_points;
 
     void sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
     std::unique_ptr<ros::Subscriber[]> sub;
@@ -150,6 +151,14 @@ void ProximityListener::start()
     ros::Rate rate(50.0);
     while (ros::ok())
     {
+        final_points.clear();
+        for (int i = 0; i < num_sensors; i++)
+        {
+            if (!(std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor)))
+            {
+                final_points.push_back(live_points[i]);
+            }
+        }
         // Delete all visualizations from previous period
         marker.action = visualization_msgs::Marker::DELETEALL;
         marker_array.markers.push_back(marker);
@@ -160,24 +169,24 @@ void ProximityListener::start()
         marker.action = visualization_msgs::Marker::ADD;
         marker.header.stamp = ros::Time::now();
 
-        for (int i = 0; i < num_sensors; i++)
+        for (int i = 0; i < final_points.size(); i++)
         {
-            if (!(std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor)))
-            {
-                // Add points to the PointArray message
-                point.x = live_points[i].x();
-                point.y = live_points[i].y();
-                point.z = live_points[i].z();
-                msg.points.push_back(point);
 
-                // Add points to the visualization message
-                marker.id = i;
-                marker.pose.position.x = point.x;
-                marker.pose.position.y = point.y;
-                marker.pose.position.z = point.z;
-                marker_array.markers.push_back(marker);
-            }
+            // Add points to the PointArray message
+            point.x = final_points[i].x();
+            point.y = final_points[i].y();
+            point.z = final_points[i].z();
+            msg.points.push_back(point);
+
+            // Add points to the visualization message
+            marker.id = i;
+            marker.pose.position.x = point.x;
+            marker.pose.position.y = point.y;
+            marker.pose.position.z = point.z;
+            marker_array.markers.push_back(marker);
+
         }
+
         // Publish
         pub.publish<ros_robotic_skin::PointArray>(msg);
         pubVisualization.publish<visualization_msgs::MarkerArray>(marker_array);
