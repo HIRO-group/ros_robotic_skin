@@ -16,6 +16,13 @@
 
 enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
 
+struct closest_point{
+    int id;
+    double t;
+    float distance_to_obs = FLT_MAX;
+    Eigen::Vector3d control_point;
+};
+
 class CartesianPositionController
 {
 private:
@@ -32,19 +39,19 @@ private:
     Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
     std::vector<Eigen::Vector3d> obstaclePositionVectors;
     std::unique_ptr<Eigen::Vector3d[]> controlPointPositionVectors;
-    Eigen::MatrixXd J, Jpinv;
+    Eigen::MatrixXd J, Jpinv, joint_positions;
     KDLSolver kdlSolver;
 
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
     void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
     void readEndEffectorPosition();
     void readControlPointPositions();
+    Eigen::Vector3d getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t);
+    void getClosestControlPoints();
     Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
-
 
 public:
     CartesianPositionController();
-    ~CartesianPositionController();
     JointVelocityController jointVelocityController;
     QPAvoidance qpAvoidance;
     Eigen::VectorXd secondaryTaskFunctionGradient(Eigen::VectorXd q);
@@ -68,10 +75,6 @@ CartesianPositionController::CartesianPositionController()
     subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1, &CartesianPositionController::ObstaclePointsCallback, this);
     readEndEffectorPosition();
     readControlPointPositions();
-}
-
-CartesianPositionController::~CartesianPositionController()
-{
 }
 
 void CartesianPositionController::readEndEffectorPosition()
@@ -131,6 +134,85 @@ Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d de
 void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName)
 {
     avoidanceMode = avoidanceModeName;
+}
+
+Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t)
+{
+    //https://math.stackexchange.com/a/2193733/801563
+    Eigen::Vector3d v = b - a;
+    Eigen::Vector3d u = a - p;
+
+    double top = (v.transpose() * u);
+    double bottom = (v.transpose() * v);
+
+    // I alter this value here because I want to use it
+    t = -top/bottom;
+
+    double d_a = (p - a).norm();
+    double d_b = (p - b).norm();
+
+    Eigen::Vector3d c;
+
+
+    if (0 < t && t < 1){
+        c = a + t * (b - a);
+    } else {
+        if (d_a < d_b){
+            c = a;
+            t = 0;
+        } else {
+            c = b;
+            t = 1;
+        }
+    }
+
+    return c;
+}
+
+void CartesianPositionController::getClosestControlPoints()
+{
+
+    joint_positions = kdlSolver.forwardKinematicsJoints(q);
+
+    // Initalize a list to hold the starting segemnt of the closest line
+    std::vector<closest_point> control_points(obstaclePositionVectors.size());
+
+    // Temporary variables
+    float cur_dist;
+    double cur_t;
+    Eigen::Vector3d cur_control_point;
+
+    // Loop though all obstical points to find the closest position on the robot to each
+    Eigen::Vector3d starting_point, ending_point;
+    std::vector<int> joints = {2, 3, 4, 6, 7, 9};
+    for (int obs = 0; obs < obstaclePositionVectors.size(); obs++)
+    {
+        for (int i = 0; i < joint_positions.cols() - 1; i++)
+        {
+            starting_point = joint_positions.col(i);
+            ending_point = joint_positions.col(i+1);
+            cur_control_point = getClosestPointOnLine(starting_point, ending_point, obstaclePositionVectors[obs], cur_t);
+            cur_dist = (obstaclePositionVectors[obs] - cur_control_point).norm();
+
+            if (cur_dist < control_points[obs].distance_to_obs)
+            {
+                // This is a better potential segment and we should make it the closest point
+                control_points[obs].distance_to_obs = cur_dist;
+                control_points[obs].control_point = cur_control_point;
+                control_points[obs].id = joints[i];
+                control_points[obs].t = cur_t;
+            }
+        }
+    }
+
+    for (int i = 0; i < control_points.size(); i++)
+    {
+        std::cout << "id:" << control_points[i].id << std::endl;
+        std::cout << "dist:" << control_points[i].distance_to_obs << std::endl;
+        std::cout << "t:" << control_points[i].t << std::endl;
+        std::cout << "point:" << control_points[i].control_point << std::endl;
+        std::cout << "---------------------------------" << std::endl;
+    }
 }
 
 void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector)
@@ -196,8 +278,9 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 Eigen::Vector3d test_point2(0.012, 0.0002, 0.7);
                 obstaclePositionVectors.push_back(test_point);
                 obstaclePositionVectors.push_back(test_point2);
-                hiroAvoidance.getClosestControlPoint(kdlSolver, q, obstaclePositionVectors);
+                CartesianPositionController::getClosestControlPoints();
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                break;
             }
         }
         // std::cout << rate.cycleTime() << std::endl; Let's us the actual run time of a cycle from start to sleep
