@@ -17,7 +17,9 @@
 enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
 
 struct closest_point{
-    int id;
+    int segmentId;
+    Eigen::Vector3d segmentPointA;
+    Eigen::Vector3d segmentPointB;
     double t;
     float distance_to_obs = FLT_MAX;
     Eigen::Vector3d control_point;
@@ -202,9 +204,13 @@ void CartesianPositionController::getClosestControlPoints()
             if (cur_dist < closestPoints[obs].distance_to_obs)
             {
                 // This is a better potential segment and we should make it the closest point
+                closestPoints[obs].segmentId = joints[i];
+                closestPoints[obs].segmentPointA = starting_point;
+                closestPoints[obs].segmentPointB = ending_point;
                 closestPoints[obs].distance_to_obs = cur_dist;
                 closestPoints[obs].control_point = cur_control_point;
-                closestPoints[obs].id = joints[i];
+
+
                 closestPoints[obs].t = cur_t;
             }
         }
@@ -213,7 +219,7 @@ void CartesianPositionController::getClosestControlPoints()
     std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
     for (int i = 0; i < closestPoints.size(); i++)
     {
-        std::cout << "id:" << closestPoints[i].id << std::endl;
+        std::cout << "id:" << closestPoints[i].segmentId << std::endl;
         std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
         std::cout << "t:" << closestPoints[i].t << std::endl;
         std::cout << "point:" << closestPoints[i].control_point << std::endl;
@@ -273,7 +279,6 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
 
             case QP:
             {
-                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, numberControlPoints, controlPointPositionVectors);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }
