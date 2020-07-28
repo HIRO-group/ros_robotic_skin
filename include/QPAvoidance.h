@@ -41,9 +41,8 @@ private:
 public:
     QPAvoidance();
     ~QPAvoidance();
-    Eigen::VectorXd computeJointVelocities(Eigen::VectorXd q, Eigen::Vector3d xDot,
-                                           std::vector<Eigen::Vector3d> obstaclePositionVectors,
-                                           int numberControlPoints,
-                                           std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors);
+    Eigen::VectorXd computeJointVelocities(Eigen::VectorXd& q, Eigen::Vector3d& xDot,
+                                           std::vector<Eigen::Vector3d>& obstaclePositionVectors,
+                                           std::vector<KDLSolver::closest_point>& closestPoints);
 
 };

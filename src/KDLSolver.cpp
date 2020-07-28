@@ -33,39 +33,34 @@ KDLSolver::KDLSolver()
 }
 
 
-Eigen::MatrixXd KDLSolver::computeJacobian(std::string controlPointName, Eigen::VectorXd q)
+Eigen::MatrixXd KDLSolver::computeJacobian(std::string linkName, Eigen::VectorXd q)
 {
     // Read the element in the KDL chain array that needs to be indexed
-    int index{0};
-    if (controlPointName == "end_effector")
-    {
-        index = 0;
-    }
-    else
-    {
-        index = std::stoi(controlPointName.substr(controlPointName.find_first_of("0123456789"), controlPointName.length() - 1)) + 1;
-    }
 
-    int number_joints = kdlChainsControlPoints[index].getNrOfJoints();
-
-    KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChainsControlPoints[index]);
-    KDL::Jacobian J; J.resize(number_joints);
-    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChainsControlPoints[index].getNrOfJoints());
+    KDL::Chain kdlChain;
+    kdlTree.getChain("panda_link0", linkName, kdlChain);
+    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChain.getNrOfJoints());
+    KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain);
+    KDL::Jacobian J; J.resize(kdlChain.getNrOfJoints());
     JSolver.JntToJac(KDLJointArray, J);
     return J.data;
 }
 
-Eigen::MatrixXd KDLSolver::computeJacobian2(std::string linkName, Eigen::VectorXd q, double t, double nrm)
+Eigen::MatrixXd KDLSolver::computeJacobian2(KDLSolver::closest_point& controlPoint, Eigen::VectorXd& q)
 {
     KDL::Chain kdlChain;
-    kdlTree.getChain("panda_link0", linkName, kdlChain);
-    KDL::Frame newFrame(KDL::Vector(0, 0, - (1-t) * nrm));
+    std::string linkNameA = std::string("panda_link") + std::to_string(controlPoint.segmentId);
+    Eigen::Vector3d ABin0 = controlPoint.t * (controlPoint.segmentPointB - controlPoint.segmentPointA);
 
-    kdlChain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), newFrame, KDL::RigidBodyInertia::Zero()));
-    int number_joints = kdlChain.getNrOfJoints();
+    kdlTree.getChain("panda_link0", linkNameA, kdlChain);
+    KDL::ChainFkSolverPos_recursive FKSolver = KDL::ChainFkSolverPos_recursive(kdlChain);
+    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChain.getNrOfJoints());
+    KDL::Frame frame0A;
+    FKSolver.JntToCart(KDLJointArray, frame0A);
+    KDL::Frame newSegment(frame0A.M.Inverse() * KDL::Vector(ABin0.x(), ABin0.y(), ABin0.z()));
+    kdlChain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), newSegment, KDL::RigidBodyInertia::Zero()));
     KDL::ChainJntToJacSolver JSolver = KDL::ChainJntToJacSolver(kdlChain);
-    KDL::Jacobian J; J.resize(number_joints);
-    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(number_joints);
+    KDL::Jacobian J; J.resize(kdlChain.getNrOfJoints());
     JSolver.JntToJac(KDLJointArray, J);
     return J.data;
 }

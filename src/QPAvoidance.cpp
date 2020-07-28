@@ -1,4 +1,4 @@
-// Link to Ding Paper Presentation: 
+// Link to Ding Paper Presentation:
 // https://docs.google.com/presentation/d/1LrW7mna1wRgHsIzw3wXOrvIg3xlkNpIfmVRfGyxG_v0/edit?usp=sharing
 
 // Link to Overleaf file with the math in the presentation
@@ -138,10 +138,9 @@ double QPAvoidance::computeDampingFactor(double omega)
 }
 
 
-Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Vector3d xDot,
-                                                    std::vector<Eigen::Vector3d> obstaclePositionVectors,
-                                                    int numberControlPoints,
-                                                    std::unique_ptr<Eigen::Vector3d[]> &controlPointPositionVectors)
+Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::Vector3d& xDot,
+                                                    std::vector<Eigen::Vector3d>& obstaclePositionVectors,
+                                                    std::vector<KDLSolver::closest_point>& closestPoints)
 {
     // Equation #3
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
@@ -181,24 +180,13 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
     }
     else
     {
+        // Initialize variables
         // Being m the number of obstacle points detected:
-        // See equation #5 in ding paper for first m rows, then an additonal 1 row for equation #7
         A = Eigen::MatrixXd(obstaclePositionVectors.size() + 1, 7);
-        // b is from equation #8, must have the same number of rows as A
         b = Eigen::VectorXd(obstaclePositionVectors.size() + 1);
-        // Will set w dependent on the distance value
         Eigen::VectorXd w = Eigen::VectorXd::Ones(obstaclePositionVectors.size());
         Eigen::VectorXd distanceNorms{obstaclePositionVectors.size()};
-        // C comes from equation #6, intermediate value
         Eigen::MatrixXd C(obstaclePositionVectors.size(), 7), Jpc, JpcNormalized = Eigen::MatrixXd::Zero(3, 7);
-        // temp variable used to hold distance
-        Eigen::Vector3d d;
-        // temp variable used to pick the control point closest to each of obstacle points
-        std::vector<double> distancesToControlPoints;
-        distancesToControlPoints.resize(numberControlPoints);
-
-        int assignedIndex{0};
-        double distanceNormsSum{0};
 
         // 1) select the control point closes to each obstacle
         // 2) Calculate the distance d from the obstacle point to chosen control point
@@ -209,22 +197,13 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd q, Eigen::Ve
         // 7) Take the gradient os the norm distance with
         for (int i = 0; i < obstaclePositionVectors.size(); i++)
         {
-            //  Find closest control point
-            for (int j = 0; j < numberControlPoints; j++)
-                distancesToControlPoints[j] = (obstaclePositionVectors[i] - controlPointPositionVectors[j]).norm();
-            assignedIndex = std::distance(distancesToControlPoints.begin(), std::min_element(distancesToControlPoints.begin(), distancesToControlPoints.end()));
-            // Obtain distance
-            d = obstaclePositionVectors[i] - kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(assignedIndex), q);
-            distanceNorms[i] = d.norm();
-            w[i] = 1 / distanceNorms[i];
-            // Obtain row i in A and b
-            // TODO: Remove rows if b[i] == 5000
-            b[i] = computebvalue(distanceNorms[i]); // From fig. 5
-            Jpc = kdlSolver.computeJacobian(std::string("control_point") + std::to_string(assignedIndex), q);
+            w[i] = 1 / closestPoints[i].distance_to_obs;
+            b[i] = computebvalue(closestPoints[i].distance_to_obs); // From fig. 5
+            Jpc;
             JpcNormalized.block(0, 0, 3, Jpc.cols()) = Jpc.block(0, 0, 3, Jpc.cols());
-            A.row(i) = d.normalized().transpose() * JpcNormalized;
+            A.row(i) = (obstaclePositionVectors[i] - closestPoints[i].control_point).normalized().transpose() * JpcNormalized;
             // Obtain row i for C, which is used in eq #7 to compute the last row
-            C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], std::string("control_point") + std::to_string(assignedIndex), q);
+            C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], std::string("control_pointi"), q);
         }
 
         // Last row in A, equation #7, if obstacles are close enough

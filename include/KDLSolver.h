@@ -21,13 +21,6 @@ private:
     int controlPointCount{0};
 
 public:
-    KDLSolver();
-    Eigen::MatrixXd computeJacobian(std::string controlPointName, Eigen::VectorXd q);
-    Eigen::MatrixXd computeJacobian2(std::string controlPointName, Eigen::VectorXd q, double t, double nrm);
-    Eigen::MatrixXd forwardKinematicsJoints(const Eigen::VectorXd & q);
-    Eigen::Vector3d forwardKinematicsControlPoints(std::string controlPointName, Eigen::VectorXd q);
-    int getNumberControlPoints();
-
     struct closest_point
     {
         int segmentId;
@@ -37,6 +30,15 @@ public:
         float distance_to_obs = FLT_MAX;
         Eigen::Vector3d control_point;
     };
+
+    KDLSolver();
+    Eigen::MatrixXd computeJacobian(std::string controlPointName, Eigen::VectorXd q);
+    Eigen::MatrixXd computeJacobian2(KDLSolver::closest_point& controlPoint, Eigen::VectorXd& q);
+    Eigen::MatrixXd forwardKinematicsJoints(const Eigen::VectorXd & q);
+    Eigen::Vector3d forwardKinematicsControlPoints(std::string controlPointName, Eigen::VectorXd q);
+    int getNumberControlPoints();
+
+
 };
 
 #endif // KDL_SOLVER_H

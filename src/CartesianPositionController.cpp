@@ -110,6 +110,10 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
     {
         obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
     }
+    ///////////////////////////
+    obstaclePositionVectors.clear();
+    obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
+    /////////////////////////////
     // Obtain the control point associated to each obstacle
     // Save the values in the class member closestPoints (of type custom struct)
     getClosestControlPoints();
@@ -275,7 +279,12 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
             }
             case HIRO:
             {
-                jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                std::cout << "-------------------------" << std::endl;
+                closestPoints[0].t = 1;
+                std::cout << kdlSolver.computeJacobian2(closestPoints[0], q) - kdlSolver.computeJacobian("panda_link2", q)<< std::endl;
+                std::cout << "-------------------------" << std::endl;
+                std::cout <<  kdlSolver.computeJacobian2(closestPoints[0], q) - kdlSolver.computeJacobian("panda_link3", q) << std::endl;
+                std::cout << "-------------------------" << std::endl;
                 break;
             }
         }
