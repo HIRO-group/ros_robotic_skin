@@ -14,7 +14,7 @@
 #include "HIROAvoidance.h"
 
 
-enum AvoidanceMode {noAvoidance, Flacco, QP};
+enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
 
 class CartesianPositionController
 {
@@ -28,7 +28,7 @@ private:
     ros::Subscriber subscriberObstaclePoints;
     tf::TransformListener transform_listener;
     tf::StampedTransform transform;
-    Eigen::VectorXd q, qDot{7}, jointLimitsMin{7}, jointLimitsMax{7}, jointMiddleValues{7}, jointRanges{7};
+    Eigen::VectorXd q, qDot{7}, jointLimitsMin{7}, jointLimitsMax{7}, jointMiddleValues{7}, jointRanges{7}, jointVelocityMax{7}, jointAccelerationMax{7};
     Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
     std::vector<Eigen::Vector3d> obstaclePositionVectors;
     std::unique_ptr<Eigen::Vector3d[]> controlPointPositionVectors;
@@ -59,6 +59,8 @@ CartesianPositionController::CartesianPositionController()
     this->controlPointPositionVectors = std::make_unique<Eigen::Vector3d[]>(numberControlPoints);
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
+    jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
+    jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
     jointRanges = jointLimitsMax - jointLimitsMin;
     q.resize(7);
@@ -144,6 +146,9 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         ros::spinOnce();
         switch (avoidanceMode)
         {
+            case noAvoidance:
+                jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                break;
             case Flacco:
             {
                 // Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
@@ -175,13 +180,6 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 //std::cout << kdlSolver.forwardKinematicsJoints(q) << std::endl;
 
                 //jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
-                obstaclePositionVectors.clear();
-                Eigen::Vector3d test_point(0.1, 0.0, 0.383);
-                Eigen::Vector3d test_point2(0.012, 0.0002, 0.7);
-                obstaclePositionVectors.push_back(test_point);
-                obstaclePositionVectors.push_back(test_point2);
-                hiroAvoidance.getClosestControlPoint(kdlSolver, q, obstaclePositionVectors);
-
                 break;
             }
 
@@ -191,9 +189,19 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }
-            default:
+            case HIRO:
+            {
+                obstaclePositionVectors.clear();
+                Eigen::Vector3d test_point(0.1, 0.0, 0.383);
+                Eigen::Vector3d test_point2(0.012, 0.0002, 0.7);
+                obstaclePositionVectors.push_back(test_point);
+                obstaclePositionVectors.push_back(test_point2);
+                hiroAvoidance.getClosestControlPoint(kdlSolver, q, obstaclePositionVectors);
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+            }
         }
+        // std::cout << rate.cycleTime() << std::endl; Let's us the actual run time of a cycle from start to sleep
+        // std::cout << rate.expectedCycleTime() << std::endl;
         rate.sleep();
     }
     jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
@@ -211,15 +219,37 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "CartesianPositionController", ros::init_options::NoSigintHandler);
     signal(SIGINT, on_shutdown);
     CartesianPositionController controller;
-    if (argc == 2)
+
+    if (argc == 1)
     {
-        controller.setMode(Flacco);
+        ROS_INFO("Running in no avoidance mode");
+        controller.setMode(noAvoidance);
     }
     else
     {
-        controller.setMode(noAvoidance);
+        std::cout << argv[1] << std::endl;
+        if (std::string(argv[1]) == "Flacco")
+        {
+            ROS_INFO("Flacco selected");
+            controller.setMode(Flacco);
+        }
+        else if (std::string(argv[1]) == "QP")
+        {
+            ROS_INFO("QP selected");
+            controller.setMode(QP);
+        }
+        else if (std::string(argv[1]) == "HIRO")
+        {
+            ROS_INFO("HIRO selected");
+            controller.setMode(HIRO);
+        }
+        else
+        {
+            ROS_ERROR("Mode entered is not valid");
+            ros::shutdown();
+        }
     }
-    Eigen::MatrixXd empt(0,0);
+
     while (ros::ok())
     {
         controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
