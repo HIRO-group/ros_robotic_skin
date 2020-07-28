@@ -12,7 +12,11 @@
 #include <math.h>
 #include <vector>
 
-int num_callbacks = 0;
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
+#include "signal.h"
+#include <ros/master.h>
+
 class ProximityListener
 {
 private:
@@ -34,16 +38,25 @@ private:
     std::unique_ptr<tf::StampedTransform[]> transform_control_points;
     tf::TransformListener listener;
     bool isInSphere(Eigen::Vector3d);
+
+    visualization_msgs::Marker marker;
+    visualization_msgs::MarkerArray marker_array;
 public:
     ros::NodeHandle n;
+    ros::Publisher pub, pubVisualization;
     ProximityListener(int argc, char **argv, int num_sensors, int num_control_points, float distance_threshold, bool removeFloor, float floor_threshold);
-    ~ProximityListener();
     void start();
+    void stop();
+    void initializeMarker();
 };
 
 ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int num_control_points,
                                      float distance_threshold=0.0, bool removeFloor=true, float floor_threshold=0.04)
 {
+
+    pub = n.advertise<ros_robotic_skin::PointArray>("live_points", 1);
+    pubVisualization = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
+
     distance_threshold = distance_threshold;
     removeFloor = removeFloor;
     floor_threshold = floor_threshold;
@@ -62,11 +75,38 @@ ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
     }
     n.setParam("num_sensors", num_sensors);
+
+    this->initializeMarker();
 }
 
-ProximityListener::~ProximityListener()
+void ProximityListener::initializeMarker()
 {
+    // Same for all markers
+    marker.ns = "Live Points";
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.scale.x = 0.05;
+    marker.scale.y = 0.05;
+    marker.scale.z = 0.05;
+    marker.color.r = 1.0;
+    marker.color.g = 0.0;
+    marker.color.b = 0.0;
+    marker.color.a = 1.0;
+    marker.header.frame_id = "/world";
+    marker.type = visualization_msgs::Marker::SPHERE;
+    marker.pose.orientation.x = 0.0;
+    marker.pose.orientation.y = 0.0;
+    marker.pose.orientation.z = 0.0;
+    marker.pose.orientation.w = 1.0;
+
+    marker.header.stamp = ros::Time::now();
+    marker.id = 0;
+    marker.pose.position.x = 0.0;
+    marker.pose.position.y = 0.0;
+    marker.pose.position.z = 0.0;
 }
+
+
+
 
 void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
@@ -98,8 +138,6 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
 
 void ProximityListener::start()
 {
-
-    ros::Publisher pub = n.advertise<ros_robotic_skin::PointArray>("live_points", 1);
     ros::AsyncSpinner spinner(0);
     spinner.start();
     ROS_INFO("Loading Proximity Listener...");
@@ -112,20 +150,41 @@ void ProximityListener::start()
     ros::Rate rate(50.0);
     while (ros::ok())
     {
+        // Delete all visualizations from previous period
+        marker.action = visualization_msgs::Marker::DELETEALL;
+        marker_array.markers.push_back(marker);
+        pubVisualization.publish<visualization_msgs::MarkerArray>(marker_array);
+        marker_array.markers.clear();
+
+        // Preparation for adding new visualizations
+        marker.action = visualization_msgs::Marker::ADD;
+        marker.header.stamp = ros::Time::now();
+
         for (int i = 0; i < num_sensors; i++)
         {
-            if (std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor) );
-            else
+            if (!(std::isnan(live_points[i].x()) || isInSphere(live_points[i]) || ( (live_points[i].z() < floor_threshold) && removeFloor)))
             {
+                // Add points to the PointArray message
                 point.x = live_points[i].x();
                 point.y = live_points[i].y();
                 point.z = live_points[i].z();
                 msg.points.push_back(point);
-                // std::cout << live_points[i].z() << std::endl ;
+
+                // Add points to the visualization message
+                marker.id = i;
+                marker.pose.position.x = point.x;
+                marker.pose.position.y = point.y;
+                marker.pose.position.z = point.z;
+                marker_array.markers.push_back(marker);
             }
         }
+        // Publish
         pub.publish<ros_robotic_skin::PointArray>(msg);
+        pubVisualization.publish<visualization_msgs::MarkerArray>(marker_array);
+
+        // Clear all to get ready for next loop
         msg.points.clear();
+        marker_array.markers.clear();
         rate.sleep();
     }
 }
@@ -143,6 +202,17 @@ bool ProximityListener::isInSphere(Eigen::Vector3d point_in_space)
             return true;
     }
     return false;
+}
+
+void ProximityListener::stop()
+{
+    ROS_INFO("Shutting down proximity listener...");
+    ROS_INFO("Deleting visualization points...");
+    marker.action = visualization_msgs::Marker::DELETEALL;
+    marker_array.markers.push_back(marker);
+    pubVisualization.publish<visualization_msgs::MarkerArray>(marker_array);
+    ROS_INFO("Deleted all visualization points");
+    ros::shutdown();
 }
 
 int topic_count(std::string topic_substring)
