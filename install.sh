@@ -91,7 +91,7 @@ then
     rm -rf panda_moveit_config
 fi
 
-git clone https://github.com/erdalpekel/panda_moveit_config
+git clone https://github.com/ros-planning/panda_moveit_config
 
 
 if [ -d "franka_ros" ]
