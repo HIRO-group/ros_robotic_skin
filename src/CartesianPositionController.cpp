@@ -111,9 +111,10 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
         obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
     }
     ///////////////////////////
-    obstaclePositionVectors.clear();
-    obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
+    // obstaclePositionVectors.clear();
+    // obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
     /////////////////////////////
+
     // Obtain the control point associated to each obstacle
     // Save the values in the class member closestPoints (of type custom struct)
     getClosestControlPoints();
@@ -204,22 +205,21 @@ void CartesianPositionController::getClosestControlPoints()
                 closestPoints[obs].segmentPointB = ending_point;
                 closestPoints[obs].distance_to_obs = cur_dist;
                 closestPoints[obs].control_point = cur_control_point;
-
-
                 closestPoints[obs].t = cur_t;
             }
         }
     }
-
-    std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
-    for (int i = 0; i < closestPoints.size(); i++)
-    {
-        std::cout << "id:" << closestPoints[i].segmentId << std::endl;
-        std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
-        std::cout << "t:" << closestPoints[i].t << std::endl;
-        std::cout << "point:" << closestPoints[i].control_point << std::endl;
-        std::cout << "---------------------------------" << std::endl;
-    }
+    ////////////////////////////////////////////////////
+    // std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
+    // for (int i = 0; i < closestPoints.size(); i++)
+    // {
+    //     std::cout << "id:" << closestPoints[i].segmentId << std::endl;
+    //     std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
+    //     std::cout << "t:" << closestPoints[i].t << std::endl;
+    //     std::cout << "point:" << closestPoints[i].control_point << std::endl;
+    //     std::cout << "---------------------------------" << std::endl;
+    // }
+    ////////////////////////////////////////////////////
 }
 
 void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector)
@@ -274,6 +274,7 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
 
             case QP:
             {
+                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }

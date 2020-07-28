@@ -995,15 +995,7 @@ Visualization Manager:
       Marker Topic: visualization_marker_array
       Name: MarkerArray
       Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: visualization_marker
-      Name: Marker
-      Namespaces:
-        {}
+        Live Points: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -1041,18 +1033,18 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.014134742319583893
-        Y: 0.2495730221271515
-        Z: 0.12526249885559082
+        X: 0.3140503168106079
+        Y: 0.3513950705528259
+        Z: -0.111198790371418
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2562662661075592
+      Pitch: 0.40626630187034607
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.7011964321136475
+      Yaw: 6.081197261810303
     Saved: ~
 Window Geometry:
   Displays:

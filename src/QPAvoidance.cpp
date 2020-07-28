@@ -182,11 +182,11 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
     {
         // Initialize variables
         // Being m the number of obstacle points detected:
-        A = Eigen::MatrixXd(obstaclePositionVectors.size() + 1, 7);
-        b = Eigen::VectorXd(obstaclePositionVectors.size() + 1);
-        Eigen::VectorXd w = Eigen::VectorXd::Ones(obstaclePositionVectors.size());
-        Eigen::VectorXd distanceNorms{obstaclePositionVectors.size()};
-        Eigen::MatrixXd C(obstaclePositionVectors.size(), 7), Jpc, JpcNormalized = Eigen::MatrixXd::Zero(3, 7);
+        int m = obstaclePositionVectors.size();
+        A = Eigen::MatrixXd(m + 1, 7);
+        b = Eigen::VectorXd(m + 1);
+        Eigen::VectorXd w = Eigen::VectorXd::Ones(m);
+        Eigen::MatrixXd C(m, 7), Ji, JiResized = Eigen::MatrixXd::Zero(3, 7);
 
         // 1) select the control point closes to each obstacle
         // 2) Calculate the distance d from the obstacle point to chosen control point
@@ -195,37 +195,17 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
         // 5) Add extra row from equation 5
         // 6) d norm calculation done in Fig. 5
         // 7) Take the gradient os the norm distance with
-        for (int i = 0; i < obstaclePositionVectors.size(); i++)
+        for (int i = 0; i < m; i++)
         {
             w[i] = 1 / closestPoints[i].distance_to_obs;
             b[i] = computebvalue(closestPoints[i].distance_to_obs); // From fig. 5
-            Jpc;
-            JpcNormalized.block(0, 0, 3, Jpc.cols()) = Jpc.block(0, 0, 3, Jpc.cols());
-            A.row(i) = (obstaclePositionVectors[i] - closestPoints[i].control_point).normalized().transpose() * JpcNormalized;
-            // Obtain row i for C, which is used in eq #7 to compute the last row
-            C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], std::string("control_pointi"), q);
+            Ji = kdlSolver.computeJacobian2(closestPoints[i], q);
+            JiResized.block(0, 0, 3, Ji.cols()) = Ji.block(0, 0, 3, Ji.cols());
+            A.row(i) = (obstaclePositionVectors[i] - closestPoints[i].control_point).normalized().transpose() * JiResized;
         }
-
-        // Last row in A, equation #7, if obstacles are close enough
-        if (distanceNorms.minCoeff() > 0.5)
-        {
-            A.conservativeResize(obstaclePositionVectors.size(), 7);
-            b.conservativeResize(obstaclePositionVectors.size());
-        }
-        else
-        {
-            // Normalize weights
-            double weightsum = w.sum();
-            for (int i = 0; i < w.size(); i++)
-            {
-                w[i] = w[i] / weightsum;
-            }
-
-            A.row(obstaclePositionVectors.size()) = - w.transpose() * C;
-            b[obstaclePositionVectors.size()] = 0;
-        }
+        A.conservativeResize(m, A.cols());
+        b.conservativeResize(m);
     }
-
     algLib(H, f, A, b, bl, bu);
     return qDot;
 }
