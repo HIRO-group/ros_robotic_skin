@@ -27,6 +27,16 @@ public:
     Eigen::MatrixXd forwardKinematicsJoints(const Eigen::VectorXd & q);
     Eigen::Vector3d forwardKinematicsControlPoints(std::string controlPointName, Eigen::VectorXd q);
     int getNumberControlPoints();
+
+    struct closest_point
+    {
+        int segmentId;
+        Eigen::Vector3d segmentPointA;
+        Eigen::Vector3d segmentPointB;
+        double t;
+        float distance_to_obs = FLT_MAX;
+        Eigen::Vector3d control_point;
+    };
 };
 
 #endif // KDL_SOLVER_H

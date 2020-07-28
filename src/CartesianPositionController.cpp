@@ -16,15 +16,6 @@
 
 enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
 
-struct closest_point{
-    int segmentId;
-    Eigen::Vector3d segmentPointA;
-    Eigen::Vector3d segmentPointB;
-    double t;
-    float distance_to_obs = FLT_MAX;
-    Eigen::Vector3d control_point;
-};
-
 class CartesianPositionController
 {
 private:
@@ -43,7 +34,7 @@ private:
     std::unique_ptr<Eigen::Vector3d[]> controlPointPositionVectors;
     Eigen::MatrixXd J, Jpinv, joint_positions;
     KDLSolver kdlSolver;
-    std::vector<closest_point> closestPoints;
+    std::vector<KDLSolver::closest_point> closestPoints;
 
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
     void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
