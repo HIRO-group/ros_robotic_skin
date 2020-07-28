@@ -117,6 +117,9 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
     {
         obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
     }
+    // Obtain the control point associated to each obstacle
+    // Save the values in the class member closestPoints (of type custom struct)
+    getClosestControlPoints();
 }
 
 Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q)
@@ -207,6 +210,7 @@ void CartesianPositionController::getClosestControlPoints()
         }
     }
 
+    std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
     for (int i = 0; i < closestPoints.size(); i++)
     {
         std::cout << "id:" << closestPoints[i].id << std::endl;
@@ -275,12 +279,6 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
             }
             case HIRO:
             {
-                obstaclePositionVectors.clear();
-                Eigen::Vector3d test_point(0.1, 0.0, 0.383);
-                Eigen::Vector3d test_point2(0.012, 0.0002, 0.7);
-                obstaclePositionVectors.push_back(test_point);
-                obstaclePositionVectors.push_back(test_point2);
-                CartesianPositionController::getClosestControlPoints();
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
                 break;
             }
