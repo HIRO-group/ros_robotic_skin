@@ -36,6 +36,7 @@ public:
     Eigen::MatrixXd computeJacobian2(KDLSolver::closest_point& controlPoint, Eigen::VectorXd& q);
     Eigen::MatrixXd forwardKinematicsJoints(const Eigen::VectorXd & q);
     Eigen::Vector3d forwardKinematicsControlPoints(std::string controlPointName, Eigen::VectorXd q);
+    Eigen::Vector3d forwardKinematics(KDLSolver::closest_point& controlPoint, Eigen::VectorXd& q);
     int getNumberControlPoints();
 
 

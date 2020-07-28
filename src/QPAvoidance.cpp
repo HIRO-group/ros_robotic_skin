@@ -205,6 +205,8 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
         }
         A.conservativeResize(m, A.cols());
         b.conservativeResize(m);
+        closestPoints[0].t = 1;
+        std::cout << kdlSolver.forwardKinematicsJoints(q).col(1) - kdlSolver.forwardKinematics(closestPoints[0], q) << std::endl;
     }
     algLib(H, f, A, b, bl, bu);
     return qDot;

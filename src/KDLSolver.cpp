@@ -51,7 +51,6 @@ Eigen::MatrixXd KDLSolver::computeJacobian2(KDLSolver::closest_point& controlPoi
     KDL::Chain kdlChain;
     std::string linkNameA = std::string("panda_link") + std::to_string(controlPoint.segmentId);
     Eigen::Vector3d ABin0 = controlPoint.t * (controlPoint.segmentPointB - controlPoint.segmentPointA);
-
     kdlTree.getChain("panda_link0", linkNameA, kdlChain);
     KDL::ChainFkSolverPos_recursive FKSolver = KDL::ChainFkSolverPos_recursive(kdlChain);
     KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChain.getNrOfJoints());
@@ -101,6 +100,24 @@ Eigen::MatrixXd KDLSolver::forwardKinematicsJoints(const Eigen::VectorXd & q)
     }
 
     return result;
+}
+
+Eigen::Vector3d KDLSolver::forwardKinematics(KDLSolver::closest_point& controlPoint, Eigen::VectorXd& q)
+{
+    KDL::Chain kdlChain;
+    std::string linkNameA = std::string("panda_link") + std::to_string(controlPoint.segmentId);
+    Eigen::Vector3d ABin0 = controlPoint.t * (controlPoint.segmentPointB - controlPoint.segmentPointA);
+    kdlTree.getChain("panda_link0", linkNameA, kdlChain);
+    KDL::ChainFkSolverPos_recursive FKSolver = KDL::ChainFkSolverPos_recursive(kdlChain);
+    KDL::JntArray KDLJointArray(7); KDLJointArray.data = q; KDLJointArray.resize(kdlChain.getNrOfJoints());
+    KDL::Frame frame0A;
+    FKSolver.JntToCart(KDLJointArray, frame0A);
+    KDL::Frame newSegment(frame0A.M.Inverse() * KDL::Vector(ABin0.x(), ABin0.y(), ABin0.z()));
+    kdlChain.addSegment(KDL::Segment(KDL::Joint(KDL::Joint::None), newSegment, KDL::RigidBodyInertia::Zero()));
+    KDL::ChainFkSolverPos_recursive FKSolver2 = KDL::ChainFkSolverPos_recursive(kdlChain);
+    KDL::Frame finalFrame;
+    FKSolver2.JntToCart(KDLJointArray, finalFrame);
+    return Eigen::Vector3d(finalFrame.p(0), finalFrame.p(1), finalFrame.p(2));
 }
 
 int KDLSolver::getNumberControlPoints()
