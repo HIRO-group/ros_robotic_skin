@@ -41,6 +41,7 @@ private:
     std::unique_ptr<Eigen::Vector3d[]> controlPointPositionVectors;
     Eigen::MatrixXd J, Jpinv, joint_positions;
     KDLSolver kdlSolver;
+    std::vector<closest_point> closestPoints;
 
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
     void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
@@ -175,7 +176,8 @@ void CartesianPositionController::getClosestControlPoints()
     joint_positions = kdlSolver.forwardKinematicsJoints(q);
 
     // Initalize a list to hold the starting segemnt of the closest line
-    std::vector<closest_point> control_points(obstaclePositionVectors.size());
+    closestPoints.clear();
+    closestPoints.resize(obstaclePositionVectors.size());
 
     // Temporary variables
     float cur_dist;
@@ -194,23 +196,23 @@ void CartesianPositionController::getClosestControlPoints()
             cur_control_point = getClosestPointOnLine(starting_point, ending_point, obstaclePositionVectors[obs], cur_t);
             cur_dist = (obstaclePositionVectors[obs] - cur_control_point).norm();
 
-            if (cur_dist < control_points[obs].distance_to_obs)
+            if (cur_dist < closestPoints[obs].distance_to_obs)
             {
                 // This is a better potential segment and we should make it the closest point
-                control_points[obs].distance_to_obs = cur_dist;
-                control_points[obs].control_point = cur_control_point;
-                control_points[obs].id = joints[i];
-                control_points[obs].t = cur_t;
+                closestPoints[obs].distance_to_obs = cur_dist;
+                closestPoints[obs].control_point = cur_control_point;
+                closestPoints[obs].id = joints[i];
+                closestPoints[obs].t = cur_t;
             }
         }
     }
 
-    for (int i = 0; i < control_points.size(); i++)
+    for (int i = 0; i < closestPoints.size(); i++)
     {
-        std::cout << "id:" << control_points[i].id << std::endl;
-        std::cout << "dist:" << control_points[i].distance_to_obs << std::endl;
-        std::cout << "t:" << control_points[i].t << std::endl;
-        std::cout << "point:" << control_points[i].control_point << std::endl;
+        std::cout << "id:" << closestPoints[i].id << std::endl;
+        std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
+        std::cout << "t:" << closestPoints[i].t << std::endl;
+        std::cout << "point:" << closestPoints[i].control_point << std::endl;
         std::cout << "---------------------------------" << std::endl;
     }
 }
