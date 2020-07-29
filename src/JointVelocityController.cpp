@@ -28,6 +28,8 @@ JointVelocityController::JointVelocityController()
                                                         std::to_string(i+1) +
                                                         "_velocity_controller/command", 1));
     }
+    realPublisher = n.advertise<std_msgs::Float64>("panda_joint_velocity_controller/command", 1);
+    msgarray.data.resize(7);
 }
 
 JointVelocityController::~JointVelocityController()
@@ -42,6 +44,7 @@ void JointVelocityController::sendVelocities(const Eigen::VectorXd vel)
             if (!std::isnan(vel[i]))
             {
                 msg.data = vel[i];
+                msgarray.data[i] = vel[i];
                 publishers[i].publish(msg);
             }
             else
@@ -51,6 +54,7 @@ void JointVelocityController::sendVelocities(const Eigen::VectorXd vel)
                 ros::shutdown();
             }
         }
+        realPublisher.publish(msgarray);
     }
     else
     {
