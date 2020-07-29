@@ -39,8 +39,17 @@ void JointVelocityController::sendVelocities(const Eigen::VectorXd vel)
     if (vel.size() == 7)
     {
         for (int i = 0; i < 7; i++){
-            msg.data = vel[i];
-            publishers[i].publish(msg);
+            if (!std::isnan(vel[i]))
+            {
+                msg.data = vel[i];
+                publishers[i].publish(msg);
+            }
+            else
+            {
+                ROS_ERROR("NaN values can't be published as joint velocities");
+                ROS_ERROR("Shutting down");
+                ros::shutdown();
+            }
         }
     }
     else
