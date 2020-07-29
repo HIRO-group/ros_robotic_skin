@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="imu">
 
-    <xacro:macro name="imu" params="imu_id:='0' xyz:='0 0 0' rpy:='0 0 0' gravity:='false' type:='fixed' freq:='100' connected_to:=''">
+    <xacro:macro name="imu" params="imu_id:='0' xyz:='0 0 0' rpy:='0 0 0' gravity:='true' type:='fixed' freq:='100' connected_to:=''">
         <!-- Connect IMU to the world if not specified -->
         <xacro:if value="${connected_to == ''}">
             <joint name="imu${imu_id}_to_world" type="${type}">
@@ -38,7 +38,7 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="${boxxy} ${boxxy} ${boxz}"/> 
+                    <box size="${boxxy} ${boxxy} ${boxz}"/>
                 </geometry>
             </visual>
         </link>

@@ -1,12 +1,10 @@
 #include "JointVelocityController.h"
 
-JointVelocityController::JointVelocityController()
-{
+JointVelocityController::JointVelocityController() {
     // Switch to velocity controller
     std::vector<std::string> velocity_controller_names; velocity_controller_names.reserve(7);
     std::vector<std::string> position_controller_names; position_controller_names.reserve(7);
-    for (int i = 0; i < 7; i++)
-    {
+    for (int i = 0; i < 7; i++) {
         velocity_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_velocity_controller");
         position_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_position_controller");
     }
@@ -22,29 +20,23 @@ JointVelocityController::JointVelocityController()
 
     // Set up publishers
     publishers.reserve(7);
-    for (int i = 0; i < 7; i++)
-    {
+    for (int i = 0; i < 7; i++) {
         publishers.push_back(n.advertise<std_msgs::Float64>("panda_joint" +
                                                         std::to_string(i+1) +
                                                         "_velocity_controller/command", 1));
     }
 }
 
-JointVelocityController::~JointVelocityController()
-{
+JointVelocityController::~JointVelocityController() {
 }
 
-void JointVelocityController::sendVelocities(const Eigen::VectorXd vel)
-{
-    if (vel.size() == 7)
-    {
-        for (int i = 0; i < 7; i++){
+void JointVelocityController::sendVelocities(const Eigen::VectorXd vel) {
+    if (vel.size() == 7) {
+        for (int i = 0; i < 7; i++) {
             msg.data = vel[i];
             publishers[i].publish(msg);
         }
-    }
-    else
-    {
+    } else {
         ROS_ERROR_ONCE("The published vector must contain 7 elements");
     }
 }

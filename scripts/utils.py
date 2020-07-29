@@ -253,3 +253,11 @@ def reject_outliers(data, m=1):
     is_in_std = np.absolute(data - np.mean(data, axis=0)) < m * np.std(data, axis=0)
     indices = np.where(is_in_std)
     return data[indices], indices
+
+
+def Vector3_to_np(vector):
+    return np.array([vector.x, vector.y, vector.z])
+
+
+def Quaternion_to_np(q):
+    return np.array([q.x, q.y, q.z, q.w])

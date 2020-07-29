@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os
-import argparse
+# import argparse
 import numpy as np
 import rospy
 import rospkg
@@ -14,8 +14,7 @@ from geometry_msgs.msg import Pose, Quaternion, Point
 import sys
 sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 # import scripts.utils
-from scripts.controllers.PandaController import PandaController  # noqa: E402
-from scripts.controllers.SawyerController import SawyerController  # noqa: E402
+from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
 
 
 class EstimatedIMUBoxStateManager():
@@ -176,40 +175,42 @@ class TrueIMUBoxStateManager():
         return poses
 
 
-def load_estimated_poses(filename):
+def parse_pickle_data(pickle_filename):
     """
-    Loads the poses
+    parses pickle data.
+    """
+    data = pickle.load(open(pickle_filename, 'r'))
+    trials = data['trials']
+    keys = trials.keys()
+    dh_params_data = []
+    for key in keys:
+        if len(dh_params_data) != trials[key]['imu_num']:
+            dh_params_data.append([])
+        dh_params_data[-1].append(trials[key]['position'] + trials[key]['orientation'])
 
-    Arguments
-    ---------
-    `filename`: `str`
-        The filename to get the `np.array`
-    """
-    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-    return np.loadtxt(os.path.join(ros_robotic_skin_path, 'data', filename))
+    return dh_params_data
 
 
 if __name__ == '__main__':
-    # rospy.init_node("set_estimated_imu_positions")
-    parser = argparse.ArgumentParser(description='IMU Spawner')
-    parser.add_argument('-r', '--robot', type=str, default='panda',
-                        help="Currently only 'panda' and 'sawyer' are supported")
-    parser.add_argument('-p', '--picklepath', type=str, default='OM_data.pkl',
-                        help="Path to pickle file from within the data directory.")
-    parser.add_argument('-f', '--frequency', type=float, default=10.0,
-                        help='Frequency at which the animation occurs.')
-    args = parser.parse_args()
-    robot = args.robot
-
+    rospy.init_node("set_estimated_imu_positions")
+    # parser = argparse.ArgumentParser(description='IMU Spawner')
+    # parser.add_argument('-r', '--robot', type=str, default='panda',
+    #                     help="Currently only 'panda' and 'sawyer' are supported")
+    # parser.add_argument('-p', '--picklepath', type=str, default='panda_OM.pickle',
+    #                     help="Path to pickle file from within the data directory.")
+    # parser.add_argument('-f', '--frequency', type=float, default=50.0,
+    #                     help='Frequency at which the animation occurs.')
+    # args = parser.parse_args()
+    robot = 'panda'
     # data from corresponding method
-    filename = args.picklepath
+    filename = 'panda_OM.pickle'
 
-    frequency = args.frequency
+    frequency = 50.0
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     load_path = os.path.join(ros_robotic_skin_path, 'data', filename)
 
     if os.path.exists(load_path):
-        dh_params_data = pickle.load(open(load_path, 'rb'))
+        dh_params_data = parse_pickle_data(load_path)
     else:
         raise EnvironmentError("File not found!")
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
@@ -220,20 +221,19 @@ if __name__ == '__main__':
     else:
         raise ValueError("Must be either panda or sawyer")
 
-    # poses = load_estimated_poses(filename)
-    positions = np.zeros(7)
+    positions = np.array([0, 0, 0, -0.0698, 0, 0, 0])
     controller.publish_positions(positions, sleep=1)
-    # imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
-    #              'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
-    # link_names = ['panda::'+imu_name for imu_name in imu_names]
-    # panda_imu_manager = TrueIMUBoxStateManager(link_names)
-    # defined_poses = panda_imu_manager.get_poses()
-    # print(defined_poses)
+    imu_names = ['imu_link0', 'imu_link1', 'imu_link2',
+                 'imu_link3', 'imu_link4', 'imu_link5', 'imu_link6']
+    link_names = ['panda::' + imu_name for imu_name in imu_names]
+    panda_imu_manager = TrueIMUBoxStateManager(link_names)
+    defined_poses = panda_imu_manager.get_poses()
     # Set initial poses
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
     r = rospy.Rate(frequency)
     n_imu = len(dh_params_data)
-    model_names = ['imu%i' % (i) for i in range(n_imu)]
+    model_names = ['imu%i' % (i+1) for i in range(n_imu)]
+
     poses = np.zeros((n_imu, 7))
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
@@ -246,6 +246,7 @@ if __name__ == '__main__':
     indices = [0] * 6
     su_idx = 0
     done_amt = 0
+
     while True:
         if indices[su_idx] == optimization_lengths[su_idx]:
             # skip su.

@@ -71,8 +71,7 @@ ProximityListener::ProximityListener(int argc, char **argv, int num_sensors, int
     this->transform = std::make_unique<tf::StampedTransform[]>(num_sensors);
     this->transform_control_points = std::make_unique<tf::StampedTransform[]>(num_control_points);
     this->translation_control_points = std::make_unique<Eigen::Vector3d[]>(num_control_points);
-    for (int i = 0; i < num_sensors; i++)
-    {
+    for (int i = 0; i < num_sensors; i++) {
         sub[i] = n.subscribe<sensor_msgs::LaserScan>("proximity_data" + std::to_string(i), 1, &ProximityListener::sensorCallback, this);
     }
     n.setParam("num_sensors", num_sensors);
@@ -113,8 +112,7 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
 {
     int sensor_number = std::stoi(scan->header.frame_id.substr(scan->header.frame_id.find_first_of("0123456789"), scan->header.frame_id.length() -1));
 
-    try
-    {
+    try {
         listener.lookupTransform("/world", "/proximity_link" + std::to_string(sensor_number),
                                  ros::Time(0), transform[sensor_number]);
         translation1[sensor_number] << transform[sensor_number].getOrigin().getX(),
@@ -129,10 +127,8 @@ void ProximityListener::sensorCallback(const sensor_msgs::LaserScan::ConstPtr& s
         rotation[sensor_number].z() = transform[sensor_number].getRotation().getZ();
 
         live_points[sensor_number] = translation1[sensor_number] + (rotation[sensor_number] * translation2[sensor_number]);
-    }
-    catch (tf::TransformException ex)
-    {
-        ROS_ERROR("%s",ex.what());
+    } catch (tf::TransformException ex) {
+        ROS_ERROR("%s", ex.what());
         ros::Duration(1.0).sleep();
     }
 }
@@ -198,10 +194,8 @@ void ProximityListener::start()
     }
 }
 
-bool ProximityListener::isInSphere(Eigen::Vector3d point_in_space)
-{
-    for (int i = 0; i < num_control_points; i++)
-    {
+bool ProximityListener::isInSphere(Eigen::Vector3d point_in_space) {
+    for (int i = 0; i < num_control_points; i++) {
         listener.lookupTransform("/world", "/control_point" + std::to_string(i),
                                  ros::Time(0), transform_control_points[i]);
         translation_control_points[i] << transform_control_points[i].getOrigin().getX(),
@@ -230,18 +224,16 @@ int topic_count(std::string topic_substring)
     ros::master::getTopics(topic_infos);
 
     int count = 0;
-    for (ros::master::V_TopicInfo::iterator it = topic_infos.begin() ; it != topic_infos.end(); it++)
-    {
+    for (ros::master::V_TopicInfo::iterator it = topic_infos.begin() ; it != topic_infos.end(); it++) {
         const ros::master::TopicInfo& info = *it;
-        if (info.name.find(topic_substring) != std::string::npos){
+        if (info.name.find(topic_substring) != std::string::npos) {
             count++;
         }
     }
     return count;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     ros::init(argc, argv, "proximity_listener");
     ProximityListener proximity_listener(argc, argv, topic_count("proximity_data"), 8);
     proximity_listener.start();

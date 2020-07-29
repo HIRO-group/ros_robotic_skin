@@ -7,9 +7,8 @@
 #include <ros/master.h>
 
 void on_shutdown(int sig);
-class ProximityVisualizer
-{
-private:
+class ProximityVisualizer {
+ private:
     int num_sensors;
     void Callback(const ros_robotic_skin::PointArray::ConstPtr& msg);
     ros::NodeHandle n;
@@ -17,19 +16,16 @@ private:
     ros::Publisher pub;
     visualization_msgs::Marker marker;
     visualization_msgs::MarkerArray marker_array;
-public:
-
+ public:
     ProximityVisualizer();
     ~ProximityVisualizer();
     void start();
     void stop();
 };
 
-ProximityVisualizer::ProximityVisualizer()
-{
+ProximityVisualizer::ProximityVisualizer() {
     signal(SIGINT, on_shutdown);
-    if (!n.getParam("/num_sensors", num_sensors))
-    {
+    if (!n.getParam("/num_sensors", num_sensors)) {
         ROS_ERROR("Can't get number of sensors from the parameter server");
         ros::shutdown();
     }
@@ -59,12 +55,10 @@ ProximityVisualizer::ProximityVisualizer()
     marker.pose.position.z = 0.0;
 }
 
-ProximityVisualizer::~ProximityVisualizer()
-{
+ProximityVisualizer::~ProximityVisualizer() {
 }
 
-void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr& msg)
-{
+void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr& msg) {
     // Delete all points from previous callback
     marker.action = visualization_msgs::Marker::DELETEALL;
     marker_array.markers.push_back(marker);
@@ -74,8 +68,7 @@ void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr&
     // Add new points
     marker.action = visualization_msgs::Marker::ADD;
     marker.header.stamp = ros::Time::now();
-    for (int i = 0; i < msg->points.size(); i++)
-    {
+    for (int i = 0; i < msg->points.size(); i++) {
         // Check that it's not 'nan' or 'inf'
         marker.id = i;
         marker.pose.position.x = msg->points[i].x;
@@ -88,13 +81,11 @@ void ProximityVisualizer::Callback(const ros_robotic_skin::PointArray::ConstPtr&
     marker_array.markers.clear();
 }
 
-void ProximityVisualizer::start()
-{
+void ProximityVisualizer::start() {
     ros::spin();
 }
 
-void ProximityVisualizer::stop()
-{
+void ProximityVisualizer::stop() {
     ROS_INFO("Shutting down...");
     marker.action = visualization_msgs::Marker::DELETEALL;
     marker_array.markers.push_back(marker);
@@ -103,14 +94,12 @@ void ProximityVisualizer::stop()
     ros::shutdown();
 }
 
-void on_shutdown(int sig)
-{
+void on_shutdown(int sig) {
     ProximityVisualizer end_visualizer;
     end_visualizer.stop();
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     ros::init(argc, argv, "proximity_visualizer", ros::init_options::NoSigintHandler);
     ProximityVisualizer proximity_visualizer;
     proximity_visualizer.start();

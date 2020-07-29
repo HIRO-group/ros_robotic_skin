@@ -10,9 +10,8 @@
 #include "kdl/chainjnttojacsolver.hpp"
 #include "kdl/chainfksolverpos_recursive.hpp"
 
-class KDLSolver
-{
-private:
+class KDLSolver {
+ private:
     ros::NodeHandle n;
     std::string robot_desc_string;
     KDL::Tree kdlTree;
@@ -42,4 +41,4 @@ public:
 
 };
 
-#endif // KDL_SOLVER_H
+#endif  // KDL_SOLVER_H

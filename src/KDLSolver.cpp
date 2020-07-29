@@ -2,8 +2,7 @@
 #include "kdl/segment.hpp"
 #include "kdl/frames.hpp"
 
-KDLSolver::KDLSolver()
-{
+KDLSolver::KDLSolver() {
     n.param("robot_description", robot_desc_string, std::string());
     if (!kdl_parser::treeFromString(robot_desc_string, kdlTree))
         ROS_ERROR("Failed to construct kdl tree");

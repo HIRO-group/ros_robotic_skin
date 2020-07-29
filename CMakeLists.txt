@@ -18,12 +18,20 @@ find_package(catkin REQUIRED COMPONENTS
   franka_gripper
   imu_filter_madgwick
   message_generation
+  franka_hw
+  realtime_tools
+  pluginlib
+  hardware_interface
+  controller_interface
 )
 
 file(GLOB alglib_SRC
     "src/alglib/src/*.h"
     "src/alglib/src/*.cpp"
 )
+find_package(Franka 0.5.0 REQUIRED)
+# find_package(CGAL REQUIRED COMPONENTS Core)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -113,7 +121,20 @@ generate_messages(
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(CATKIN_DEPENDS xacro message_runtime)
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES ros_robotic_skin
+  CATKIN_DEPENDS
+    controller_interface
+    franka_hw
+    hardware_interface
+    pluginlib
+    realtime_tools
+    message_runtime
+    roscpp
+    xacro
+  DEPENDS Franka
+)
 
 ###########
 ## Build ##
@@ -125,12 +146,14 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   src/alglib/src
+  ${Franka_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ros_robotic_skin.cpp
-# )
+add_library(ros_robotic_skin
+  src/PandaJointVelocityController.cpp
+  src/PandaJointPositionController.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -146,7 +169,6 @@ add_executable(CartesianPositionController src/CartesianPositionController.cpp s
 
 
 
-
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -158,11 +180,20 @@ add_executable(CartesianPositionController src/CartesianPositionController.cpp s
 add_dependencies(proximity_listener ros_robotic_skin_gencpp)
 add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
 add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
+add_dependencies(ros_robotic_skin
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+  ${PROJECT_NAME}_gencpp
+)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(proximity_listener ${catkin_LIBRARIES})
 target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
 target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
+target_link_libraries(ros_robotic_skin PUBLIC
+  ${Franka_LIBRARIES}
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -197,6 +228,23 @@ target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 # )
+install(TARGETS ros_robotic_skin
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(DIRECTORY config
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(FILES ros_robotic_skin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/

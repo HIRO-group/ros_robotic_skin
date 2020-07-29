@@ -17,3 +17,10 @@ class InvalidTrajectoryCommandException(Exception):
     provided is incorrect.
     """
     pass
+
+
+class VariableNotInitializedException(Exception):
+    """
+    Exception raised when a variable is not Initialized.
+    """
+    pass
