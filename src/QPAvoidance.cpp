@@ -96,7 +96,7 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         std::cout << A << std::endl;
         printf("b: \n");
         std::cout << b << std::endl;
-
+        ros::shutdown();
     }
 
 
@@ -202,29 +202,30 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
             Ji = kdlSolver.computeJacobian2(closestPoints[i], q);
             JiResized.block(0, 0, 3, Ji.cols()) = Ji.block(0, 0, 3, Ji.cols());
             A.row(i) = (obstaclePositionVectors[i] - closestPoints[i].control_point).normalized().transpose() * JiResized;
+            C.row(i) = gradientOfDistanceNorm(obstaclePositionVectors[i], closestPoints[i], q);
         }
-        A.conservativeResize(m, A.cols());
-        b.conservativeResize(m);
-        closestPoints[0].t = 1;
-        std::cout << kdlSolver.forwardKinematicsJoints(q).col(1) - kdlSolver.forwardKinematics(closestPoints[0], q) << std::endl;
+        // A.conservativeResize(m, A.cols());
+        // b.conservativeResize(m);
+        A.row(m) = - w.transpose() * C;
+        b(m) = 0;
     }
     algLib(H, f, A, b, bl, bu);
     return qDot;
 }
 
-Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q)
+Eigen::VectorXd QPAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, KDLSolver::closest_point closestPoint, Eigen::VectorXd q)
 {
     // The value of the derivative is dependent on h, generally the smaller the better the aproximation.
     Eigen::VectorXd qplus(7), qminus(7), result(7);
-    double h{0.0001};
+    double h{0.001};
     for (int i = 0; i < 7; i++)
     {
         qplus = q;
         qminus = q;
         qplus[i] = qplus[i] + h;
         qminus[i] = qminus[i] - h;
-        result[i] = ((obstaclePositionVector - kdlSolver.forwardKinematicsControlPoints(controlPointName, qplus)).norm() -
-             (obstaclePositionVector - kdlSolver.forwardKinematicsControlPoints(controlPointName, qminus)).norm()) / (2*h);
+        result[i] = ((obstaclePositionVector - kdlSolver.forwardKinematics(closestPoint, qplus)).norm() -
+             (obstaclePositionVector - kdlSolver.forwardKinematics(closestPoint, qminus)).norm()) / (2*h);
     }
     return result;
 }

@@ -21,7 +21,7 @@ private:
     Eigen::VectorXd jointVelocityLimitsMin{7}, jointVelocityLimitsMax{7}, jointLimitsMin{7}, jointLimitsMax{7};
 
     //void computeAandbMatrices(Eigen::MatrixXd& A, Eigen::MatrixXd& b);
-    Eigen::VectorXd gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, std::string controlPointName, Eigen::VectorXd q);
+    Eigen::VectorXd gradientOfDistanceNorm(Eigen::Vector3d obstaclePositionVector, KDLSolver::closest_point closestPoint, Eigen::VectorXd q);
     double computebvalue(double distanceNorm);
     Eigen::VectorXd qDot{7};
     Eigen::VectorXd algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen::MatrixXd A, Eigen::VectorXd b, Eigen::VectorXd bl, Eigen::VectorXd bu);

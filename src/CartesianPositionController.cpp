@@ -111,8 +111,8 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
         obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
     }
     ///////////////////////////
-    obstaclePositionVectors.clear();
-    obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
+    // obstaclePositionVectors.clear();
+    // obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
     /////////////////////////////
 
     // Obtain the control point associated to each obstacle
@@ -210,15 +210,15 @@ void CartesianPositionController::getClosestControlPoints()
         }
     }
     ////////////////////////////////////////////////////
-    std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
-    for (int i = 0; i < closestPoints.size(); i++)
-    {
-        std::cout << "id:" << closestPoints[i].segmentId << std::endl;
-        std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
-        std::cout << "t:" << closestPoints[i].t << std::endl;
-        std::cout << "point:" << closestPoints[i].control_point << std::endl;
-        std::cout << "---------------------------------" << std::endl;
-    }
+    // std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
+    // for (int i = 0; i < closestPoints.size(); i++)
+    // {
+    //     std::cout << "id:" << closestPoints[i].segmentId << std::endl;
+    //     std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
+    //     std::cout << "t:" << closestPoints[i].t << std::endl;
+    //     std::cout << "point:" << closestPoints[i].control_point << std::endl;
+    //     std::cout << "---------------------------------" << std::endl;
+    // }
     ////////////////////////////////////////////////////
 }
 
