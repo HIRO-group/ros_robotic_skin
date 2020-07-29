@@ -274,7 +274,7 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
 
             case QP:
             {
-                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints);
+                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints, rate);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }

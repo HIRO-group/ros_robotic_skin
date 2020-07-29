@@ -132,10 +132,6 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
 
 QPAvoidance::QPAvoidance()
 {
-    jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
-    jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;
-    jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
-    jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     ALGLIBH.setlength(7, 7);
     ALGLIBf.setlength(7);
     ALGLIBbl.setlength(7);
@@ -162,29 +158,29 @@ double QPAvoidance::computeDampingFactor(double omega)
 
 Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::Vector3d& xDot,
                                                     std::vector<Eigen::Vector3d>& obstaclePositionVectors,
-                                                    std::vector<KDLSolver::closest_point>& closestPoints)
+                                                    std::vector<KDLSolver::closest_point>& closestPoints,
+                                                    ros::Rate& r)
 {
     // Equation #3
+    Eigen::VectorXd jointLimitsMin{7}, jointLimitsMax{7}, jointVelocityMax{7}, jointAccelerationMax{7};
+    jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
+    jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
+    jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
+    jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+    Eigen::Vector3d candidates;
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)
     {
-        if (q(i) <= jointLimitsMin(i))
-        {
-            bl(i) = 0;
-            bu(i) = jointVelocityLimitsMax(i);
-        }
-        else if (q(i) >= jointLimitsMax(i))
-        {
-            bl(i) = jointVelocityLimitsMin(i);
-            bu(i) = 0;
-        }
-        else
-        {
-            bl(i) = jointVelocityLimitsMin(i);
-            bu(i) = jointVelocityLimitsMax(i);
-        }
-    }
+        candidates(0) = (jointLimitsMin(i) - q(i)) / r.expectedCycleTime().toSec();
+        candidates(1) = - jointVelocityMax(i);
+        candidates(2) = - std::sqrt(2 * jointAccelerationMax(i) * (q(i) - jointLimitsMin(i)));
+        bl(i) = candidates.maxCoeff();
 
+        candidates(0) = (jointLimitsMax(i) - q(i)) / r.expectedCycleTime().toSec();
+        candidates(1) = + jointVelocityMax(i);
+        candidates(2) = + std::sqrt(2 * jointAccelerationMax(i) * (q(i) - jointLimitsMin(i)));
+        bu(i) = candidates.minCoeff();
+    }
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q).block(0,0,3,7);
     Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
