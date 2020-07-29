@@ -73,21 +73,14 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         alglib::minqpsetalgobleic(ALGLIBstate, 0.0, 0.0, 0.0, 70);
         alglib::minqpoptimize(ALGLIBstate);
         alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-        // printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
-
-
-        // DENSE-AUL solver is optimized for problems with up to several thousands of
-        // variables and large amount of general linear constraints. Problems with
-        // less than 50 general linear constraints can be efficiently solved with
-        // BLEIC, problems with box-only constraints can be solved with QuickQP.
-        // However, DENSE-AUL will work in any (including unconstrained) case.
-        //
-        // Default stopping criteria are used.
-        //
-        // alglib::minqpsetalgodenseaul(ALGLIBstate, 0.0, 1.0e+4, 15);
-        // alglib::minqpoptimize(ALGLIBstate);
-        // alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-        // printf("%s\n", ALGLIBqDot.tostring(1).c_str()); // EXPECTED: [1.500,0.500]
+        if (ALGLIBrep.terminationtype < 0)
+        {
+            std::cout << ALGLIBrep.terminationtype << std::endl; // 1 to 4 successful. 7 conditions too much.
+            // -3 error. inconsistent constraints (or, maybe, feasible point is too hard to find). If you are sure that constraints are feasible, try to restart optimizer with better initial approximation.
+            ROS_ERROR("Error in the optimization process. Returning zero velocities");
+            qDot = Eigen::VectorXd::Zero(7);
+            return qDot;
+        }
     }
     catch(alglib::ap_error e)
     {
@@ -98,8 +91,6 @@ Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen:
         std::cout << b << std::endl;
         ros::shutdown();
     }
-
-
     for (int i = 0; i < ALGLIBqDot.length(); i++)
     {
         qDot(i) = ALGLIBqDot(i);
@@ -171,8 +162,8 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
     Eigen::MatrixXd H = J.transpose() * J + computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
     Eigen::VectorXd f = - xDot.transpose() * J;
 
-    Eigen::MatrixXd A;
-    Eigen::VectorXd b;
+    Eigen::MatrixXd A, newA;
+    Eigen::VectorXd b, newb;
     if (obstaclePositionVectors.size() == 0)
     {
         A = Eigen::MatrixXd(0,0);
@@ -195,10 +186,15 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
         // 5) Add extra row from equation 5
         // 6) d norm calculation done in Fig. 5
         // 7) Take the gradient os the norm distance with
+        int numberOfRestrictions = 0;
         for (int i = 0; i < m; i++)
         {
             w[i] = 1 / closestPoints[i].distance_to_obs;
             b[i] = computebvalue(closestPoints[i].distance_to_obs); // From fig. 5
+            if (!std::isnan(b(i)))
+            {
+                numberOfRestrictions++;
+            }
             Ji = kdlSolver.computeJacobian2(closestPoints[i], q);
             JiResized.block(0, 0, 3, Ji.cols()) = Ji.block(0, 0, 3, Ji.cols());
             A.row(i) = (obstaclePositionVectors[i] - closestPoints[i].control_point).normalized().transpose() * JiResized;
@@ -206,10 +202,21 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
         }
         // A.conservativeResize(m, A.cols());
         // b.conservativeResize(m);
-        A.row(m) = - w.transpose() * C;
-        b(m) = 0;
+        newA.resize(numberOfRestrictions + 1, 7);
+        newb.resize(numberOfRestrictions + 1);
+        for (int i = 0, j = 0; i < m; i++)
+        {
+            if (!std::isnan(b(i)))
+            {
+                newA.row(j) = A.row(i);
+                b(j) = b(i);
+                j++;
+            }
+        }
+        newA.row(numberOfRestrictions) = - w.transpose() * C;
+        newb(numberOfRestrictions) = 0;
     }
-    algLib(H, f, A, b, bl, bu);
+    algLib(H, f, newA, newb, bl, bu);
     return qDot;
 }
 
@@ -252,6 +259,6 @@ double QPAvoidance::computebvalue(double distanceNorm)
     }
     else
     {
-        return 5000.0;
+        return NAN;
     }
 }
