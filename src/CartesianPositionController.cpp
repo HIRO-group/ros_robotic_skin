@@ -280,12 +280,8 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
             }
             case HIRO:
             {
-                std::cout << "-------------------------" << std::endl;
-                closestPoints[0].t = 1;
-                std::cout << kdlSolver.computeJacobian2(closestPoints[0], q) - kdlSolver.computeJacobian("panda_link2", q)<< std::endl;
-                std::cout << "-------------------------" << std::endl;
-                std::cout <<  kdlSolver.computeJacobian2(closestPoints[0], q) - kdlSolver.computeJacobian("panda_link3", q) << std::endl;
-                std::cout << "-------------------------" << std::endl;
+                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints);
+                jointVelocityController.sendVelocities(qDot);
                 break;
             }
         }
