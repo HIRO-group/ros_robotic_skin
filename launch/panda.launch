@@ -19,6 +19,7 @@
   <node name="panda_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_position_controller"/>
   <node name="controller_spawn_stopped" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="--stopped panda_joint_velocity_controller" />
 
-  <node pkg="ros_robotic_skin" name="fake_imu_publisher0" type="fake_imu_publisher.py" output="screen" args="0"/>
-  <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler" args="--layout $(find ros_robotic_skin)/plotjuggler/config/verify_joint_velocities_in_real.xml"/>
+  <!-- <node pkg="ros_robotic_skin" name="fake_imu_publisher0" type="fake_imu_publisher.py" output="screen" args="0"/> -->
+  <!--   <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler" args="@@layout $(find ros_robotic_skin)/plotjuggler/config/verify_joint_velocities_in_real.xml"/> -->
+  <!-- Change the two @s in line 23 to dash dash if you would like to run the plot juggler -->
 </launch>

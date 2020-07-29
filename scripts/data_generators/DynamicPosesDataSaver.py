@@ -215,7 +215,7 @@ class DynamicPoseDataSaver():
         self.joint_names = map(str, self.controller.joint_names)
 
         # get imu names and topics through rostopic and xacro.
-        self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
+        # self.imu_names, self.imu_topics = utils.get_imu_names_and_topics()
 
         self.curr_pose_name = self.pose_names[0]
         self.curr_joint_name = self.joint_names[0]
@@ -227,10 +227,10 @@ class DynamicPoseDataSaver():
         self.r = rospy.Rate(RATE)
 
         # data storage
-        self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
+        #self.data_storage = DynamicPoseData(self.pose_names, self.joint_names, self.imu_names, filepath)
         # Subscribe to IMUs
-        for imu_topic in self.imu_topics:
-            rospy.Subscriber(imu_topic, Imu, self.callback)
+        #for imu_topic in self.imu_topics:
+        #    rospy.Subscriber(imu_topic, Imu, self.callback)
 
     def callback(self, data):
         """
@@ -278,7 +278,7 @@ class DynamicPoseDataSaver():
         # first, move to the position from <robot>_positions.txt
         self.controller.publish_positions(positions, sleep=REST_TIME)
         print('At Position: ' + pose_name,
-              map(int, np.rad2deg * np.array(positions)))
+              map(int, np.rad2deg(np.array(positions))))
 
     def prepare_recording(self, joint_name):
         # Set current joint
