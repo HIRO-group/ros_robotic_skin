@@ -42,6 +42,7 @@ private:
 
     visualization_msgs::Marker marker;
     visualization_msgs::MarkerArray marker_array;
+    std::vector<std::vector<Eigen::Vector3d>> buffer;
 public:
     ros::NodeHandle n;
     ros::Publisher pub, pubVisualization;
@@ -159,6 +160,11 @@ void ProximityListener::start()
                 final_points.push_back(live_points[i]);
             }
         }
+        if (buffer.size() == 10)
+        {
+            buffer.pop_back();
+        }
+        buffer.insert(buffer.begin(), final_points);
         // Delete all visualizations from previous period
         marker.action = visualization_msgs::Marker::DELETEALL;
         marker_array.markers.push_back(marker);
@@ -168,23 +174,23 @@ void ProximityListener::start()
         // Preparation for adding new visualizations
         marker.action = visualization_msgs::Marker::ADD;
         marker.header.stamp = ros::Time::now();
-
-        for (int i = 0; i < final_points.size(); i++)
+        for (int i = 0; i < buffer.size(); i++)
         {
+            for (int j = 0; j < buffer[i].size(); j++)
+            {
+                // Add points to the PointArray message
+                point.x = buffer[i][j].x();
+                point.y = buffer[i][j].y();
+                point.z = buffer[i][j].z();
+                msg.points.push_back(point);
 
-            // Add points to the PointArray message
-            point.x = final_points[i].x();
-            point.y = final_points[i].y();
-            point.z = final_points[i].z();
-            msg.points.push_back(point);
-
-            // Add points to the visualization message
-            marker.id = i;
-            marker.pose.position.x = point.x;
-            marker.pose.position.y = point.y;
-            marker.pose.position.z = point.z;
-            marker_array.markers.push_back(marker);
-
+                // Add points to the visualization message
+                marker.id = 162*i + j;
+                marker.pose.position.x = point.x;
+                marker.pose.position.y = point.y;
+                marker.pose.position.z = point.z;
+                marker_array.markers.push_back(marker);
+            }
         }
 
         // Publish

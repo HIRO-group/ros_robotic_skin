@@ -280,7 +280,7 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
             }
             case HIRO:
             {
-                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints);
+                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints, rate);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }
