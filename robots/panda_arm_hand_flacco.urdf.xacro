@@ -27,7 +27,7 @@
 
 
   <!-- end effector control point -->
-  <xacro:end_effector/>
+  <xacro:panda_EE/>
 
   <!-- Proximity sensors -->
   <xacro:property name="sensors_per_ring" value="16"/>

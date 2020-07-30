@@ -18,6 +18,7 @@ enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
 
 class CartesianPositionController {
  private:
+    bool isSim = false;
     AvoidanceMode avoidanceMode{noAvoidance};
     int numberControlPoints;
     double position_error_threshold{0.01}, pGain {2.5}, secondaryTaskGain{5.0};
@@ -38,7 +39,7 @@ class CartesianPositionController {
     void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
     void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
     void readEndEffectorPosition();
-    void readControlPointPositions();
+    // void readControlPointPositions();
     Eigen::Vector3d getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t);
     void getClosestControlPoints();
     Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
@@ -55,8 +56,8 @@ class CartesianPositionController {
 
 CartesianPositionController::CartesianPositionController()
 {
-    numberControlPoints = kdlSolver.getNumberControlPoints();
-    this->controlPointPositionVectors = std::make_unique<Eigen::Vector3d[]>(numberControlPoints);
+    // numberControlPoints = kdlSolver.getNumberControlPoints();
+    // this->controlPointPositionVectors = std::make_unique<Eigen::Vector3d[]>(numberControlPoints);
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
@@ -67,7 +68,7 @@ CartesianPositionController::CartesianPositionController()
     subscriberJointStates = n.subscribe<sensor_msgs::JointState>("/joint_states", 1, &CartesianPositionController::JointStateCallback, this);
     subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1, &CartesianPositionController::ObstaclePointsCallback, this);
     readEndEffectorPosition();
-    readControlPointPositions();
+    // readControlPointPositions();
 }
 
 void CartesianPositionController::readEndEffectorPosition()
@@ -76,7 +77,7 @@ void CartesianPositionController::readEndEffectorPosition()
     {
         try
         {
-            transform_listener.lookupTransform("/world", "/end_effector",
+            transform_listener.lookupTransform("/world", "/panda_EE",
                                     ros::Time(0), transform);
             endEffectorPositionVector << transform.getOrigin().getX(),
                                          transform.getOrigin().getY(),
@@ -90,15 +91,21 @@ void CartesianPositionController::readEndEffectorPosition()
     }
 }
 
-void CartesianPositionController::readControlPointPositions()
-{
-    for (int i = 0; i < numberControlPoints; i++)
-        controlPointPositionVectors[i] = kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(i), q);
-}
+// void CartesianPositionController::readControlPointPositions()
+// {
+//     for (int i = 0; i < numberControlPoints; i++)
+//         controlPointPositionVectors[i] = kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(i), q);
+// }
 
 void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
-    q << msg->position[2], msg->position[3], msg->position[4], msg->position[5], msg->position[6], msg->position[7], msg->position[8];
+    if (isSim == true)
+        q << msg->position[2], msg->position[3], msg->position[4], msg->position[5], msg->position[6], msg->position[7], msg->position[8];
+    else
+        q << msg->position[2-2], msg->position[3-2], msg->position[4-2], msg->position[5-2], msg->position[6-2], msg->position[7-2], msg->position[8-2];
+
+    
+    
 }
 
 void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg)
@@ -127,7 +134,12 @@ Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen
 Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity)
 {
     // Function description
-    J = kdlSolver.computeJacobian(std::string ("end_effector"), q).block(0,0,3,7);
+    J = kdlSolver.computeJacobian(std::string("panda_link8"), q);
+    ROS_INFO("J: \n");
+    std::cout << J << std::endl;
+    ROS_INFO("q: \n");
+    std::cout << q << std::endl;
+    J = J.block(0,0,3,7);
     Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
     return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
 }
@@ -145,7 +157,7 @@ Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector
     double top = (v.transpose() * u);
     double bottom = (v.transpose() * v);
 
-    // I alter this value here because I want to use it
+    // I alter this value here because I want to use it 
     t = -top/bottom;
 
     double d_a = (p - a).norm();
@@ -226,14 +238,15 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
 
     while (positionErrorVector.norm() > position_error_threshold && ros::ok()) {
         readEndEffectorPosition();
-        readControlPointPositions();
+        ROS_INFO("End effector postition: \n");
+        std::cout << endEffectorPositionVector << std::endl;
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
         desiredEEVelocity = pGain * positionErrorVector;
         ros::spinOnce();
         switch (avoidanceMode)
         {
             case noAvoidance:
-                jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                jointVelocityController.sendVelocities(0.50 * EEVelocityToQDot(desiredEEVelocity));
                 break;
             case Flacco:
             {
@@ -286,7 +299,10 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         // std::cout << rate.expectedCycleTime() << std::endl;
         rate.sleep();
     }
-    jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
+    if (is_sim)
+    {
+        jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
+    }
 }
 
 void on_shutdown(int sig) {

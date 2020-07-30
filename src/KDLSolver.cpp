@@ -18,16 +18,18 @@ KDLSolver::KDLSolver() {
 
     kdlChainsControlPoints = std::make_unique<KDL::Chain[]>(controlPointCount + 1);
     kdlChainsJoints = std::make_unique<KDL::Chain[]>(10); // 0 through 8 + ee
-    kdlTree.getChain("panda_link0", "end_effector", kdlChainsControlPoints[0]);
+
+    kdlTree.getChain("panda_link0", "panda_EE", kdlChainsControlPoints[0]);
     for (int i = 0; i < controlPointCount; i++)
     {
         kdlTree.getChain("panda_link0", std::string("control_point") + std::to_string(i), kdlChainsControlPoints[i+1]);
     }
+    
     for (int i = 0; i < 9; i++)
     {
         kdlTree.getChain("panda_link0", std::string("panda_link") + std::to_string(i), kdlChainsJoints[i]);
     }
-    kdlTree.getChain("panda_link0", std::string("end_effector"), kdlChainsJoints[9]);
+    kdlTree.getChain("panda_link0", std::string("panda_EE"), kdlChainsJoints[9]);
 
 }
 
@@ -66,7 +68,7 @@ Eigen::MatrixXd KDLSolver::computeJacobian2(KDLSolver::closest_point& controlPoi
 Eigen::Vector3d KDLSolver::forwardKinematicsControlPoints(std::string controlPointName, Eigen::VectorXd q)
 {
     int index{0};
-    if (controlPointName == "end_effector")
+    if (controlPointName == "panda_EE")
     {
         index = 0;
     }

@@ -9,11 +9,11 @@
     </joint>
   </xacro:macro>
 
-  <xacro:macro name="end_effector">
-    <link name="end_effector"></link>
-    <joint name="end_effector_to_panda_link8" type="fixed">
+  <xacro:macro name="panda_EE">
+    <link name="panda_EE"></link>
+    <joint name="panda_EE_to_panda_link8" type="fixed">
       <parent link="panda_link8"/>
-      <child link="end_effector"/>
+      <child link="panda_EE"/>
       <origin rpy="0 0 0" xyz="0 0 0.10"/>
     </joint>
   </xacro:macro>

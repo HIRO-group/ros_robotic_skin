@@ -25,7 +25,7 @@ JointVelocityController::JointVelocityController() {
                                                         std::to_string(i+1) +
                                                         "_velocity_controller/command", 1));
     }
-    realPublisher = n.advertise<std_msgs::Float64>("panda_joint_velocity_controller/command", 1);
+    realPublisher = n.advertise<std_msgs::Float64MultiArray>("panda_joint_velocity_controller/command", 1);
     msgarray.data.resize(7);
 }
 
