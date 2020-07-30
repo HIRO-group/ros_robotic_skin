@@ -298,7 +298,7 @@ class DynamicPoseDataSaver():
         for pose in self.poses_list:
             for i, joint_name in enumerate(self.joint_names):
                 # Go to current setting position
-                self.goto_current_pose(pose)
+                # self.goto_current_pose(pose)
                 print("At the pose.")
                 # Initialize Variables
                 self.prepare_recording(joint_name)

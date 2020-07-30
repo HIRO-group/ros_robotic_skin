@@ -8,103 +8,130 @@
 
 Eigen::VectorXd QPAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen::MatrixXd A, Eigen::VectorXd b, Eigen::VectorXd bl, Eigen::VectorXd bu)
 {
-    try
+    bool successfulOptimization = false;
+    bool numberOfAttemptsExceeded = false;
+    while (!successfulOptimization)
     {
-        ALGLIBAb = "[[]]";
-        ALGLIBconstraintType = "[]";
-
-        for (int i = 0; i < H.rows(); i++)
-        {
-            for (int j = 0; j < H.cols(); j++)
-            {
-                ALGLIBH(i,j) = H(i,j);
-
-            }
-            ALGLIBf(i) = f(i);
-            ALGLIBbl(i) = bl(i);
-            ALGLIBbu(i) = bu(i);
-        }
-
-        if (A.rows() == 0)
+        try
         {
             ALGLIBAb = "[[]]";
-        }
-        else
-        {
-            ALGLIBAb.setlength(A.rows(), A.cols() + 1);
-            ALGLIBconstraintType.setlength(A.rows());
-            for (int i = 0; i < A.rows(); i++)
+            ALGLIBconstraintType = "[]";
+
+            for (int i = 0; i < H.rows(); i++)
             {
-                for (int j = 0; j < A.cols(); j++)
+                for (int j = 0; j < H.cols(); j++)
                 {
-                    ALGLIBAb(i,j) = A(i,j);
+                    ALGLIBH(i,j) = H(i,j);
+
                 }
-                ALGLIBAb(i, A.cols()) = b(i);
-                ALGLIBconstraintType(i) = -1;
+                ALGLIBf(i) = f(i);
+                ALGLIBbl(i) = bl(i);
+                ALGLIBbu(i) = bu(i);
             }
+
+            if (A.rows() == 0)
+            {
+                ALGLIBAb = "[[]]";
+            }
+            else
+            {
+                ALGLIBAb.setlength(A.rows(), A.cols() + 1);
+                ALGLIBconstraintType.setlength(A.rows());
+                for (int i = 0; i < A.rows(); i++)
+                {
+                    for (int j = 0; j < A.cols(); j++)
+                    {
+                        ALGLIBAb(i,j) = A(i,j);
+                    }
+                    ALGLIBAb(i, A.cols()) = b(i);
+                    ALGLIBconstraintType(i) = -1;
+                }
+            }
+
+            // create solver, set quadratic/linear terms
+            alglib::minqpcreate(ALGLIBH.cols(), ALGLIBstate);
+            alglib::minqpsetquadraticterm(ALGLIBstate, ALGLIBH);
+            alglib::minqpsetlinearterm(ALGLIBstate, ALGLIBf);
+            alglib::minqpsetlc(ALGLIBstate, ALGLIBAb, ALGLIBconstraintType);
+            alglib::minqpsetbc(ALGLIBstate, ALGLIBbl, ALGLIBbu);
+
+            // Set scale of the parameters.
+            // It is strongly recommended that you set scale of your variables.
+            // Knowing their scales is essential for evaluation of stopping criteria
+            // and for preconditioning of the algorithm steps.
+            // You can find more information on scaling at http://www.alglib.net/optimization/scaling.php
+            //
+            // NOTE: for convex problems you may try using minqpsetscaleautodiag()
+            //       which automatically determines variable scales.
+            alglib::minqpsetscale(ALGLIBstate, ALGLIBscale);
+            // alglib::minqpsetscaleautodiag(ALGLIBstate);
+
+
+            // SOLVE: 3 options: BLEIC-based, DENSE-AUL, QUICKQP
+
+            // BLEIC-based QP solver is intended for problems with moderate (up to 50) number
+            // of general linear constraints and unlimited number of box constraints.
+            //
+            // Default stopping criteria are used.
+            //
+            alglib::minqpsetalgobleic(ALGLIBstate, 0.0, 0.0, 0.0, 70);
+            alglib::minqpoptimize(ALGLIBstate);
+            alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
+            if (ALGLIBrep.terminationtype < 0)
+            {
+                if (numberOfAttemptsExceeded)
+                {
+                    std::cout << "-------------------------------" << std::endl;
+                    ROS_WARN("Error in the optimization process");
+                    ROS_WARN("Optimization exit code: %s", std::to_string(ALGLIBrep.terminationtype).c_str());
+                    ROS_WARN("Number of attemps exceeded");
+                    ROS_WARN("Returning zero velocities");
+                    qDot = Eigen::VectorXd::Zero(7);
+                    return qDot;
+                }
+                else
+                {
+                    successfulOptimization = false;
+                    numberOfAttemptsExceeded = true;
+                    std::cout << "-------------------------------" << std::endl;
+                    ROS_WARN("Error in the optimization process");
+                    ROS_WARN("Optimization exit code: %s", std::to_string(ALGLIBrep.terminationtype).c_str());
+                    ROS_WARN("Trying easier constraints. Repulsive actions set to 0.");
+                    for (int i = 0; i < b.size(); i++)
+                    {
+                        if (b(i) < 0)
+                        {
+                            b(i) = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                successfulOptimization = true;
+                for (int i = 0; i < ALGLIBqDot.length(); i++)
+                {
+                    qDot(i) = ALGLIBqDot(i);
+                }
+            }
+
         }
-
-        // create solver, set quadratic/linear terms
-        alglib::minqpcreate(ALGLIBH.cols(), ALGLIBstate);
-        alglib::minqpsetquadraticterm(ALGLIBstate, ALGLIBH);
-        alglib::minqpsetlinearterm(ALGLIBstate, ALGLIBf);
-        alglib::minqpsetlc(ALGLIBstate, ALGLIBAb, ALGLIBconstraintType);
-        alglib::minqpsetbc(ALGLIBstate, ALGLIBbl, ALGLIBbu);
-
-        // Set scale of the parameters.
-        // It is strongly recommended that you set scale of your variables.
-        // Knowing their scales is essential for evaluation of stopping criteria
-        // and for preconditioning of the algorithm steps.
-        // You can find more information on scaling at http://www.alglib.net/optimization/scaling.php
-        //
-        // NOTE: for convex problems you may try using minqpsetscaleautodiag()
-        //       which automatically determines variable scales.
-        alglib::minqpsetscale(ALGLIBstate, ALGLIBscale);
-        // alglib::minqpsetscaleautodiag(ALGLIBstate);
-
-
-        // SOLVE: 3 options: BLEIC-based, DENSE-AUL, QUICKQP
-
-        // BLEIC-based QP solver is intended for problems with moderate (up to 50) number
-        // of general linear constraints and unlimited number of box constraints.
-        //
-        // Default stopping criteria are used.
-        //
-        alglib::minqpsetalgobleic(ALGLIBstate, 0.0, 0.0, 0.0, 70);
-        alglib::minqpoptimize(ALGLIBstate);
-        alglib::minqpresults(ALGLIBstate, ALGLIBqDot, ALGLIBrep);
-        if (ALGLIBrep.terminationtype < 0)
+        catch(alglib::ap_error e)
         {
-            std::cout << ALGLIBrep.terminationtype << std::endl; // 1 to 4 successful. 7 conditions too much.
-            // -3 error. inconsistent constraints (or, maybe, feasible point is too hard to find). If you are sure that constraints are feasible, try to restart optimizer with better initial approximation.
-            ROS_ERROR("Error in the optimization process. Returning zero velocities");
-            qDot = Eigen::VectorXd::Zero(7);
-            return qDot;
+            ROS_WARN("Alglib exception. Shutting down...");
+            printf("error msg: %s\n", e.msg.c_str());
+            printf("A: \n");
+            std::cout << A << std::endl;
+            printf("b: \n");
+            std::cout << b << std::endl;
+            ros::shutdown();
         }
     }
-    catch(alglib::ap_error e)
-    {
-        printf("error msg: %s\n", e.msg.c_str());
-        printf("A: \n");
-        std::cout << A << std::endl;
-        printf("b: \n");
-        std::cout << b << std::endl;
-        ros::shutdown();
-    }
-    for (int i = 0; i < ALGLIBqDot.length(); i++)
-    {
-        qDot(i) = ALGLIBqDot(i);
-    }
-
     return qDot;
 }
 
 QPAvoidance::QPAvoidance()
 {
-    jointVelocityLimitsMin << -2.1750, -2.1750, -2.1750, -2.1750, -2.6100, -2.6100, -2.6100;
-    jointVelocityLimitsMax << +2.1750, +2.1750, +2.1750, +2.1750, +2.6100, +2.6100, +2.6100;
-    jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
-    jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     ALGLIBH.setlength(7, 7);
     ALGLIBf.setlength(7);
     ALGLIBbl.setlength(7);
@@ -131,29 +158,29 @@ double QPAvoidance::computeDampingFactor(double omega)
 
 Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::Vector3d& xDot,
                                                     std::vector<Eigen::Vector3d>& obstaclePositionVectors,
-                                                    std::vector<KDLSolver::closest_point>& closestPoints)
+                                                    std::vector<KDLSolver::closest_point>& closestPoints,
+                                                    ros::Rate& r)
 {
     // Equation #3
+    Eigen::VectorXd jointLimitsMin{7}, jointLimitsMax{7}, jointVelocityMax{7}, jointAccelerationMax{7};
+    jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
+    jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
+    jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
+    jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+    Eigen::Vector3d candidates;
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)
     {
-        if (q(i) <= jointLimitsMin(i))
-        {
-            bl(i) = 0;
-            bu(i) = jointVelocityLimitsMax(i);
-        }
-        else if (q(i) >= jointLimitsMax(i))
-        {
-            bl(i) = jointVelocityLimitsMin(i);
-            bu(i) = 0;
-        }
-        else
-        {
-            bl(i) = jointVelocityLimitsMin(i);
-            bu(i) = jointVelocityLimitsMax(i);
-        }
-    }
+        candidates(0) = (jointLimitsMin(i) - q(i)) / r.expectedCycleTime().toSec();
+        candidates(1) = - jointVelocityMax(i);
+        candidates(2) = - std::sqrt(2 * jointAccelerationMax(i) * (q(i) - jointLimitsMin(i)));
+        bl(i) = candidates.maxCoeff();
 
+        candidates(0) = (jointLimitsMax(i) - q(i)) / r.expectedCycleTime().toSec();
+        candidates(1) = + jointVelocityMax(i);
+        candidates(2) = + std::sqrt(2 * jointAccelerationMax(i) * (q(i) - jointLimitsMin(i)));
+        bu(i) = candidates.minCoeff();
+    }
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q).block(0,0,3,7);
     Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();

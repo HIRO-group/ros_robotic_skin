@@ -67,25 +67,29 @@ CartesianPositionController::CartesianPositionController()
     subscriberJointStates = n.subscribe<sensor_msgs::JointState>("/joint_states", 1, &CartesianPositionController::JointStateCallback, this);
     subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1, &CartesianPositionController::ObstaclePointsCallback, this);
     readEndEffectorPosition();
-<<<<<<< HEAD
     readControlPointPositions();
-=======
 }
-CartesianPositionController::~CartesianPositionController() {
-        try {
+
+void CartesianPositionController::readEndEffectorPosition()
+{
+    while (ros::ok())
+    {
+        try
+        {
             transform_listener.lookupTransform("/world", "/end_effector",
                                     ros::Time(0), transform);
             endEffectorPositionVector << transform.getOrigin().getX(),
                                          transform.getOrigin().getY(),
                                          transform.getOrigin().getZ();
             break;
-        } catch (tf::TransformException ex) {
+        }
+        catch (tf::TransformException ex)
+        {
             ros::Duration(0.3).sleep();
         }
     }
 }
 
-<<<<<<< HEAD
 void CartesianPositionController::readControlPointPositions()
 {
     for (int i = 0; i < numberControlPoints; i++)
@@ -124,18 +128,6 @@ Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d de
 {
     // Function description
     J = kdlSolver.computeJacobian(std::string ("end_effector"), q).block(0,0,3,7);
-=======
-void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg) {
-    q << msg->position[2], msg->position[3], msg->position[4], msg->position[5], msg->position[6], msg->position[7], msg->position[8];
-}
-
-Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q) {
-    return 2.0/7.0 * (q - jointMiddleValues).cwiseQuotient(jointRanges);
-}
-
-Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity) {
-    J = kdlSolver.computeJacobian(std::string("end_effector"), q); J = J.block(0, 0, 3, 7);
->>>>>>> master
     Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
     return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
 }
@@ -144,7 +136,6 @@ void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName) {
     avoidanceMode = avoidanceModeName;
 }
 
-<<<<<<< HEAD
 Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t)
 {
     //https://math.stackexchange.com/a/2193733/801563
@@ -231,9 +222,6 @@ void CartesianPositionController::getClosestControlPoints()
 
 void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector)
 {
-=======
-void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector) {
->>>>>>> master
     positionErrorVector = desiredPositionVector - endEffectorPositionVector;
 
     while (positionErrorVector.norm() > position_error_threshold && ros::ok()) {
@@ -242,15 +230,11 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
         desiredEEVelocity = pGain * positionErrorVector;
         ros::spinOnce();
-<<<<<<< HEAD
         switch (avoidanceMode)
         {
             case noAvoidance:
                 jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
                 break;
-=======
-        switch (avoidanceMode) {
->>>>>>> master
             case Flacco:
             {
                 // Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
@@ -287,13 +271,13 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
 
             case QP:
             {
-                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints);
+                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints, rate);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }
             case HIRO:
             {
-                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints);
+                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints, rate);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }

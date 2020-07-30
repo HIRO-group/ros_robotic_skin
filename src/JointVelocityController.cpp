@@ -25,18 +25,35 @@ JointVelocityController::JointVelocityController() {
                                                         std::to_string(i+1) +
                                                         "_velocity_controller/command", 1));
     }
+    realPublisher = n.advertise<std_msgs::Float64>("panda_joint_velocity_controller/command", 1);
+    msgarray.data.resize(7);
 }
 
 JointVelocityController::~JointVelocityController() {
 }
 
-void JointVelocityController::sendVelocities(const Eigen::VectorXd vel) {
-    if (vel.size() == 7) {
-        for (int i = 0; i < 7; i++) {
-            msg.data = vel[i];
-            publishers[i].publish(msg);
+void JointVelocityController::sendVelocities(const Eigen::VectorXd vel)
+{
+    if (vel.size() == 7)
+    {
+        for (int i = 0; i < 7; i++){
+            if (!std::isnan(vel[i]))
+            {
+                msg.data = vel[i];
+                msgarray.data[i] = vel[i];
+                publishers[i].publish(msg);
+            }
+            else
+            {
+                ROS_ERROR("NaN values can't be published as joint velocities");
+                ROS_ERROR("Shutting down");
+                ros::shutdown();
+            }
         }
-    } else {
+        realPublisher.publish(msgarray);
+    }
+    else
+    {
         ROS_ERROR_ONCE("The published vector must contain 7 elements");
     }
 }
