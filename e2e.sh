@@ -3,6 +3,15 @@
 # HIRO Group end-to-end (e2e) script
 # for running data collection and calibration for roboskin.
 
+# open new terminals to ssh into our raspberry pis
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.76 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PAC$
+gnome-terminal -e "ssh -t hiro@192.168.50.76 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PAC$
+gnome-terminal -e "ssh -t hiro@192.168.50.58 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PAC$
+gnome-terminal -e "ssh -t hiro@192.168.50.58 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PAC$
+gnome-terminal -e "ssh -t hiro@192.168.50.154 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PAC$
+gnome-terminal -e "ssh -t hiro@192.168.50.154 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PAC$
+
 # go through specific arguments
 while [[ $# -gt 0 ]]
 do
