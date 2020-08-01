@@ -3,6 +3,20 @@
 # HIRO Group end-to-end (e2e) script
 # for running data collection and calibration for roboskin.
 
+# open up new terminals for ssh into our 3 raspberry pi's
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.76 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file accelerometer_config1.yaml; exec bash'"
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.76 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file accelerometer_config1.yaml; exec bash'"
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.58 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file accelerometer_config1.yaml; exec bash'"
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.58 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file accelerometer_config1.yaml; exec bash'"
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.154 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file accelerometer_config1.yaml; exec bash'"
+gnome-terminal -e 'roscore'
+gnome-terminal -e "ssh -t hiro@192.168.50.154 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file accelerometer_config1.yaml; exec bash'"
+
 # go through specific arguments
 while [[ $# -gt 0 ]]
 do
