@@ -25,7 +25,7 @@ def save_to_pickle(pickle_data):
 
 def optitrack_listener(obj):
     """
-    Subscribes to events from the optitrack and get PoseStamped data for the 
+    Subscribes to events from the optitrack and get PoseStamped data for the
     location of the given object and sends callback data to `save_to_pickle`
     Arguments
     ----------
