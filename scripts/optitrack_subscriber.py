@@ -64,7 +64,7 @@ if __name__ == '__main__':
         raise ValueError("RigidBody not provided!")
 
     topic = ["/vrpn_client_node/"+args[1]+"/pose", 'geometry_msgs/PoseStamped']
-    if not topic in rospy.get_published_topics():
+    if topic not in rospy.get_published_topics():
         raise ValueError("RigidBody does not exist!")
 
     newSave = poseData()
