@@ -6,7 +6,8 @@ import rospkg
 from geometry_msgs.msg import PoseStamped
 
 ROS_PATH = rospkg.RosPack().get_path('ros_robotic_skin')
-FILEPATH = os.path.join(ROS_PATH, 'data/optitrack_data.pickle')
+DIRPATH = os.path.join(ROS_PATH, 'data', 'optitrack_data')
+FILEPATH = os.path.join(DIRPATH, 'optitrack_data.pickle')
 
 
 class OptiTrackPoseDataSaver:
@@ -66,6 +67,9 @@ if __name__ == '__main__':
     topic = ["/vrpn_client_node/{}/pose".format(args[1]), 'geometry_msgs/PoseStamped']
     if topic not in rospy.get_published_topics():
         raise ValueError("RigidBody does not exist!")
+
+    if not os.path.exists(DIRPATH):
+        os.makedirs(DIRPATH)
 
     optitrackPoseData = OptiTrackPoseDataSaver()
     optitrack_listener(topic, optitrackPoseData)
