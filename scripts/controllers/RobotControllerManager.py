@@ -71,10 +71,13 @@ class RobotControllerManager():
 
         Desired mode should be a ControllerType enum
         """
+        
         # check if mode is running
         if desired_mode == self.mode:
             pass
         else:
+            rospy.loginfo("Before switching")
+            rospy.sleep(0.1)
             try:
                 while 1:
                     rospy.wait_for_service(self.switch_controller_service_name)
@@ -89,3 +92,4 @@ class RobotControllerManager():
                 self.mode = desired_mode
             except rospy.ServiceException as e:
                 rospy.logerr("Controller Manager service exception:", e)
+            rospy.loginfo("After switching")
