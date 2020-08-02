@@ -1,11 +1,15 @@
 import os
+import sys
 import pickle
 import rospy
 import rospkg
 from geometry_msgs.msg import PoseStamped
 
+ROS_PATH = rospkg.RosPack().get_path('ros_robotic_skin')
+FILEPATH = os.path.join(ROS_PATH, 'data/optitrack_data.pickle')
 
-def save(pickle_data):
+
+def save_to_pickle(pickle_data):
     """
     Saves the data to a pickle file.
     Arguments
@@ -13,41 +17,40 @@ def save(pickle_data):
     `data`: `PoseStamped`
         The data to be saved
     """
-    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-    filepath = os.path.join(ros_robotic_skin_path, 'data/optitrack_data.pickle')
 
-    with open(filepath, 'ab') as f:
+    with open(FILEPATH, 'ab') as f:
         pickle.dump(pickle_data, f)
+        # print(pickle_data)
 
 
-def callback(data):
+def optitrack_listener(obj):
     """
-    A callback function for optitrack topics
+    Subscribes to events from the optitrack and get PoseStamped data for the location of the given object and sends callback data to `save_to_pickle`
     Arguments
     ----------
-    data: geometry_msgs.msg.PoseStamped
-        Data for the rigid body under optitrack
+    `obj`: `String`
+        The object the optitrack listener will track
     """
-    # rospy.loginfo(rospy.get_caller_id() + 'I heard %s ', data)
-    save(data)
 
-
-def listener():
-    rospy.init_node('listener', anonymous=True)
-
-    # saves data for RigidBody01
-    topic_name = "/vrpn_client_node/RigidBody01/pose"
-    topic_type = PoseStamped
-    rospy.Subscriber(topic_name, topic_type, callback)
+    # initializes the subscriber and listens to the object provided through the command line and sends callback data
+    rospy.init_node('optitrack_listener', anonymous=True)
+    rospy.Subscriber("/vrpn_client_node/"+obj+"/pose", PoseStamped, save_to_pickle)
 
     # saves 3 seconds of data
     rospy.sleep(3)
 
 
 if __name__ == '__main__':
-    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-    filepath = os.path.join(ros_robotic_skin_path, 'data/optitrack_data.pickle')
 
-    if os.path.exists(filepath):
-        os.remove(filepath)
-    listener()
+    # accesses command line arguments through rospy
+    args = rospy.myargv(argv=sys.argv)
+    if len(args) != 2:
+        raise ValueError("RigidBody not provided!")
+    elif not args[1] in rospy.get_published_topics():
+        raise ValueError("RigidBody does not exist!")
+    
+    # deletes the file before starting to get a clean dataset.
+    if os.path.exists(FILEPATH):
+        os.remove(FILEPATH)
+    
+    optitrack_listener(args[1])
