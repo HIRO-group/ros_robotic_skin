@@ -9,7 +9,7 @@ ROS_PATH = rospkg.RosPack().get_path('ros_robotic_skin')
 FILEPATH = os.path.join(ROS_PATH, 'data/optitrack_data.pickle')
 
 
-class poseData:
+class OptiTrackPoseDataSaver:
     """
     Class for collecting all pose data for the objects in optitrack
     """
@@ -63,12 +63,12 @@ if __name__ == '__main__':
     if len(args) != 2:
         raise ValueError("RigidBody not provided!")
 
-    topic = ["/vrpn_client_node/"+args[1]+"/pose", 'geometry_msgs/PoseStamped']
+    topic = ["/vrpn_client_node/{}/pose".format(args[1]), 'geometry_msgs/PoseStamped']
     if topic not in rospy.get_published_topics():
         raise ValueError("RigidBody does not exist!")
 
-    newSave = poseData()
-    optitrack_listener(topic, newSave)
+    optitrackPoseData = OptiTrackPoseDataSaver()
+    optitrack_listener(topic, optitrackPoseData)
 
     # calls the write function to save the data
-    newSave.writePickleFile()
+    optitrackPoseData.writePickleFile()
