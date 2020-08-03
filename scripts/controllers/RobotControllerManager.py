@@ -71,7 +71,7 @@ class RobotControllerManager():
 
         Desired mode should be a ControllerType enum
         """
-        
+
         # check if mode is running
         if desired_mode == self.mode:
             pass
