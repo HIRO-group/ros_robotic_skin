@@ -8,6 +8,11 @@ while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in
+    --panda-ip)
+    PANDA_IP="$2"
+    shift # past argument
+    shift # past value
+    ;;
     --roboskin-path)
     ROBOSKIN_PATH="$2"
     shift # past argument
@@ -63,7 +68,7 @@ else
     gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config1.yaml; exec bash'"
     gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config2.yaml; exec bash'"
 
-    roslaunch ros_robotic_skin e2e_panda_real.launch
+    roslaunch ros_robotic_skin e2e_panda_real.launch robot_ip:=$PANDA_IP
 fi
 
 # sleep to wait for complete shutdown of ros nodes
