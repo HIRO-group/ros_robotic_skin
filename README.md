@@ -3,7 +3,7 @@
 
 
 # ROS Robotic Skin
-- **Current Release**: `0.0.1` as of 2020/3/25
+- **Current Release**: `0.0.1` as of 2020/8/2
 - **Suporting Version**: `ROS Melodic`
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
@@ -104,7 +104,7 @@ We use 2 different tests.
 1. `Flake8` <br>
 to enforce style consistency across Python projects.
 2. `ROS Test` <br>
-to ensure our codes run without any bugs
+to ensure our codes run without any bugs.
 
 ### RUN TESTS BEFORE COMMITTING
 #### `Flake8`
@@ -120,7 +120,7 @@ rostest ros_robotic_skin test.test
 ```
 This will run our simulation without the GUI and perform the tests.
 
-Guides to add tests are descibed in [our Wiki page](https://github.com/HIRO-group/ros_robotic_skin/wiki/How-to-add-test)
+Guides to add tests are described in [our Wiki page](https://github.com/HIRO-group/ros_robotic_skin/wiki/How-to-add-test)
 
 
 ## Parameters
@@ -138,5 +138,5 @@ Here are some extra resources for this package.
 ## Ding Paper Explanation Resources
 Below are links to an explanation of the Ding control paper and the Overleaf document that has the equations included in the explanation.
 
-- Ding Explanation: [here...](https://docs.google.com/presentation/d/1LrW7mna1wRgHsIzw3wXOrvIg3xlkNpIfmVRfGyxG_v0/edit?usp=sharing)
-- Overleaf File: [here...](https://www.overleaf.com/read/hwndqxxqtvds)
+- Ding Explanation: [here](https://docs.google.com/presentation/d/1LrW7mna1wRgHsIzw3wXOrvIg3xlkNpIfmVRfGyxG_v0/edit?usp=sharing)
+- Overleaf File: [here](https://www.overleaf.com/read/hwndqxxqtvds)
