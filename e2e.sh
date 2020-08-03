@@ -29,6 +29,20 @@ case $key in
     shift # past argument
     shift # past value
     ;;
+    --location)
+    if [[ "$2" == "hiro" ]]
+    then
+        YAML_PREFIX="accelerometer_config"
+    elif [[ "$2" == "ir" ]]
+    then
+        YAML_PREFIX="irlab_accelerometer_config"
+    else
+        echo "hiro or not selected for location. Resorting to hiro option."
+        YAML_PREFIX="accelerometer_config"
+    fi
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     shift # past argument
     ;;
@@ -36,6 +50,18 @@ esac
 done
 
 # input validation
+if [[ -z "$YAML_PREFIX" ]]
+then
+    echo "--location was not set. Setting to hiro..."
+    YAML_PREFIX="accelerometer_config"
+fi
+
+if [[ -z "$PANDA_IP" ]]
+then
+    echo "--panda-ip was not set. Exiting now..."
+    exit 1
+fi
+
 if [[ -z "$ROBOSKIN_PATH" ]]
 then
     echo "--roboskin-path was not set. Exiting now..."
@@ -61,12 +87,12 @@ then
 else
     # open new terminals to ssh into our raspberry pi - before running the launch file
     gnome-terminal -e 'roscore'
-    gnome-terminal -e "ssh -t rp14 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config1.yaml; exec bash'"
-    gnome-terminal -e "ssh -t rp14 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config2.yaml; exec bash'"
-    gnome-terminal -e "ssh -t rp23 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config1.yaml; exec bash'"
-    gnome-terminal -e "ssh -t rp23 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config2.yaml; exec bash'"
-    gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config1.yaml; exec bash'"
-    gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file irlab_accelerometer_config2.yaml; exec bash'"
+    gnome-terminal -e "ssh -t rp14 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file "$YAML_PREFIX"1.yaml; exec bash'"
+    gnome-terminal -e "ssh -t rp14 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file "$YAML_PREFIX"2.yaml; exec bash'"
+    gnome-terminal -e "ssh -t rp23 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file "$YAML_PREFIX"1.yaml; exec bash'"
+    gnome-terminal -e "ssh -t rp23 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file "$YAML_PREFIX"2.yaml; exec bash'"
+    gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file "$YAML_PREFIX"1.yaml; exec bash'"
+    gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --config_file "$YAML_PREFIX"2.yaml; exec bash'"
 
     roslaunch ros_robotic_skin e2e_panda_real.launch robot_ip:=$PANDA_IP
 fi
