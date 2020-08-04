@@ -182,7 +182,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
         bu(i) = candidates.minCoeff();
     }
 
-    Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("panda_EE"), q).block(0,0,3,7);
+    Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("end_effector"), q).block(0,0,3,7);
     Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
     Eigen::MatrixXd qGroundTruth = Jpinv * xDot ;
 
