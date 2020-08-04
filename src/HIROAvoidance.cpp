@@ -8,6 +8,11 @@
 
 Eigen::VectorXd HIROAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eigen::MatrixXd A, Eigen::VectorXd b, Eigen::VectorXd bl, Eigen::VectorXd bu)
 {
+    std::cout << "A: " << std::endl;
+    std::cout << A << std::endl;
+    std::cout << "b: "  << std::endl;
+    std::cout << b << std::endl;
+
     bool successfulOptimization = false;
     bool numberOfAttemptsExceeded = false;
     while (!successfulOptimization)
@@ -81,7 +86,6 @@ Eigen::VectorXd HIROAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eige
             {
                 if (numberOfAttemptsExceeded)
                 {
-                    std::cout << "-------------------------------" << std::endl;
                     ROS_WARN("Error in the optimization process");
                     ROS_WARN("Optimization exit code: %s", std::to_string(ALGLIBrep.terminationtype).c_str());
                     ROS_WARN("Number of attemps exceeded");
@@ -161,6 +165,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
     jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+    jointAccelerationMax = 0.01 * jointAccelerationMax;
     Eigen::Vector3d candidates;
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)
@@ -210,6 +215,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
         for (int i = 0; i < m; i++)
         {
             b[i] = computebvalue(closestPoints[i].distance_to_obs); // From fig. 5
+            // b[i] = 0.5;
             if (!std::isnan(b(i)))
             {
                 numberOfRestrictions++;
@@ -218,14 +224,16 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
             JiResized.block(0, 0, 3, Ji.cols()) = Ji.block(0, 0, 3, Ji.cols());
             A.row(i) = (obstaclePositionVectors[i] - closestPoints[i].control_point).normalized().transpose() * JiResized;
         }
-        newA.resize(numberOfRestrictions, 7);
+
+        newA.resize(numberOfRestrictions, A.cols());
         newb.resize(numberOfRestrictions);
-        for (int i = 0, j = 0; i < m; i++)
+        int j = 0;
+        for (int i = 0; i < m; i++)
         {
             if (!std::isnan(b(i)))
             {
                 newA.row(j) = A.row(i);
-                b(j) = b(i);
+                newb(j) = b(i);
                 j++;
             }
         }
@@ -254,25 +262,24 @@ Eigen::VectorXd HIROAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePo
 double HIROAvoidance::computebvalue(double distanceNorm)
 {
     // equation #13
-    double dr{0.17}, d0l{0.22}, d0u{0.25}, da{0.3}, xdota{0.2}, xdotr{-0.2};
-    if (distanceNorm < dr)
+    double dcritical{0.12}, dnoticeable{0.3}, VrepulsiveMax{0.3};
+    if (distanceNorm < dnoticeable)
     {
-        return xdotr;
-    }
-    else if (distanceNorm < d0l)
-    {
-        return xdotr + (0 - xdotr) / (d0l - dr) * (distanceNorm - dr);
-    }
-    else if (distanceNorm < d0u)
-    {
-        return 0;
-    }
-    else if (distanceNorm < da)
-    {
-        return 0 + (xdota - 0) / (da - d0u) * (distanceNorm - d0u);
+        double result;
+        if (distanceNorm < dcritical)
+        {
+            result = VrepulsiveMax / (1 + std::exp(-10*(2*distanceNorm/dcritical - 1))) - VrepulsiveMax;
+        }
+        else
+        {
+            result = VrepulsiveMax / (1 + std::exp(-10*(2*(distanceNorm-dcritical)/(dnoticeable- dcritical) - 1)));
+        }
+        return result;
     }
     else
     {
         return NAN;
     }
+
+
 }

@@ -210,15 +210,15 @@ void CartesianPositionController::getClosestControlPoints()
         }
     }
     ////////////////////////////////////////////////////
-    // std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
-    // for (int i = 0; i < closestPoints.size(); i++)
-    // {
-    //     std::cout << "id:" << closestPoints[i].segmentId << std::endl;
-    //     std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
-    //     std::cout << "t:" << closestPoints[i].t << std::endl;
-    //     std::cout << "point:" << closestPoints[i].control_point << std::endl;
-    //     std::cout << "---------------------------------" << std::endl;
-    // }
+    std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
+    for (int i = 0; i < closestPoints.size(); i++)
+    {
+        std::cout << "id:" << closestPoints[i].segmentId << std::endl;
+        std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
+        std::cout << "t:" << closestPoints[i].t << std::endl;
+        std::cout << "point:" << closestPoints[i].control_point << std::endl;
+        std::cout << "---------------------------------" << std::endl;
+    }
     ////////////////////////////////////////////////////
 }
 
@@ -231,7 +231,7 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         readEndEffectorPosition();
         readControlPointPositions();
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
-        desiredEEVelocity = pGain * positionErrorVector;
+        desiredEEVelocity = 0.35 * positionErrorVector.normalized();
         ros::spinOnce();
         switch (avoidanceMode)
         {
@@ -335,10 +335,26 @@ int main(int argc, char **argv)
         }
     }
 
+    std::vector<Eigen::Vector3d> trajectory;
+    for (double i=0; i<1; i=i+0.25){
+        double theta = 2 * M_PI * i;
+        double x0 = 0.5;
+        double y0 = 0.0;
+        double z0 = 0.5;
+        double r = 0.25;
+        double x = x0 ;
+        double y = y0 + r * std::cos(theta);
+        double z = z0 + r * std::sin(theta);
+        trajectory.push_back(Eigen::Vector3d(x, y, z));
+    }
+    int idx = 0;
+
     while (ros::ok())
     {
-        controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-        controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+        // controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
+        // controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+        controller.moveToPosition(trajectory[idx]);
+        idx = (idx + 1) % trajectory.size();
     }
     return 0;
 }
