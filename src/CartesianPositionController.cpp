@@ -134,7 +134,7 @@ Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen
 Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity)
 {
     // Function description
-    J = kdlSolver.computeJacobian(std::string("panda_link8"), q);
+    J = kdlSolver.computeJacobian(std::string("panda_EE"), q);
     ROS_INFO("J: \n");
     std::cout << J << std::endl;
     ROS_INFO("q: \n");
@@ -241,12 +241,12 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         ROS_INFO("End effector postition: \n");
         std::cout << endEffectorPositionVector << std::endl;
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
-        desiredEEVelocity = pGain * positionErrorVector;
+        desiredEEVelocity = 0.25 * positionErrorVector.normalized();
         ros::spinOnce();
         switch (avoidanceMode)
         {
             case noAvoidance:
-                jointVelocityController.sendVelocities(0.50 * EEVelocityToQDot(desiredEEVelocity));
+                jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
                 break;
             case Flacco:
             {
@@ -299,7 +299,7 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         // std::cout << rate.expectedCycleTime() << std::endl;
         rate.sleep();
     }
-    if (is_sim)
+    if (isSim)
     {
         jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
     }
@@ -347,10 +347,33 @@ int main(int argc, char **argv)
         }
     }
 
+    // while (ros::ok())
+    // {
+    //     controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
+    //     controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+    // }   
+
+    std::vector<Eigen::Vector3d> trajectory;
+    for (double i=0; i<1; i=i+0.25)
+    {
+        double theta = 2 * M_PI * i;
+        double x0 = 0.5;
+        double y0 = 0.0;
+        double z0 = 0.5;
+        double r = 0.25;
+        double x = x0 ;
+        double y = y0 + r * std::cos(theta);
+        double z = z0 + r * std::sin(theta);
+        trajectory.push_back(Eigen::Vector3d(x, y, z));
+    }
+    int idx = 0;    
     while (ros::ok())
     {
-        controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-        controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+        // controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
+        // controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+        controller.moveToPosition(trajectory[idx]);
+        idx = (idx + 1) % trajectory.size();
     }
+
     return 0;
 }

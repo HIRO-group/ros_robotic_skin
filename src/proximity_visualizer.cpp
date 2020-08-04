@@ -25,10 +25,7 @@ class ProximityVisualizer {
 
 ProximityVisualizer::ProximityVisualizer() {
     signal(SIGINT, on_shutdown);
-    if (!n.getParam("/num_sensors", num_sensors)) {
-        ROS_ERROR("Can't get number of sensors from the parameter server");
-        ros::shutdown();
-    }
+    num_sensors = 162;
     sub = n.subscribe<ros_robotic_skin::PointArray>("live_points", 1, &ProximityVisualizer::Callback, this);
     pub = n.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 1);
     // Same for all markers

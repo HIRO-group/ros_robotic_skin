@@ -6,7 +6,9 @@ KDLSolver::KDLSolver() {
     n.param("robot_description", robot_desc_string, std::string());
     if (!kdl_parser::treeFromString(robot_desc_string, kdlTree))
         ROS_ERROR("Failed to construct kdl tree");
-
+    
+    KDL::Frame newSegment(KDL::Vector(0, 0, 0.1034));
+    kdlTree.addSegment(KDL::Segment("panda_EE", KDL::Joint(KDL::Joint::None), newSegment, KDL::RigidBodyInertia::Zero()), "panda_link8");
 
     for (KDL::SegmentMap::const_iterator seg = kdlTree.getSegments().begin(); seg != kdlTree.getSegments().end(); seg++)
     {

@@ -167,6 +167,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
     jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+    jointAccelerationMax = jointAccelerationMax * 0.01;
     Eigen::Vector3d candidates;
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)
@@ -236,7 +237,7 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
             if (!std::isnan(b(i)))
             {
                 newA.row(j) = A.row(i);
-                b(j) = b(i);
+                newb(j) = b(i);
                 j++;
             }
         }

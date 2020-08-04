@@ -161,6 +161,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
     jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+    jointAccelerationMax = jointAccelerationMax * 0.01;
     Eigen::Vector3d candidates;
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)
@@ -175,10 +176,9 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
         candidates(2) = + std::sqrt(2 * jointAccelerationMax(i) * (q(i) - jointLimitsMin(i)));
         bu(i) = candidates.minCoeff();
     }
+    std::cout << "Before J" << std::endl;
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("panda_EE"), q).block(0,0,3,7);
-    Eigen::MatrixXd Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
-    Eigen::MatrixXd qGroundTruth = Jpinv * xDot ;
 
     Eigen::MatrixXd H = J.transpose() * J + computeDampingFactor(std::sqrt((J*J.transpose()).determinant())) * Eigen::MatrixXd::Identity(7,7);
     Eigen::VectorXd f = - xDot.transpose() * J;
@@ -209,6 +209,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
         int numberOfRestrictions = 0;
         for (int i = 0; i < m; i++)
         {
+            JiResized = Eigen::MatrixXd::Zero(3, 7);
             b[i] = computebvalue(closestPoints[i].distance_to_obs); // From fig. 5
             if (!std::isnan(b(i)))
             {
@@ -225,7 +226,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
             if (!std::isnan(b(i)))
             {
                 newA.row(j) = A.row(i);
-                b(j) = b(i);
+                newb(j) = b(i);
                 j++;
             }
         }
@@ -254,22 +255,19 @@ Eigen::VectorXd HIROAvoidance::gradientOfDistanceNorm(Eigen::Vector3d obstaclePo
 double HIROAvoidance::computebvalue(double distanceNorm)
 {
     // equation #13
-    double dr{0.17}, d0l{0.22}, d0u{0.25}, da{0.3}, xdota{0.2}, xdotr{-0.2};
-    if (distanceNorm < dr)
+    double dcritical{0.12}, dnoticeable{0.3}, VrepulsiveMax{0.3};
+    if (distanceNorm < dnoticeable)
     {
-        return xdotr;
-    }
-    else if (distanceNorm < d0l)
-    {
-        return xdotr + (0 - xdotr) / (d0l - dr) * (distanceNorm - dr);
-    }
-    else if (distanceNorm < d0u)
-    {
-        return 0;
-    }
-    else if (distanceNorm < da)
-    {
-        return 0 + (xdota - 0) / (da - d0u) * (distanceNorm - d0u);
+        double result;
+        if (distanceNorm < dcritical)
+        {
+            result = VrepulsiveMax / (1 + std::exp(-10*(2*distanceNorm/dcritical - 1))) - VrepulsiveMax;
+        }
+        else
+        {
+            result = VrepulsiveMax / (1 + std::exp(-10*(2*(distanceNorm-dcritical)/(dnoticeable- dcritical) - 1)));
+        }
+        return result;
     }
     else
     {
