@@ -2,6 +2,8 @@
 
 <launch>
 
+    <!-- Load URDF in the parameter server -->
+<param name="robot_description_with_imu" command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand.urdf.xacro"/>
     <!-- Command line arguments -->
     <arg name="paused" default="false"/>
     <arg name="use_sim_time" default="true"/>
@@ -10,8 +12,9 @@
     <arg name="debug" default="false"/>
     <arg name="load_gripper" default="true"/>
 
-    <!-- Load URDF in the parameter server -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ros_robotic_skin)/robots/panda_arm_hand_flacco.urdf.xacro"/>
+    <!--    Add Params YAML File-->
+    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/simulation.yaml"/>
+    <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
     <!-- Launch Gazebo with an empty world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -23,8 +26,8 @@
     </include>
 
     <!-- Add Panda to Gazebo -->
-    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model"
-          args="-param robot_description -urdf -model panda"/>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description_with_imu -urdf -model panda"/>
+
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find panda_simulation)/config/panda_control.yaml" command="load"/>
@@ -44,16 +47,12 @@
 
     <!-- Convert joint states to TF transforms for rviz, etc -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
+        <param name="publish_frequency" value="100" />
+        <remap from="robot_description" to="robot_description_with_imu" />
     </node>
-
-    <!-- Add Params YAML File-->
-    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/params.yaml"/>
-    <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
     <!-- Rviz -->
     <node name="$(anon rviz)" pkg="rviz" type="rviz" respawn="false"
         args="-d $(find ros_robotic_skin)/config/rviz.rviz" output="screen"/>
-
-    <!-- <node name="Spheres" pkg="ros_robotic_skin" type="sphere_visualizer.py"/> -->
 
 </launch>
