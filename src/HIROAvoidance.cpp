@@ -118,13 +118,13 @@ Eigen::VectorXd HIROAvoidance::algLib(Eigen::MatrixXd H, Eigen::VectorXd f, Eige
         }
         catch(alglib::ap_error e)
         {
-            ROS_WARN("Alglib exception. Shutting down...");
+            ROS_ERROR("Alglib exception. Shutting down...");
             printf("error msg: %s\n", e.msg.c_str());
             printf("A: \n");
             std::cout << A << std::endl;
             printf("b: \n");
             std::cout << b << std::endl;
-            ros::shutdown();
+            return Eigen::VectorXd::Zero(7);
         }
     }
     return qDot;
@@ -176,7 +176,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
         candidates(2) = + std::sqrt(2 * jointAccelerationMax(i) * (q(i) - jointLimitsMin(i)));
         bu(i) = candidates.minCoeff();
     }
-    std::cout << "Before J" << std::endl;
+    // std::cout << "Before J" << std::endl;
 
     Eigen::MatrixXd J = kdlSolver.computeJacobian(std::string ("panda_EE"), q).block(0,0,3,7);
 

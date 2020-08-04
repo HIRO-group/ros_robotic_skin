@@ -135,10 +135,10 @@ Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d de
 {
     // Function description
     J = kdlSolver.computeJacobian(std::string("panda_EE"), q);
-    ROS_INFO("J: \n");
-    std::cout << J << std::endl;
-    ROS_INFO("q: \n");
-    std::cout << q << std::endl;
+    // ROS_INFO("J: \n");
+    // std::cout << J << std::endl;
+    // ROS_INFO("q: \n");
+    // std::cout << q << std::endl;
     J = J.block(0,0,3,7);
     Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
     return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
@@ -238,8 +238,8 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
 
     while (positionErrorVector.norm() > position_error_threshold && ros::ok()) {
         readEndEffectorPosition();
-        ROS_INFO("End effector postition: \n");
-        std::cout << endEffectorPositionVector << std::endl;
+        // ROS_INFO("End effector postition: \n");
+        // std::cout << endEffectorPositionVector << std::endl;
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
         desiredEEVelocity = 0.25 * positionErrorVector.normalized();
         ros::spinOnce();
@@ -324,7 +324,6 @@ int main(int argc, char **argv)
     }
     else
     {
-        std::cout << argv[1] << std::endl;
         if (std::string(argv[1]) == "Flacco")
         {
             ROS_INFO("Flacco selected");
