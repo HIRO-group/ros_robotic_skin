@@ -3,4 +3,4 @@
 .git/
 .vscode/
 data/
-src/alglib/src/*
+alglib/
