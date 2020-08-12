@@ -18,7 +18,7 @@ enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
 
 class CartesianPositionController {
  private:
-    bool isSim = false;
+    bool isSim = true;
     AvoidanceMode avoidanceMode{noAvoidance};
     int numberControlPoints;
     double position_error_threshold{0.01}, pGain {2.5}, secondaryTaskGain{5.0};
@@ -104,8 +104,8 @@ void CartesianPositionController::JointStateCallback(const sensor_msgs::JointSta
     else
         q << msg->position[2-2], msg->position[3-2], msg->position[4-2], msg->position[5-2], msg->position[6-2], msg->position[7-2], msg->position[8-2];
 
-    
-    
+
+
 }
 
 void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg)
@@ -157,7 +157,7 @@ Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector
     double top = (v.transpose() * u);
     double bottom = (v.transpose() * v);
 
-    // I alter this value here because I want to use it 
+    // I alter this value here because I want to use it
     t = -top/bottom;
 
     double d_a = (p - a).norm();
@@ -350,10 +350,10 @@ int main(int argc, char **argv)
     // {
     //     controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
     //     controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
-    // }   
+    // }
 
     std::vector<Eigen::Vector3d> trajectory;
-    for (double i=0; i<1; i=i+0.25)
+    for (double i=0; i<1; i=i+0.05)
     {
         double theta = 2 * M_PI * i;
         double x0 = 0.5;
@@ -365,11 +365,11 @@ int main(int argc, char **argv)
         double z = z0 + r * std::sin(theta);
         trajectory.push_back(Eigen::Vector3d(x, y, z));
     }
-    int idx = 0;    
+    int idx = 0;
     while (ros::ok())
     {
-        // controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-        // controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+        //controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
+        //controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
         controller.moveToPosition(trajectory[idx]);
         idx = (idx + 1) % trajectory.size();
     }
