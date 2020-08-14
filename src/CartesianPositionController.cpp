@@ -1,75 +1,27 @@
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <signal.h>
-#include <math.h>
-#include <cmath>
-#include "ros/ros.h"
-#include "JointVelocityController.h"
-#include "QPAvoidance.h"
-#include "sensor_msgs/JointState.h"
-#include "ros_robotic_skin/PointArray.h"
-#include "tf/transform_listener.h"
-#include "KDLSolver.h"
-#include "Eigen/Dense"
-#include "HIROAvoidance.h"
+#include "CartesianPositionController.h"
 
 
-enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
-
-class CartesianPositionController {
- private:
-    bool isSim = true;
-    AvoidanceMode avoidanceMode{noAvoidance};
-    int numberControlPoints;
-    double position_error_threshold{0.01}, pGain {2.5}, secondaryTaskGain{5.0};
-    ros::NodeHandle n;
-    ros::Rate rate{100.0};
-    ros::Subscriber subscriberJointStates;
-    ros::Subscriber subscriberObstaclePoints;
-    tf::TransformListener transform_listener;
-    tf::StampedTransform transform;
-    Eigen::VectorXd q, qDot{7}, jointLimitsMin{7}, jointLimitsMax{7}, jointMiddleValues{7}, jointRanges{7}, jointVelocityMax{7}, jointAccelerationMax{7};
-    Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
-    std::vector<Eigen::Vector3d> obstaclePositionVectors;
-    std::unique_ptr<Eigen::Vector3d[]> controlPointPositionVectors;
-    Eigen::MatrixXd J, Jpinv, joint_positions;
-    KDLSolver kdlSolver;
-    std::vector<KDLSolver::closest_point> closestPoints;
-
-    void JointStateCallback(const sensor_msgs::JointState::ConstPtr& scan);
-    void ObstaclePointsCallback(const ros_robotic_skin::PointArray::ConstPtr& msg);
-    void readEndEffectorPosition();
-    // void readControlPointPositions();
-    Eigen::Vector3d getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t);
-    void getClosestControlPoints();
-    Eigen::VectorXd EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity);
-
- public:
-    CartesianPositionController();
-    JointVelocityController jointVelocityController;
-    QPAvoidance qpAvoidance;
-    Eigen::VectorXd secondaryTaskFunctionGradient(Eigen::VectorXd q);
-    void setMode(AvoidanceMode avoidanceModeName);
-    void moveToPosition(Eigen::Vector3d position_vector);
-    HIROAvoidance hiroAvoidance;
-};
 
 CartesianPositionController::CartesianPositionController()
 {
-    // numberControlPoints = kdlSolver.getNumberControlPoints();
-    // this->controlPointPositionVectors = std::make_unique<Eigen::Vector3d[]>(numberControlPoints);
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
     jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
     jointRanges = jointLimitsMax - jointLimitsMin;
+
     q.resize(7);
-    subscriberJointStates = n.subscribe<sensor_msgs::JointState>("/joint_states", 1, &CartesianPositionController::JointStateCallback, this);
-    subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1, &CartesianPositionController::ObstaclePointsCallback, this);
+
+    subscriberJointStates = n.subscribe<sensor_msgs::JointState>("/joint_states", 1,
+                                                                 &CartesianPositionController::JointStateCallback,
+                                                                 this);
+    subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1,
+                                                                         &CartesianPositionController::ObstaclePointsCallback,
+                                                                        this);
+
     readEndEffectorPosition();
-    // readControlPointPositions();
 }
 
 void CartesianPositionController::readEndEffectorPosition()
@@ -92,12 +44,6 @@ void CartesianPositionController::readEndEffectorPosition()
     }
 }
 
-// void CartesianPositionController::readControlPointPositions()
-// {
-//     for (int i = 0; i < numberControlPoints; i++)
-//         controlPointPositionVectors[i] = kdlSolver.forwardKinematicsControlPoints(std::string("control_point") + std::to_string(i), q);
-// }
-
 void CartesianPositionController::JointStateCallback(const sensor_msgs::JointState::ConstPtr& msg)
 {
     if (isSim == true)
@@ -117,32 +63,16 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
     {
         obstaclePositionVectors.push_back(Eigen::Vector3d(it->x, it->y, it->z));
     }
-    ///////////////////////////
-    // obstaclePositionVectors.clear();
-    // obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
-    /////////////////////////////
-
-    // Obtain the control point associated to each obstacle
-    // Save the values in the class member closestPoints (of type custom struct)
     getClosestControlPoints();
-}
-
-Eigen::VectorXd CartesianPositionController::secondaryTaskFunctionGradient(Eigen::VectorXd q)
-{
-    return 2.0/7.0 * (q - jointMiddleValues).cwiseQuotient(jointRanges);
 }
 
 Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d desiredEEVelocity)
 {
-    // Function description
     J = kdlSolver.computeJacobian(std::string("panda_EE"), q);
-    // ROS_INFO("J: \n");
-    // std::cout << J << std::endl;
-    // ROS_INFO("q: \n");
-    // std::cout << q << std::endl;
     J = J.block(0,0,3,7);
     Jpinv = J.completeOrthogonalDecomposition().pseudoInverse();
-    return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient(q));
+    Eigen::VectorXd secondaryTaskFunctionGradient =  2.0/7.0 * (q - jointMiddleValues).cwiseQuotient(jointRanges);
+    return Jpinv * desiredEEVelocity - secondaryTaskGain * ((Eigen::MatrixXd::Identity(7, 7) - Jpinv*J) * secondaryTaskFunctionGradient);
 }
 
 void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName) {
@@ -151,6 +81,7 @@ void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName) {
 
 Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t)
 {
+    //TODO: change variable names
     //https://math.stackexchange.com/a/2193733/801563
     Eigen::Vector3d v = b - a;
     Eigen::Vector3d u = a - p;
@@ -158,14 +89,12 @@ Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector
     double top = (v.transpose() * u);
     double bottom = (v.transpose() * v);
 
-    // I alter this value here because I want to use it
     t = -top/bottom;
 
     double d_a = (p - a).norm();
     double d_b = (p - b).norm();
 
     Eigen::Vector3d c;
-
 
     if (0 < t && t < 1){
         c = a + t * (b - a);
@@ -178,13 +107,12 @@ Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector
             t = 1;
         }
     }
-
     return c;
 }
 
 void CartesianPositionController::getClosestControlPoints()
 {
-
+    // TODO: Break down
     joint_positions = kdlSolver.forwardKinematicsJoints(q);
 
     // Initalize a list to hold the starting segemnt of the closest line
@@ -220,17 +148,6 @@ void CartesianPositionController::getClosestControlPoints()
             }
         }
     }
-    ////////////////////////////////////////////////////
-    // std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
-    // for (int i = 0; i < closestPoints.size(); i++)
-    // {
-    //     std::cout << "id:" << closestPoints[i].segmentId << std::endl;
-    //     std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
-    //     std::cout << "t:" << closestPoints[i].t << std::endl;
-    //     std::cout << "point:" << closestPoints[i].control_point << std::endl;
-    //     std::cout << "---------------------------------" << std::endl;
-    // }
-    ////////////////////////////////////////////////////
 }
 
 void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector)
@@ -238,12 +155,16 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
     positionErrorVector = desiredPositionVector - endEffectorPositionVector;
 
     while (positionErrorVector.norm() > position_error_threshold && ros::ok()) {
+
         readEndEffectorPosition();
-        // ROS_INFO("End effector postition: \n");
-        // std::cout << endEffectorPositionVector << std::endl;
+
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
+
+        // TODO: change this from a constant velocity, to a velocity dependent on distance
         desiredEEVelocity = 0.25 * positionErrorVector.normalized();
+
         ros::spinOnce();
+
         switch (avoidanceMode)
         {
             case noAvoidance:
@@ -251,55 +172,30 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 break;
             case Flacco:
             {
-                // Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
-
-                // Eigen::Vector3d c = controlPointPositionVectors[5];
-
-                // Eigen::Vector3d v1, v3;
-                // transform_listener.lookupTransform("/world", "/panda_link1",
-                //                         ros::Time(0), transform);
-                // v1 << transform.getOrigin().getX(),
-                //       transform.getOrigin().getY(),
-                //       transform.getOrigin().getZ();
-                // transform_listener.lookupTransform("/world", "/panda_link3",
-                //                         ros::Time(0), transform);
-                // v3 << transform.getOrigin().getX(),
-                //       transform.getOrigin().getY(),
-                //       transform.getOrigin().getZ();
-                // double t;
-                // t = (c-v1)[0] / (v3 - v1)[0];
-
-                // Eigen::MatrixXd J2 = kdlSolver.computeJacobian2("panda_link4", q, t, 0);
-                // Eigen::VectorXd va(3); va << 1,2,4;
-                // std::cout << J2 << std::endl;
-                // std::cout << "----------------" << std::endl;
-                // std::cout << Jreal << std::endl;
-                // std::cout << "----------------" << std::endl;
-                // std::cout << "----------------" << std::endl;
-
-                //std::cout << kdlSolver.forwardKinematicsJoints(q) << std::endl;
-
-                //jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                // TODO: insert Flacco implementation here
                 break;
             }
-
             case QP:
             {
-                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints, rate);
+                qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity,
+                                                          obstaclePositionVectors,
+                                                          closestPoints, rate);
+
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }
             case HIRO:
             {
-                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, closestPoints, rate);
+                qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity,
+                                                            obstaclePositionVectors,
+                                                            closestPoints, rate);
                 jointVelocityController.sendVelocities(qDot);
                 break;
             }
         }
-        // std::cout << rate.cycleTime() << std::endl; Let's us the actual run time of a cycle from start to sleep
-        // std::cout << rate.expectedCycleTime() << std::endl;
         rate.sleep();
     }
+    // If no velocity is sent then the sim will continue at the last velocity sent
     if (isSim)
     {
         jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
@@ -311,6 +207,7 @@ void on_shutdown(int sig) {
     endController.jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
     ros::shutdown();
 }
+
 
 int main(int argc, char **argv)
 {
@@ -347,36 +244,10 @@ int main(int argc, char **argv)
         }
     }
 
-    // while (ros::ok())
-    // {
-    //     controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-    //     controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
-    // }
-
-    // std::vector<Eigen::Vector3d> trajectory;
-    // for (double i=0; i<1; i=i+0.05)
-    // {
-    //     double theta = 2 * M_PI * i;
-    //     double x0 = 0.5;
-    //     double y0 = 0.0;
-    //     double z0 = 0.5;
-    //     double r = 0.25;
-    //     double x = x0 ;
-    //     double y = y0 + r * std::cos(theta);
-    //     double z = z0 + r * std::sin(theta);
-    //     trajectory.push_back(Eigen::Vector3d(x, y, z));
-    // }
-    // int idx = 0;
-    // while (ros::ok())
-    // {
-    //     //controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-    //     //controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
-    //     controller.moveToPosition(trajectory[idx]);
-    //     idx = (idx + 1) % trajectory.size();
-    // }
-
+    //Set up a circular trajectory
+    // TODO: make function to send this path
     Eigen::Vector3d trajectory;
-    double theta =0;
+    double theta = 0;
     double radius = 0.25;
     double x = 0.5;
     double y = radius * std::cos(theta);
@@ -384,18 +255,14 @@ int main(int argc, char **argv)
     double inc = 0.005;
     trajectory = Eigen::Vector3d(x, y, z);
 
-
     while (ros::ok())
     {
-        //controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-        //controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
         controller.moveToPosition(trajectory);
         theta = fmod(theta + inc, M_PI * 2.0);
         y = radius * std::cos(theta);
         z = 0.5 + radius * std::sin(theta);
         trajectory = Eigen::Vector3d(x, y, z);
         ros::Duration(0.001).sleep();
-
     }
 
     return 0;

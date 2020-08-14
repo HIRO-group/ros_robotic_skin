@@ -161,16 +161,19 @@ Eigen::VectorXd QPAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen::V
                                                     std::vector<KDLSolver::closest_point>& closestPoints,
                                                     ros::Rate& r)
 {
+    // TODO: Break this function into sub subfunctions
     // Equation #3
     Eigen::VectorXd jointLimitsMin{7}, jointLimitsMax{7}, jointVelocityMax{7}, jointAccelerationMax{7};
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
     jointAccelerationMax << 15, 7.5, 10, 12.5, 15, 20, 20;
+
     jointLimitsMax = jointLimitsMin * 0.97;
     jointLimitsMin = jointLimitsMax * 0.97;
     jointVelocityMax = jointVelocityMax * 0.98;
     jointAccelerationMax = jointAccelerationMax * 0.01;
+
     Eigen::Vector3d candidates;
     Eigen::VectorXd bl{jointLimitsMax.size()}, bu{jointLimitsMax.size()};
     for (int i = 0; i < jointLimitsMax.size(); i++)

@@ -155,6 +155,7 @@ Eigen::VectorXd HIROAvoidance::computeJointVelocities(Eigen::VectorXd& q, Eigen:
                                                     std::vector<KDLSolver::closest_point>& closestPoints,
                                                     ros::Rate& r)
 {
+    // TODO: Break this function into sub subfunctions
     // Equation #3
     Eigen::VectorXd jointLimitsMin{7}, jointLimitsMax{7}, jointVelocityMax{7}, jointAccelerationMax{7};
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
