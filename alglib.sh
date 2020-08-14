@@ -7,5 +7,6 @@ rm alglib-3.16.0.cpp.gpl.tgz
 mv src/alglib/cpp/src src/alglib
 rm -rf src/alglib/cpp
 
+catkin build ros_robotic_skin
 
 

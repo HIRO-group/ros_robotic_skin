@@ -100,7 +100,7 @@ then
     rm -rf franka_ros
 fi
 
-git clone --branch simulation https://github.com/HIRO-group/franka_ros
+git clone --branch QP_simulation https://github.com/HIRO-group/franka_ros
 
 cd ..
 sudo apt install libboost-filesystem-dev
@@ -153,6 +153,10 @@ sed -i '48i\target_link_libraries(${PROJECT_NAME} yaml-cpp)' src/sawyer_simulato
 # clean things up before the show!
 rm -rf devel
 rm -rf build
+
+# Need to build Alglib before all of franka ros!
+./alglib.sh
+
 if [[ $FRANKA_BUILD = "source" ]]
 then
   catkin build -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
