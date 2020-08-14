@@ -32,6 +32,7 @@ file(GLOB alglib_SRC
 
 find_package(Franka 0.5.0 REQUIRED)
 # find_package(CGAL REQUIRED COMPONENTS Core)
+#find_package(ALGLIB REQUIRED)
 
 
 ## System dependencies are found with CMake's conventions

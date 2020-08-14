@@ -1,10 +1,11 @@
 #!/bin/bash
 
 wget https://www.alglib.net/translator/re/alglib-3.16.0.cpp.gpl.tgz
-tar -xzf alglib-3.16.0.cpp.gpl.tgz -C  src/
+mkdir src/alglib
+tar -xzf alglib-3.16.0.cpp.gpl.tgz -C  src/alglib
 rm alglib-3.16.0.cpp.gpl.tgz
-mv src/cpp/src src/alglib
-rm -rf src/cpp
+mv src/alglib/cpp/src src/alglib
+rm -rf src/alglib/cpp
 
 
 

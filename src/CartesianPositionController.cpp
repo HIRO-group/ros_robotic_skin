@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <signal.h>
 #include <math.h>
+#include <cmath>
 #include "ros/ros.h"
 #include "JointVelocityController.h"
 #include "QPAvoidance.h"
@@ -352,26 +353,49 @@ int main(int argc, char **argv)
     //     controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
     // }
 
-    std::vector<Eigen::Vector3d> trajectory;
-    for (double i=0; i<1; i=i+0.05)
-    {
-        double theta = 2 * M_PI * i;
-        double x0 = 0.5;
-        double y0 = 0.0;
-        double z0 = 0.5;
-        double r = 0.25;
-        double x = x0 ;
-        double y = y0 + r * std::cos(theta);
-        double z = z0 + r * std::sin(theta);
-        trajectory.push_back(Eigen::Vector3d(x, y, z));
-    }
-    int idx = 0;
+    // std::vector<Eigen::Vector3d> trajectory;
+    // for (double i=0; i<1; i=i+0.05)
+    // {
+    //     double theta = 2 * M_PI * i;
+    //     double x0 = 0.5;
+    //     double y0 = 0.0;
+    //     double z0 = 0.5;
+    //     double r = 0.25;
+    //     double x = x0 ;
+    //     double y = y0 + r * std::cos(theta);
+    //     double z = z0 + r * std::sin(theta);
+    //     trajectory.push_back(Eigen::Vector3d(x, y, z));
+    // }
+    // int idx = 0;
+    // while (ros::ok())
+    // {
+    //     //controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
+    //     //controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+    //     controller.moveToPosition(trajectory[idx]);
+    //     idx = (idx + 1) % trajectory.size();
+    // }
+
+    Eigen::Vector3d trajectory;
+    double theta =0;
+    double radius = 0.25;
+    double x = 0.5;
+    double y = radius * std::cos(theta);
+    double z = 0.5 + radius * std::sin(theta);
+    double inc = 0.005;
+    trajectory = Eigen::Vector3d(x, y, z);
+
+
     while (ros::ok())
     {
         //controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
         //controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
-        controller.moveToPosition(trajectory[idx]);
-        idx = (idx + 1) % trajectory.size();
+        controller.moveToPosition(trajectory);
+        theta = fmod(theta + inc, M_PI * 2.0);
+        y = radius * std::cos(theta);
+        z = 0.5 + radius * std::sin(theta);
+        trajectory = Eigen::Vector3d(x, y, z);
+        ros::Duration(0.001).sleep();
+
     }
 
     return 0;
