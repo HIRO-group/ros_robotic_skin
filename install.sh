@@ -3,6 +3,14 @@
 # HIRO Group installation script for ros_robotic_skin
 # and the corresponding ROS packages.
 
+# install alglib
+wget https://www.alglib.net/translator/re/alglib-3.16.0.cpp.gpl.tgz
+mkdir src/alglib
+tar -xzf alglib-3.16.0.cpp.gpl.tgz -C  src/alglib
+rm alglib-3.16.0.cpp.gpl.tgz
+mv src/alglib/cpp/src src/alglib
+rm -rf src/alglib/cpp
+
 # checks to see if a valid catkin workspace has been created
 TWO_DOTS=$(cd ../../ && pwd)
 THREE_DOTS=$(cd ../../.. && pwd)
@@ -102,6 +110,7 @@ fi
 
 git clone --branch QP_simulation https://github.com/HIRO-group/franka_ros
 
+
 cd ..
 sudo apt install libboost-filesystem-dev
 rosdep install --from-paths src --ignore-src -y --skip-keys libfranka --skip-keys ros_robotic_skin --skip-keys libgazebo7-dev
@@ -155,8 +164,6 @@ rm -rf devel
 rm -rf build
 
 # Need to build Alglib before all of franka ros!
-./alglib.sh
-
 if [[ $FRANKA_BUILD = "source" ]]
 then
   catkin build -DFranka_DIR:PATH=$(pwd)/src/libfranka/build
