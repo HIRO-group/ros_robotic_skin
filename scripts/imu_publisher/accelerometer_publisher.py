@@ -1,4 +1,4 @@
-from robotic_skin.sensor.lsm6ds3 import LSM6DS3_IMU
+from roboskin.sensor.lsm6ds3 import LSM6DS3_IMU
 from sensor_msgs.msg import Imu
 import rospy
 import os

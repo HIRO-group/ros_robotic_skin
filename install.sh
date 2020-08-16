@@ -70,9 +70,9 @@ sudo apt install python3-pip python-catkin-tools
 
 if [[ $GIT_OPTION = "ssh" ]]
 then
-  pip3 install --upgrade --user git+ssh://git@github.com/HIRO-group/robotic_skin.git
+  pip3 install --upgrade --user git+ssh://git@github.com/HIRO-group/roboskin.git
 else
-  pip3 install --upgrade --user git+https://github.com/HIRO-group/robotic_skin.git
+  pip3 install --upgrade --user git+https://github.com/HIRO-group/roboskin.git
 fi
 cd ..
 # clone repositories for simulation
