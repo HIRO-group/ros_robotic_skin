@@ -7,46 +7,26 @@
 - **Suporting Version**: `ROS Melodic`
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
-# Installation
-
-We have an `install.sh` script that will install the following packages:
-
-- Installs our Python `robotic_skin` package [here](https://github.com/HIRO-group/robotic_skin)
-
-- The Franka Panda Gazebo Simulator package [here](https://github.com/HIRO-group/panda_simulation)
-
-- The Sawyer Gazebo simulator
-
-## To run `install.sh`
-Make sure that you have cloned this repository from the `src` folder of a catkin workspace (eg: from `catkin_ws/src`). If you haven't, the script will give an error.
-Additionally, you should clone this repository in an **empty** catkin workspace. For example, if you have the `franka_ros` package in the workspace, it will be deleted in favor of our forked version that works with this package.
-
-### Usage:
-```sh
-./install.sh --git-option https|ssh --franka-build apt|source
+# Quick Installation
 ```
+# Assume catkin_ws is already made
+cd catkin_ws/src
 
-### Examples
-1. Simply Run (Default options= `ssh` && `apt`)
-```sh
+# Install hiro_ros_arm_controller
+git clone git@github.com:HIRO-group/hiro_ros_arm_controller.git
+cd hiro_ros_arm_controller
 ./install.sh
+cd ..
+
+# Install this repo
+git clone https://github.com/HIRO-group/ros_robotic_skin/
+cd ..
+catkin build   # or catkin make
 ```
 
-2. Use options
-```sh
-./install.sh --git-option ssh --franka-build source
-```
-This command will build `libfranka` from source and use ssh for git.
-
-### Options
-- `--git-option` <br>
-specifies if we clone the `HIRO` repos via https or ssh.
-
-- `franka_build` <br>
-specifies whether we want to build `libfranka` from source or install it via `apt`.
-
-### Docker
+# Docker Installation
 We also have a [`Dockerfile`](https://github.com/HIRO-group/ros_robotic_skin/blob/master/Dockerfile). See how you install and run it in [our Wiki page](https://github.com/HIRO-group/ros_robotic_skin/wiki/Running-on-Docker)
+
 
 # Launch Files
 ## Prerequisite
@@ -57,10 +37,12 @@ a terminal.
 
 ```sh
 source <path to your workspace>/devel/setup.bash
+# If you followed the ROS tutorials, it should be
+# source ~/catkin_ws/devel/setup.bash
 ```
 
 ## Running Panda in simulation
-You can add as many IMUs as you want in `config/imu_poses.txt`.
+You can add as many IMUs as you want in `config/imu_poses/imu_poses.txt`.
 The format per line is as follows:
 
 ```sh

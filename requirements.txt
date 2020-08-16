@@ -3,5 +3,4 @@ rospy
 rospkg
 rosparam
 kivy
-pygame
 flake8==3.7.9

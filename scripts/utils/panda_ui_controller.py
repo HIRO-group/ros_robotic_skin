@@ -3,16 +3,16 @@
 Panda UI Controller.
 Uses 7 sliders to manipulate the position of the panda
 """
+import sys
+import numpy as np
+import rospkg
 
 from kivy.app import App
 from kivy.uix.slider import Slider
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-import sys
-import numpy as np
-import rospkg
-sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts.controllers.RobotController import PandaController  # noqa: E402
+
+from hiro_ros_arm_controller.RobotController import PandaController
 
 
 class PandaPositionMover(GridLayout):

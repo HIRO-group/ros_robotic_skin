@@ -63,17 +63,14 @@ find_package(Franka 0.5.0 REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  Jacobian.msg
-  PointArray.msg
-)
+# add_message_files(
+#   FILES
+# )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  getJacobian.srv
-)
+# add_service_files(
+#   FILES
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -83,11 +80,11 @@ add_service_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+#   geometry_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -119,7 +116,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+  # INCLUDE_DIRS include
   LIBRARIES ros_robotic_skin
   CATKIN_DEPENDS
     controller_interface
@@ -146,10 +143,9 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(ros_robotic_skin
-  src/PandaJointVelocityController.cpp
-  src/PandaJointPositionController.cpp
-)
+# add_library(ros_robotic_skin
+#   src/.cpp
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -159,10 +155,7 @@ add_library(ros_robotic_skin
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(KDL_server src/KDL_server.cpp)
-add_executable(proximity_listener src/proximity_listener.cpp)
-add_executable(proximity_visualizer src/proximity_visualizer.cpp)
-add_executable(CartesianPositionController src/CartesianPositionController.cpp src/JointVelocityController.cpp src/KDLSolver.cpp)
+# add_executable()
 
 
 ## Rename C++ executable without prefix
@@ -173,25 +166,10 @@ add_executable(CartesianPositionController src/CartesianPositionController.cpp s
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(KDL_server ros_robotic_skin_gencpp)
-add_dependencies(proximity_listener ros_robotic_skin_gencpp)
-add_dependencies(proximity_visualizer ros_robotic_skin_gencpp)
-add_dependencies(CartesianPositionController ros_robotic_skin_gencpp)
-add_dependencies(ros_robotic_skin
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
-  ${catkin_EXPORTED_TARGETS}
-  ${PROJECT_NAME}_gencpp
-)
+# add_dependencies()
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(KDL_server ${catkin_LIBRARIES})
-target_link_libraries(proximity_listener ${catkin_LIBRARIES})
-target_link_libraries(proximity_visualizer ${catkin_LIBRARIES})
-target_link_libraries(CartesianPositionController ${catkin_LIBRARIES})
-target_link_libraries(ros_robotic_skin PUBLIC
-  ${Franka_LIBRARIES}
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries( ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -226,23 +204,23 @@ target_link_libraries(ros_robotic_skin PUBLIC
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 # )
-install(TARGETS ros_robotic_skin
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# install(TARGETS ros_robotic_skin
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
-install(DIRECTORY launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+# install(DIRECTORY launch
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
 
-install(DIRECTORY config
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+# install(DIRECTORY config
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
 
-install(FILES ros_robotic_skin.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+# install(FILES ros_robotic_skin.xml
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/
@@ -270,8 +248,3 @@ install(FILES ros_robotic_skin.xml
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-if(CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  add_rostest(launch/test.test)
-endif()

@@ -34,7 +34,7 @@ class RealIMUSpawner():
             self.robot_standard_link = "panda_link"
         else:
             self.robot_standard_link = "right_l"
-        real_imu_pose_path = os.path.join(self.pkg_path, 'config/imu_poses.txt')
+        real_imu_pose_path = os.path.join(self.pkg_path, 'config/imu_poses/imu_poses.txt')
         if not os.path.exists(real_imu_pose_path):
             raise EnvironmentError('imu_poses.txt file not found in config!')
         else:

@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 import os
-# import argparse
+import sys
 import numpy as np
+import pickle
+
 import rospy
 import rospkg
-import pickle
 import tf
 from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState, GetLinkState
 from gazebo_msgs.msg import ModelState, LinkState
 from geometry_msgs.msg import Pose, Quaternion, Point
 
-
-import sys
-sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-# import scripts.utils
-from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
+from hiro_ros_arm_controller.RobotController import PandaController, SawyerController
 
 
 class EstimatedIMUBoxStateManager():
@@ -29,30 +26,19 @@ class EstimatedIMUBoxStateManager():
 
         `init_poses`: `List[geometry_msgs.msg.Pose]`
             `[Pose(Position xyz, Orientation quaternion)]`
-
-        `sdf`: `bool`
-            launch from sdf or urdf
         """
         self.model_names = model_names
         self.n = len(model_names)
-        self.sdf = sdf
         ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
 
         rospy.wait_for_service('/gazebo/set_model_state')
-        if sdf:
-            rospy.wait_for_service('/gazebo/spawn_sdf_model')
-            self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-            model_path = os.path.join(ros_robotic_skin_path, 'robots/imubox/model.sdf')
-            self.set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
-            with open(model_path, 'r') as f:
-                xml_string = f.read().replace('\n', '')
-        else:
-            rospy.wait_for_service('/gazebo/spawn_urdf_model')
-            self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
-            model_path = os.path.join(ros_robotic_skin_path, 'robots/imu.urdf')
-            self.set_link_state = rospy.ServiceProxy('/gazebo/set_link_state', SetLinkState)
-            with open(model_path, 'r') as f:
-                xml_string = f.read()
+        rospy.wait_for_service('/gazebo/spawn_sdf_model')
+        self.spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+        model_path = os.path.join(ros_robotic_skin_path, 'robots/imubox/model.sdf')
+        self.set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+        with open(model_path, 'r') as f:
+            xml_string = f.read().replace('\n', '')
+
 
         if init_poses is None:
             q = tf.transformations.quaternion_from_euler(0, 0, 0)
@@ -122,26 +108,15 @@ class EstimatedIMUBoxStateManager():
         init_pose.orientation.y = pose.orientation[1]
         init_pose.orientation.z = pose.orientation[2]
         init_pose.orientation.w = pose.orientation[3]
-        if self.sdf:
-            try:
-                state_msg = ModelState()
-                state_msg.model_name = name
-                state_msg.pose = init_pose
-                state_msg.reference_frame = "world"
-                rospy.wait_for_service('/gazebo/set_model_state')
-                self.set_model_state(state_msg)
-            except rospy.ServiceException as e:
-                rospy.loginfo("Service call failed: %s" % e)
-        else:
-            try:
-                link_msg = LinkState()
-                link_msg.link_name = name
-                link_msg.pose = init_pose
-                link_msg.reference_frame = "world"
-                rospy.wait_for_service('/gazebo/set_link_state')
-                self.set_link_state(state_msg)
-            except rospy.ServiceException as e:
-                rospy.loginfo("Service call failed: %s" % e)
+        try:
+            state_msg = ModelState()
+            state_msg.model_name = name
+            state_msg.pose = init_pose
+            state_msg.reference_frame = "world"
+            rospy.wait_for_service('/gazebo/set_model_state')
+            self.set_model_state(state_msg)
+        except rospy.ServiceException as e:
+            rospy.loginfo("Service call failed: %s" % e)
 
 
 class TrueIMUBoxStateManager():

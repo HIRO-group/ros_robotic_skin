@@ -6,7 +6,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         filename = sys.argv[1]
     else:
-        filename = "data/constant_data_sawyer.pickle"
+        filename = "data/constant_data_sawyer.pickle"  # TODO: This needs to be changed
     data = pickle.load(open(filename, "rb"))
     print(data)
     for p in data.keys():

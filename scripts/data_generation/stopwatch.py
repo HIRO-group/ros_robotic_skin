@@ -1,4 +1,7 @@
+import sys
 import rospy
+import rospkg
+sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
 from scripts.exceptions import VariableNotInitializedException  # noqa:E402
 
 

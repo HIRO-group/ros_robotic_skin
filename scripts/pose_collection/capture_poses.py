@@ -67,7 +67,7 @@ class CapturePose():
 
         self.captured_positions = np.zeros((self.total_num_poses, joints))
         self.is_in_captured_pose = False
-        self.save_dir = os.path.join(save_path, 'data')
+        self.save_dir = os.path.join(save_path, 'config', 'robot_positions')
 
         try:
             os.makedirs(self.save_dir)

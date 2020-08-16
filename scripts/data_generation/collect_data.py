@@ -7,11 +7,12 @@ import rospy
 import rospkg
 from sensor_msgs.msg import Imu
 # Our packages
-sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-from scripts import utils  # noqa: E402
-from scripts.data_generators.stopwatch import StopWatch  # noqa: E402
-from scripts.data_generators.storage import StaticPoseData, DynamicPoseData  # noqa: E402
-from scripts.controllers.RobotController import PandaController  # noqa: E402
+from stopwatch import StopWatch  # noqa: E402
+from storage import StaticPoseData, DynamicPoseData  # noqa: E402
+from hiro_ros_arm_controller.RobotController import PandaController  # noqa: E402
+ROS_ROBOTIC_SKIN_PATH = rospkg.RosPack().get_path('ros_robotic_skin')
+sys.path.append(os.path.join(ROS_ROBOTIC_SKIN_PATH, 'scripts'))
+import utils  # noqa: E402
 
 RATE = rospy.get_param('/dynamic_frequency')
 SIM_DT = 1.0 / RATE
@@ -239,8 +240,7 @@ if __name__ == '__main__':
 
     poses_list = utils.get_poses_list_file(filename)
 
-    ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-    savedir = os.path.join(ros_robotic_skin_path, 'data')
+    savedir = os.path.join(ROS_ROBOTIC_SKIN_PATH, 'data')
     static_filename = 'static_data_panda.pickle'
     dynamic_filename = 'dynamic_data_panda.pickle'
 

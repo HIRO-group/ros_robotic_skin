@@ -3,8 +3,8 @@
         <arg name="robot_ip" default="172.16.0.172" />
     </include>
 
-    <rosparam file="$(find ros_robotic_skin)/config/realworld.yaml" command="load"/>
-    <arg name="node_start_delay" default="15.0" />  
+    <rosparam file="$(find ros_robotic_skin)/param/realworld.yaml" command="load"/>
+    <arg name="node_start_delay" default="15.0" />
     <!-- this node will run both static and dynamic data collection in the future -->
     <node name="data_collection" pkg="ros_robotic_skin" type="collect_data.py" required="true" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " output="screen" />
 </launch>
