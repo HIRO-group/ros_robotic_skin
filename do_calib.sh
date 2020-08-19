@@ -8,13 +8,22 @@ run_do_calib(){
 }
 
 array=()
-read -p "How many IMUs would you like to calibrate: " imu_num
-echo "Number of IMUs: $imu_num"
 
-for i in $(seq 1 $imu_num); do
-	#echo "HI"
-	read -p "Enter the imu number: " num
-	echo "Entered imu number: $num "
-	array+=($num)
-done
+defnum=0
+defimu=0
+
+num_imus=${1:-$defnum}
+i_imu=${2:-$defimu}
+
+if [ $num_imus -gt $defnum ]
+then
+	for i in $(seq 1 $num_imus); do
+		#echo "HI"
+		array+=($i)
+	done
+elif [ $i_imu -gt $defimu ]
+then
+	array+=($i_imu)
+fi
+
 run_do_calib "${array[@]}"
