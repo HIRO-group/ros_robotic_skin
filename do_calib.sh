@@ -7,5 +7,14 @@ run_do_calib(){
 	echo ""
 }
 
-array=(1 2 3 4 5 6);
+array=()
+read -p "How many IMUs would you like to calibrate: " imu_num
+echo "Number of IMUs: $imu_num"
+
+for i in $(seq 1 $imu_num); do
+	#echo "HI"
+	read -p "Enter the imu number: " num
+	echo "Entered imu number: $num "
+	array+=($num)
+done
 run_do_calib "${array[@]}"
