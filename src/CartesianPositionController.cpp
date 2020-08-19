@@ -12,6 +12,7 @@
 #include "KDLSolver.h"
 #include "Eigen/Dense"
 #include "HIROAvoidance.h"
+#include "FlaccoAvoidance.h"
 
 
 enum AvoidanceMode {noAvoidance, Flacco, QP, HIRO};
@@ -52,6 +53,7 @@ public:
     void setMode(AvoidanceMode avoidanceModeName);
     void moveToPosition(Eigen::Vector3d position_vector);
     HIROAvoidance hiroAvoidance;
+    FlaccoAvoidance flaccoAvoidance;
 };
 
 CartesianPositionController::CartesianPositionController()
@@ -113,6 +115,9 @@ void CartesianPositionController::ObstaclePointsCallback(const ros_robotic_skin:
     ///////////////////////////
     // obstaclePositionVectors.clear();
     // obstaclePositionVectors.push_back(Eigen::Vector3d(-0.2, 0, 0.2));
+    // obstaclePositionVectors.push_back(Eigen::Vector3d(1, 0, 0.2));
+    // obstaclePositionVectors.push_back(Eigen::Vector3d(0, 0, 0.2));
+    // obstaclePositionVectors.push_back(Eigen::Vector3d(-0.0970781, 3.62141e-05, 0.737369));
     /////////////////////////////
 
     // Obtain the control point associated to each obstacle
@@ -210,15 +215,15 @@ void CartesianPositionController::getClosestControlPoints()
         }
     }
     ////////////////////////////////////////////////////
-    std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
-    for (int i = 0; i < closestPoints.size(); i++)
-    {
-        std::cout << "id:" << closestPoints[i].segmentId << std::endl;
-        std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
-        std::cout << "t:" << closestPoints[i].t << std::endl;
-        std::cout << "point:" << closestPoints[i].control_point << std::endl;
-        std::cout << "---------------------------------" << std::endl;
-    }
+    // std::cout << "closestPoints.size():" << closestPoints.size() << std::endl;
+    // for (int i = 0; i < closestPoints.size(); i++)
+    // {
+    //     std::cout << "id:" << closestPoints[i].segmentId << std::endl;
+    //     std::cout << "dist:" << closestPoints[i].distance_to_obs << std::endl;
+    //     std::cout << "t:" << closestPoints[i].t << std::endl;
+    //     std::cout << "point:" << closestPoints[i].control_point << std::endl;
+    //     std::cout << "---------------------------------" << std::endl;
+    // }
     ////////////////////////////////////////////////////
 }
 
@@ -230,8 +235,9 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
     {
         readEndEffectorPosition();
         readControlPointPositions();
+        joint_positions = kdlSolver.forwardKinematicsJoints(q);
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
-        desiredEEVelocity = 0.35 * positionErrorVector.normalized();
+        desiredEEVelocity = 0.2 * positionErrorVector.normalized();
         ros::spinOnce();
         switch (avoidanceMode)
         {
@@ -240,35 +246,8 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
                 break;
             case Flacco:
             {
-                // Eigen::MatrixXd Jreal = kdlSolver.computeJacobian("control_point5", q);
-
-                // Eigen::Vector3d c = controlPointPositionVectors[5];
-
-                // Eigen::Vector3d v1, v3;
-                // transform_listener.lookupTransform("/world", "/panda_link1",
-                //                         ros::Time(0), transform);
-                // v1 << transform.getOrigin().getX(),
-                //       transform.getOrigin().getY(),
-                //       transform.getOrigin().getZ();
-                // transform_listener.lookupTransform("/world", "/panda_link3",
-                //                         ros::Time(0), transform);
-                // v3 << transform.getOrigin().getX(),
-                //       transform.getOrigin().getY(),
-                //       transform.getOrigin().getZ();
-                // double t;
-                // t = (c-v1)[0] / (v3 - v1)[0];
-
-                // Eigen::MatrixXd J2 = kdlSolver.computeJacobian2("panda_link4", q, t, 0);
-                // Eigen::VectorXd va(3); va << 1,2,4;
-                // std::cout << J2 << std::endl;
-                // std::cout << "----------------" << std::endl;
-                // std::cout << Jreal << std::endl;
-                // std::cout << "----------------" << std::endl;
-                // std::cout << "----------------" << std::endl;
-
-                //std::cout << kdlSolver.forwardKinematicsJoints(q) << std::endl;
-
-                //jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+                qDot = flaccoAvoidance.computeJointVelocities(q, desiredEEVelocity, obstaclePositionVectors, joint_positions, rate);
+                jointVelocityController.sendVelocities(qDot);
                 break;
             }
 
@@ -351,8 +330,8 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
-        // controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
-        // controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
+    //     controller.moveToPosition(Eigen::Vector3d {0.7, 0.0, 0.4});
+    //     controller.moveToPosition(Eigen::Vector3d {0.4, 0.0, 0.4});
         controller.moveToPosition(trajectory[idx]);
         idx = (idx + 1) % trajectory.size();
     }
