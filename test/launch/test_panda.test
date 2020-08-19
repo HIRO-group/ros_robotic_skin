@@ -1,0 +1,9 @@
+<launch>
+    <!-- REQUIRE IP ADDRESS!!! -->
+    <arg name="robot_ip" />
+
+    <include file="$(find ros_robotic_skin)/launch/panda.launch">
+        <arg name="robot_ip" value="$(arg robot_ip)">
+    </launch>
+    <test test-name='test_panda' pkg='ros_robotic_skin' type="test_panda.py" />
+</launch>
