@@ -33,5 +33,4 @@ class IMU(LSM6DS3_IMU):
         super().__init__(self, **kwargs)
         set_environment_variables(filename)
 
-
-## Similarly do the same thing for all sensors
+# Similarly do the same thing for all sensors

@@ -14,9 +14,6 @@ class TestIMU(unittest.TestCase):
     received_messages = [False] * n_imu
 
     def test_published(self):
-        print('hello')
-        rospy.init_node('test_imu', anonymous=True)
-
         # create subscribers for num_imus topics
         for i in range(self.n_imu):
             rospy.Subscriber('imu_data{}'.format(i), Imu, self.imu_callback)
@@ -37,4 +34,5 @@ class TestIMU(unittest.TestCase):
 
 if __name__ == '__main__':
     import rostest
+    rospy.init_node('test_imu')
     rostest.rosrun('ros_robotic_skin', 'test_imu', TestIMU)

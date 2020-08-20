@@ -58,4 +58,5 @@ class TestSimulation(unittest.TestCase):
 
 if __name__ == '__main__':
     import rostest
+    rospy.init_node('test_simulation')
     rostest.rosrun('ros_robotic_skin', 'test_simulation', TestSimulation)

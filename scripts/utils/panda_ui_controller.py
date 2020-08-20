@@ -3,9 +3,7 @@
 Panda UI Controller.
 Uses 7 sliders to manipulate the position of the panda
 """
-import sys
 import numpy as np
-import rospkg
 
 from kivy.app import App
 from kivy.uix.slider import Slider
