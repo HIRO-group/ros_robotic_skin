@@ -20,6 +20,8 @@ CartesianPositionController::CartesianPositionController()
     subscriberObstaclePoints = n.subscribe<ros_robotic_skin::PointArray>("/live_points", 1,
                                                                          &CartesianPositionController::ObstaclePointsCallback,
                                                                         this);
+    graph_start_publisher = n.advertise<std_msgs::String>("/start_stopper", 1);
+    ee_xyz_publisher = n.advertise<geometry_msgs::Point>("/EE_xyz", 1);
 
     readEndEffectorPosition();
 }
@@ -35,6 +37,10 @@ void CartesianPositionController::readEndEffectorPosition()
             endEffectorPositionVector << transform.getOrigin().getX(),
                                          transform.getOrigin().getY(),
                                          transform.getOrigin().getZ();
+            ee_xyz.x = endEffectorPositionVector(0);
+            ee_xyz.y = endEffectorPositionVector(1);
+            ee_xyz.z = endEffectorPositionVector(2);
+            ee_xyz_publisher.publish(ee_xyz);
             break;
         }
         catch (tf::TransformException ex)
@@ -77,6 +83,10 @@ Eigen::VectorXd CartesianPositionController::EEVelocityToQDot(Eigen::Vector3d de
 
 void CartesianPositionController::setMode(AvoidanceMode avoidanceModeName) {
     avoidanceMode = avoidanceModeName;
+}
+
+AvoidanceMode CartesianPositionController::getMode() {
+    return avoidanceMode;
 }
 
 Eigen::Vector3d CartesianPositionController::getClosestPointOnLine(Eigen::Vector3d & a, Eigen::Vector3d & b, Eigen::Vector3d & p, double & t)
@@ -150,6 +160,7 @@ void CartesianPositionController::getClosestControlPoints()
     }
 }
 
+
 void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPositionVector)
 {
     positionErrorVector = desiredPositionVector - endEffectorPositionVector;
@@ -159,8 +170,6 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
         readEndEffectorPosition();
 
         positionErrorVector = desiredPositionVector - endEffectorPositionVector;
-
-        // TODO: change this from a constant velocity, to a velocity dependent on distance
         desiredEEVelocity = 0.25 * positionErrorVector.normalized();
 
         ros::spinOnce();
@@ -202,6 +211,90 @@ void CartesianPositionController::moveToPosition(const Eigen::Vector3d desiredPo
     }
 }
 
+void CartesianPositionController::setVelocitiesToZero(){
+    this->jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
+};
+
+void CartesianPositionController::moveToTime(const Eigen::Vector3d desiredPositionVector)
+{
+    readEndEffectorPosition();
+    positionErrorVector = desiredPositionVector - endEffectorPositionVector;
+
+    desiredEEVelocity =  positionErrorVector;
+    double norm = desiredEEVelocity.norm();
+    if(norm > 1.0){
+        desiredEEVelocity = positionErrorVector.normalized() * 1.0;
+
+    }
+
+    std::cout << desiredEEVelocity << "Norm:" << norm << "\n"<< std::endl;
+
+    ros::spinOnce();
+
+    switch (avoidanceMode)
+    {
+        case noAvoidance:
+            jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
+            break;
+        case Flacco:
+        {
+            // TODO: insert Flacco implementation here
+            break;
+        }
+        case QP:
+        {
+            qDot = qpAvoidance.computeJointVelocities(q, desiredEEVelocity,
+                                                        obstaclePositionVectors,
+                                                        closestPoints, rate);
+
+            jointVelocityController.sendVelocities(qDot);
+            break;
+        }
+        case HIRO:
+        {
+            qDot = hiroAvoidance.computeJointVelocities(q, desiredEEVelocity,
+                                                        obstaclePositionVectors,
+                                                        closestPoints, rate);
+            jointVelocityController.sendVelocities(qDot);
+            break;
+        }
+    }
+    rate.sleep();
+}
+
+void CartesianPositionController::moveToStart(){
+    AvoidanceMode mode = this->getMode();
+    this->setMode(noAvoidance);
+    Eigen::Vector3d start_position(0.5, 0.25, 0.5);
+    moveToPosition(start_position);
+    this->setMode(mode);
+}
+void CartesianPositionController::moveInCircle(double radius, double timeToComplete){
+    Eigen::Vector3d trajectory;
+    double theta = 0;
+    double x = 0.5;
+    double y = radius * std::cos(theta);
+    double z = 0.5 + radius * std::sin(theta);
+
+    trajectory = Eigen::Vector3d(x, y, z);
+    double inc = (M_PI * 2.0) / (timeToComplete * 100.0);
+    bool circle_complete = false;
+
+    while (!circle_complete)
+    {
+        moveToTime(trajectory);
+        theta = theta + inc;
+        y = radius * std::cos(theta);
+        z = 0.5 + radius * std::sin(theta);
+        trajectory = Eigen::Vector3d(x, y, z);
+        if (theta > M_PI * 2.5){
+            circle_complete = true;
+        }
+    }
+
+    setVelocitiesToZero();
+}
+
 void on_shutdown(int sig) {
     CartesianPositionController endController;
     endController.jointVelocityController.sendVelocities(Eigen::VectorXd::Constant(7, 0.0));
@@ -214,6 +307,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "CartesianPositionController", ros::init_options::NoSigintHandler);
     signal(SIGINT, on_shutdown);
     CartesianPositionController controller;
+    controller.moveToStart();
 
     if (argc == 1)
     {
@@ -244,26 +338,21 @@ int main(int argc, char **argv)
         }
     }
 
-    //Set up a circular trajectory
-    // TODO: make function to send this path
-    Eigen::Vector3d trajectory;
-    double theta = 0;
-    double radius = 0.25;
-    double x = 0.5;
-    double y = radius * std::cos(theta);
-    double z = 0.5 + radius * std::sin(theta);
-    double inc = 0.005;
-    trajectory = Eigen::Vector3d(x, y, z);
 
-    while (ros::ok())
-    {
-        controller.moveToPosition(trajectory);
-        theta = fmod(theta + inc, M_PI * 2.0);
-        y = radius * std::cos(theta);
-        z = 0.5 + radius * std::sin(theta);
-        trajectory = Eigen::Vector3d(x, y, z);
-        ros::Duration(0.001).sleep();
-    }
+    double timeToCircleSeconds = 20.0;
+    double radius = 0.25;
+
+    // Start Plot
+    std_msgs::String msg;
+    msg.data = "True";
+    controller.graph_start_publisher.publish(msg);
+
+    controller.moveInCircle(radius, timeToCircleSeconds);
+
+    msg.data = "Save No_Avoidance_Control_Fig_one";
+    controller.graph_start_publisher.publish(msg);
+    controller.readEndEffectorPosition();
+
 
     return 0;
 }

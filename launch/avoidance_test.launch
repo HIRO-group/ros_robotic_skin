@@ -1,0 +1,29 @@
+<launch>
+
+
+<arg name="node_start_delay" default="5.0" />
+<arg name="avoidance_type" default="" />
+
+
+<include file="$(find ros_robotic_skin)/launch/flacco.launch">
+        <arg name="gui" value="false"/>
+</include>
+
+<node name="graph_ee_position" pkg="ros_panda_path_plotter" type="subscriber_eg.py" output="screen"/>
+
+<node name="avoidance_controller" pkg="ros_robotic_skin" type="CartesianPositionController"
+      launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "
+      args="$(arg avoidance_type)" />
+
+
+<!-- Do we want to sense the object, or do we want to publish the objects -->
+<node name="obstacle_visualizer" pkg="ros_robotic_skin" type="proximity_visualizer"
+    launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
+<node name="obstacle_publisher" pkg="ros_robotic_skin" type="fake_obstacle_publisher.py"
+    launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
+
+<!-- <node name="obstacle_listener" pkg="ros_robotic_skin" type="proximity_listener"
+    launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " /> -->
+
+
+</launch>
