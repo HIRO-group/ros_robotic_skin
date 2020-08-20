@@ -23,13 +23,13 @@
     </include>
 
     <!--    Add Params YAML File-->
-    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/config/simulation.yaml"/>
+    <arg name="constants_file_yaml" default="$(find ros_robotic_skin)/param/simulation.yaml"/>
     <rosparam command="load" file="$(arg constants_file_yaml)"/>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description_with_imu -urdf -model panda"/>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
-    <rosparam file="$(find panda_simulation)/config/panda_control.yaml" command="load"/>
+    <rosparam file="$(find hiro_ros_arm_controller)/param/panda_control.yaml" command="load"/>
 
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="panda_joint_trajectory_controller joint_state_controller" />
@@ -65,44 +65,7 @@
     <!-- launch robot control node for moveit motion planning -->
     <node pkg="panda_simulation" type="robot_control_node" name="robot_control_node" output="screen"/>
 
-    <!-- Add Pose Estimation C++ binary to launch file to publish poses -->
-    <!-- References: https://answers.ros.org/question/277622/roslaunch-command-line-args/ -->
-    <!-- <node name="Pose0EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE0" output="screen">
-        <param name="imu_pose_publisher_name" value="imu0_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data0" />
-    </node>
-
-    <node name="Pose1EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE1" output="screen">
-        <param name="imu_pose_publisher_name" value="imu1_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data1" />
-    </node>
-
-    <node name="Pose2EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE2" output="screen">
-        <param name="imu_pose_publisher_name" value="imu2_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data2" />
-    </node>
-
-    <node name="Pose3EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE3" output="screen">
-        <param name="imu_pose_publisher_name" value="imu3_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data3" />
-    </node>
-
-    <node name="Pose4EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE4" output="screen">
-        <param name="imu_pose_publisher_name" value="imu4_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data4" />
-    </node>
-
-    <node name="Pose5EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE5" output="screen">
-        <param name="imu_pose_publisher_name" value="imu5_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data5" />
-    </node>
-
-    <node name="Pose6EstimationPublisher" pkg="custom_imu_madgwick_filter" type="PoseEstimation" args="IMU_POSE6" output="screen">
-        <param name="imu_pose_publisher_name" value="imu6_pose" />
-        <param name="original_imu_publisher_name" value="/imu_data6" />
-    </node> -->
-
-    <!-- Don't forget to add 2 dashes before layout when uncommenting the line below -->
+    <!-- Don't forget to add 2 dashes before "layout" when uncommenting the line below -->
     <!-- <node name = "PlotJuggler" pkg = "plotjuggler" type = "PlotJuggler"
           args="layout $(find ros_robotic_skin)/config/plotjuggler/verify_joint_velocities_in_sim.xml"/> -->
 

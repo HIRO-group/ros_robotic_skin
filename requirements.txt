@@ -1,7 +1,6 @@
--e git@github.com:HIRO-group/robotic_skin.git#egg=robotic_skin
+-e git@github.com:HIRO-group/roboskin.git#egg=roboskin
 rospy
 rospkg
 rosparam
 kivy
-pygame
 flake8==3.7.9

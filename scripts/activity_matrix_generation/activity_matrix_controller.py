@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 
-import sys
-import rospy
-from std_msgs.msg import Bool, Int16
-
-import rospkg
 import os
+import sys
 import numpy as np
 
+import rospy
+import rospkg
+from std_msgs.msg import Bool, Int16
 
-sys.path.append(rospkg.RosPack().get_path('ros_robotic_skin'))
-
-from scripts.controllers.RobotController import PandaController, SawyerController  # noqa: E402
+from hiro_ros_arm_controller.RobotController import PandaController, SawyerController
 
 
 class ActivityMatrixController():
