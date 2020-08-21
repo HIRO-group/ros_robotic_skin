@@ -31,7 +31,7 @@ def set_environment_variables(filename):
 class IMU(LSM6DS3_IMU):
     def __init__(self, ros_core_ip=None, **kwargs):
         super().__init__(self, **kwargs)
-        if ros_core_ip != None:
+        if ros_core_ip is not None:
             set_environment_variables('environment_variables.yaml')
 
 # Similarly do the same thing for all sensors
