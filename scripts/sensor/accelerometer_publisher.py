@@ -9,8 +9,8 @@ ROS_ROBOSKIN_DIR = rospkg.RosPack().get_path('ros_robotic_skin')
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--filename', type=str, default='environment_variables.yaml',
-                        help="The environment variable yaml file name in config directory")
+    parser.add_argument('--ros_core_ip', type=str, default=None,
+                        help="The ros_core_ip in which ros master is running")
     parser.add_argument('--imu_num', type=int, required=True,
                         help="Publish topic as this given number")
     parser.add_argument('--raspi_bus_number', type=int, required=True,
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     r = rospy.Rate(100)
 
     # Prepare IMU
-    imu = IMU(raspi_bus_number=args.raspi_bus_number)
+    imu = IMU(ros_core_ip=args.ros_core_ip, raspi_bus_number=args.raspi_bus_number)
 
     # Publish IMU topics
     imu_msg = Imu()
