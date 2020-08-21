@@ -1,6 +1,6 @@
 <launch>
     <include file="$(find ros_robotic_skin)/launch/panda.launch">
-        <arg name="robot_ip" default="192.168.50.12" />
+        <arg name="robot_ip" default="172.16.0.172" />
     </include>
 
     <rosparam file="$(find ros_robotic_skin)/param/realworld.yaml" command="load"/>
