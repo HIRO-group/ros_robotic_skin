@@ -6,7 +6,7 @@ import rospkg
 import numpy as np
 from std_msgs.msg import Bool, Int16
 
-from robotic_skin.algorithm.convert_to_lowertriangular_matrix \
+from roboskin.algorithm.convert_to_lowertriangular_matrix \
                 import ConvertToLT
 
 import os

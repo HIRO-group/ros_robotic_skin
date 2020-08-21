@@ -1,0 +1,8 @@
+<launch>
+    <include file="$(find ros_robotic_skin)/launch/simulation.launch">
+        <arg name="headless" value="true"/>
+        <arg name="gui" value="false"/>
+    </include>
+
+    <test test-name='test_imu' pkg='ros_robotic_skin' type="test_imu.py" />
+</launch>

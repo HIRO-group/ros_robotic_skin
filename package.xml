@@ -45,7 +45,6 @@
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <controller_interface plugin="${prefix}/ros_robotic_skin.xml"/>
   </export>
 
 </package>
