@@ -13,7 +13,7 @@ def parse_arguments():
                         help="The environment variable yaml file name in config directory")
     parser.add_argument('--imu_num', type=int, required=True,
                         help="Publish topic as this given number")
-    parser.add_argument('--raspi_bus', type=int, required=True,
+    parser.add_argument('--raspi_bus_number', type=int, required=True,
                         help="Raspi's bus number for the given specific imu")
 
     return parser.parse_args()
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     r = rospy.Rate(100)
 
     # Prepare IMU
-    imu = IMU(raspi_bus=args.raspi_bus)
+    imu = IMU(raspi_bus_number=args.raspi_bus_number)
 
     # Publish IMU topics
     imu_msg = Imu()
