@@ -8,20 +8,22 @@
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
 # Quick Installation
-```
-# Assume catkin_ws is already made
+This installation includes the installation of the `hiro_ros_arm_controller` package.
+```sh
+# Assuming catkin_ws is already made..
 cd catkin_ws/src
 
-# Install hiro_ros_arm_controller
-git clone git@github.com:HIRO-group/hiro_ros_arm_controller.git
+# Install the hiro_ros_arm_controller package.
+git clone https://github.com/HIRO-group/hiro_ros_arm_controller
 cd hiro_ros_arm_controller
+# the install script to install the other dependencies and builds the current workspace
 ./install.sh
 cd ..
 
 # Install this repo
-git clone https://github.com/HIRO-group/ros_robotic_skin/
+git clone https://github.com/HIRO-group/ros_robotic_skin
 cd ..
-catkin build   # or catkin make
+catkin build   # or catkin_make
 ```
 
 # Docker Installation
@@ -32,7 +34,7 @@ We also have a [`Dockerfile`](https://github.com/HIRO-group/ros_robotic_skin/blo
 ## Prerequisite
 In order to run the Panda Gazebo simulation, make sure that you have built your workspace, then run (from `catkin_ws`, or the root of your catkin workspace)
 
-This tutorial will **assume** that you have added this line to your `~/.bashrc` so you don't have to `source` the `setup.bash` file everytime you open
+This tutorial will **assume** that you have added this line to your `~/.bashrc` so you don't have to `source` the `setup.bash` file every time you open
 a terminal.
 
 ```sh
