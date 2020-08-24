@@ -85,14 +85,8 @@ if [[ "$EXPERIMENT_TYPE" == "sim" ]]
 then
     roslaunch ros_robotic_skin e2e_panda_sim.launch
 else
-    # open new terminals to ssh into our raspberry pi - before running the launch file
-    gnome-terminal -e 'roscore' # This line can be removed if roscore is already running
-gnome-terminal -e "ssh -t rp14 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --imu_num 1 --raspi_bus_number 1; exec bash'"
-gnome-terminal -e "ssh -t rp14 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --imu_num 4 --raspi_bus_number 0; exec bash'"
-gnome-terminal -e "ssh -t rp23 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --imu_num 2 --raspi_bus_number 0; exec bash'"
-gnome-terminal -e "ssh -t rp23 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --imu_num 3 --raspi_bus_number 1; exec bash'"
-gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --imu_num 5 --raspi_bus_number 1; exec bash'"
-gnome-terminal -e "ssh -t rp56 'source ~/.bashrc; source /opt/ros/melodic/setup.bash; export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/home/hiro/catkin_ws; sleep 5; cd catkin_ws/src/ros_robotic_skin/scripts/publishers/; python accelerometer_publisher.py --imu_num 6 --raspi_bus_number 0; exec bash'"
+    # run shell script open new terminals to ssh into our raspberry pi - before running the launch file
+    ./run_raspis.sh
 
     roslaunch ros_robotic_skin e2e_panda_real.launch robot_ip:=$PANDA_IP
 fi
