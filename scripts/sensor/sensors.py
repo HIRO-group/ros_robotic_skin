@@ -1,5 +1,4 @@
 import os
-import yaml
 
 import rospkg
 from roboskin.sensor.lsm6ds3 import LSM6DS3_IMU
