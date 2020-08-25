@@ -8,7 +8,7 @@ CONFIG_DIR = os.path.join(ROS_ROBOSKIN_DIR, 'config')
 
 def set_environment_variables(ros_core_ip):
     # Check for ros_core_ip
-    if 'ros_core_ip' is not None:
+    if ros_core_ip is not None:
         raise ValueError('ros_core_ip should not be None')
 
     # Use Default port value
