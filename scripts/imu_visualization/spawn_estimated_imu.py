@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 import os
-import sys
 import numpy as np
 import pickle
 
 import rospy
 import rospkg
 import tf
-from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, SetLinkState, GetLinkState
-from gazebo_msgs.msg import ModelState, LinkState
+from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, SetModelState, GetLinkState
+from gazebo_msgs.msg import ModelState
 from geometry_msgs.msg import Pose, Quaternion, Point
 
 from hiro_ros_arm_controller.RobotController import PandaController, SawyerController
@@ -38,7 +37,6 @@ class EstimatedIMUBoxStateManager():
         self.set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
         with open(model_path, 'r') as f:
             xml_string = f.read().replace('\n', '')
-
 
         if init_poses is None:
             q = tf.transformations.quaternion_from_euler(0, 0, 0)
