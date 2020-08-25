@@ -22,5 +22,3 @@ class IMU(LSM6DS3_IMU):
         super().__init__(self, **kwargs)
         if ros_core_ip is not None:
             set_environment_variables(ros_core_ip)
-
-# Similarly do the same thing for all sensors
