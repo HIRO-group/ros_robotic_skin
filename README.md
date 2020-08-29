@@ -3,12 +3,12 @@
 
 
 # ROS Robotic Skin
-- **Current Release**: `0.0.1` as of 2020/8/2
+- **Current Release**: `0.0.1` as of 2020/8/28
 - **Suporting Version**: `ROS Melodic`
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
 # Quick Installation
-This installation includes the installation of the `hiro_ros_arm_controller` package.
+This installation includes the installation of the `hiro_ros_arm_controller` package, but will also install the `ros_robotic_skin` ROS package.
 ```sh
 # Assuming catkin_ws is already made..
 cd catkin_ws/src
