@@ -7,6 +7,8 @@
 - **Suporting Version**: `ROS Melodic`
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
+This is our ROS package for our robotic skin work. This section includes data collection; once that is done, calibration logically follows, which can be found [here](https://github.com/HIRO-group/roboskin).
+
 # Quick Installation
 This installation includes the installation of the `hiro_ros_arm_controller` package, but will also install the `ros_robotic_skin` ROS package.
 ```sh
