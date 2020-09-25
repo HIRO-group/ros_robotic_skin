@@ -24,6 +24,7 @@ $(function() {
 , <a class="el" href="classimu__norms_1_1ImuListener.html#a3c0c256fb87cb1be9785e8a0e28e2c03">imu_norms.ImuListener</a>
 , <a class="el" href="classoptitrack__subscriber_1_1OptiTrackPoseDataSaver.html#ac6bf34ca43a696b271c8890c6b2744e4">optitrack_subscriber.OptiTrackPoseDataSaver</a>
 , <a class="el" href="classpanda__ui__controller_1_1PandaPositionMover.html#abb359e0e96caf4791b4b99d84581eef9">panda_ui_controller.PandaPositionMover</a>
+, <a class="el" href="classrange__publisher_1_1RangePublisher.html#a57e30b85e26b5687af24eed62f23cfba">range_publisher.RangePublisher</a>
 , <a class="el" href="classrecord__mean__imu__norms_1_1ImuListener.html#a4ac916826873215f937b8e9ef66abd40">record_mean_imu_norms.ImuListener</a>
 , <a class="el" href="classscripts_1_1activity__matrix__generation_1_1activity__matrix_1_1ActivityMatrix.html#af65851c7dbc28417c397a261e045bb3c">scripts.activity_matrix_generation.activity_matrix.ActivityMatrix</a>
 , <a class="el" href="classscripts_1_1activity__matrix__generation_1_1activity__matrix__controller_1_1ActivityMatrixController.html#aa87238533c903dbee12c4a4f37a2d579">scripts.activity_matrix_generation.activity_matrix_controller.ActivityMatrixController</a>
@@ -48,6 +49,9 @@ $(function() {
 </li>
 <li>append_pose()
 : <a class="el" href="classoptitrack__subscriber_1_1OptiTrackPoseDataSaver.html#a7f14f89c527f8cd415a72b3a1f7e4802">optitrack_subscriber.OptiTrackPoseDataSaver</a>
+</li>
+<li>AvoidanceControl()
+: <a class="el" href="classAvoidanceControl.html#aaec2069a71f6e74ae913c92a13af3b9e">AvoidanceControl</a>
 </li>
 </ul>
 
@@ -76,13 +80,49 @@ $(function() {
 <li>collect_data()
 : <a class="el" href="classscripts_1_1data__generation_1_1collect__data_1_1DataCollector.html#af3aebeb9cc27a06139b438b568512678">scripts.data_generation.collect_data.DataCollector</a>
 </li>
+<li>computeJacobian()
+: <a class="el" href="classKDLSolver.html#a8b22f076ce52a70677fe9d09fb27497d">KDLSolver</a>
+</li>
+<li>computeJacobian2()
+: <a class="el" href="classKDLSolver.html#a216771d8e173b15475766fd4c79aeb24">KDLSolver</a>
+</li>
 <li>construct_imu_string()
 : <a class="el" href="classscripts_1_1imu__visualization_1_1spawn__real__imus_1_1RealIMUSpawner.html#ae717f1db06b91830c380a7c5083e1689">scripts.imu_visualization.spawn_real_imus.RealIMUSpawner</a>
 </li>
 </ul>
 
 
+<h3><a id="index_d"></a>- d -</h3><ul>
+<li>distanceCallBack()
+: <a class="el" href="classAvoidanceControl.html#acaa3efb023879cbf2c2e6ee1e283de26">AvoidanceControl</a>
+</li>
+</ul>
+
+
+<h3><a id="index_e"></a>- e -</h3><ul>
+<li>EEVelocityToQDot()
+: <a class="el" href="classAvoidanceControl.html#af85ed030c400489cdc92c50173c52412">AvoidanceControl</a>
+</li>
+</ul>
+
+
+<h3><a id="index_f"></a>- f -</h3><ul>
+<li>forwardKinematics()
+: <a class="el" href="classKDLSolver.html#ae974abc6fd57f7578febf12c761a5ce5">KDLSolver</a>
+</li>
+<li>forwardKinematicsControlPoints()
+: <a class="el" href="classKDLSolver.html#ac896ac829f0b0fd2d8768114445b0ec6">KDLSolver</a>
+</li>
+<li>forwardKinematicsJoints()
+: <a class="el" href="classKDLSolver.html#afcefc95ccaa2acf44e5b659cdbbbfefe">KDLSolver</a>
+</li>
+</ul>
+
+
 <h3><a id="index_g"></a>- g -</h3><ul>
+<li>get_ee_position()
+: <a class="el" href="classrange__publisher_1_1RangePublisher.html#a39935d8d5a4d4d50b99a20264dab0747">range_publisher.RangePublisher</a>
+</li>
 <li>get_elapsed_time()
 : <a class="el" href="classscripts_1_1data__generation_1_1stopwatch_1_1StopWatch.html#a88f40bb72650ff9f92005e49b1188a9f">scripts.data_generation.stopwatch.StopWatch</a>
 </li>
@@ -94,6 +134,9 @@ $(function() {
 </li>
 <li>get_poses()
 : <a class="el" href="classscripts_1_1imu__visualization_1_1spawn__estimated__imu_1_1TrueIMUBoxStateManager.html#ad5faa63119baf4e506d11c5e88cc2a45">scripts.imu_visualization.spawn_estimated_imu.TrueIMUBoxStateManager</a>
+</li>
+<li>getNumberControlPoints()
+: <a class="el" href="classKDLSolver.html#a6ef4921eec59303574b2db4899c2ef18">KDLSolver</a>
 </li>
 <li>goto_defined_pose()
 : <a class="el" href="classscripts_1_1data__generation_1_1collect__data_1_1DataCollector.html#ac0596bbff37f6dad5e2bf3c0c02599f3">scripts.data_generation.collect_data.DataCollector</a>
@@ -123,6 +166,36 @@ $(function() {
 </ul>
 
 
+<h3><a id="index_j"></a>- j -</h3><ul>
+<li>jointStateCallback()
+: <a class="el" href="classAvoidanceControl.html#a19e0341e5fbaafe5a5fbc363660b3271">AvoidanceControl</a>
+</li>
+<li>JointVelocityController()
+: <a class="el" href="classJointVelocityController.html#a6e4345510db44be6b9167ded09677c42">JointVelocityController</a>
+</li>
+</ul>
+
+
+<h3><a id="index_k"></a>- k -</h3><ul>
+<li>KDLSolver()
+: <a class="el" href="classKDLSolver.html#af61d1150a5bbfeac2aad912a0bb727f1">KDLSolver</a>
+</li>
+</ul>
+
+
+<h3><a id="index_m"></a>- m -</h3><ul>
+<li>moveToGoal()
+: <a class="el" href="classAvoidanceControl.html#a7316c183120bff15a07cd445cad5331a">AvoidanceControl</a>
+</li>
+<li>moveToPosition()
+: <a class="el" href="classAvoidanceControl.html#adbd66a6cadc9c9709e80ce3a674c3919">AvoidanceControl</a>
+</li>
+<li>moveToStart()
+: <a class="el" href="classAvoidanceControl.html#ae8445534faceef5ed60e9323e2ca9cf7">AvoidanceControl</a>
+</li>
+</ul>
+
+
 <h3><a id="index_p"></a>- p -</h3><ul>
 <li>prepare_prev_states()
 : <a class="el" href="classscripts_1_1data__generation_1_1collect__data_1_1DataCollector.html#ab0e6ba832ba4a0550d83af47e60a7e94">scripts.data_generation.collect_data.DataCollector</a>
@@ -131,6 +204,9 @@ $(function() {
 
 
 <h3><a id="index_r"></a>- r -</h3><ul>
+<li>readEndEffectorPosition()
+: <a class="el" href="classAvoidanceControl.html#a3c12eefccd5a6705b1290aeda887fafe">AvoidanceControl</a>
+</li>
 <li>record_static_motion()
 : <a class="el" href="classscripts_1_1data__generation_1_1collect__data_1_1DataCollector.html#a6bb14167255f3a5b314a064bbd745c37">scripts.data_generation.collect_data.DataCollector</a>
 </li>
@@ -145,6 +221,9 @@ $(function() {
 : <a class="el" href="classscripts_1_1data__generation_1_1collect__data_1_1DataCollector.html#a1e2770de9339a0e55dacc7676706679a">scripts.data_generation.collect_data.DataCollector</a>
 , <a class="el" href="classscripts_1_1data__generation_1_1storage_1_1DynamicPoseData.html#a45c45a7b5d5db0b066a17e05a196c645">scripts.data_generation.storage.DynamicPoseData</a>
 , <a class="el" href="classscripts_1_1data__generation_1_1storage_1_1StaticPoseData.html#a7384dd4292b93e694714cb2991859d06">scripts.data_generation.storage.StaticPoseData</a>
+</li>
+<li>sendVelocities()
+: <a class="el" href="classJointVelocityController.html#aa1ab96092314a24e02642723746d59e2">JointVelocityController</a>
 </li>
 <li>set_dof()
 : <a class="el" href="classscripts_1_1activity__matrix__generation_1_1activity__matrix_1_1ActivityMatrix.html#af3a64511577e24e71e9910eabcf28455">scripts.activity_matrix_generation.activity_matrix.ActivityMatrix</a>
@@ -165,11 +244,15 @@ $(function() {
 : <a class="el" href="classscripts_1_1imu__visualization_1_1spawn__estimated__imu_1_1EstimatedIMUBoxStateManager.html#a031340c4550ffb1469a855d10bbd98d9">scripts.imu_visualization.spawn_estimated_imu.EstimatedIMUBoxStateManager</a>
 </li>
 <li>spin()
-: <a class="el" href="classscripts_1_1activity__matrix__generation_1_1activity__matrix_1_1ActivityMatrix.html#ad68943cf8feb978c4877face9e1c47f7">scripts.activity_matrix_generation.activity_matrix.ActivityMatrix</a>
+: <a class="el" href="classrange__publisher_1_1RangePublisher.html#ab6755f5142884fb57a1b2584d33d8cd2">range_publisher.RangePublisher</a>
+, <a class="el" href="classscripts_1_1activity__matrix__generation_1_1activity__matrix_1_1ActivityMatrix.html#ad68943cf8feb978c4877face9e1c47f7">scripts.activity_matrix_generation.activity_matrix.ActivityMatrix</a>
 , <a class="el" href="classscripts_1_1activity__matrix__generation_1_1activity__matrix__controller_1_1ActivityMatrixController.html#ac47fce798720b0001f16b000c58a82b7">scripts.activity_matrix_generation.activity_matrix_controller.ActivityMatrixController</a>
 </li>
 <li>start()
 : <a class="el" href="classscripts_1_1data__generation_1_1stopwatch_1_1StopWatch.html#a55a88830540ea6077cb3dc3c3c0a7d45">scripts.data_generation.stopwatch.StopWatch</a>
+</li>
+<li>start_callback()
+: <a class="el" href="classrange__publisher_1_1RangePublisher.html#ada0964d285f10ca8e4475ad5c73288c9">range_publisher.RangePublisher</a>
 </li>
 <li>start_watches()
 : <a class="el" href="classscripts_1_1data__generation_1_1collect__data_1_1DataCollector.html#a2a8bae768f7c57d17de5c2ec4d40697e">scripts.data_generation.collect_data.DataCollector</a>
@@ -216,13 +299,23 @@ $(function() {
 : <a class="el" href="classoptitrack__subscriber_1_1OptiTrackPoseDataSaver.html#ad9f913790c98cdab4b3dc7f107069a49">optitrack_subscriber.OptiTrackPoseDataSaver</a>
 </li>
 </ul>
+
+
+<h3><a id="index_0x7e"></a>- ~ -</h3><ul>
+<li>~AvoidanceControl()
+: <a class="el" href="classAvoidanceControl.html#aaeafeedcadf15636c2169f169fd8282f">AvoidanceControl</a>
+</li>
+<li>~JointVelocityController()
+: <a class="el" href="classJointVelocityController.html#a9fc87d4e0174f88d6cd24efd479d78e9">JointVelocityController</a>
+</li>
+</ul>
 </div><!-- contents -->
 
 <br clear="all" />
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Tue Sep 1 2020 05:31:17</small>
+<small>autogenerated on Fri Sep 25 2020 22:25:29</small>
 </div>
 </body>
 </html>

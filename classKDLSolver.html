@@ -17,6 +17,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classKDLSolver-members.html">List of all members</a>  </div>
@@ -27,17 +28,36 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="KDLSolver_8h_source.html">KDLSolver.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structKDLSolver_1_1closest__point.html">closest_point</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8b22f076ce52a70677fe9d09fb27497d"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a8b22f076ce52a70677fe9d09fb27497d">computeJacobian</a> (std::string controlPointName, Eigen::VectorXd q)</td></tr>
 <tr class="separator:a8b22f076ce52a70677fe9d09fb27497d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a216771d8e173b15475766fd4c79aeb24"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a216771d8e173b15475766fd4c79aeb24">computeJacobian2</a> (<a class="el" href="structKDLSolver_1_1closest__point.html">KDLSolver::closest_point</a> &amp;controlPoint, Eigen::VectorXd &amp;q)</td></tr>
+<tr class="separator:a216771d8e173b15475766fd4c79aeb24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae974abc6fd57f7578febf12c761a5ce5"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#ae974abc6fd57f7578febf12c761a5ce5">forwardKinematics</a> (<a class="el" href="structKDLSolver_1_1closest__point.html">KDLSolver::closest_point</a> &amp;controlPoint, Eigen::VectorXd &amp;q)</td></tr>
+<tr class="separator:ae974abc6fd57f7578febf12c761a5ce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac896ac829f0b0fd2d8768114445b0ec6"><td class="memItemLeft" align="right" valign="top">Eigen::Vector3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#ac896ac829f0b0fd2d8768114445b0ec6">forwardKinematicsControlPoints</a> (std::string controlPointName, Eigen::VectorXd q)</td></tr>
+<tr class="separator:ac896ac829f0b0fd2d8768114445b0ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcefc95ccaa2acf44e5b659cdbbbfefe"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#afcefc95ccaa2acf44e5b659cdbbbfefe">forwardKinematicsJoints</a> (const Eigen::VectorXd &amp;q)</td></tr>
+<tr class="separator:afcefc95ccaa2acf44e5b659cdbbbfefe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ef4921eec59303574b2db4899c2ef18"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a6ef4921eec59303574b2db4899c2ef18">getNumberControlPoints</a> ()</td></tr>
+<tr class="separator:a6ef4921eec59303574b2db4899c2ef18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af61d1150a5bbfeac2aad912a0bb727f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#af61d1150a5bbfeac2aad912a0bb727f1">KDLSolver</a> ()</td></tr>
 <tr class="separator:af61d1150a5bbfeac2aad912a0bb727f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1748d4fab77c2d6f74da60acdac79fce"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a1748d4fab77c2d6f74da60acdac79fce">~KDLSolver</a> ()</td></tr>
-<tr class="separator:a1748d4fab77c2d6f74da60acdac79fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
+<tr class="memitem:a48650cf32d900a1b2e6da0a7ab80053e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a48650cf32d900a1b2e6da0a7ab80053e">controlPointCount</a> {0}</td></tr>
+<tr class="separator:a48650cf32d900a1b2e6da0a7ab80053e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac20898f1329f94f91229b45e3e0b73ad"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; KDL::Chain[]&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#ac20898f1329f94f91229b45e3e0b73ad">kdlChainsControlPoints</a></td></tr>
+<tr class="separator:ac20898f1329f94f91229b45e3e0b73ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a919b268fd897093d3995aa62a10fcf37"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; KDL::Chain[]&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a919b268fd897093d3995aa62a10fcf37">kdlChainsJoints</a></td></tr>
+<tr class="separator:a919b268fd897093d3995aa62a10fcf37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07e29c06bc7d5390978dd5ae79a27077"><td class="memItemLeft" align="right" valign="top">KDL::Tree&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#a07e29c06bc7d5390978dd5ae79a27077">kdlTree</a></td></tr>
 <tr class="separator:a07e29c06bc7d5390978dd5ae79a27077"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4210a6e8e84321184009057dc47be6c"><td class="memItemLeft" align="right" valign="top">ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classKDLSolver.html#aa4210a6e8e84321184009057dc47be6c">n</a></td></tr>
@@ -64,26 +84,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00003">3</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a1748d4fab77c2d6f74da60acdac79fce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1748d4fab77c2d6f74da60acdac79fce">&#9670;&nbsp;</a></span>~KDLSolver()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">KDLSolver::~KDLSolver </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00009">9</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00005">5</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
 
 </div>
 </div>
@@ -114,11 +115,212 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00012">12</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00039">39</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a216771d8e173b15475766fd4c79aeb24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a216771d8e173b15475766fd4c79aeb24">&#9670;&nbsp;</a></span>computeJacobian2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd KDLSolver::computeJacobian2 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structKDLSolver_1_1closest__point.html">KDLSolver::closest_point</a> &amp;&#160;</td>
+          <td class="paramname"><em>controlPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>q</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00058">58</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae974abc6fd57f7578febf12c761a5ce5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae974abc6fd57f7578febf12c761a5ce5">&#9670;&nbsp;</a></span>forwardKinematics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector3d KDLSolver::forwardKinematics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structKDLSolver_1_1closest__point.html">KDLSolver::closest_point</a> &amp;&#160;</td>
+          <td class="paramname"><em>controlPoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>q</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00114">114</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac896ac829f0b0fd2d8768114445b0ec6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac896ac829f0b0fd2d8768114445b0ec6">&#9670;&nbsp;</a></span>forwardKinematicsControlPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector3d KDLSolver::forwardKinematicsControlPoints </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>controlPointName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd&#160;</td>
+          <td class="paramname"><em>q</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00076">76</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+
+</div>
+</div>
+<a id="afcefc95ccaa2acf44e5b659cdbbbfefe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcefc95ccaa2acf44e5b659cdbbbfefe">&#9670;&nbsp;</a></span>forwardKinematicsJoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd KDLSolver::forwardKinematicsJoints </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>q</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00097">97</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a6ef4921eec59303574b2db4899c2ef18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ef4921eec59303574b2db4899c2ef18">&#9670;&nbsp;</a></span>getNumberControlPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int KDLSolver::getNumberControlPoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8cpp_source.html#l00132">132</a> of file <a class="el" href="KDLSolver_8cpp_source.html">KDLSolver.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a48650cf32d900a1b2e6da0a7ab80053e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48650cf32d900a1b2e6da0a7ab80053e">&#9670;&nbsp;</a></span>controlPointCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int KDLSolver::controlPointCount {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8h_source.html#l00020">20</a> of file <a class="el" href="KDLSolver_8h_source.html">KDLSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="ac20898f1329f94f91229b45e3e0b73ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac20898f1329f94f91229b45e3e0b73ad">&#9670;&nbsp;</a></span>kdlChainsControlPoints</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;KDL::Chain[]&gt; KDLSolver::kdlChainsControlPoints</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8h_source.html#l00018">18</a> of file <a class="el" href="KDLSolver_8h_source.html">KDLSolver.h</a>.</p>
+
+</div>
+</div>
+<a id="a919b268fd897093d3995aa62a10fcf37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a919b268fd897093d3995aa62a10fcf37">&#9670;&nbsp;</a></span>kdlChainsJoints</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;KDL::Chain[]&gt; KDLSolver::kdlChainsJoints</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="KDLSolver_8h_source.html#l00019">19</a> of file <a class="el" href="KDLSolver_8h_source.html">KDLSolver.h</a>.</p>
+
+</div>
+</div>
 <a id="a07e29c06bc7d5390978dd5ae79a27077"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a07e29c06bc7d5390978dd5ae79a27077">&#9670;&nbsp;</a></span>kdlTree</h2>
 
@@ -201,7 +403,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/ros_robotic_skin">ros_robotic_skin</a><br />
 Author(s): </br />
-<small>autogenerated on Mon Aug 10 2020 04:48:17</small>
+<small>autogenerated on Fri Sep 25 2020 22:25:29</small>
 </div>
 </body>
 </html>
