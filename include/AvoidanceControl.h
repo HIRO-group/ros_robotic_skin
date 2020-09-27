@@ -14,11 +14,11 @@
 
 using namespace std;
 
-
+    
 class AvoidanceControl
 {
     private:
-        bool isSim = true;
+        bool isSim = false;
 
         ros::NodeHandle nh;
         ros::Rate rate{100};

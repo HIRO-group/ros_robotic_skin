@@ -91,9 +91,11 @@ class DataCollector:
             quaternion = utils.Quaternion_to_np(data.orientation)
             joint_angles = self.controller.joint_angles
 
+            imu_num = int(data.header.frame_id[-1])
+
             self.static_acceleration_storage.append(
                 pose_name=self.curr_pose_name,     # for each defined initial pose
-                imu_name=data.header.frame_id,      # frame id of imu
+                imu_name="imu_link%i" % (imu_num),      # frame id of imu
                 data=np.r_[
                     quaternion,
                     acceleration,
@@ -114,13 +116,14 @@ class DataCollector:
             self.prev_angular_velocity = curr_angular_velocity
 
             joint_angles = self.controller.joint_angles
+            imu_num = int(data.header.frame_id[-1])
 
             # time
             t = self.watch_dynamic_motion.get_elapsed_time()
             self.dynamic_acceleration_storage.append(
                 pose_name=self.curr_pose_name,          # for each defined initial pose
                 joint_name=self.curr_joint_name,        # for each excited joint
-                imu_name=data.header.frame_id,          # for each imu
+                imu_name="imu_link%i" % (imu_num),          # for each imu
                 data=np.r_[
                     acceleration,
                     joint_angles,
@@ -136,7 +139,9 @@ class DataCollector:
         # first, move to the position from <robot>_positions.txt
         # TODO: We have to ensure that commanded positions are reached
         # Then REST_TIME should start once it reached the goal.
+        rospy.loginfo("Before publishing positions")
         self.controller.publish_positions(positions, sleep=rest_time)
+        rospy.loginfo("After publishing positions")
 
         self.curr_pose_name = pose_name
         if log:
@@ -204,7 +209,7 @@ class DataCollector:
                 self.watch_dynamic_motion.stop()
                 rospy.sleep(0.1)
 
-    def save(self, save=True, verbose=False, clean_static=True, clean_dynamic=False):
+    def save(self, save=True, verbose=False, clean_static=False, clean_dynamic=False):
         """
         Save data to a pickle file.
 

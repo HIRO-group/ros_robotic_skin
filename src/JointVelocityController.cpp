@@ -2,13 +2,21 @@
 
 JointVelocityController::JointVelocityController() {
     // Switch to velocity controller
-    std::vector<std::string> velocity_controller_names; velocity_controller_names.reserve(7);
-    std::vector<std::string> position_controller_names; position_controller_names.reserve(7);
-    for (int i = 0; i < 7; i++) {
-        velocity_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_velocity_controller");
-        position_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_position_controller");
+    // std::vector<std::string> velocity_controller_names; velocity_controller_names.reserve(7);
+    // std::vector<std::string> position_controller_names; position_controller_names.reserve(7);
+    // for (int i = 0; i < 7; i++) {
+    //     velocity_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_velocity_controller");
+    //     position_controller_names.push_back("panda_joint" + std::to_string(i+1) + "_position_controller");
+    // }
+    // position_controller_names.push_back("panda_joint_trajectory_controller");
+
+    std::vector<std::string> velocity_controller_names; velocity_controller_names.reserve(1);
+    std::vector<std::string> position_controller_names; position_controller_names.reserve(1);
+    for (int i = 0; i < 1; i++) {
+        velocity_controller_names.push_back("panda_joint_velocity_controller");
+        position_controller_names.push_back("panda_joint_position_controller");
     }
-    position_controller_names.push_back("panda_joint_trajectory_controller");
+
     ros::ServiceClient switch_controller = n.serviceClient<controller_manager_msgs::SwitchController>("/controller_manager/switch_controller");
     controller_manager_msgs::SwitchController srv;
     srv.request.start_controllers = velocity_controller_names;
@@ -23,7 +31,7 @@ JointVelocityController::JointVelocityController() {
     for (int i = 0; i < 7; i++) {
         publishers.push_back(n.advertise<std_msgs::Float64>("panda_joint" +
                                                         std::to_string(i+1) +
-                                                        "_velocity_controller/command", 1));
+                                                        "_velocity_controller/command", 10));
     }
     realPublisher = n.advertise<std_msgs::Float64MultiArray>("panda_joint_velocity_controller/command", 1);
     msgarray.data.resize(7);

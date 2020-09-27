@@ -13,17 +13,21 @@ AvoidanceControl::AvoidanceControl()
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
     jointRanges = jointLimitsMax - jointLimitsMin;
 
-    desired_position << 0.3, -0.5, 0.5;
-    start_position << 0.3, 0.5, 0.5;
-    obstacle_position << 0.3, -0.2, 0.5;
+    // desired_position << 0.3, -0.5, 0.5;
+    // start_position << 0.3, 0.5, 0.5;
+    // obstacle_position << 0.3, -0.2, 0.5;
+
+    desired_position << 1.0, 0.0, 0.6;
+    start_position << 0.25, 0.0, 0.6;
+    obstacle_position << 0.8, 0.0, 0.6;
 
     q.resize(7);
 
     cout << "Initializing subscribers" << endl;
 
-    distanceSubscriber = nh.subscribe("/proximity_data1", 10, &AvoidanceControl::distanceCallBack, this);
+    distanceSubscriber = nh.subscribe("/proximity_data6", 10, &AvoidanceControl::distanceCallBack, this);
     jointStateSubscriber = nh.subscribe("/joint_states", 10, &AvoidanceControl::jointStateCallback, this);
-    distancePublisher = nh.advertise<sensor_msgs::Range>("/proximity_data1", 10);
+    distancePublisher = nh.advertise<sensor_msgs::Range>("/proximity_data6", 10);
     startPublisher = nh.advertise<std_msgs::Bool>("/at_start_position", 10);
 
     cout << "Start reading EndEffectorPosition" << endl;
@@ -153,6 +157,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "AvoidanceControl");
     cout << "spawning AvoidanceControl Object" << endl;
     AvoidanceControl controller;
+
+    ros::Duration(10).sleep();
 
     cout << "Start Moving to a start point" << endl;
     controller.moveToStart();
