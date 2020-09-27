@@ -155,7 +155,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable()
+add_executable(avoidance_control src/AvoidanceControl.cpp src/KDLSolver.cpp src/JointVelocityController.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -169,7 +169,7 @@ include_directories(
 # add_dependencies()
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries( ${catkin_LIBRARIES})
+target_link_libraries(avoidance_control ${catkin_LIBRARIES})
 
 #############
 ## Install ##
