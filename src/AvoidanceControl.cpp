@@ -1,9 +1,9 @@
 #include "AvoidanceControl.h"
 
 
-AvoidanceControl::AvoidanceControl()
+AvoidanceControl::AvoidanceControl(bool isSim)
 {
-    cout << "Initializing class variables" << endl;
+    this.isSim = isSim;
 
     Eigen::VectorXd jointLimitsMin{7}, jointLimitsMax{7}, jointVelocityMax{7};
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
@@ -12,6 +12,8 @@ AvoidanceControl::AvoidanceControl()
 
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
     jointRanges = jointLimitsMax - jointLimitsMin;
+
+    jointVelocityController = new JointVelocityController(isSim);
 
     // desired_position << 0.3, -0.5, 0.5;
     // start_position << 0.3, 0.5, 0.5;
@@ -23,14 +25,10 @@ AvoidanceControl::AvoidanceControl()
 
     q.resize(7);
 
-    cout << "Initializing subscribers" << endl;
-
     distanceSubscriber = nh.subscribe("/proximity_data6", 10, &AvoidanceControl::distanceCallBack, this);
     jointStateSubscriber = nh.subscribe("/joint_states", 10, &AvoidanceControl::jointStateCallback, this);
     distancePublisher = nh.advertise<sensor_msgs::Range>("/proximity_data6", 10);
     startPublisher = nh.advertise<std_msgs::Bool>("/at_start_position", 10);
-
-    cout << "Start reading EndEffectorPosition" << endl;
 
     readEndEffectorPosition();
 }
@@ -156,7 +154,8 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "AvoidanceControl");
     cout << "spawning AvoidanceControl Object" << endl;
-    AvoidanceControl controller;
+    bool isSim = false;
+    AvoidanceControl controller = new AvoidanceControl(isSim);
 
     ros::Duration(10).sleep();
 

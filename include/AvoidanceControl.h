@@ -14,11 +14,11 @@
 
 using namespace std;
 
-    
+
 class AvoidanceControl
 {
     private:
-        bool isSim = false;
+        bool isSim;
 
         ros::NodeHandle nh;
         ros::Rate rate{100};
@@ -54,7 +54,7 @@ class AvoidanceControl
         Eigen::Vector3d obstacle_position;
 
     public:
-        AvoidanceControl();
+        AvoidanceControl(bool isSim);
         ~AvoidanceControl();
         void moveToPosition(const Eigen::Vector3d desiredPositionVector);
         void moveToStart();
