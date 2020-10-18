@@ -74,9 +74,9 @@ then
     exit 1
 fi
 
-if [[ ! -f "$ROBOSKIN_PATH/robotic_skin/examples/calibration/calibrate_imu_poses.py" ]]
+if [[ ! -f "$ROBOSKIN_PATH/roboskin/examples/calibration/calibrate_imu_poses.py" ]]
 then
-    echo "--roboskin-path does not contain robotic_skin/examples/calibration/calibrate_imu_poses.py. Exiting now..."
+    echo "--roboskin-path does not contain roboskin/examples/calibration/calibrate_imu_poses.py. Exiting now..."
     exit 1
 fi
 
@@ -95,7 +95,7 @@ fi
 sleep 2
 
 # execution of optimization
-python3 $ROBOSKIN_PATH/robotic_skin/examples/calibration/calibrate_imu_poses.py --log INFO
+python3 $ROBOSKIN_PATH/roboskin/examples/calibration/calibrate_imu_poses.py --log INFO
 
 sleep 2
 
