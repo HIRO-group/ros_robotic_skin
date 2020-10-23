@@ -84,6 +84,27 @@ roslaunch ros_robotic_skin sawyer_world.launch
 
 ![](images/sawyer_example.png)
 
+## Running the end to end flow
+
+In order to run the whole process of data collection + optimization, we have a shell script that takes care of all of that in one line. To run:
+
+First, make sure that you have installed our [roboskin](https://github.com/HIRO-group/roboskin) Python package before continuing.
+
+Usage:
+
+```sh
+./shell_scripts/e2e.sh --panda-ip <panda ip> --experiment-type <real or sim> --roboskin-path <path to roboskin on YOUR computer>
+```
+
+Here's an example where the Panda's IP is `123`, we want to run the experiment on the `real` panda, and the path to `roboskin` is `/home/mamba/roboskin`.
+
+```sh
+./shell_scripts/e2e.sh --panda-ip 123 --experiment-type real --roboskin-path /home/mamba/roboskin
+```
+
+**Note**: This flow assumes that the IMUs are already calibrated!
+
+
 # For DEVELOPERS
 ## Test
 We use 2 different tests.
