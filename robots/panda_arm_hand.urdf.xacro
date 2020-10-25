@@ -11,6 +11,8 @@
 
   <xacro:panda_arm />
   <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
+  
+  <!-- su poses can be changed by updating the xyz (position related) and rpy (roll pitch yaw) values   -->
   <xacro:imu imu_id="0" xyz="0.05 0.0 -0.15" rpy="0.0 1.57 0.0" connected_to="panda_link1"/>
   <xacro:imu imu_id="1" xyz="0.06 0.0 0.06" rpy="0.0 1.57 0.0" connected_to="panda_link2"/>
   <xacro:imu imu_id="2" xyz="0.0 -0.05 -0.08" rpy="1.57 0.0 0.0" connected_to="panda_link3"/>
