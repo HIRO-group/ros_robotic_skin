@@ -9,7 +9,7 @@ from tf import TransformListener
 
 
 class RangePublisher:
-    def __init__(self, obstacle_position, topic_name='/proximity_data1'):
+    def __init__(self, obstacle_position, topic_name='/proximity_data6'):
         # Prepare publisher
         self.obstacle_position = obstacle_position
         self.proximity_publisher = rospy.Publisher(topic_name, Range, queue_size=10)
