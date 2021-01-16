@@ -8,22 +8,33 @@
 #include "controller_manager_msgs/SwitchController.h"
 #include "Eigen/Dense"
 #include "std_msgs/Float64MultiArray.h"
-
+using namespace std;
 
 class JointVelocityController
 {
+    public:
+        JointVelocityController(bool isSim);
+        ~JointVelocityController();
+        void sendVelocities(const Eigen::VectorXd velocities);
+
     private:
-        std::vector<ros::Publisher> publishers;
-        ros::Publisher realPublisher;
+        // variable
+        bool isSim;
+        // ROS instances
+        ros::NodeHandle n;
+        vector<ros::Publisher> velocityPublishers;
+        ros::Publisher realVelocityPublisher;
         std_msgs::Float64 msg;
         std_msgs::Float64MultiArray msgarray;
-
- public:
-    ros::NodeHandle n;
-    JointVelocityController();
-    ~JointVelocityController();
-    void sendVelocities(const Eigen::VectorXd vel);
-
+        // functions
+        void _switchController(
+            vector<string> positionControllerNames,
+            vector<string> velocityControllerNames);
+        void _initializeSwitchController(bool isSim);
+        void _prepareSimVelocityPublisher();
+        void _prepareRealVelocityPublisher();
+        void _sendSimVelocities(const Eigen::VectorXd velocities);
+        void _sendRealVelocities(const Eigen::VectorXd velocities);
 };
 
 #endif // JOINT_VELOCITY_CONTROLLER_H

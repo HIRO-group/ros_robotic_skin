@@ -1,38 +1,37 @@
 #include "AvoidanceControl.h"
 
 
-AvoidanceControl::AvoidanceControl()
+AvoidanceControl::AvoidanceControl(bool isSim)
 {
-    cout << "Initializing class variables" << endl;
+    this.isSim = isSim;
+    jointVelocityController = new JointVelocityController(isSim);
 
+    // Initialize Constants
+
+    // Joint Limits
     Eigen::VectorXd jointLimitsMin{7}, jointLimitsMax{7}, jointVelocityMax{7};
     jointLimitsMin << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
     jointLimitsMax << +2.8973, +1.7628, +2.8973, -0.0698, +2.8973, +3.7525, +2.8973;
     jointVelocityMax << 2.1750, 2.1750, 2.1750 , 2.1750, 2.6100 , 2.6100 , 2.6100;
-
     jointMiddleValues = 0.5 * (jointLimitsMax + jointLimitsMin);
     jointRanges = jointLimitsMax - jointLimitsMin;
 
-    // desired_position << 0.3, -0.5, 0.5;
-    // start_position << 0.3, 0.5, 0.5;
-    // obstacle_position << 0.3, -0.2, 0.5;
+    // desiredPosition << 0.3, -0.5, 0.5;
+    // startPosition << 0.3, 0.5, 0.5;
+    desiredPosition << 1.0, 0.0, 0.6;
+    startPosition << 0.25, 0.0, 0.6;
 
-    desired_position << 1.0, 0.0, 0.6;
-    start_position << 0.25, 0.0, 0.6;
-    obstacle_position << 0.8, 0.0, 0.6;
-
+    // Joint Positions
     q.resize(7);
-
-    cout << "Initializing subscribers" << endl;
+    // Distance (give large value to start with to avoid any stupid control)
+    distance.range = 1000000000;
 
     distanceSubscriber = nh.subscribe("/proximity_data6", 10, &AvoidanceControl::distanceCallBack, this);
     jointStateSubscriber = nh.subscribe("/joint_states", 10, &AvoidanceControl::jointStateCallback, this);
     distancePublisher = nh.advertise<sensor_msgs::Range>("/proximity_data6", 10);
-    startPublisher = nh.advertise<std_msgs::Bool>("/at_start_position", 10);
-
-    cout << "Start reading EndEffectorPosition" << endl;
 
     readEndEffectorPosition();
+
 }
 
 
@@ -70,16 +69,6 @@ void AvoidanceControl::readEndEffectorPosition()
             endEffectorPositionVector << transform.getOrigin().getX(),
                                          transform.getOrigin().getY(),
                                          transform.getOrigin().getZ();
-
-            // Eigen::Vector3d distanceVector = obstacle_position - endEffectorPositionVector;
-            // publishDistance.header.stamp = ros::Time::now();
-            // if (atStartingPoint == true)
-            // {
-            //     publishDistance.range = distanceVector.norm();
-            // } else {
-            //     publishDistance.range = 100000;
-            // }
-            // distancePublisher.publish(publishDistance);
             break;
         }
         catch (tf::TransformException ex)
@@ -104,7 +93,7 @@ void AvoidanceControl::moveToPosition(const Eigen::Vector3d desiredPositionVecto
 {
     positionErrorVector = desiredPositionVector - endEffectorPositionVector;
 
-    while (positionErrorVector.norm() > position_error_threshold && ros::ok()) {
+    while (positionErrorVector.norm() > positionErrorThreshold && ros::ok()) {
 
         readEndEffectorPosition();
 
@@ -116,12 +105,7 @@ void AvoidanceControl::moveToPosition(const Eigen::Vector3d desiredPositionVecto
 
         Eigen::Vector3d commandVelocity = desiredEEVelocity + repulsiveEEVelocity;
 
-        if (atStartingPoint == true)
-        {
-            jointVelocityController.sendVelocities(EEVelocityToQDot(commandVelocity));
-        } else {
-            jointVelocityController.sendVelocities(EEVelocityToQDot(desiredEEVelocity));
-        }
+        jointVelocityController.sendVelocities(EEVelocityToQDot(commandVelocity));
 
         ros::spinOnce();
         rate.sleep();
@@ -136,19 +120,15 @@ void AvoidanceControl::moveToPosition(const Eigen::Vector3d desiredPositionVecto
 
 void AvoidanceControl::moveToStart()
 {
-    ROS_INFO_STREAM("start_position");
-    ROS_INFO_STREAM(start_position);
-    moveToPosition(start_position);
-    atStartingPoint = true;
-    std_msgs::Bool startMsg;
-    startMsg.data = true;
-    startPublisher.publish(startMsg);
+    ROS_INFO_STREAM("startPosition");
+    ROS_INFO_STREAM(startPosition);
+    moveToPosition(startPosition);
 }
 
 
 void AvoidanceControl::moveToGoal()
 {
-    moveToPosition(desired_position);
+    moveToPosition(desiredPosition);
 }
 
 
@@ -156,17 +136,19 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "AvoidanceControl");
     cout << "spawning AvoidanceControl Object" << endl;
-    AvoidanceControl controller;
+    bool isSim = false;
+    AvoidanceControl controller = new AvoidanceControl(isSim);
 
     ros::Duration(10).sleep();
 
-    cout << "Start Moving to a start point" << endl;
-    controller.moveToStart();
+    while(true){
+        cout << "Start Moving to a start point" << endl;
+        controller.moveToStart();
+        ros::Duration(1).sleep();
 
-    ros::Duration(5).sleep();
-
-    cout << "Start Moving to a goal" << endl;
-    controller.moveToGoal();
-
+        cout << "Start Moving to a goal" << endl;
+        controller.moveToGoal();
+        ros::Duration(1).sleep();
+    }
     return 0;
 }

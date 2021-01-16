@@ -14,11 +14,11 @@
 
 using namespace std;
 
-    
+
 class AvoidanceControl
 {
     private:
-        bool isSim = false;
+        bool isSim;
 
         ros::NodeHandle nh;
         ros::Rate rate{100};
@@ -38,7 +38,7 @@ class AvoidanceControl
         Eigen::Vector3d endEffectorPositionVector, positionErrorVector, desiredEEVelocity;
         Eigen::VectorXd q, jointMiddleValues{7}, jointRanges{7};
 
-        double position_error_threshold{0.01}, secondaryTaskGain{5.0};
+        double positionErrorThreshold{0.01}, secondaryTaskGain{5.0};
 
         void distanceCallBack(const sensor_msgs::Range::ConstPtr& msg);
         void jointStateCallback(const sensor_msgs::JointState::ConstPtr& msg);
@@ -49,12 +49,11 @@ class AvoidanceControl
         const double maxRepulsiveVelocity = 1.0;
         bool atStartingPoint = false;
 
-        Eigen::Vector3d desired_position;
-        Eigen::Vector3d start_position;
-        Eigen::Vector3d obstacle_position;
+        Eigen::Vector3d desiredPosition;
+        Eigen::Vector3d startPosition;
 
     public:
-        AvoidanceControl();
+        AvoidanceControl(bool isSim);
         ~AvoidanceControl();
         void moveToPosition(const Eigen::Vector3d desiredPositionVector);
         void moveToStart();
