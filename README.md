@@ -7,7 +7,7 @@
 - **Suporting Version**: `ROS Melodic`
 - **Documentation**: https://hiro-group.ronc.one/ros_robotic_skin/
 
-This is our ROS package for our robotic skin work. This section includes data collection; once that is done, calibration logically follows, which can be found [here](https://github.com/HIRO-group/roboskin).
+This is our ROS package for our robotic skin work. This section includes data collection; once that is done, calibration follows, which can be found in our [roboskin](https://github.com/HIRO-group/roboskin) Python package.
 
 # Quick Installation
 This installation includes the installation of the `hiro_ros_arm_controller` package, but will also install the `ros_robotic_skin` ROS package.
@@ -83,6 +83,27 @@ roslaunch ros_robotic_skin sawyer_world.launch
 ```
 
 ![](images/sawyer_example.png)
+
+## Running the end to end flow
+
+In order to run the whole process of data collection + optimization, we have a shell script that takes care of all of that in one line. To run:
+
+First, make sure that you have installed our [roboskin](https://github.com/HIRO-group/roboskin) Python package before continuing.
+
+Usage:
+
+```sh
+./shell_scripts/e2e.sh --panda-ip <panda ip> --experiment-type <real or sim> --roboskin-path <path to roboskin on YOUR computer>
+```
+
+Here's an example where the Panda's IP is `123`, we want to run the experiment on the `real` panda, and the path to `roboskin` is `/home/mamba/roboskin`.
+
+```sh
+./shell_scripts/e2e.sh --panda-ip 123 --experiment-type real --roboskin-path /home/mamba/roboskin
+```
+
+**Note**: This flow assumes that the IMUs are already calibrated!
+
 
 # For DEVELOPERS
 ## Test
