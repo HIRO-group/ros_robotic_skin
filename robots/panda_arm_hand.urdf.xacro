@@ -11,13 +11,53 @@
 
   <xacro:panda_arm />
   <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
+  <!-- parameters you can change- xyz, rpy of each skin unit (xacro:imu) -->
+
+  <!-- 1st pose -->
   <xacro:imu imu_id="0" xyz="0.05 0.0 -0.15" rpy="0.0 1.57 0.0" connected_to="panda_link1"/>
-  <xacro:imu imu_id="1" xyz="0.06 0.0 0.06" rpy="0.0 1.57 0.0" connected_to="panda_link2"/>
+  <!-- <xacro:imu imu_id="1" xyz="0.06 0.0 0.06" rpy="0.0 1.57 0.0" connected_to="panda_link2"/>
   <xacro:imu imu_id="2" xyz="0.0 -0.05 -0.08" rpy="1.57 0.0 0.0" connected_to="panda_link3"/>
   <xacro:imu imu_id="3" xyz="-0.06 0.0 0.08" rpy="0.0 -1.57 0.0" connected_to="panda_link4"/>
   <xacro:imu imu_id="4" xyz="0.0 0.1 -0.1" rpy="-1.57 0.0 0.0" connected_to="panda_link5"/>
   <xacro:imu imu_id="5" xyz="-0.05 0.0 0.03" rpy="0.0 -1.57 0.0" connected_to="panda_link6"/>
-  <xacro:imu imu_id="6" xyz="0.05 0.0 0.0" rpy="0.0 1.57 0.0" connected_to="panda_link7"/>
+  <xacro:imu imu_id="6" xyz="0.05 0.0 0.0" rpy="0.0 1.57 0.0" connected_to="panda_link7"/> -->
+  <xacro:imu imu_id="1" xyz="0.04 -0.04 0.0" rpy="1.57 1.57 0.7" connected_to="panda_link7"/>
+  <xacro:imu imu_id="2" xyz="-0.02 -0.02 0.00" rpy="1.57 0.0 -2.355" connected_to="panda_link7"/>
+  <xacro:imu imu_id="3" xyz="0.03 0.03 0.00" rpy="1.57 0.0 2.355" connected_to="panda_link7"/>
+  
+  <!-- 2nd pose -->
+  <!-- <xacro:imu imu_id="0" xyz="-0.05 0.0 -0.15" rpy="0.0 -1.57 0.0" gravity="true" connected_to="panda_link1"/>
+  <xacro:imu imu_id="1" xyz="-0.06 0.0 0.06" rpy="0.0 -1.57 0.0" gravity="true" connected_to="panda_link2"/>
+  <xacro:imu imu_id="2" xyz="0.0 0.05 -0.08" rpy="-1.57 0.0 0.0" gravity="true" connected_to="panda_link3"/>
+  <xacro:imu imu_id="3" xyz="0.06 0.0 0.08" rpy="0.0 1.57 0.0" gravity="true" connected_to="panda_link4"/>
+  <xacro:imu imu_id="4" xyz="0.0 0.15 0.0" rpy="-1.57 0.0 0.0" gravity="true" connected_to="panda_link5"/>
+  <xacro:imu imu_id="5" xyz="0.01 0.0 0.06" rpy="0.0 0.0 1.57" gravity="true" connected_to="panda_link6"/>
+  <xacro:imu imu_id="6" xyz="0.0 -0.05 0.0" rpy="1.57 0.0 0.0" gravity="true" connected_to="panda_link7"/> -->
+  
+
+  <!-- <xacro:imu imu_id="0" xyz="0.05 0.0 -0.15" rpy="1.57 1.57 0.0" connected_to="panda_link1"/>
+  <xacro:imu imu_id="1" xyz="0.01 -0.13 0.06" rpy="0.0 1.57 0.0" connected_to="panda_link2"/>
+  <xacro:imu imu_id="2" xyz="0.07 -0.05 -0.08" rpy="1.57 0.0 -1.57" connected_to="panda_link3"/>
+  <xacro:imu imu_id="3" xyz="-0.06 0.1 0.08" rpy="0.0 -1.57 1.57" connected_to="panda_link4"/>
+  <xacro:imu imu_id="4" xyz="0.0 0.02 -0.1" rpy="-1.57 1.57 0.0" connected_to="panda_link5"/>
+  <xacro:imu imu_id="5" xyz="0.02 0.0 0.08" rpy="-1.57 -1.57 0.0" connected_to="panda_link6"/>
+  <xacro:imu imu_id="6" xyz="-0.01 -0.06 0.01" rpy="1.57 1.57 -1.57" connected_to="panda_link7"/> -->
+  <!-- <xacro:imu imu_id="0" xyz="0.05 0.0 -0.10" rpy="0.0 -1.57 0.0" connected_to="panda_link1"/>
+  <xacro:imu imu_id="1" xyz="0.05 0.0 0.05" rpy="0.0 -1.57 0.0" connected_to="panda_link2"/>
+  <xacro:imu imu_id="2" xyz="0.0 -0.05 -0.08" rpy="-1.57 0.0 0.0" connected_to="panda_link3"/>
+  <xacro:imu imu_id="3" xyz="-0.06 0.0 -0.08" rpy="0.0 1.57 0.0" connected_to="panda_link4"/>
+  <xacro:imu imu_id="4" xyz="0.01 0.0 0.07" rpy="-1.57 0.0 0.0" connected_to="panda_link5"/>
+  <xacro:imu imu_id="5" xyz="-0.05 0.0 0.06" rpy="0.0 -1.57 0.0" connected_to="panda_link6"/>
+  <xacro:imu imu_id="6" xyz="0.0 -0.04 0.0" rpy="1.57 0.0 0.0" connected_to="panda_link7"/> -->
+
+  <!-- 3rd pose -->
+  <!-- <xacro:imu imu_id="0" xyz="0.05 0.0 -0.15" rpy="1.57 1.57 1.0" connected_to="panda_link1"/>
+  <xacro:imu imu_id="1" xyz="0.01 -0.13 0.06" rpy="0.0 1.57 1.0" connected_to="panda_link2"/>
+  <xacro:imu imu_id="2" xyz="0.07 -0.05 -0.08" rpy="1.57 1.0 -1.57" connected_to="panda_link3"/>
+  <xacro:imu imu_id="3" xyz="-0.06 0.1 0.08" rpy="1.0 -1.57 1.57" connected_to="panda_link4"/>
+  <xacro:imu imu_id="4" xyz="0.0 0.02 -0.1" rpy="-1.57 1.57 2.0" connected_to="panda_link5"/>
+  <xacro:imu imu_id="5" xyz="0.02 0.0 0.08" rpy="-1.57 -1.57 1.0" connected_to="panda_link6"/>
+  <xacro:imu imu_id="6" xyz="-0.01 -0.06 0.01" rpy="1.57 1.57 -1.57" connected_to="panda_link7"/> -->
 
   <!-- for simulation -->
   <xacro:arg name="robot_name" default="panda"/>
