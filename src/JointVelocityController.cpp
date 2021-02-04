@@ -2,7 +2,7 @@
 
 
 JointVelocityController::JointVelocityController(bool isSim) {
-    this.isSim = isSim;
+    this->isSim = isSim;
 
     // Switches to a proper controller depending on sim / real robot
     _initializeSwitchController(isSim);
