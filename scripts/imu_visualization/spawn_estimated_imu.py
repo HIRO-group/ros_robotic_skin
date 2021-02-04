@@ -159,8 +159,20 @@ def parse_pickle_data(pickle_filename):
     for key in keys:
         if len(dh_params_data) != trials[key]['imu_num']:
             dh_params_data.append([])
-        dh_params_data[-1].append(trials[key]['position'] + trials[key]['orientation'])
+        dh_params_data.append(trials[key]['position'] + trials[key]['orientation'])
 
+    return dh_params_data
+
+def parse_pickle_data_best(pickle_filename):
+    """
+    parses pickle data.
+    """
+    data = pickle.load(open(pickle_filename, 'r'))
+    best_data = data['best_data']
+    keys = best_data['elapsed_time'].keys()
+    dh_params_data = []
+    for key in keys:
+        dh_params_data.append(best_data['position'][key] + best_data['orientation'][key])
     return dh_params_data
 
 
@@ -176,14 +188,16 @@ if __name__ == '__main__':
     # args = parser.parse_args()
     robot = 'panda'
     # data from corresponding method
-    filename = 'panda_OM.pickle'
+    filename = 'panda_OM_jan16.pickle'
 
     frequency = 50.0
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
     load_path = os.path.join(ros_robotic_skin_path, 'data', filename)
 
     if os.path.exists(load_path):
-        dh_params_data = parse_pickle_data(load_path)
+        # dh_params_data = parse_pickle_data(load_path)
+        dh_params_data = parse_pickle_data_best(load_path)
+
     else:
         raise EnvironmentError("File not found!")
     # dh_params_data shape is (num_su, optimization_steps, dh_params)
@@ -211,33 +225,38 @@ if __name__ == '__main__':
     init_poses = [Pose(position=pose[:3], orientation=pose[3:]) for pose in poses]
     state_manager = EstimatedIMUBoxStateManager(model_names, init_poses)
     state_manager.spawn()
-    optimization_lengths = []
-    for su_idx, val in enumerate(dh_params_data):
-        optimization_lengths.append(len(dh_params_data[su_idx]))
+    for su_idx in range(3):
+        pose = dh_params_data[su_idx]
+        pose = Pose(position=pose[:3], orientation=pose[3:])
+        state_manager.set_pose(model_names[su_idx], pose)
+    sleep(3)
+    # optimization_lengths = []
+    # for su_idx, val in enumerate(dh_params_data):
+    #     optimization_lengths.append(len(dh_params_data[su_idx]))
 
-    optimization_lengths = np.array(optimization_lengths)
-    indices = [0] * 6
-    su_idx = 0
-    done_amt = 0
+    # optimization_lengths = np.array(optimization_lengths)
+    # indices = [0] * 6
+    # su_idx = 0
+    # done_amt = 0
 
-    while True:
-        if indices[su_idx] == optimization_lengths[su_idx]:
-            # skip su.
-            pass
-        else:
-            pose = dh_params_data[su_idx][indices[su_idx]]
-            pose = Pose(position=pose[:3], orientation=pose[3:])
-            state_manager.set_pose(model_names[su_idx], pose)
+    # while True:
+    #     if indices[su_idx] == optimization_lengths[su_idx]:
+    #         # skip su.
+    #         pass
+    #     else:
+    #         pose = dh_params_data[su_idx][indices[su_idx]]
+    #         pose = Pose(position=pose[:3], orientation=pose[3:])
+    #         state_manager.set_pose(model_names[su_idx], pose)
 
-            indices[su_idx] += 1
-            if indices[su_idx] == optimization_lengths[su_idx]:
-                done_amt += 1
-                if done_amt == n_imu:
-                    break
-        su_idx += 1
-        su_idx %= n_imu
-        print('Optimization steps for imus:', indices)
-        r.sleep()
+    #         indices[su_idx] += 1
+    #         if indices[su_idx] == optimization_lengths[su_idx]:
+    #             done_amt += 1
+    #             if done_amt == n_imu:
+    #                 break
+    #     su_idx += 1
+    #     su_idx %= n_imu
+    #     print('Optimization steps for imus:', indices)
+    #     r.sleep()
 
     # error = np.linalg.norm(defined_poses - poses)
     # print(error)
