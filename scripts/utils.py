@@ -55,7 +55,6 @@ def get_imu_names_and_topics(xacro_name='panda_arm_hand.urdf.xacro',
         imu_topics.append('imu_data{}'.format(i))
     # save pickle file of imu mappings that we can use later.
     ros_robotic_skin_path = rospkg.RosPack().get_path('ros_robotic_skin')
-
     data_path = os.path.join(ros_robotic_skin_path, 'data', 'imu_mappings.pickle')
     with open(data_path, 'wb') as handle:
         pickle.dump(imu_mappings, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -89,7 +88,7 @@ def get_joint_names_from_imus(filename, directory='robots'):
     imu_elements = document.getElementsByTagName('xacro:imu')
     # make sure to get ids of imus in order.
     links = []
-    sorted_imu_elements = sorted(imu_elements, key=lambda x: x.getAttribute('imu_id'))
+    sorted_imu_elements = sorted(imu_elements, key=lambda x: int(x.getAttribute('imu_id')))
 
     # get imu information.
     for imu_element in sorted_imu_elements:
