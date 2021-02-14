@@ -173,6 +173,7 @@ def parse_pickle_data_best(pickle_filename):
     keys = data['best_data']['position'].keys()
     dh_params_data = []
     for key in keys:
+        # if key == 3:
         dh_params_data.append(data['best_data']['position'][key] + data['best_data']['orientation'][key])
 
     return dh_params_data
