@@ -174,6 +174,8 @@ class DataCollector:
         for pose in self.poses_list:
             self.goto_defined_pose(pose, rest_time)
             # Record for given time
+            # import time
+            # time.sleep(100)
             self.record_static_motion(static_motion_record_time)
 
             for i, joint_name in enumerate(self.joint_names):
@@ -204,7 +206,7 @@ class DataCollector:
                 self.watch_dynamic_motion.stop()
                 rospy.sleep(0.1)
 
-    def save(self, save=True, verbose=False, clean_static=True, clean_dynamic=False):
+    def save(self, save=True, verbose=False, clean_static=True, clean_dynamic=True):
         """
         Save data to a pickle file.
 
